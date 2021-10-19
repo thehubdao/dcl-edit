@@ -10,7 +10,8 @@ public class Interface3DManager : MonoBehaviour
 {
     public Camera gizmoCamera;
 
-    private Material _lastHovered = null;
+    //private Material _lastHovered = null;
+    private Interface3DHover _lastHoveredVisualIndicator = null;
 
     private EntityManipulator _activeManipulator;
     private Vector3? _lastMousePosition = null;
@@ -20,36 +21,53 @@ public class Interface3DManager : MonoBehaviour
     void Update()
     {
         var mouseRay = gizmoCamera.ViewportPointToRay(gizmoCamera.ScreenToViewportPoint(Input.mousePosition));
-        Material hitMaterial = null;
+        //Material hitMaterial = null;
+        Interface3DHover hoveredVisualIndicator = null;
         EntityManipulator hoveredManipulator = null;
         Entity hoveredEntity = null;
 
         if (_activeManipulator != null)
         {
-            hitMaterial = _activeManipulator.transform.GetComponent<MeshRenderer>().material;
+            hoveredVisualIndicator = _lastHoveredVisualIndicator;
+            //hitMaterial = _activeManipulator.transform.GetComponent<MeshRenderer>().material;
         }
         else
         {
             if (!Input.GetMouseButton((int)MouseButton.RightMouse) && Physics.Raycast(mouseRay, out RaycastHit hitInfoGizmos, 10000, LayerMask.GetMask("Gizmos")))
             {
                 //Debug.Log("Hovering "+hitInfo.transform.gameObject);
-                hitMaterial = hitInfoGizmos.transform.GetComponent<MeshRenderer>().material;
+                //hitMaterial = hitInfoGizmos.transform.GetComponent<MeshRenderer>().material;
+                if (hitInfoGizmos.transform.gameObject.TryGetComponent(out Interface3DHover hoverIndicator))
+                {
+                    hoveredVisualIndicator = hoverIndicator;
+                }
                 hoveredManipulator = hitInfoGizmos.transform.GetComponent<EntityManipulator>();
             }
             else if (!Input.GetMouseButton((int)MouseButton.RightMouse) && Physics.Raycast(mouseRay, out RaycastHit hitInfoEntity, 10000, LayerMask.GetMask("Entity")))
             {
                 //Debug.Log("Hovering "+hitInfo.transform.gameObject);
                 //hitMaterial = hitInfoEntity.transform.GetComponent<MeshRenderer>()?.material;
+                if (hitInfoEntity.transform.gameObject.TryGetComponent(out Interface3DHover hoverIndicator))
+                {
+                    hoveredVisualIndicator = hoverIndicator;
+                }
                 hoveredEntity = hitInfoEntity.transform.GetComponent<Entity>();
             }
         }
 
 
-        if (hitMaterial != _lastHovered)
+        //if (hitMaterial != _lastHovered)
+        //{
+        //    hitMaterial?.SetFloat("hover", 1);
+        //    _lastHovered?.SetFloat("hover", 0);
+        //    _lastHovered = hitMaterial;
+        //}
+
+        if (hoveredVisualIndicator != _lastHoveredVisualIndicator)
         {
-            hitMaterial?.SetFloat("hover", 1);
-            _lastHovered?.SetFloat("hover", 0);
-            _lastHovered = hitMaterial;
+            hoveredVisualIndicator?.StartHover();
+            _lastHoveredVisualIndicator?.EndHover();
+            _lastHoveredVisualIndicator = hoveredVisualIndicator;
         }
 
         //Debug.Log("Manipulator: "+hoveredManipulator);

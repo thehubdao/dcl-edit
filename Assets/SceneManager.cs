@@ -8,6 +8,22 @@ using UnityEngine;
 
 public class SceneManager : MonoBehaviour
 {
+    // Start is called before the first frame update
+    void Start()
+    {
+        var sr = new StreamReader(DclProjectPath+"/scene.json");
+        var fileContents = sr.ReadToEnd();
+        sr.Close();
+
+        sceneJson = JsonUtility.FromJson<SceneJson>(fileContents);
+
+        _entityGameObject = entityGameObject;
+        _hierarchyView = hierarchyView;
+        ChangedHierarchy();
+
+        SelectedEntity = null;
+    }
+
     public struct SceneJson
     {
         [Serializable]
@@ -64,21 +80,7 @@ public class SceneManager : MonoBehaviour
 
     public static readonly string DclProjectPath = "F:/Data/Decentraland/dcl-edit-test";
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        var sr = new StreamReader(DclProjectPath+"/scene.json");
-        var fileContents = sr.ReadToEnd();
-        sr.Close();
 
-        sceneJson = JsonUtility.FromJson<SceneJson>(fileContents);
-
-        _entityGameObject = entityGameObject;
-        _hierarchyView = hierarchyView;
-        ChangedHierarchy();
-
-        SelectedEntity = null;
-    }
     
     // Entities
     public GameObject entityGameObject;
