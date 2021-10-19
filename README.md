@@ -1,4 +1,4 @@
-#dcl-edit
+# dcl-edit
 
 A scene editor for Decentraland SDK
 
