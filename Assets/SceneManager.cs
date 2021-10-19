@@ -8,6 +8,9 @@ using UnityEngine;
 
 public class SceneManager : MonoBehaviour
 {
+    // Constants 
+    public static readonly string DclProjectPath = "F:/Data/Decentraland/dcl-edit-test";
+
     // Start is called before the first frame update
     void Start()
     {
@@ -22,8 +25,13 @@ public class SceneManager : MonoBehaviour
         ChangedHierarchy();
 
         SelectedEntity = null;
+
+        GizmoCamera = _gizmoCamera;
+        GizmoScale = _gizmoScale;
     }
 
+
+    // read scene.json file 
     public struct SceneJson
     {
         [Serializable]
@@ -75,12 +83,16 @@ public class SceneManager : MonoBehaviour
 
 
     }
-
     public static SceneJson sceneJson;
 
-    public static readonly string DclProjectPath = "F:/Data/Decentraland/dcl-edit-test";
 
-
+    // Gizmo sizing 
+    public static Camera GizmoCamera;
+    [SerializeField]
+    private Camera _gizmoCamera;
+    public static float GizmoScale;
+    [SerializeField]
+    private float _gizmoScale;
     
     // Entities
     public GameObject entityGameObject;

@@ -1106,6 +1106,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3409b1cb7a2cb1149b3ecb32f639ffeb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _gizmoCamera: {fileID: 105068609}
+  _gizmoScale: 0.15
   entityGameObject: {fileID: 1117648748}
   hierarchyView: {fileID: 983030324}
 --- !u!1 &375617525
@@ -2609,7 +2611,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1597363793}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.5331591
+  m_Size: 0.5331589
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -2776,7 +2778,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.000015258789}
+  m_AnchoredPosition: {x: 0, y: -0.000030517578}
   m_SizeDelta: {x: 0, y: 148.222}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &983030324
