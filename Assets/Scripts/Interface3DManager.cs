@@ -65,7 +65,7 @@ public class Interface3DManager : MonoBehaviour
             }
 
             // When Left mouse button is clicked, do necessary actions
-            if (Input.GetMouseButton((int)MouseButton.LeftMouse))
+            if (Input.GetMouseButtonDown((int)MouseButton.LeftMouse))
             {
                 if (hoveredManipulator != null)
                 {
