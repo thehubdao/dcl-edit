@@ -17,121 +17,129 @@ public class Interface3DManager : MonoBehaviour
     private Vector3? _lastMousePosition = null;
     private Plane _activeManipulatorPlane;
 
-    // Update is called once per frame
-    void Update()
-    {
-        var mouseRay = gizmoCamera.ViewportPointToRay(gizmoCamera.ScreenToViewportPoint(Input.mousePosition));
-        //Material hitMaterial = null;
-        Interface3DHover hoveredVisualIndicator = null;
-        EntityManipulator hoveredManipulator = null;
-        Entity hoveredEntity = null;
 
-        if (_activeManipulator != null)
+    private StateMachine _interfaceStateMachine;
+    private StateMachine.State _freeMouseState;
+    private StateMachine.State _cameraMovingState;
+    private StateMachine.State _holdingManipulatorState;
+
+    void Start()
+    {
+        // This State is normally active, when the user just hovers the mouse over the 3D view
+        _freeMouseState = new StateMachine.State("Free mouse state");
+        _freeMouseState.OnStateUpdate = state =>
         {
-            hoveredVisualIndicator = _lastHoveredVisualIndicator;
-            //hitMaterial = _activeManipulator.transform.GetComponent<MeshRenderer>().material;
-        }
-        else
-        {
+            // Get the ray from the camera, where the mouse currently is
+            var mouseRay = gizmoCamera.ViewportPointToRay(gizmoCamera.ScreenToViewportPoint(Input.mousePosition));
+
+            // Figuring out, what the mouse currently hovers
+            Interface3DHover hoveredVisualIndicator = null;
+            EntityManipulator hoveredManipulator = null;
+            Entity hoveredEntity = null;
+
+            // First check, if mouse is hovering over Gizmo
             if (!Input.GetMouseButton((int)MouseButton.RightMouse) && Physics.Raycast(mouseRay, out RaycastHit hitInfoGizmos, 10000, LayerMask.GetMask("Gizmos")))
             {
-                //Debug.Log("Hovering "+hitInfo.transform.gameObject);
-                //hitMaterial = hitInfoGizmos.transform.GetComponent<MeshRenderer>().material;
                 if (hitInfoGizmos.transform.gameObject.TryGetComponent(out Interface3DHover hoverIndicator))
                 {
-                    hoveredVisualIndicator = hoverIndicator;
+                    hoveredVisualIndicator = hoverIndicator; // set the hover indicator if one is present
                 }
                 hoveredManipulator = hitInfoGizmos.transform.GetComponent<EntityManipulator>();
             }
+            // Secondly check, if mouse is hovering over Entity
             else if (!Input.GetMouseButton((int)MouseButton.RightMouse) && Physics.Raycast(mouseRay, out RaycastHit hitInfoEntity, 10000, LayerMask.GetMask("Entity")))
             {
-                //Debug.Log("Hovering "+hitInfo.transform.gameObject);
-                //hitMaterial = hitInfoEntity.transform.GetComponent<MeshRenderer>()?.material;
                 if (hitInfoEntity.transform.gameObject.TryGetComponent(out Interface3DHover hoverIndicator))
                 {
-                    hoveredVisualIndicator = hoverIndicator;
+                    hoveredVisualIndicator = hoverIndicator; // set the hover indicator if one is present
                 }
                 hoveredEntity = hitInfoEntity.transform.GetComponent<Entity>();
             }
-        }
 
-
-        //if (hitMaterial != _lastHovered)
-        //{
-        //    hitMaterial?.SetFloat("hover", 1);
-        //    _lastHovered?.SetFloat("hover", 0);
-        //    _lastHovered = hitMaterial;
-        //}
-
-        if (hoveredVisualIndicator != _lastHoveredVisualIndicator)
-        {
-            hoveredVisualIndicator?.StartHover();
-            _lastHoveredVisualIndicator?.EndHover();
-            _lastHoveredVisualIndicator = hoveredVisualIndicator;
-        }
-
-        //Debug.Log("Manipulator: "+hoveredManipulator);
-        if (Input.GetMouseButtonDown((int)MouseButton.LeftMouse))
-        {
-            if (hoveredManipulator != null)
+            // Update hover indicator when necessary
+            if (hoveredVisualIndicator != _lastHoveredVisualIndicator)
             {
-                _activeManipulator = hoveredManipulator;
-                //_activeManipulatorDistance = Vector3.Distance(
-                //            _activeManipulator.transform.position,
-                //            gizmoCamera.transform.position);
-                _activeManipulatorPlane = _activeManipulator.GetPlane(gizmoCamera);
+                hoveredVisualIndicator?.StartHover();
+                _lastHoveredVisualIndicator?.EndHover();
+                _lastHoveredVisualIndicator = hoveredVisualIndicator;
             }
-            else if (hoveredEntity != null)
+
+            // When Left mouse button is clicked, do necessary actions
+            if (Input.GetMouseButton((int)MouseButton.LeftMouse))
             {
-                SceneManager.SelectedEntity = hoveredEntity;
+                if (hoveredManipulator != null)
+                {
+                    _activeManipulator = hoveredManipulator;
+                    _activeManipulatorPlane = _activeManipulator.GetPlane(gizmoCamera);
+                    _interfaceStateMachine.ActiveState = _holdingManipulatorState; // Switching state to "holding manipulator state"
+                }
+                else if (hoveredEntity != null)
+                {
+                    SceneManager.SelectedEntity = hoveredEntity;
+                }
             }
-        }
 
-        if (Input.GetMouseButtonUp((int)MouseButton.LeftMouse))
+            // When pressing Right mouse button, switch to "Camera moving state"
+            if (Input.GetMouseButton((int) MouseButton.RightMouse))
+            {
+                _interfaceStateMachine.ActiveState = _cameraMovingState;
+            }
+        };
+
+        // This state is active, when the user is holding a Manipulator
+        _holdingManipulatorState = new StateMachine.State("Holding manipulator state");
+        _holdingManipulatorState.OnStateEnter = state =>
         {
-            _activeManipulator = null;
-        }
-
-
-        if (_activeManipulator != null)
+            // set null, to indicate that this state was just entered
+            _lastMousePosition = null;
+        };
+        _holdingManipulatorState.OnStateUpdate = state =>
         {
-            //// Distance from the camera to the active manipulator
-            //var manipulatorDistance = _activeManipulatorDistance;
-            //
-            //// Distance from the camera to where the mouse points on a plane
-            //var planeDistance = manipulatorDistance / Mathf.Cos(Mathf.Deg2Rad * Vector3.Angle(gizmoCamera.transform.forward, mouseRay.direction));
-            //
-            //// Point on the plane
-            //var mousePositionOnPlane = mouseRay.GetPoint(planeDistance);
-            //_lastMousePosition ??= mousePositionOnPlane;
-            //
-            //var mouseChange = mousePositionOnPlane - _lastMousePosition.Value;
-            ////Debug.Log(currentMousePosition);
-            //_activeManipulator?.Change(mouseChange);
-            //
-            //Debug.DrawLine(mousePositionOnPlane, _lastMousePosition.Value, Color.red, 10);
-            //
-            //_lastMousePosition = mousePositionOnPlane;
-
+            // Get the ray from the camera, where the mouse currently is
+            var mouseRay = gizmoCamera.ViewportPointToRay(gizmoCamera.ScreenToViewportPoint(Input.mousePosition));
+            
+            // Get the 3D position on the Manipulator plane
             _activeManipulatorPlane.Raycast(mouseRay, out var distanceOnPlane);
             var mousePositionOnPlane = mouseRay.GetPoint(distanceOnPlane);
-
-            _lastMousePosition ??= mousePositionOnPlane;
-
+            
             //Debug.DrawLine(mousePositionOnPlane, _lastMousePosition.Value, Color.red, 10);
-
             //_activeManipulatorPlane.DrawGizmo(_activeManipulator.GetOneRay());
 
-
-            var mouseChange = mousePositionOnPlane - _lastMousePosition.Value;
-            _activeManipulator.Change(mouseChange);
-
+            // if this is the first update, where the manipulator is hold, there is no movement to apply
+            if (_lastMousePosition != null)
+            {
+                var mouseChange = mousePositionOnPlane - _lastMousePosition.Value;
+                _activeManipulator.Change(mouseChange);
+            }
+            
+            // save the mouse position in a field. This is used to calculate the mouse movement in the next update
             _lastMousePosition = mousePositionOnPlane;
-        }
-        else
+
+            // When the left mouse button is released, return to "Free mouse state"
+            if (!Input.GetMouseButton((int) MouseButton.LeftMouse)) 
+            {
+                _interfaceStateMachine.ActiveState = _freeMouseState;
+            }
+        };
+
+        // This state is active, when the user moves around
+        _cameraMovingState = new StateMachine.State("Camera moving state");
+        _cameraMovingState.OnStateUpdate = state =>
         {
-            _lastMousePosition = null;
-        }
+            // When releasing Right mouse button, switch to "Free mouse state"
+            if (!Input.GetMouseButton((int) MouseButton.RightMouse))
+            {
+                _interfaceStateMachine.ActiveState = _freeMouseState;
+            }
+        };
+
+
+        _interfaceStateMachine = new StateMachine(_freeMouseState);
+    }
+
+    void Update()
+    {
+        _interfaceStateMachine.Update();
     }
 }
 
