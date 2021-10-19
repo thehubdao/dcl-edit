@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using TMPro;
 using UnityEditor.UIElements;
 using UnityEngine;
 
@@ -75,6 +76,8 @@ public class SceneManager : MonoBehaviour
         _entityGameObject = entityGameObject;
         _hierarchyView = hierarchyView;
         ChangedHierarchy();
+
+        SelectedEntity = null;
     }
     
     // Entities
@@ -95,7 +98,23 @@ public class SceneManager : MonoBehaviour
 
 
     // Selection
+    private static Entity _selectedEntity;
+    public static Entity SelectedEntity
+    {
+        get => _selectedEntity;
+        set
+        {
+            _selectedEntity = value;
 
+            foreach (var entity in Entities)
+            {
+                var isSelected = entity == _selectedEntity;
+                entity.gizmos.SetActive(isSelected);
+            }
+
+            // TODO update inspector
+        }
+    }
 }
 
 public static class MyJsonUtil

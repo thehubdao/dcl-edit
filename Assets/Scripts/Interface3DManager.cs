@@ -22,22 +22,29 @@ public class Interface3DManager : MonoBehaviour
         var mouseRay = gizmoCamera.ViewportPointToRay(gizmoCamera.ScreenToViewportPoint(Input.mousePosition));
         Material hitMaterial = null;
         EntityManipulator hoveredManipulator = null;
-        
+        Entity hoveredEntity = null;
+
         if (_activeManipulator != null)
         {
             hitMaterial = _activeManipulator.transform.GetComponent<MeshRenderer>().material;
         }
         else
         {
-            if (!Input.GetMouseButton((int) MouseButton.RightMouse)&&Physics.Raycast(mouseRay, out RaycastHit hitInfo, 10000, LayerMask.GetMask("Gizmos")))
+            if (!Input.GetMouseButton((int)MouseButton.RightMouse) && Physics.Raycast(mouseRay, out RaycastHit hitInfoGizmos, 10000, LayerMask.GetMask("Gizmos")))
             {
                 //Debug.Log("Hovering "+hitInfo.transform.gameObject);
-                hitMaterial = hitInfo.transform.GetComponent<MeshRenderer>().material;
-                hoveredManipulator = hitInfo.transform.GetComponent<EntityManipulator>();
+                hitMaterial = hitInfoGizmos.transform.GetComponent<MeshRenderer>().material;
+                hoveredManipulator = hitInfoGizmos.transform.GetComponent<EntityManipulator>();
+            }
+            else if (!Input.GetMouseButton((int)MouseButton.RightMouse) && Physics.Raycast(mouseRay, out RaycastHit hitInfoEntity, 10000, LayerMask.GetMask("Entity")))
+            {
+                //Debug.Log("Hovering "+hitInfo.transform.gameObject);
+                //hitMaterial = hitInfoEntity.transform.GetComponent<MeshRenderer>()?.material;
+                hoveredEntity = hitInfoEntity.transform.GetComponent<Entity>();
             }
         }
 
-        
+
         if (hitMaterial != _lastHovered)
         {
             hitMaterial?.SetFloat("hover", 1);
@@ -46,13 +53,20 @@ public class Interface3DManager : MonoBehaviour
         }
 
         //Debug.Log("Manipulator: "+hoveredManipulator);
-        if (hoveredManipulator != null && Input.GetMouseButtonDown((int)MouseButton.LeftMouse))
+        if (Input.GetMouseButtonDown((int)MouseButton.LeftMouse))
         {
-            _activeManipulator = hoveredManipulator;
-            //_activeManipulatorDistance = Vector3.Distance(
-            //            _activeManipulator.transform.position,
-            //            gizmoCamera.transform.position);
-            _activeManipulatorPlane = _activeManipulator.GetPlane(gizmoCamera);
+            if (hoveredManipulator != null)
+            {
+                _activeManipulator = hoveredManipulator;
+                //_activeManipulatorDistance = Vector3.Distance(
+                //            _activeManipulator.transform.position,
+                //            gizmoCamera.transform.position);
+                _activeManipulatorPlane = _activeManipulator.GetPlane(gizmoCamera);
+            }
+            else if (hoveredEntity != null)
+            {
+                SceneManager.SelectedEntity = hoveredEntity;
+            }
         }
 
         if (Input.GetMouseButtonUp((int)MouseButton.LeftMouse))
@@ -81,9 +95,9 @@ public class Interface3DManager : MonoBehaviour
             //
             //_lastMousePosition = mousePositionOnPlane;
 
-            _activeManipulatorPlane.Raycast(mouseRay,out var distanceOnPlane);
+            _activeManipulatorPlane.Raycast(mouseRay, out var distanceOnPlane);
             var mousePositionOnPlane = mouseRay.GetPoint(distanceOnPlane);
-            
+
             _lastMousePosition ??= mousePositionOnPlane;
 
             //Debug.DrawLine(mousePositionOnPlane, _lastMousePosition.Value, Color.red, 10);
@@ -93,7 +107,7 @@ public class Interface3DManager : MonoBehaviour
 
             var mouseChange = mousePositionOnPlane - _lastMousePosition.Value;
             _activeManipulator.Change(mouseChange);
-            
+
             _lastMousePosition = mousePositionOnPlane;
         }
         else
@@ -111,7 +125,7 @@ static class Util
         return new Vector3(Random.Range(-1.0f, 1.0f), Random.Range(-1.0f, 1.0f), Random.Range(-1.0f, 1.0f));
     }
 
-    public static void DrawGizmo(this Plane p,Ray? startRay = null,int lines = 21,float spacing=1)
+    public static void DrawGizmo(this Plane p, Ray? startRay = null, int lines = 21, float spacing = 1)
     {
         startRay ??= new Ray(Vector3.zero, Vector3.up);
 
@@ -122,7 +136,7 @@ static class Util
 
         // Move startpoint to left border
         var horizontalRay = new Ray(startPointOnPlane, Vector3.Cross(p.normal, startRay.Value.direction));
-        startPointOnPlane = horizontalRay.GetPoint(-(lines-1) * spacing / 2);
+        startPointOnPlane = horizontalRay.GetPoint(-(lines - 1) * spacing / 2);
 
         // Move startpoint to left bottom corner
         var verticalRay = new Ray(startPointOnPlane, Vector3.Cross(p.normal, horizontalRay.direction));
@@ -130,8 +144,8 @@ static class Util
         // Draw Horizontal lines
         for (int i = 0; i < lines; i++)
         {
-            var rayStartPoint = verticalRay.GetPoint((-(lines-1) * spacing / 2)+i*spacing);
-            Debug.DrawRay(rayStartPoint,horizontalRay.direction.normalized*(lines-1) * spacing);
+            var rayStartPoint = verticalRay.GetPoint((-(lines - 1) * spacing / 2) + i * spacing);
+            Debug.DrawRay(rayStartPoint, horizontalRay.direction.normalized * (lines - 1) * spacing);
         }
 
         horizontalRay.origin = verticalRay.GetPoint(-(lines - 1) * spacing / 2);
@@ -139,10 +153,10 @@ static class Util
         // Draw Vertical lines
         for (int i = 0; i < lines; i++)
         {
-            var rayStartPoint = horizontalRay.GetPoint(/*(-(lines-1) * (-spacing/4))+*/i*spacing);
-            Debug.DrawRay(rayStartPoint,verticalRay.direction.normalized*(lines-1) * spacing);
+            var rayStartPoint = horizontalRay.GetPoint(/*(-(lines-1) * (-spacing/4))+*/i * spacing);
+            Debug.DrawRay(rayStartPoint, verticalRay.direction.normalized * (lines - 1) * spacing);
         }
-        
+
         //Debug.DrawRay(p.normal*-p.distance,Vector3.Cross(p.normal,Util.randomVector3()),Color.green,10);
     }
 }

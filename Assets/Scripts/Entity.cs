@@ -22,6 +22,9 @@ public class Entity : MonoBehaviour
     */
     public string name;
 
+    [Space]
+    public GameObject gizmos;
+
     public EntityComponent[] Components => GetComponents<EntityComponent>();
 
 
