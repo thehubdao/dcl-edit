@@ -1711,7 +1711,7 @@ MonoBehaviour:
   _gizmoCamera: {fileID: 105068609}
   _gizmoScale: 0.15
   entityGameObject: {fileID: 1117648748}
-  hierarchyView: {fileID: 0}
+  hierarchyView: {fileID: 698346408}
 --- !u!114 &358762087
 MonoBehaviour:
   m_ObjectHideFlags: 0
