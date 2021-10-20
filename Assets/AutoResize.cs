@@ -7,7 +7,7 @@ public class AutoResize : MonoBehaviour
 {
     void Start()
     {
-        gameObject.SetActive(false);
+        //gameObject.SetActive(false);
     }
 
     void LateUpdate()

@@ -73,7 +73,7 @@ public class Interface3DManager : MonoBehaviour
                     _activeManipulatorPlane = _activeManipulator.GetPlane(gizmoCamera);
                     _interfaceStateMachine.ActiveState = _holdingManipulatorState; // Switching state to "holding manipulator state"
                 }
-                else if (hoveredEntity != null)
+                else// if (hoveredEntity != null)
                 {
                     SceneManager.SelectedEntity = hoveredEntity;
                 }
