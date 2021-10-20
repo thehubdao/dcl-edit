@@ -1,13 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
+using NUnit.Framework.Constraints;
 using UnityEngine;
 
-public class TransformComponenet : EntityComponent
+public class TransformComponent : EntityComponent
 {
+    public override void Start()
+    {
+        base.Start();
 
+        // Setup representation
+        Instantiate(ComponentRepresentationList.TransformComponent, entity.componentsParent.transform);
+    }
 
-    public override Ts GetTypeScript(string entityName)
+    public override Ts GetTypeScript()
     {
         //Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator = ".";
 
@@ -15,8 +22,8 @@ public class TransformComponenet : EntityComponent
         var rot = transform.rotation;
         var scale = transform.localScale;
 
-        return new Ts($"{entityName}Transform",
-            $"const {entityName}Transform = new Transform({{\n" +
+        return new Ts($"{entity.name.ToCamelCase()}Transform",
+            $"const {entity.name.ToCamelCase()}Transform = new Transform({{\n" +
             $"  position: {pos.ToTS()},\n" +
             $"  rotation: {rot.ToTS()},\n" +
             $"  scale: {scale.ToTS()}\n" +

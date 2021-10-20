@@ -5,8 +5,16 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
+[RequireComponent(typeof(Entity))]
 public abstract class EntityComponent: MonoBehaviour
 {
+    protected Entity entity;
+    public virtual void Start()
+    {
+        entity = GetComponent<Entity>();
+    }
+
+
     public struct Ts
     {
         public Ts(string symbol, string setup)
@@ -19,7 +27,7 @@ public abstract class EntityComponent: MonoBehaviour
         public string setup;
     }
 
-    public abstract Ts GetTypeScript(string entityName);
+    public abstract Ts GetTypeScript();
     //{
     //    return new Ts( $"{entityName}setup", $"const {entityName}setup = new BoxShape()\n");
     //}

@@ -25,8 +25,11 @@ public class Entity : MonoBehaviour
     [Space]
     public GameObject gizmos;
 
-    public EntityComponent[] Components => GetComponents<EntityComponent>();
+    public GameObject componentsParent;
 
+
+    public EntityComponent[] Components => GetComponents<EntityComponent>();
+    
 
     void Start()
     {
@@ -46,7 +49,7 @@ public class Entity : MonoBehaviour
 
         foreach (var component in Components)
         {
-            var componentTs = component.GetTypeScript(name.ToCamelCase());
+            var componentTs = component.GetTypeScript();
             script += componentTs.setup;
             script += $"{name.ToCamelCase()}.addComponentOrReplace({componentTs.symbol})\n";
         }
