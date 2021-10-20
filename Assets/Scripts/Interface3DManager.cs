@@ -9,6 +9,7 @@ using Random = UnityEngine.Random;
 public class Interface3DManager : MonoBehaviour
 {
     public Camera gizmoCamera;
+    public RightClickCameraController cameraController;
 
     //private Material _lastHovered = null;
     private Interface3DHover _lastHoveredVisualIndicator = null;
@@ -124,8 +125,12 @@ public class Interface3DManager : MonoBehaviour
 
         // This state is active, when the user moves around
         _cameraMovingState = new StateMachine.State("Camera moving state");
-        _cameraMovingState.OnStateUpdate = state =>
+        _cameraMovingState.OnStateEnter = _ => cameraController.StartMovement();
+        _cameraMovingState.OnStateExit = _ => cameraController.EndMovement();
+        _cameraMovingState.OnStateUpdate = _ =>
         {
+            cameraController.UpdateMovement();
+
             // When releasing Right mouse button, switch to "Free mouse state"
             if (!Input.GetMouseButton((int) MouseButton.RightMouse))
             {

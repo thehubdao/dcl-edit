@@ -1079,7 +1079,7 @@ Transform:
   m_Children:
   - {fileID: 1117648749}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &358762085
 MonoBehaviour:
@@ -2382,7 +2382,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &898326560
 GameObject:
@@ -2477,7 +2477,7 @@ RectTransform:
   m_Children:
   - {fileID: 1294538558}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -2514,6 +2514,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gizmoCamera: {fileID: 1191877227}
+  cameraController: {fileID: 1191877230}
 --- !u!4 &904570398
 Transform:
   m_ObjectHideFlags: 0
@@ -2526,7 +2527,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &929432391
 GameObject:
@@ -2611,7 +2612,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1597363793}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.58998066
+  m_Size: 0.5899805
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -2778,7 +2779,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.000015258789}
+  m_AnchoredPosition: {x: 0, y: -0.000030517578}
   m_SizeDelta: {x: 0, y: 148.222}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &983030324
