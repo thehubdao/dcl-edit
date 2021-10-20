@@ -14,6 +14,8 @@ public class TransformComponent : EntityComponent
         Instantiate(ComponentRepresentationList.TransformComponent, entity.componentsParent.transform);
     }
 
+    public override string ComponentName => "transform";
+
     public override Ts GetTypeScript()
     {
         //Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator = ".";

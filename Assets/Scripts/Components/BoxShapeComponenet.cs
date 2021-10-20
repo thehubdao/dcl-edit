@@ -11,6 +11,8 @@ public class BoxShapeComponenet : EntityComponent
         entity.gameObject.AddComponent<BoxCollider>();
     }
 
+    public override string ComponentName => "boxShape";
+
     public override Ts GetTypeScript()
     {
         return new Ts( $"{entity.name.ToCamelCase()}BoxShape", $"const {entity.name.ToCamelCase()}BoxShape = new BoxShape()\n");

@@ -12,6 +12,8 @@ public class SphereShapeComponent : EntityComponent
         spc.radius = 1;
     }
 
+    public override string ComponentName => "sphereShape";
+
     public override Ts GetTypeScript()
     {
         return new Ts( $"{entity.name.ToCamelCase()}SphereShape", $"const {entity.name.ToCamelCase()}SphereShape = new SphereShape()\n");

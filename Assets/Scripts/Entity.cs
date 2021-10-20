@@ -37,7 +37,7 @@ public class Entity : MonoBehaviour
     }
 
     private static int nameFillCount = 0;
-    public string GetTypeScript()
+    public string GetTypeScript(ref List<ScriptGenerator.ExposedVars> exposed)
     {
         if (name == "")
         {
@@ -47,11 +47,26 @@ public class Entity : MonoBehaviour
         var script = $"const {name.ToCamelCase()} = new Entity(\"{name}\")\n";
         script += $"engine.addEntity({name.ToCamelCase()})\n";
 
+        var exposedVar = new ScriptGenerator.ExposedVars
+        {
+            exposedAs = "entity",
+            symbol = name.ToCamelCase()
+        };
+        exposed.Add(exposedVar);
+
         foreach (var component in Components)
         {
             var componentTs = component.GetTypeScript();
             script += componentTs.setup;
             script += $"{name.ToCamelCase()}.addComponentOrReplace({componentTs.symbol})\n";
+
+            var exposedComponentVar = new ScriptGenerator.ExposedVars
+            {
+                exposedAs = component.ComponentName,
+                symbol = componentTs.symbol
+            };
+            exposed.Add(exposedComponentVar);
+
         }
 
 

@@ -14,6 +14,8 @@ public abstract class EntityComponent: MonoBehaviour
         entity = GetComponent<Entity>();
     }
 
+    public abstract string ComponentName { get; }
+
 
     public struct Ts
     {
