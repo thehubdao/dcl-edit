@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Interface3DHoverSetMaterial : Interface3DHover
 {
-    public MeshRenderer renderer;
+    public new MeshRenderer renderer;
 
     public override void StartHover()
     {

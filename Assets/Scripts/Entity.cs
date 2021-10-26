@@ -32,7 +32,7 @@ public class Entity : MonoBehaviour
     })
     darkCobblestoneTile21.addComponentOrReplace(transform29)
     */
-    public string name;
+    public new string name;
 
     [Space]
     public GameObject gizmos;

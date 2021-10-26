@@ -9,7 +9,7 @@ public class HierarchyViewItem : MonoBehaviour
     public TextMeshProUGUI nameText;
 
     [NonSerialized]
-    public string name;
+    public new string name;
     public void UpdateVisuals()
     {
         nameText.text = name;
