@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
@@ -6,6 +7,30 @@ using UnityEngine;
 
 public class TransformComponent : EntityComponent
 {
+    [Serializable]
+    public class SpecificTransformJson
+    {
+        public SpecificTransformJson(TransformComponent tc)
+        {
+            pos = tc.transform.position;
+            rot = tc.transform.rotation;
+            scale = tc.transform.localScale;
+        }
+
+        public Vector3 pos;
+        public Quaternion rot;
+        public Vector3 scale;
+    }
+
+    public override string SpecificJson => JsonUtility.ToJson(new SpecificTransformJson(this));
+    public override void ApplySpecificJson(string jsonString)
+    {
+        var specifics = JsonUtility.FromJson<SpecificTransformJson>(jsonString);
+        transform.position = specifics.pos;
+        transform.rotation = specifics.rot;
+        transform.localScale = specifics.scale;
+    }
+
     public override void Start()
     {
         base.Start();

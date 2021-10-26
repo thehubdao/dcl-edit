@@ -4,6 +4,11 @@ using UnityEngine;
 
 public class SphereShapeComponent : EntityComponent
 {
+    public override string SpecificJson => "";
+    public override void ApplySpecificJson(string jsonString)
+    {
+    }
+
     public override void Start()
     {
         base.Start();

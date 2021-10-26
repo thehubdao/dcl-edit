@@ -8,6 +8,18 @@ using static System.Char;
 
 public class Entity : MonoBehaviour
 {
+    [Serializable]
+    public struct Json
+    {
+        public Json(Entity e)
+        {
+            name = e.name;
+            components = e.Components.Select(c => new EntityComponent.Json(c)).ToList();
+        }
+         
+        public string name;
+        public List<EntityComponent.Json> components;
+    }
     /*
     const darkCobblestoneTile21 = new Entity('darkCobblestoneTile21')
     engine.addEntity(darkCobblestoneTile21)
@@ -29,7 +41,12 @@ public class Entity : MonoBehaviour
 
 
     public EntityComponent[] Components => GetComponents<EntityComponent>();
-    
+
+    /// <summary>
+    /// will be true, when the game object is to be destroyed
+    /// </summary>
+    [NonSerialized]
+    public bool doomed = false;
 
     void Start()
     {
@@ -71,6 +88,11 @@ public class Entity : MonoBehaviour
 
 
         return script;
+    }
+
+    public string ToJson()
+    {
+        return JsonUtility.ToJson(new Json(this));
     }
 }
 

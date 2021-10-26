@@ -1,7 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
+using JetBrains.Annotations;
 using TMPro;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -20,7 +23,10 @@ public class SceneManager : MonoBehaviour
 
         sceneJson = JsonUtility.FromJson<SceneJson>(fileContents);
 
+        _saveManager = saveManager;
+
         _entityGameObject = entityGameObject;
+        _entityTemplate = entityTemplate;
         _hierarchyView = hierarchyView;
         ChangedHierarchy();
 
@@ -28,6 +34,8 @@ public class SceneManager : MonoBehaviour
 
         GizmoCamera = _gizmoCamera;
         GizmoScale = _gizmoScale;
+
+        SaveManager.Load(); 
     }
 
 
@@ -94,11 +102,20 @@ public class SceneManager : MonoBehaviour
     [SerializeField]
     private float _gizmoScale;
     
+    // Saving and Loading
+    public SceneSaveManager saveManager;
+    private static SceneSaveManager _saveManager;
+    public static SceneSaveManager SaveManager => _saveManager;
+
     // Entities
     public GameObject entityGameObject;
     private static GameObject _entityGameObject;
-    public static Entity[] Entities => _entityGameObject.GetComponentsInChildren<Entity>();
-
+    public static Entity[] Entities => _entityGameObject.GetComponentsInChildren<Entity>().Where(entity => !entity.doomed).ToArray();
+    public static Transform EntityParent => _entityGameObject.transform;
+    
+    public GameObject entityTemplate;
+    private static GameObject _entityTemplate;
+    public static GameObject EntityTemplate => _entityTemplate;
 
     // Hierarchy View
     public HierarchyView hierarchyView;
@@ -128,6 +145,13 @@ public class SceneManager : MonoBehaviour
 
             // TODO update inspector
         }
+    }
+}
+
+public class EntityArray:List<Entity>
+{
+    public EntityArray(Entity[] array):base(array)
+    {
     }
 }
 

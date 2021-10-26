@@ -2,8 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BoxShapeComponenet : EntityComponent
+public class BoxShapeComponent : EntityComponent
 {
+    public override string SpecificJson => "";
+    public override void ApplySpecificJson(string jsonString)
+    {
+    }
+
     public override void Start()
     {
         base.Start();

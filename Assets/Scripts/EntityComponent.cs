@@ -8,6 +8,22 @@ using UnityEngine;
 [RequireComponent(typeof(Entity))]
 public abstract class EntityComponent: MonoBehaviour
 {
+    [Serializable]
+    public class Json
+    {
+        public Json(EntityComponent ec)
+        {
+            name = ec.ComponentName;
+            specifics = ec.SpecificJson;
+        }
+
+        public string name;
+        public string specifics;
+    }
+
+    public abstract string SpecificJson { get; }
+    public abstract void ApplySpecificJson(string jsonString);
+
     protected Entity entity;
     public virtual void Start()
     {

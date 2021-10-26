@@ -1661,6 +1661,7 @@ GameObject:
   - component: {fileID: 358762085}
   - component: {fileID: 358762086}
   - component: {fileID: 358762087}
+  - component: {fileID: 358762088}
   m_Layer: 0
   m_Name: Scene
   m_TagString: Untagged
@@ -1710,7 +1711,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _gizmoCamera: {fileID: 105068609}
   _gizmoScale: 0.15
+  saveManager: {fileID: 358762088}
   entityGameObject: {fileID: 1117648748}
+  entityTemplate: {fileID: 2305240446249227317, guid: fdadcf6827fd2704db3ca045cbbfa65a, type: 3}
   hierarchyView: {fileID: 698346408}
 --- !u!114 &358762087
 MonoBehaviour:
@@ -1727,6 +1730,20 @@ MonoBehaviour:
   _transformComponent: {fileID: 703043143153875396, guid: f9b3f92f1020fb746822db65bd1de4ad, type: 3}
   _boxShapeComponent: {fileID: 5034175284151747857, guid: e43e4e3f555e8444e93f8ab87e3f367f, type: 3}
   _sphereShapeComponent: {fileID: 5034175284151747857, guid: 7cfa1b7140dd6d547a5937e84e15fcd7, type: 3}
+--- !u!114 &358762088
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 358762083}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb9702955df8c934ca639ce5049480ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  saveNow: 0
+  loadNow: 0
 --- !u!1 &375617525
 GameObject:
   m_ObjectHideFlags: 0
@@ -2587,7 +2604,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 212005267}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.5804196
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
