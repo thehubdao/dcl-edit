@@ -42,6 +42,7 @@ public class Entity : MonoBehaviour
         get => _customName;
         set => _customName = value;
     }
+    [SerializeField]
     private string _customName = "Entity";
 
     public int uniqueNumber = -1;

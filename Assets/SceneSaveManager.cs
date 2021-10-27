@@ -39,40 +39,47 @@ public class SceneSaveManager : MonoBehaviour
 
     public void Load()
     {
-        var reader = new StreamReader(SceneManager.DclProjectPath + "/scene/scene.json");
-        var entities = reader.ReadToEnd().FromJson();
-
-        Entity.uniqueNumberCounter = entities.entityNumberCounter;
-
-        foreach (var entity in SceneManager.Entities)
+        if(File.Exists(SceneManager.DclProjectPath + "/scene/scene.json"))
         {
-            entity.doomed = true;
-            Destroy(entity.gameObject);
-        }
+            var reader = new StreamReader(SceneManager.DclProjectPath + "/scene/scene.json");
+            var entities = reader.ReadToEnd().FromJson();
 
-        foreach (var entity in entities.entities)
-        {
-            var newEntityGameObject = Instantiate(SceneManager.EntityTemplate, SceneManager.EntityParent);
-            var newEntity = newEntityGameObject.GetComponent<Entity>();
+            Entity.uniqueNumberCounter = entities.entityNumberCounter;
 
-            newEntity.Name = entity.name;
-            newEntity.uniqueNumber = entity.uniqueNumber;
-
-            foreach (var component in entity.components)
+            foreach (var entity in SceneManager.Entities)
             {
-                EntityComponent newComponent = component.name switch
-                {
-                    "transform" => newEntityGameObject.AddComponent<TransformComponent>(),
-                    "sphereShape" => newEntityGameObject.AddComponent<SphereShapeComponent>(),
-                    "boxShape" => newEntityGameObject.AddComponent<BoxShapeComponent>(),
-                    _ => throw new NotImplementedException("Unknown component name: " + component.name)
-                };
-
-                newComponent.ApplySpecificJson(component.specifics);
+                entity.doomed = true;
+                Destroy(entity.gameObject);
             }
-        }
 
-        SceneManager.ChangedHierarchy();
+            foreach (var entity in entities.entities)
+            {
+                var newEntityGameObject = Instantiate(SceneManager.EntityTemplate, SceneManager.EntityParent);
+                var newEntity = newEntityGameObject.GetComponent<Entity>();
+
+                newEntity.Name = entity.name;
+                newEntity.uniqueNumber = entity.uniqueNumber;
+
+                foreach (var component in entity.components)
+                {
+                    EntityComponent newComponent = component.name switch
+                    {
+                        "transform" => newEntityGameObject.AddComponent<TransformComponent>(),
+                        "sphereShape" => newEntityGameObject.AddComponent<SphereShapeComponent>(),
+                        "boxShape" => newEntityGameObject.AddComponent<BoxShapeComponent>(),
+                        _ => throw new NotImplementedException("Unknown component name: " + component.name)
+                    };
+
+                    newComponent.ApplySpecificJson(component.specifics);
+                }
+            }
+
+            SceneManager.ChangedHierarchy();
+        }
+        else
+        {
+            Debug.Log("Creating new Scene...");
+        }
     }
 }
 
