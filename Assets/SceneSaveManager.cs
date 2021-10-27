@@ -42,18 +42,21 @@ public class SceneSaveManager : MonoBehaviour
         var reader = new StreamReader(SceneManager.DclProjectPath + "/scene/scene.json");
         var entities = reader.ReadToEnd().FromJson();
 
+        Entity.uniqueNumberCounter = entities.entityNumberCounter;
+
         foreach (var entity in SceneManager.Entities)
         {
             entity.doomed = true;
             Destroy(entity.gameObject);
         }
 
-        foreach (var entity in entities)
+        foreach (var entity in entities.entities)
         {
             var newEntityGameObject = Instantiate(SceneManager.EntityTemplate, SceneManager.EntityParent);
             var newEntity = newEntityGameObject.GetComponent<Entity>();
 
-            newEntity.name = entity.name;
+            newEntity.Name = entity.name;
+            newEntity.uniqueNumber = entity.uniqueNumber;
 
             foreach (var component in entity.components)
             {
@@ -81,14 +84,15 @@ public static class SceneSaveJsonHelper
     //}
 
     [Serializable]
-    class EntityList
+    public class EntityList
     {
+        public int entityNumberCounter;
         public List<Entity.Json> entities;// = new List<Entity.Json>();
     };
 
-    public static List<Entity.Json> FromJson(this string jsonString)
+    public static EntityList FromJson(this string jsonString)
     {
-        return JsonUtility.FromJson<EntityList>(jsonString).entities;
+        return JsonUtility.FromJson<EntityList>(jsonString);
     }
 
     public static string ToJson(this Entity[] entities)
@@ -96,7 +100,8 @@ public static class SceneSaveJsonHelper
 
         var entityList = new EntityList()
         {
-            entities = entities.Select(e => new Entity.Json(e)).ToList()
+            entities = entities.Select(e => new Entity.Json(e)).ToList(),
+            entityNumberCounter = Entity.uniqueNumberCounter
         };
 
         return JsonUtility.ToJson(entityList,true);

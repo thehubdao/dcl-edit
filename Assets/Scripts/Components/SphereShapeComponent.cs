@@ -21,7 +21,7 @@ public class SphereShapeComponent : EntityComponent
 
     public override Ts GetTypeScript()
     {
-        return new Ts( $"{entity.name.ToCamelCase()}SphereShape", $"const {entity.name.ToCamelCase()}SphereShape = new SphereShape()\n");
+        return new Ts( $"{entity.NameTsSymbol.ToCamelCase()}SphereShape", $"const {entity.NameTsSymbol.ToCamelCase()}SphereShape = new SphereShape()\n");
     }
 }
 

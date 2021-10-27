@@ -37,7 +37,17 @@ public class ScriptGenerator : MonoBehaviour
         {
             var exposedVars = new List<ExposedVars>();
             fileWriter.WriteLine(entity.GetTypeScript(ref exposedVars));
-            allExposedVars.Add(entity.name.ToCamelCase(),exposedVars);
+
+            var exposedSymbol = entity.Name.ToCamelCase();
+            if (exposedSymbol == "")
+                exposedSymbol = "Entity";
+
+            while (allExposedVars.ContainsKey(exposedSymbol))
+                exposedSymbol += $"_{entity.uniqueNumber}"; 
+
+            allExposedVars.Add(exposedSymbol,exposedVars);
+
+            //allExposedVars.Add(entity.NameTsSymbol.ToCamelCase()+(allExposedVars.ContainsKey(entity.Name.ToCamelCase())?entity.uniqueNumber.ToString():""),exposedVars);
         }
 
         fileWriter.WriteLine("export let scene = {");

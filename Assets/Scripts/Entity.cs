@@ -13,11 +13,13 @@ public class Entity : MonoBehaviour
     {
         public Json(Entity e)
         {
-            name = e.name;
+            name = e.Name;
+            uniqueNumber = e.uniqueNumber;
             components = e.Components.Select(c => new EntityComponent.Json(c)).ToList();
         }
          
         public string name;
+        public int uniqueNumber;
         public List<EntityComponent.Json> components;
     }
     /*
@@ -32,13 +34,29 @@ public class Entity : MonoBehaviour
     })
     darkCobblestoneTile21.addComponentOrReplace(transform29)
     */
-    public new string name;
+
+    public string UniqueName => Name + uniqueNumber.ToString();
+
+    public string Name
+    {
+        get => _customName;
+        set => _customName = value;
+    }
+    private string _customName = "Entity";
+
+    public int uniqueNumber = -1;
+
+    public static int uniqueNumberCounter = 0;
+
+    public string NameTsSymbol => (Name == "") ? "Entity" + uniqueNumber.ToString() : UniqueName;
+
 
     [Space]
     public GameObject gizmos;
 
     public GameObject componentsParent;
 
+    
 
     public EntityComponent[] Components => GetComponents<EntityComponent>();
 
@@ -50,24 +68,26 @@ public class Entity : MonoBehaviour
 
     void Start()
     {
-
+        if (uniqueNumber < 0)
+            uniqueNumber = uniqueNumberCounter++;
     }
 
     private static int nameFillCount = 0;
     public string GetTypeScript(ref List<ScriptGenerator.ExposedVars> exposed)
     {
-        if (name == "")
-        {
-            name = "Entity " + nameFillCount++;
-        }
+        //if (Name == "")
+        //{
+        //    Name = "Entity " + nameFillCount++;
+        //}
+        //var usedName = (Name == "") ? "Entity" + uniqueNumber.ToString() : UniqueName;
 
-        var script = $"const {name.ToCamelCase()} = new Entity(\"{name}\")\n";
-        script += $"engine.addEntity({name.ToCamelCase()})\n";
+        var script = $"const {NameTsSymbol.ToCamelCase()} = new Entity(\"{NameTsSymbol}\")\n";
+        script += $"engine.addEntity({NameTsSymbol.ToCamelCase()})\n";
 
         var exposedVar = new ScriptGenerator.ExposedVars
         {
             exposedAs = "entity",
-            symbol = name.ToCamelCase()
+            symbol = NameTsSymbol.ToCamelCase()
         };
         exposed.Add(exposedVar);
 
@@ -75,7 +95,7 @@ public class Entity : MonoBehaviour
         {
             var componentTs = component.GetTypeScript();
             script += componentTs.setup;
-            script += $"{name.ToCamelCase()}.addComponentOrReplace({componentTs.symbol})\n";
+            script += $"{NameTsSymbol.ToCamelCase()}.addComponentOrReplace({componentTs.symbol})\n";
 
             var exposedComponentVar = new ScriptGenerator.ExposedVars
             {

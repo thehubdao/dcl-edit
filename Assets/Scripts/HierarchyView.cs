@@ -22,7 +22,7 @@ public class HierarchyView : MonoBehaviour
         foreach (var entity in SceneManager.Entities)
         {
             var newItem = Instantiate(itemTemplate, transform).GetComponent<HierarchyViewItem>();
-            newItem.name = entity.name;
+            newItem.name = entity.Name;
 
             newItem.GetComponent<RectTransform>().Translate(0, i++ * -50f, 0);// = new Vector3();
 
