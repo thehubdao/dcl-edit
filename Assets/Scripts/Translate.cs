@@ -19,36 +19,43 @@ public class Translate : EntityManipulator
     public TranslateDirection direction;
 
     private Transform _entity;
+    private GizmoManager _gizmoManager;
     void Start()
     {
         _entity = GetComponentInParent<Entity>().transform;
+        _gizmoManager = GetComponentInParent<GizmoManager>();
     }
 
     public override void Change(Vector3 change)
     {
-        change = _entity.InverseTransformDirection(change);
+        if(_gizmoManager.relationSetting == GizmoManager.RelationSetting.Local)
+            change = _entity.InverseTransformDirection(change);
+        
         switch (direction)
         {
             case TranslateDirection.XAxis:
-                _entity.Translate(change.x, 0, 0);
+                var changeOnX = Vector3.Project(change, (_gizmoManager.relationSetting==GizmoManager.RelationSetting.Local)?Vector3.right: transform.right);
+                _entity.Translate(changeOnX,_gizmoManager.relationSetting.ToSpace());
                 break;
             case TranslateDirection.YAxis:
-                _entity.Translate( 0,change.y, 0);
+                var changeOnY = Vector3.Project(change, (_gizmoManager.relationSetting==GizmoManager.RelationSetting.Local)?Vector3.up: transform.up);
+                _entity.Translate( changeOnY,_gizmoManager.relationSetting.ToSpace());
                 break;
             case TranslateDirection.ZAxis:
-                _entity.Translate( 0, 0, change.z);
+                var changeOnZ = Vector3.Project(change, (_gizmoManager.relationSetting==GizmoManager.RelationSetting.Local)?Vector3.forward: transform.forward);
+                _entity.Translate( changeOnZ,_gizmoManager.relationSetting.ToSpace());
                 break;
             case TranslateDirection.XYPlane:
-                _entity.Translate( change.x, change.y, 0);
+                _entity.Translate( change.x, change.y, 0,_gizmoManager.relationSetting.ToSpace());
                 break;
             case TranslateDirection.YZPlane:
-                _entity.Translate( 0, change.y, change.z);
+                _entity.Translate( 0, change.y, change.z,_gizmoManager.relationSetting.ToSpace());
                 break;
             case TranslateDirection.ZXPlane:
-                _entity.Translate( change.x, 0, change.z);
+                _entity.Translate( change.x, 0, change.z,_gizmoManager.relationSetting.ToSpace());
                 break;
             case TranslateDirection.All:
-                _entity.Translate( change.x, change.y, change.z);
+                _entity.Translate( change.x, change.y, change.z,_gizmoManager.relationSetting.ToSpace());
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
@@ -60,20 +67,20 @@ public class Translate : EntityManipulator
         switch (direction)
         {
             case TranslateDirection.XAxis:
-                return new Plane(Vector3.Project(camera.transform.position-_entity.position,_entity.right)+_entity.position-camera.transform.position , _entity.position);
+                return new Plane(Vector3.Project(camera.transform.position-_entity.position,transform.right)+_entity.position-camera.transform.position , _entity.position);
                 //return new Plane(Vector3.Cross(camera.transform.up,_entity.right) , _entity.position);
             case TranslateDirection.YAxis:
-                return new Plane(Vector3.Project(camera.transform.position-_entity.position,_entity.up)+_entity.position-camera.transform.position , _entity.position);
+                return new Plane(Vector3.Project(camera.transform.position-_entity.position,transform.up)+_entity.position-camera.transform.position , _entity.position);
                 //return new Plane(Vector3.Cross(camera.transform.right,_entity.up) , _entity.position);
             case TranslateDirection.ZAxis:
-                return new Plane(Vector3.Project(camera.transform.position-_entity.position,_entity.forward)+_entity.position-camera.transform.position , _entity.position);
+                return new Plane(Vector3.Project(camera.transform.position-_entity.position,transform.forward)+_entity.position-camera.transform.position , _entity.position);
                 //return new Plane(Vector3.Cross(camera.transform.up,_entity.forward) , _entity.position);
             case TranslateDirection.XYPlane:
-                return new Plane(_entity.forward , _entity.position);
+                return new Plane(transform.right , _entity.position);
             case TranslateDirection.YZPlane:
-                return new Plane(_entity.right , _entity.position);
+                return new Plane(transform.right , _entity.position);
             case TranslateDirection.ZXPlane:
-                return new Plane(_entity.up , _entity.position);
+                return new Plane(transform.right , _entity.position);
             case TranslateDirection.All:
                 return new Plane(camera.transform.forward, _entity.position);
             default:

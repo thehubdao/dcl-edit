@@ -74,7 +74,7 @@ public class Interface3DManager : MonoBehaviour
                     _activeManipulatorPlane = _activeManipulator.GetPlane(gizmoCamera);
                     _interfaceStateMachine.ActiveState = _holdingManipulatorState; // Switching state to "holding manipulator state"
                 }
-                else// if (hoveredEntity != null)
+                else if (hoveredEntity != null)
                 {
                     SceneManager.SelectedEntity = hoveredEntity;
                 }
@@ -104,13 +104,14 @@ public class Interface3DManager : MonoBehaviour
             var mousePositionOnPlane = mouseRay.GetPoint(distanceOnPlane);
             
             //Debug.DrawLine(mousePositionOnPlane, _lastMousePosition.Value, Color.red, 10);
-            //_activeManipulatorPlane.DrawGizmo(_activeManipulator.GetOneRay());
+            _activeManipulatorPlane.DrawGizmo(_activeManipulator.GetOneRay());
 
             // if this is the first update, where the manipulator is hold, there is no movement to apply
             if (_lastMousePosition != null)
             {
                 var mouseChange = mousePositionOnPlane - _lastMousePosition.Value;
                 _activeManipulator.Change(mouseChange);
+                Debug.Log("Mouse change: "+mouseChange/Time.deltaTime);
             }
             
             // save the mouse position in a field. This is used to calculate the mouse movement in the next update
