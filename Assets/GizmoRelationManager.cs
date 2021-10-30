@@ -5,7 +5,7 @@ using System.ComponentModel;
 using TMPro;
 using UnityEngine;
 
-public class GizmoManager : MonoBehaviour
+public class GizmoRelationManager : MonoBehaviour
 {
     public enum RelationSetting
     {
@@ -53,12 +53,12 @@ public static class GizmoManagerHelper
         return (arr.Length==j) ? arr[0] : arr[j];            
     }
 
-    public static Space ToSpace(this GizmoManager.RelationSetting setting)
+    public static Space ToSpace(this GizmoRelationManager.RelationSetting setting)
     {
         return setting switch
         {
-            GizmoManager.RelationSetting.Local => Space.Self,
-            GizmoManager.RelationSetting.Global => Space.World,
+            GizmoRelationManager.RelationSetting.Local => Space.Self,
+            GizmoRelationManager.RelationSetting.Global => Space.World,
             _ => throw new ArgumentOutOfRangeException(nameof(setting), setting, null)
         };
     }

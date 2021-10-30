@@ -19,43 +19,43 @@ public class Translate : EntityManipulator
     public TranslateDirection direction;
 
     private Transform _entity;
-    private GizmoManager _gizmoManager;
+    private GizmoRelationManager _gizmoRelationManager;
     void Start()
     {
         _entity = GetComponentInParent<Entity>().transform;
-        _gizmoManager = GetComponentInParent<GizmoManager>();
+        _gizmoRelationManager = GetComponentInParent<GizmoRelationManager>();
     }
 
     public override void Change(Vector3 change)
     {
-        if(_gizmoManager.relationSetting == GizmoManager.RelationSetting.Local)
+        if(_gizmoRelationManager.relationSetting == GizmoRelationManager.RelationSetting.Local)
             change = _entity.InverseTransformDirection(change);
         
         switch (direction)
         {
             case TranslateDirection.XAxis:
-                var changeOnX = Vector3.Project(change, (_gizmoManager.relationSetting==GizmoManager.RelationSetting.Local)?Vector3.right: transform.right);
-                _entity.Translate(changeOnX,_gizmoManager.relationSetting.ToSpace());
+                var changeOnX = Vector3.Project(change, (_gizmoRelationManager.relationSetting==GizmoRelationManager.RelationSetting.Local)?Vector3.right: transform.right);
+                _entity.Translate(changeOnX,_gizmoRelationManager.relationSetting.ToSpace());
                 break;
             case TranslateDirection.YAxis:
-                var changeOnY = Vector3.Project(change, (_gizmoManager.relationSetting==GizmoManager.RelationSetting.Local)?Vector3.up: transform.up);
-                _entity.Translate( changeOnY,_gizmoManager.relationSetting.ToSpace());
+                var changeOnY = Vector3.Project(change, (_gizmoRelationManager.relationSetting==GizmoRelationManager.RelationSetting.Local)?Vector3.up: transform.up);
+                _entity.Translate( changeOnY,_gizmoRelationManager.relationSetting.ToSpace());
                 break;
             case TranslateDirection.ZAxis:
-                var changeOnZ = Vector3.Project(change, (_gizmoManager.relationSetting==GizmoManager.RelationSetting.Local)?Vector3.forward: transform.forward);
-                _entity.Translate( changeOnZ,_gizmoManager.relationSetting.ToSpace());
+                var changeOnZ = Vector3.Project(change, (_gizmoRelationManager.relationSetting==GizmoRelationManager.RelationSetting.Local)?Vector3.forward: transform.forward);
+                _entity.Translate( changeOnZ,_gizmoRelationManager.relationSetting.ToSpace());
                 break;
             case TranslateDirection.XYPlane:
-                _entity.Translate( change.x, change.y, 0,_gizmoManager.relationSetting.ToSpace());
+                _entity.Translate( change.x, change.y, 0,_gizmoRelationManager.relationSetting.ToSpace());
                 break;
             case TranslateDirection.YZPlane:
-                _entity.Translate( 0, change.y, change.z,_gizmoManager.relationSetting.ToSpace());
+                _entity.Translate( 0, change.y, change.z,_gizmoRelationManager.relationSetting.ToSpace());
                 break;
             case TranslateDirection.ZXPlane:
-                _entity.Translate( change.x, 0, change.z,_gizmoManager.relationSetting.ToSpace());
+                _entity.Translate( change.x, 0, change.z,_gizmoRelationManager.relationSetting.ToSpace());
                 break;
             case TranslateDirection.All:
-                _entity.Translate( change.x, change.y, change.z,_gizmoManager.relationSetting.ToSpace());
+                _entity.Translate( change.x, change.y, change.z,_gizmoRelationManager.relationSetting.ToSpace());
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
