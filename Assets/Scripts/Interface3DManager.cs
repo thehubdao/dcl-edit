@@ -112,7 +112,7 @@ public class Interface3DManager : MonoBehaviour
                 var globalMouseChange = mousePositionOnPlane - _lastMousePosition.Value;
                 var localMouseChange = _activeManipulator.transform.InverseTransformDirection(globalMouseChange);
                 var cameraSpaceMouseChange = gizmoCamera.transform.InverseTransformDirection(globalMouseChange);
-                _activeManipulator.Change(globalMouseChange, localMouseChange, cameraSpaceMouseChange);
+                _activeManipulator.Change(globalMouseChange, localMouseChange, cameraSpaceMouseChange, gizmoCamera);
                 //Debug.Log("Mouse change: "+globalMouseChange/Time.deltaTime);
             }
             

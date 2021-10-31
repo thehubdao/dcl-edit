@@ -26,7 +26,7 @@ public class Translate : EntityManipulator
         _gizmoRelationManager = GetComponentInParent<GizmoRelationManager>();
     }
 
-    public override void Change(Vector3 globalChange, Vector3 localChange, Vector3 cameraSpaceChange)
+    public override void Change(Vector3 globalChange, Vector3 localChange, Vector3 cameraSpaceChange, Camera gizmoCamera)
     {
         if(_gizmoRelationManager.relationSetting == GizmoRelationManager.RelationSetting.Local)
             globalChange = _entity.InverseTransformDirection(globalChange);

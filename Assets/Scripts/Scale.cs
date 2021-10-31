@@ -23,7 +23,7 @@ public class Scale : EntityManipulator
         _gizmoRelationManager = GetComponentInParent<GizmoRelationManager>();
     }
 
-    public override void Change(Vector3 globalChange, Vector3 localChange, Vector3 cameraSpaceChange)
+    public override void Change(Vector3 globalChange, Vector3 localChange, Vector3 cameraSpaceChange, Camera gizmoCamera)
     {
         var localScale = _entity.componentsParent.transform.localScale;
 

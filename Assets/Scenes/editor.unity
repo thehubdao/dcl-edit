@@ -3190,7 +3190,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 212005267}
   m_Direction: 2
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.6124031
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -3687,10 +3687,6 @@ PrefabInstance:
     - target: {fileID: 2305240446249227317, guid: fdadcf6827fd2704db3ca045cbbfa65a, type: 3}
       propertyPath: m_Name
       value: BaseEntity
-      objectReference: {fileID: 0}
-    - target: {fileID: 2554240752179117319, guid: fdadcf6827fd2704db3ca045cbbfa65a, type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3010728171095694298, guid: fdadcf6827fd2704db3ca045cbbfa65a, type: 3}
       propertyPath: m_RootOrder
@@ -5343,19 +5339,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 677399058637677850, guid: 0bc026698a8f02c49a30a81a001aea9c, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0.7175
       objectReference: {fileID: 0}
     - target: {fileID: 677399058637677850, guid: 0bc026698a8f02c49a30a81a001aea9c, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 677399058637677850, guid: 0bc026698a8f02c49a30a81a001aea9c, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 677399058637677850, guid: 0bc026698a8f02c49a30a81a001aea9c, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0.69655854
       objectReference: {fileID: 0}
     - target: {fileID: 677399058637677850, guid: 0bc026698a8f02c49a30a81a001aea9c, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -5367,7 +5363,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 677399058637677850, guid: 0bc026698a8f02c49a30a81a001aea9c, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
+      value: -88.303
       objectReference: {fileID: 0}
     - target: {fileID: 785571100156279304, guid: 0bc026698a8f02c49a30a81a001aea9c, type: 3}
       propertyPath: _customName
