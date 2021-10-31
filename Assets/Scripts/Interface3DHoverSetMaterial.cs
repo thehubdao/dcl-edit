@@ -4,15 +4,21 @@ using UnityEngine;
 
 public class Interface3DHoverSetMaterial : Interface3DHover
 {
-    public new MeshRenderer renderer;
+    public MeshRenderer[] renderers;
 
     public override void StartHover()
     {
-        renderer.material.SetFloat("hover", 1);
+        foreach (var r in renderers)
+        {
+            r.material.SetFloat("hover", 1);
+        }
     }
 
     public override void EndHover()
     {
-        renderer.material.SetFloat("hover", 0);
+        foreach (var r in renderers)
+        {
+            r.material.SetFloat("hover", 0);
+        }
     }
 }

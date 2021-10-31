@@ -25,7 +25,9 @@ public class CloseUnstableWindow : MonoBehaviour
             //Debug.Log($"Rect: {r}, Mouse is in: {r.Contains(Input.mousePosition)}");
             
             if(!r.Contains(Input.mousePosition))
+            {
                 gameObject.SetActive(false);
+            }
         }
     }
 }

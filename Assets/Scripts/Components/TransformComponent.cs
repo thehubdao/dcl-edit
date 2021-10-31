@@ -14,7 +14,7 @@ public class TransformComponent : EntityComponent
         {
             pos = tc.transform.position;
             rot = tc.transform.rotation;
-            scale = tc.transform.localScale;
+            scale = tc.entity.componentsParent.transform.localScale;
         }
 
         public Vector3 pos;
@@ -28,8 +28,10 @@ public class TransformComponent : EntityComponent
         var specifics = JsonUtility.FromJson<SpecificTransformJson>(jsonString);
         transform.position = specifics.pos;
         transform.rotation = specifics.rot;
-        transform.localScale = specifics.scale;
+        // this is called, before start is called. Therefore we need to use GetComponent here
+        GetComponent<Entity>().componentsParent.transform.localScale = specifics.scale;
     }
+    
 
     public override void Start()
     {
@@ -47,7 +49,7 @@ public class TransformComponent : EntityComponent
 
         var pos = transform.position;
         var rot = transform.rotation;
-        var scale = transform.localScale;
+        var scale = entity.componentsParent.transform.localScale;
 
         return new Ts($"{entity.NameTsSymbol.ToCamelCase()}Transform",
             $"const {entity.NameTsSymbol.ToCamelCase()}Transform = new Transform({{\n" +

@@ -13,8 +13,8 @@ public class SphereShapeComponent : EntityComponent
     {
         base.Start();
         Instantiate(ComponentRepresentationList.SphereShapeComponent, entity.componentsParent.transform);
-        var spc = entity.gameObject.AddComponent<SphereCollider>();
-        spc.radius = 1;
+        //var spc = entity.gameObject.AddComponent<MeshCollider>();
+        //spc.sharedMesh = ComponentRepresentationList.SphereShapeComponent.GetComponentInChildren<MeshFilter>().sharedMesh;
     }
 
     public override string ComponentName => "sphereShape";

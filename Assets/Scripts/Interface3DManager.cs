@@ -41,20 +41,20 @@ public class Interface3DManager : MonoBehaviour
             // First check, if mouse is hovering over Gizmo
             if (!Input.GetMouseButton((int)MouseButton.RightMouse) && Physics.Raycast(mouseRay, out RaycastHit hitInfoGizmos, 10000, LayerMask.GetMask("Gizmos")))
             {
+                hoveredManipulator = hitInfoGizmos.transform.GetComponent<EntityManipulator>();
                 if (hitInfoGizmos.transform.gameObject.TryGetComponent(out Interface3DHover hoverIndicator))
                 {
                     hoveredVisualIndicator = hoverIndicator; // set the hover indicator if one is present
                 }
-                hoveredManipulator = hitInfoGizmos.transform.GetComponent<EntityManipulator>();
             }
             // Secondly check, if mouse is hovering over Entity
             else if (!Input.GetMouseButton((int)MouseButton.RightMouse) && Physics.Raycast(mouseRay, out RaycastHit hitInfoEntity, 10000, LayerMask.GetMask("Entity")))
             {
-                if (hitInfoEntity.transform.gameObject.TryGetComponent(out Interface3DHover hoverIndicator))
+                hoveredEntity = hitInfoEntity.transform.GetComponentInParent<Entity>();
+                if (hoveredEntity.gameObject.TryGetComponent(out Interface3DHover hoverIndicator))
                 {
                     hoveredVisualIndicator = hoverIndicator; // set the hover indicator if one is present
                 }
-                hoveredEntity = hitInfoEntity.transform.GetComponent<Entity>();
             }
 
             // Update hover indicator when necessary
@@ -74,7 +74,7 @@ public class Interface3DManager : MonoBehaviour
                     _activeManipulatorPlane = _activeManipulator.GetPlane(gizmoCamera);
                     _interfaceStateMachine.ActiveState = _holdingManipulatorState; // Switching state to "holding manipulator state"
                 }
-                else if (hoveredEntity != null)
+                else //if (hoveredEntity != null)
                 {
                     SceneManager.SelectedEntity = hoveredEntity;
                 }
@@ -109,9 +109,11 @@ public class Interface3DManager : MonoBehaviour
             // if this is the first update, where the manipulator is hold, there is no movement to apply
             if (_lastMousePosition != null)
             {
-                var mouseChange = mousePositionOnPlane - _lastMousePosition.Value;
-                _activeManipulator.Change(mouseChange);
-                Debug.Log("Mouse change: "+mouseChange/Time.deltaTime);
+                var globalMouseChange = mousePositionOnPlane - _lastMousePosition.Value;
+                var localMouseChange = _activeManipulator.transform.InverseTransformDirection(globalMouseChange);
+                var cameraSpaceMouseChange = gizmoCamera.transform.InverseTransformDirection(globalMouseChange);
+                _activeManipulator.Change(globalMouseChange, localMouseChange, cameraSpaceMouseChange);
+                //Debug.Log("Mouse change: "+globalMouseChange/Time.deltaTime);
             }
             
             // save the mouse position in a field. This is used to calculate the mouse movement in the next update
