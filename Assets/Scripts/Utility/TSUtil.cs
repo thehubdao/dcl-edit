@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
 
-static class TSUtil
+public static class TSUtil
 {
     public static string ToTS(this float f)
     {

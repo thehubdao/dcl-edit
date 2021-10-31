@@ -1840,7 +1840,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &345196425
 GameObject:
@@ -1854,6 +1854,7 @@ GameObject:
   - component: {fileID: 345196429}
   - component: {fileID: 345196428}
   - component: {fileID: 345196427}
+  - component: {fileID: 345196430}
   m_Layer: 5
   m_Name: GizmoRelation
   m_TagString: Untagged
@@ -1925,9 +1926,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 358762089}
-        m_TargetAssemblyTypeName: GizmoManager, Assembly-CSharp
-        m_MethodName: SwitchToNextRelationSetting
+      - m_Target: {fileID: 345196430}
+        m_TargetAssemblyTypeName: GizmoRelationButton, UI
+        m_MethodName: SetNextGizmoRelation
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1975,6 +1976,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 345196425}
   m_CullTransparentMesh: 1
+--- !u!114 &345196430
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 345196425}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e1da202af1ad774aaaec300a89dff75, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  relationManager: {fileID: 358762089}
+  text: {fileID: 1910720350}
 --- !u!1 &352228286
 GameObject:
   m_ObjectHideFlags: 0
@@ -2087,7 +2102,7 @@ Transform:
   m_Children:
   - {fileID: 1117648749}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &358762085
 MonoBehaviour:
@@ -2119,7 +2134,7 @@ MonoBehaviour:
   saveManager: {fileID: 358762088}
   entityGameObject: {fileID: 1117648748}
   entityTemplate: {fileID: 2305240446249227317, guid: fdadcf6827fd2704db3ca045cbbfa65a, type: 3}
-  hierarchyView: {fileID: 698346408}
+  gizmoRelationManager: {fileID: 358762089}
 --- !u!114 &358762087
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2162,7 +2177,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   relationSetting: 0
-  relationSettingText: {fileID: 1910720350}
+  OnUpdate:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &358762090
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2187,7 +2204,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc3b529486f6d1549ab7347f898a0da3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _currentManipulatorText: {fileID: 679060896}
+  OnUpdate:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &375617525
 GameObject:
   m_ObjectHideFlags: 0
@@ -2518,6 +2537,7 @@ GameObject:
   - component: {fileID: 468955024}
   - component: {fileID: 468955023}
   - component: {fileID: 468955022}
+  - component: {fileID: 468955025}
   m_Layer: 5
   m_Name: ManipulatorSwitch
   m_TagString: Untagged
@@ -2589,9 +2609,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 358762091}
-        m_TargetAssemblyTypeName: GizmoManipulatorManager, Assembly-CSharp
-        m_MethodName: SwitchToNextManipulator
+      - m_Target: {fileID: 468955025}
+        m_TargetAssemblyTypeName: ManipulatorSwitchButton, UI
+        m_MethodName: SetNextManipulator
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2639,6 +2659,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 468955020}
   m_CullTransparentMesh: 1
+--- !u!114 &468955025
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 468955020}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e5b4a01d1ea4e6408e907cbc0fc636a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  manipulatorManager: {fileID: 358762091}
+  text: {fileID: 679060896}
 --- !u!1 &520001770
 GameObject:
   m_ObjectHideFlags: 0
@@ -3190,7 +3224,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 212005267}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.6124031
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -4100,7 +4134,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &898326560
 GameObject:
@@ -4196,7 +4230,7 @@ RectTransform:
   - {fileID: 574598127}
   - {fileID: 1294538558}
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -6845,6 +6879,36 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2015864421
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2015864423}
+  m_Layer: 0
+  m_Name: VisualRepresentationManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2015864423
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2015864421}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2046269860
 GameObject:

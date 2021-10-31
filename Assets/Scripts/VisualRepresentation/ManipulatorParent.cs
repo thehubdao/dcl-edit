@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using NUnit.Framework.Constraints;
 using UnityEngine;
 
-public class ManipulatorParent : MonoBehaviour
+public class ManipulatorParent : VisualRepresentation
 {
     [SerializeField]
     private GameObject _translate;
@@ -13,14 +13,18 @@ public class ManipulatorParent : MonoBehaviour
     [SerializeField]
     private GameObject _scale;
 
-    void OnEnable()
+
+    private GizmoManipulatorManager _gizmoManipulatorManager;
+
+    void Start()
     {
-        UpdateVisuals();
+        _gizmoManipulatorManager = GetComponentInParent<GizmoManipulatorManager>();
+        _gizmoManipulatorManager.OnUpdate.AddListener(SetDirty);
     }
 
-    public void UpdateVisuals()
+    public override void UpdateVisuals()
     {
-        var currentManipulator = GetComponentInParent<GizmoManipulatorManager>().CurrentManipulator;
+        var currentManipulator = _gizmoManipulatorManager.CurrentManipulator;
 
         if (_translate)
             _translate.SetActive(currentManipulator == GizmoManipulatorManager.Manipulator.Translate);

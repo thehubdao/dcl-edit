@@ -1,14 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class GizmoManipulatorManager : MonoBehaviour
 {
     private Manipulator _currentManipulator = Manipulator.Translate;
 
     [SerializeField]
-    private TextMeshProUGUI _currentManipulatorText;
+    //private TextMeshProUGUI _currentManipulatorText;
+
+    public UnityEvent OnUpdate;
 
     public enum Manipulator
     {
@@ -23,13 +25,14 @@ public class GizmoManipulatorManager : MonoBehaviour
         set
         {
             _currentManipulator = value;
-            var mps = GetComponentsInChildren<ManipulatorParent>();
-            foreach (var mp in mps)
-            {
-                mp.UpdateVisuals();
-            }
-
-            _currentManipulatorText.text = _currentManipulator.ToString();
+            OnUpdate.Invoke();
+            //var mps = GetComponentsInChildren<ManipulatorParent>();
+            //foreach (var mp in mps)
+            //{
+            //    mp.SetDirty();
+            //}
+            //
+            //_currentManipulatorText.text = _currentManipulator.ToString();
         }
     }
 

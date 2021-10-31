@@ -5,6 +5,7 @@ using System.Threading;
 using NUnit.Framework.Constraints;
 using UnityEngine;
 
+
 public class TransformComponent : EntityComponent
 {
     [Serializable]
@@ -53,7 +54,7 @@ public class TransformComponent : EntityComponent
 
         return new Ts($"{entity.NameTsSymbol.ToCamelCase()}Transform",
             $"const {entity.NameTsSymbol.ToCamelCase()}Transform = new Transform({{\n" +
-            $"  position: {pos.ToTS()},\n" +
+            $"  position: {pos.ToTS()},\n" + 
             $"  rotation: {rot.ToTS()},\n" +
             $"  scale: {scale.ToTS()}\n" +
             $"}})\n");

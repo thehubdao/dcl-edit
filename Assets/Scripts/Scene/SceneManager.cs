@@ -5,9 +5,10 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using JetBrains.Annotations;
-using TMPro;
+//using TMPro;
 using UnityEditor.UIElements;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class SceneManager : MonoBehaviour
 {
@@ -27,7 +28,8 @@ public class SceneManager : MonoBehaviour
 
         _entityGameObject = entityGameObject;
         _entityTemplate = entityTemplate;
-        _hierarchyView = hierarchyView;
+        //_hierarchyView = hierarchyView;
+        _gizmoRelationManager = gizmoRelationManager;
         ChangedHierarchy();
 
         SelectedEntity = null;
@@ -117,12 +119,19 @@ public class SceneManager : MonoBehaviour
     private static GameObject _entityTemplate;
     public static GameObject EntityTemplate => _entityTemplate;
 
+    // Manipulator manager
+    public GizmoRelationManager gizmoRelationManager;
+    private static GizmoRelationManager _gizmoRelationManager;
+    public static GizmoRelationManager GizmoRelationManager => _gizmoRelationManager;
+
     // Hierarchy View
-    public HierarchyView hierarchyView;
-    private static HierarchyView _hierarchyView;
+    public static UnityEvent OnUpdateHierarchy = new UnityEvent();
+    //public HierarchyView hierarchyView;
+    //private static HierarchyView _hierarchyView;
     public static void ChangedHierarchy()
     {
-        _hierarchyView.UpdateVisuals();
+        //_hierarchyView.UpdateVisuals();
+        OnUpdateHierarchy.Invoke();
     }
 
     // Inspector

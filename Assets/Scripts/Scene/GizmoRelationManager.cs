@@ -2,8 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
-using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class GizmoRelationManager : MonoBehaviour
 {
@@ -14,32 +14,34 @@ public class GizmoRelationManager : MonoBehaviour
     }
 
     public RelationSetting relationSetting;
-    public TextMeshProUGUI relationSettingText;
+    //public TextMeshProUGUI relationSettingText;
+    public UnityEvent OnUpdate;
     public void SwitchToNextRelationSetting()
     {
         relationSetting = relationSetting.Next();
-        relationSettingText.text = relationSetting.ToString();
-        UpdateGizmoOrientation();
+        //relationSettingText.text = relationSetting.ToString();
+        OnUpdate.Invoke();
+        //UpdateGizmoOrientation();
     }
 
 
-    public void UpdateGizmoOrientation()
-    {
-        if(SceneManager.SelectedEntity!=null)
-        {
-            switch (relationSetting)
-            {
-                case RelationSetting.Local:
-                    SceneManager.SelectedEntity.gizmos.transform.localRotation = Quaternion.identity;
-                    break;
-                case RelationSetting.Global:
-                    SceneManager.SelectedEntity.gizmos.transform.rotation = Quaternion.identity;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
-    }
+    //public void UpdateGizmoOrientation()
+    //{
+    //    if(SceneManager.SelectedEntity!=null)
+    //    {
+    //        switch (relationSetting)
+    //        {
+    //            case RelationSetting.Local:
+    //                SceneManager.SelectedEntity.gizmos.transform.localRotation = Quaternion.identity;
+    //                break;
+    //            case RelationSetting.Global:
+    //                SceneManager.SelectedEntity.gizmos.transform.rotation = Quaternion.identity;
+    //                break;
+    //            default:
+    //                throw new ArgumentOutOfRangeException();
+    //        }
+    //    }
+    //}
 }
 
 public static class GizmoManagerHelper
@@ -55,7 +57,7 @@ public static class GizmoManagerHelper
 
     public static Space ToSpace(this GizmoRelationManager.RelationSetting setting)
     {
-        return setting switch
+        return setting switch 
         {
             GizmoRelationManager.RelationSetting.Local => Space.Self,
             GizmoRelationManager.RelationSetting.Global => Space.World,
