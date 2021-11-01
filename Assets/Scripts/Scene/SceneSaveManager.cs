@@ -67,6 +67,7 @@ public class SceneSaveManager : MonoBehaviour
                         "transform" => newEntityGameObject.AddComponent<TransformComponent>(),
                         "sphereShape" => newEntityGameObject.AddComponent<SphereShapeComponent>(),
                         "boxShape" => newEntityGameObject.AddComponent<BoxShapeComponent>(),
+                        "GLTFShape" => newEntityGameObject.AddComponent<GLTFShapeComponent>(),
                         _ => throw new NotImplementedException("Unknown component name: " + component.name)
                     };
 

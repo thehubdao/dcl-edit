@@ -2150,6 +2150,7 @@ MonoBehaviour:
   _transformComponent: {fileID: 703043143153875396, guid: f9b3f92f1020fb746822db65bd1de4ad, type: 3}
   _boxShapeComponent: {fileID: 5034175284151747857, guid: e43e4e3f555e8444e93f8ab87e3f367f, type: 3}
   _sphereShapeComponent: {fileID: 5034175284151747857, guid: 7cfa1b7140dd6d547a5937e84e15fcd7, type: 3}
+  _gltfShapeComponent: {fileID: 5034175284151747857, guid: 462545f67f63c3b418ac7d1e8c8ff300, type: 3}
 --- !u!114 &358762088
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3224,7 +3225,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 212005267}
   m_Direction: 2
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.6124031
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

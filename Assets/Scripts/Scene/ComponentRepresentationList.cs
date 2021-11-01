@@ -15,6 +15,10 @@ public class ComponentRepresentationList : MonoBehaviour
     [SerializeField]
     private GameObject _sphereShapeComponent;
     public static GameObject SphereShapeComponent => _instance._sphereShapeComponent;
+    
+    [SerializeField]
+    private GameObject _gltfShapeComponent;
+    public static GameObject GltfShapeComponent => _instance._gltfShapeComponent;
 
 
     private static ComponentRepresentationList _instance;

@@ -2,7 +2,8 @@
     "name": "Scene",
     "rootNamespace": "",
     "references": [
-        "GUID:49cd013a246d25146a38bcc50cdf56e2"
+        "GUID:49cd013a246d25146a38bcc50cdf56e2",
+        "GUID:774f0e7b520e24644b448f5ac7fa5d94"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
