@@ -56,12 +56,23 @@ public class Interface3DManager : MonoBehaviour
                     hoveredVisualIndicator = hoverIndicator; // set the hover indicator if one is present
                 }
             }
+            
+            if (Input.GetKeyDown(KeyCode.Delete))
+            {
+                if(SceneManager.SelectedEntity!=null)
+                {
+                    Destroy(SceneManager.SelectedEntity.gameObject);
+                    SceneManager.SelectedEntity = null;
+                }
+            }
 
             // Update hover indicator when necessary
             if (hoveredVisualIndicator != _lastHoveredVisualIndicator)
             {
-                hoveredVisualIndicator?.StartHover();
-                _lastHoveredVisualIndicator?.EndHover();
+                if(hoveredVisualIndicator != null)
+                    hoveredVisualIndicator.StartHover();
+                if(_lastHoveredVisualIndicator != null)
+                    _lastHoveredVisualIndicator.EndHover();
                 _lastHoveredVisualIndicator = hoveredVisualIndicator;
             }
 
@@ -85,6 +96,7 @@ public class Interface3DManager : MonoBehaviour
             {
                 _interfaceStateMachine.ActiveState = _cameraMovingState;
             }
+
         };
 
         // This state is active, when the user is holding a Manipulator
