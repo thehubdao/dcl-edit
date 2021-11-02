@@ -30,11 +30,18 @@ public class SceneSaveManager : MonoBehaviour
         Debug.Log(jsonString);
 
         Directory.CreateDirectory(SceneManager.DclProjectPath + "/scene");
-        var fileWriter = new StreamWriter(SceneManager.DclProjectPath + "/scene/scene.json", false);
-        
-        fileWriter.WriteLine(jsonString);
-        
-        fileWriter.Close();
+        try
+        {
+            var fileWriter = new StreamWriter(SceneManager.DclProjectPath + "/scene/scene.json", false);
+
+            fileWriter.WriteLine(jsonString);
+
+            fileWriter.Close();
+        }
+        catch (IOException)
+        {
+            Debug.LogError("Error while saving scene");
+        }
     }
 
     public void Load()
@@ -43,6 +50,7 @@ public class SceneSaveManager : MonoBehaviour
         {
             var reader = new StreamReader(SceneManager.DclProjectPath + "/scene/scene.json");
             var entities = reader.ReadToEnd().FromJson();
+            reader.Close();
 
             Entity.uniqueNumberCounter = entities.entityNumberCounter;
 
