@@ -73,7 +73,7 @@ public class Entity : MonoBehaviour
             uniqueNumber = uniqueNumberCounter++;
     }
 
-    private static int nameFillCount = 0;
+    //private static int nameFillCount = 0;
     public string GetTypeScript(ref List<ScriptGenerator.ExposedVars> exposed)
     {
         //if (Name == "")

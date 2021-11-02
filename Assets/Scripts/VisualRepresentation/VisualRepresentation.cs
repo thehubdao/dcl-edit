@@ -16,7 +16,7 @@ public abstract class VisualRepresentation : MonoBehaviour
     void OnEnable()
     {
         SetDirty();
-        Debug.Log("Enabled "+gameObject,gameObject);
+        //Debug.Log("Enabled "+gameObject,gameObject);
     }
 
     void LateUpdate()

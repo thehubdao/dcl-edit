@@ -6,9 +6,30 @@ public class HierarchyView : MonoBehaviour
 {
     public GameObject itemTemplate;
 
-    void Update()
+    void Start()
     {
-        //UpdateVisuals(); // TODO: Make a smart decision, when to update visuals
+        SceneManager.OnUpdateHierarchy.AddListener(SetDirty);
+        SceneManager.OnUpdateSelection.AddListener(SetDirty);
+    }
+
+    void OnEnable()
+    {
+        SetDirty();
+    }
+
+    private bool _dirty;
+    void SetDirty()
+    {
+        _dirty = true;
+    }
+
+    void LateUpdate()
+    {
+        if (_dirty)
+        {
+            _dirty = false;
+            UpdateVisuals();
+        }
     }
 
     public void UpdateVisuals()
@@ -21,17 +42,18 @@ public class HierarchyView : MonoBehaviour
         int i = 0;
         foreach (var entity in SceneManager.Entities)
         {
-            var newItem = Instantiate(itemTemplate, transform).GetComponent<HierarchyViewItem>();
-            newItem.name = entity.Name;
+            var newItem = Instantiate(itemTemplate, transform).GetComponentInChildren<HierarchyViewItem>();
+            newItem.entity = entity;
 
-            newItem.GetComponent<RectTransform>().Translate(0, i++ * -50f, 0);// = new Vector3();
+            var itemRectTransform = newItem.GetComponent<RectTransform>();
+            itemRectTransform.Translate(0, i++ * -20f, 0);// = new Vector3();
 
             newItem.UpdateVisuals();
         }
 
         var rectTransform = GetComponent<RectTransform>();
         var newSize = rectTransform.sizeDelta;
-        newSize.y = i * 50;
+        newSize.y = i * 20;
         rectTransform.sizeDelta = newSize;
     }
 }

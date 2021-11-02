@@ -138,6 +138,7 @@ public class SceneManager : MonoBehaviour
 
 
     // Selection
+    public static UnityEvent OnUpdateSelection = new UnityEvent();
     private static Entity _selectedEntity;
     public static Entity SelectedEntity
     {
@@ -153,6 +154,7 @@ public class SceneManager : MonoBehaviour
             }
 
             // TODO update inspector
+            OnUpdateSelection.Invoke();
         }
     }
 }
