@@ -152,8 +152,7 @@ public class SceneManager : MonoBehaviour
                 var isSelected = entity == _selectedEntity;
                 entity.gizmos.SetActive(isSelected);
             }
-
-            // TODO update inspector
+            
             OnUpdateSelection.Invoke();
         }
     }

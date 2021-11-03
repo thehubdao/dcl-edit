@@ -16,6 +16,8 @@ public class BoxShapeComponent : EntityComponent
         //entity.gameObject.AddComponent<BoxCollider>();
     }
 
+    public override GameObject UiItemTemplate => ComponentRepresentationList.BoxShapeComponentUI;
+
     public override string ComponentName => "boxShape";
 
     public override Ts GetTypeScript()

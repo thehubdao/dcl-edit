@@ -17,6 +17,8 @@ public class SphereShapeComponent : EntityComponent
         //spc.sharedMesh = ComponentRepresentationList.SphereShapeComponent.GetComponentInChildren<MeshFilter>().sharedMesh;
     }
 
+    public override GameObject UiItemTemplate => ComponentRepresentationList.SphereShapeComponentUI;
+
     public override string ComponentName => "sphereShape";
 
     public override Ts GetTypeScript()

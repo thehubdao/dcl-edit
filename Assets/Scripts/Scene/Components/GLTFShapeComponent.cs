@@ -39,4 +39,5 @@ public class GLTFShapeComponent : EntityComponent
         componentRepresentation.GetComponent<GltfComponentRepresentation>().UpdateVisuals(this);
     }
 
+    public override GameObject UiItemTemplate => ComponentRepresentationList.GltfShapeComponentUI;
 }

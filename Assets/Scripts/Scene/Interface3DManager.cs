@@ -1,8 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UIElements;
 using Random = UnityEngine.Random;
 
@@ -23,6 +23,9 @@ public class Interface3DManager : MonoBehaviour
     private StateMachine.State _freeMouseState;
     private StateMachine.State _cameraMovingState;
     private StateMachine.State _holdingManipulatorState;
+
+    [NonSerialized]
+    public static UnityEvent onTransformChange = new UnityEvent();
 
     void Start()
     {
@@ -137,6 +140,8 @@ public class Interface3DManager : MonoBehaviour
             {
                 _interfaceStateMachine.ActiveState = _freeMouseState;
             }
+
+            onTransformChange.Invoke();
         };
 
         // This state is active, when the user moves around

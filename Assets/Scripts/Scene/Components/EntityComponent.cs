@@ -24,11 +24,13 @@ public abstract class EntityComponent: MonoBehaviour
     public abstract string SpecificJson { get; }
     public abstract void ApplySpecificJson(string jsonString);
 
-    protected Entity entity;
+    public Entity entity;
     public virtual void Start()
     {
         entity = GetComponent<Entity>();
     }
+
+    public abstract GameObject UiItemTemplate { get; }
 
     public abstract string ComponentName { get; }
 

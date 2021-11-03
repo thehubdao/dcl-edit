@@ -41,6 +41,8 @@ public class TransformComponent : EntityComponent
         Instantiate(ComponentRepresentationList.TransformComponent, entity.componentsParent.transform);
     }
 
+    public override GameObject UiItemTemplate => ComponentRepresentationList.TransformComponentUI;
+
     public override string ComponentName => "transform";
 
     public override Ts GetTypeScript()
