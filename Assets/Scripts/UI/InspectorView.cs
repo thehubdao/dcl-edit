@@ -12,8 +12,14 @@ public class InspectorView : MonoBehaviour
 
     [SerializeField]
     private GameObject _components;
-    
+
+    [SerializeField]
+    private GameObject[] _nothingSelectedObjects;
+    [SerializeField]
+    private GameObject[] _somethingSelectedObjects;
+
     private RectTransform _rectTransform;
+
 
     void Start()
     {
@@ -27,7 +33,7 @@ public class InspectorView : MonoBehaviour
     }
 
     private bool _dirty = false;
-    
+
     public void SetDirty()
     {
         _dirty = true;
@@ -48,37 +54,62 @@ public class InspectorView : MonoBehaviour
         var entity = SceneManager.SelectedEntity;
 
         if (entity == null)
-            return; // TODO: Make "No entity selected" screen
-
-        // Entity Header
-        _nameInput.text = entity.Name;
-
-
-        // Components
-        foreach (Transform component in _components.transform)
         {
-            Destroy(component.gameObject);
-        }
-        
-
-        foreach (var component in entity.Components)
-        {
-            var newComponentObject = Instantiate(component.UiItemTemplate,Vector3.zero, Quaternion.identity,_components.transform);
-            //var newComponentRectTransform = newComponentObject.GetComponent<RectTransform>();
-            //componentUiItemTemplate.GetComponent<RectTransform>().position += Vector3.down;
-            if (newComponentObject.TryGetComponent<ComponentUI>(out var newComponentUi))
+            foreach (var nothingSelectedObject in _nothingSelectedObjects)
             {
-                newComponentUi.entityComponent = component;
-                newComponentUi.UpdateVisuals();
+                nothingSelectedObject.SetActive(true);
+            }
+
+            foreach (var somethingSelectedObject in _somethingSelectedObjects)
+            {
+                somethingSelectedObject.SetActive(false);
             }
         }
+        else
+        {
+            foreach (var nothingSelectedObject in _nothingSelectedObjects)
+            {
+                nothingSelectedObject.SetActive(false);
+            }
 
-        Canvas.ForceUpdateCanvases();
+            foreach (var somethingSelectedObject in _somethingSelectedObjects)
+            {
+                somethingSelectedObject.SetActive(true);
+            }
 
-        //StartCoroutine(ReEnableAfterFrame(gameObject));
-        //RefreshLayoutGroupsImmediateAndRecursive(_components);
-        //RefreshLayoutGroupsImmediateAndRecursive(gameObject);
+
+
+            // Entity Header
+            _nameInput.text = entity.Name;
+
+
+            // Components
+            foreach (Transform component in _components.transform)
+            {
+                Destroy(component.gameObject);
+            }
+
+
+            foreach (var component in entity.Components)
+            {
+                var newComponentObject = Instantiate(component.UiItemTemplate, Vector3.zero, Quaternion.identity, _components.transform);
+                //var newComponentRectTransform = newComponentObject.GetComponent<RectTransform>();
+                //componentUiItemTemplate.GetComponent<RectTransform>().position += Vector3.down;
+                if (newComponentObject.TryGetComponent<ComponentUI>(out var newComponentUi))
+                {
+                    newComponentUi.entityComponent = component;
+                    newComponentUi.UpdateVisuals();
+                }
+            }
+
+            Canvas.ForceUpdateCanvases();
+
+            //StartCoroutine(ReEnableAfterFrame(gameObject));
+            //RefreshLayoutGroupsImmediateAndRecursive(_components);
+            //RefreshLayoutGroupsImmediateAndRecursive(gameObject);
+        }
     }
+
 
     IEnumerator ReEnableAfterFrame(GameObject theObject)
     {
