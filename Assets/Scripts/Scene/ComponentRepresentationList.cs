@@ -1,25 +1,27 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class ComponentRepresentationList : MonoBehaviour
 {
+
     [Header("Scene Representations")]
     [SerializeField]
-    private GameObject _transformComponent;
-    public static GameObject TransformComponent => _instance._transformComponent;
+    private GameObject _transformComponentInScene;
+    public static GameObject TransformComponentInScene => _instance._transformComponentInScene;
     
     [SerializeField]
-    private GameObject _boxShapeComponent;
-    public static GameObject BoxShapeComponent => _instance._boxShapeComponent;
+    private GameObject _boxShapeComponentInScene;
+    public static GameObject BoxShapeComponentInScene => _instance._boxShapeComponentInScene;
 
     [SerializeField]
-    private GameObject _sphereShapeComponent;
-    public static GameObject SphereShapeComponent => _instance._sphereShapeComponent;
+    private GameObject _sphereShapeComponentInScene;
+    public static GameObject SphereShapeComponentInScene => _instance._sphereShapeComponentInScene;
     
     [SerializeField]
-    private GameObject _gltfShapeComponent;
-    public static GameObject GltfShapeComponent => _instance._gltfShapeComponent;
+    private GameObject _gltfShapeComponentInScene;
+    public static GameObject GltfShapeComponentInScene => _instance._gltfShapeComponentInScene;
 
     [Header("UI Representations")]
     [SerializeField]
@@ -37,6 +39,33 @@ public class ComponentRepresentationList : MonoBehaviour
     [SerializeField]
     private GameObject _gltfShapeComponentUI;
     public static GameObject GltfShapeComponentUI => _instance._gltfShapeComponentUI;
+    
+    public static Type TransformComponentComponent = typeof(TransformComponent);
+    public static Type BoxShapeComponentComponent = typeof(BoxShapeComponent);
+    public static Type SphereShapeComponentComponent = typeof(SphereShapeComponent);
+    public static Type GltfShapeComponentComponent = typeof(GLTFShapeComponent);
+
+    public static Dictionary<string, Type> AllComponentComponents = new Dictionary<string, Type>()
+    {
+        {"Transform", TransformComponentComponent},
+        {"Box Shape", BoxShapeComponentComponent},
+        {"Sphere Shape", SphereShapeComponentComponent},
+        {"GLTF Shape", GltfShapeComponentComponent}
+    };
+    
+
+    public static Type GetComponentByName(string name)
+    {
+        return name switch
+        {
+            "transform" => TransformComponentComponent,
+            "boxShape" => BoxShapeComponentComponent,
+            "sphereShape" => SphereShapeComponentComponent,
+            "GLTFShape" => GltfShapeComponentComponent,
+            _ => throw new ArgumentOutOfRangeException(nameof(name), name, "Component name not found")
+        };
+    }
+
 
     private static ComponentRepresentationList _instance;
     // Start is called before the first frame update

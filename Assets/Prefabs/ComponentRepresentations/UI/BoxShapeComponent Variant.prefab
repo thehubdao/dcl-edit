@@ -27,9 +27,13 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1129600043051664928, guid: 165e16580b2d0f140abd1c2da7b9318a, type: 3}
+      propertyPath: m_text
+      value: Box Shape
+      objectReference: {fileID: 0}
     - target: {fileID: 1129600043480785278, guid: 165e16580b2d0f140abd1c2da7b9318a, type: 3}
       propertyPath: m_Name
-      value: BoxShapeComponent
+      value: BoxShapeComponent Variant
       objectReference: {fileID: 0}
     - target: {fileID: 1129600043480785279, guid: 165e16580b2d0f140abd1c2da7b9318a, type: 3}
       propertyPath: m_Pivot.x

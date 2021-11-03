@@ -38,7 +38,7 @@ public class TransformComponent : EntityComponent
         base.Start();
 
         // Setup representation
-        Instantiate(ComponentRepresentationList.TransformComponent, entity.componentsParent.transform);
+        Instantiate(ComponentRepresentationList.TransformComponentInScene, entity.componentsParent.transform);
     }
 
     public override GameObject UiItemTemplate => ComponentRepresentationList.TransformComponentUI;
