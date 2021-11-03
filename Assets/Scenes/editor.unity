@@ -6529,10 +6529,10 @@ RectTransform:
   m_Father: {fileID: 194585903}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 40.499992, y: -16.79685}
-  m_SizeDelta: {x: 80.999985, y: 33.5937}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 33.5937}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1382119423
 MonoBehaviour:
@@ -7153,6 +7153,7 @@ GameObject:
   - component: {fileID: 1561867252}
   - component: {fileID: 1561867254}
   - component: {fileID: 1561867253}
+  - component: {fileID: 1561867255}
   m_Layer: 5
   m_Name: EntityHeader
   m_TagString: Untagged
@@ -7220,6 +7221,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1561867251}
   m_CullTransparentMesh: 1
+--- !u!114 &1561867255
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1561867251}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 74eec1cd377eb26419244fbffdff8bb1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _nameInput: {fileID: 1820294121}
 --- !u!1 &1592564937
 GameObject:
   m_ObjectHideFlags: 0
@@ -8293,10 +8307,10 @@ RectTransform:
   m_Father: {fileID: 194585903}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 161.99997, y: -15}
-  m_SizeDelta: {x: 161.99997, y: 30}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1820294121
 MonoBehaviour:
@@ -8359,7 +8373,19 @@ MonoBehaviour:
   m_CharacterLimit: 0
   m_OnEndEdit:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1561867255}
+        m_TargetAssemblyTypeName: EntityHeaderUI, UI
+        m_MethodName: SetEntityName
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_OnSubmit:
     m_PersistentCalls:
       m_Calls: []
@@ -8857,7 +8883,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eda3112e90a7eff438495ef52935e2df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _nameInput: {fileID: 1820294121}
+  _entityHeaderUi: {fileID: 1561867255}
   _components: {fileID: 1056052244}
   _nothingSelectedObjects:
   - {fileID: 1794273690}

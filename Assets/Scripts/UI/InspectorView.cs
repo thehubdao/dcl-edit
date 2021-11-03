@@ -8,7 +8,7 @@ using UnityEngine.UI;
 public class InspectorView : MonoBehaviour
 {
     [SerializeField]
-    private TMP_InputField _nameInput;
+    private EntityHeaderUI _entityHeaderUi;
 
     [SerializeField]
     private GameObject _components;
@@ -80,7 +80,8 @@ public class InspectorView : MonoBehaviour
 
 
             // Entity Header
-            _nameInput.text = entity.Name;
+            _entityHeaderUi.entity = entity;
+            _entityHeaderUi.UpdateVisuals();
 
 
             // Components
