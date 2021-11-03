@@ -5,20 +5,42 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using JetBrains.Annotations;
-//using TMPro;
-using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.Events;
 
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
+
 public class SceneManager : MonoBehaviour
 {
-    // Constants 
-    public static readonly string DclProjectPath = "F:/Data/Decentraland/dcl-edit-test";
+    // Project Path
+    public static string DclProjectPath = "";
 
-    // Start is called before the first frame update
+    private static void SetProjectPath()
+    {
+#if UNITY_EDITOR
+        var devProjectPathFilePath = Application.dataPath+"/dev_project_path.txt";
+        if (File.Exists(devProjectPathFilePath))
+        {
+            DclProjectPath = File.ReadAllText(devProjectPathFilePath);
+        }
+        else
+        {
+            DclProjectPath = EditorUtility.OpenFolderPanel("Select DCL project folder","","");
+            File.WriteAllText(devProjectPathFilePath,DclProjectPath);
+        }
+#else
+        DclProjectPath = ".";
+#endif
+    }
+
     void Start()
     {
-        var sr = new StreamReader(DclProjectPath+"/scene.json");
+        SetProjectPath();
+
+        var sr = new StreamReader(DclProjectPath + "/scene.json");
         var fileContents = sr.ReadToEnd();
         sr.Close();
 
@@ -37,7 +59,7 @@ public class SceneManager : MonoBehaviour
         GizmoCamera = _gizmoCamera;
         GizmoScale = _gizmoScale;
 
-        SaveManager.Load(); 
+        SaveManager.Load();
     }
 
 
@@ -53,7 +75,7 @@ public class SceneManager : MonoBehaviour
             public string favicon;
         }
         public Display display;
-        
+
         [Serializable]
         public struct Contact
         {
@@ -103,7 +125,7 @@ public class SceneManager : MonoBehaviour
     public static float GizmoScale;
     [SerializeField]
     private float _gizmoScale;
-    
+
     // Saving and Loading
     public SceneSaveManager saveManager;
     private static SceneSaveManager _saveManager;
@@ -114,7 +136,7 @@ public class SceneManager : MonoBehaviour
     private static GameObject _entityGameObject;
     public static Entity[] Entities => _entityGameObject.GetComponentsInChildren<Entity>().Where(entity => !entity.doomed).ToArray();
     public static Transform EntityParent => _entityGameObject.transform;
-    
+
     public GameObject entityTemplate;
     private static GameObject _entityTemplate;
     public static GameObject EntityTemplate => _entityTemplate;
@@ -152,15 +174,15 @@ public class SceneManager : MonoBehaviour
                 var isSelected = entity == _selectedEntity;
                 entity.gizmos.SetActive(isSelected);
             }
-            
+
             OnUpdateSelection.Invoke();
         }
     }
 }
 
-public class EntityArray:List<Entity>
+public class EntityArray : List<Entity>
 {
-    public EntityArray(Entity[] array):base(array)
+    public EntityArray(Entity[] array) : base(array)
     {
     }
 }
