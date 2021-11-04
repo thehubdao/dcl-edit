@@ -84,6 +84,8 @@ public class Rotate : EntityManipulator
 
     public override Plane GetPlane(Camera camera)
     {
+        _snapLeftOvers = 0;
+
         return new Plane(camera.transform.forward, camera.transform.position + camera.transform.forward);
         
         //switch (direction)

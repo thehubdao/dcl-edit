@@ -22,26 +22,58 @@ public class Scale : EntityManipulator
         _entity = GetComponentInParent<Entity>();
         _gizmoRelationManager = GetComponentInParent<GizmoRelationManager>();
     }
+    
+    private float _snapLeftOvers;
+    private float ApplySnapping(float change)
+    {
+        if (!SnappingManager.IsSnapping)
+        {
+            return change;
+        }
+
+        _snapLeftOvers += change;
+        var newChange = 0f;
+
+        while (_snapLeftOvers > SnappingManager.scaleSnapDistance / 2)
+        {
+            newChange += SnappingManager.scaleSnapDistance;
+            _snapLeftOvers -= SnappingManager.scaleSnapDistance;
+        }
+        while (_snapLeftOvers < -SnappingManager.scaleSnapDistance / 2)
+        {
+            newChange -= SnappingManager.scaleSnapDistance;
+            _snapLeftOvers += SnappingManager.scaleSnapDistance;
+        }
+        
+        
+        return newChange;
+    }
 
     public override void Change(Vector3 globalChange, Vector3 localChange, Vector3 cameraSpaceChange, Camera gizmoCamera)
     {
         var localScale = _entity.componentsParent.transform.localScale;
 
+        var snappedChange = 0f;
+
         switch (direction)
         {
             case TranslateDirection.XAxis:
-                localScale.x += localChange.x;
+                snappedChange = ApplySnapping(localChange.x);
+                localScale.x += snappedChange;
                 break;
             case TranslateDirection.YAxis:
-                localScale.y += localChange.y;
+                snappedChange = ApplySnapping(localChange.y);
+                localScale.y += snappedChange;
                 break;
             case TranslateDirection.ZAxis:
-                localScale.z += localChange.z;
+                snappedChange = ApplySnapping(localChange.z);
+                localScale.z += snappedChange;
                 break;
             case TranslateDirection.All:
                 var averageValue = (localScale.x + localScale.y + localScale.z) / 3f;
                 var localScaleAveragized = localScale / averageValue;
-                localScale += localScaleAveragized * cameraSpaceChange.x;
+                snappedChange = ApplySnapping(cameraSpaceChange.x);
+                localScale += localScaleAveragized * snappedChange;
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
@@ -53,6 +85,8 @@ public class Scale : EntityManipulator
 
     public override Plane GetPlane(Camera camera)
     {
+        _snapLeftOvers = 0;
+
         switch (direction)
         {
             case TranslateDirection.XAxis:
