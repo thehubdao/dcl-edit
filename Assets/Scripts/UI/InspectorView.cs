@@ -101,6 +101,9 @@ public class InspectorView : MonoBehaviour
                     newComponentUi.entityComponent = component;
                     newComponentUi.UpdateVisuals();
                 }
+
+                if(component.GetType() != typeof(TransformComponent)) // Can't remove Transform component
+                    newComponentObject.GetComponentInChildren<RemoveComponent>().component = component;
             }
 
             Canvas.ForceUpdateCanvases();

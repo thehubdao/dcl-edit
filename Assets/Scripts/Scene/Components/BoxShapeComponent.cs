@@ -12,7 +12,7 @@ public class BoxShapeComponent : EntityComponent
     public override void Start()
     {
         base.Start();
-        Instantiate(ComponentRepresentationList.BoxShapeComponentInScene, entity.componentsParent.transform);
+        componentRepresentation = Instantiate(ComponentRepresentationList.BoxShapeComponentInScene, entity.componentsParent.transform);
         //entity.gameObject.AddComponent<BoxCollider>();
     }
 

@@ -931,7 +931,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1129600043480785278, guid: 165e16580b2d0f140abd1c2da7b9318a, type: 3}
       propertyPath: m_Name
-      value: TransformComponent Variant
+      value: TransformComponent
       objectReference: {fileID: 0}
     - target: {fileID: 1129600043480785279, guid: 165e16580b2d0f140abd1c2da7b9318a, type: 3}
       propertyPath: m_Pivot.x
@@ -1016,6 +1016,14 @@ PrefabInstance:
     - target: {fileID: 1129600043480785279, guid: 165e16580b2d0f140abd1c2da7b9318a, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2034429411287498350, guid: 165e16580b2d0f140abd1c2da7b9318a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6507052598772164619, guid: 165e16580b2d0f140abd1c2da7b9318a, type: 3}
+      propertyPath: m_RootOrder
+      value: 4
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 165e16580b2d0f140abd1c2da7b9318a, type: 3}

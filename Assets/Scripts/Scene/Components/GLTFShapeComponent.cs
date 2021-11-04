@@ -35,7 +35,7 @@ public class GLTFShapeComponent : EntityComponent
     public override void Start()
     {
         base.Start();
-        var componentRepresentation = Instantiate(ComponentRepresentationList.GltfShapeComponentInScene, entity.componentsParent.transform);
+        componentRepresentation = Instantiate(ComponentRepresentationList.GltfShapeComponentInScene, entity.componentsParent.transform);
         componentRepresentation.GetComponent<GltfComponentRepresentation>().UpdateVisuals(this);
     }
 

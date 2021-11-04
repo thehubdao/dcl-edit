@@ -31,15 +31,16 @@ public class TransformComponent : EntityComponent
         // this is called, before start is called. Therefore we need to use GetComponent here
         GetComponent<Entity>().componentsParent.transform.localScale = specifics.scale;
     }
-    
+
 
     public override void Start()
     {
         base.Start();
 
         // Setup representation
-        Instantiate(ComponentRepresentationList.TransformComponentInScene, entity.componentsParent.transform);
+        componentRepresentation = Instantiate(ComponentRepresentationList.TransformComponentInScene, entity.componentsParent.transform);
     }
+
 
     public override GameObject UiItemTemplate => ComponentRepresentationList.TransformComponentUI;
 

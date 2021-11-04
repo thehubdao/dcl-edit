@@ -24,7 +24,18 @@ public abstract class EntityComponent: MonoBehaviour
     public abstract string SpecificJson { get; }
     public abstract void ApplySpecificJson(string jsonString);
 
+    [NonSerialized]
     public Entity entity;
+    
+    [NonSerialized]
+    protected GameObject componentRepresentation;
+
+    public void OnDestroy()
+    {
+        Destroy(componentRepresentation);
+        SceneManager.OnUpdateSelection.Invoke();
+    }
+
     public virtual void Start()
     {
         entity = GetComponent<Entity>();
