@@ -23,25 +23,58 @@ public class Rotate : EntityManipulator
         _gizmoRelationManager = GetComponentInParent<GizmoRelationManager>();
     }
 
+    private float _snapLeftOvers;
+
+    private float ApplySnapping(float change)
+    {
+        if (!SnappingManager.IsSnapping)
+        {
+            return change;
+        }
+
+        _snapLeftOvers += change;
+        var newChange = 0f;
+
+        while (_snapLeftOvers > SnappingManager.rotateSnapDistance / 2)
+        {
+            newChange += SnappingManager.rotateSnapDistance;
+            _snapLeftOvers -= SnappingManager.rotateSnapDistance;
+        }
+        while (_snapLeftOvers < -SnappingManager.rotateSnapDistance / 2)
+        {
+            newChange -= SnappingManager.rotateSnapDistance;
+            _snapLeftOvers += SnappingManager.rotateSnapDistance;
+        }
+        
+        
+        return newChange;
+    }
+
     public override void Change(Vector3 globalChange, Vector3 localChange, Vector3 cameraSpaceChange, Camera gizmoCamera)
     {
         const float sensitivity = 500f;
 
         var space = _gizmoRelationManager.relationSetting.ToSpace();
 
+        var snappedAngle = 0f;
+
         switch (direction)
         {
             case RotateDirection.XAxis:
-                _entity.transform.Rotate(Vector3.right,cameraSpaceChange.x*sensitivity,space);
+                snappedAngle = ApplySnapping(cameraSpaceChange.x * sensitivity);
+                _entity.transform.Rotate(Vector3.right,snappedAngle,space);
                 break;
             case RotateDirection.YAxis:
-                _entity.transform.Rotate(Vector3.up,cameraSpaceChange.x*sensitivity,space);
+                snappedAngle = ApplySnapping(cameraSpaceChange.x * sensitivity);
+                _entity.transform.Rotate(Vector3.up,snappedAngle,space);
                 break;
             case RotateDirection.ZAxis:
-                _entity.transform.Rotate(Vector3.forward,cameraSpaceChange.x*sensitivity,space);
+                snappedAngle = ApplySnapping(cameraSpaceChange.x * sensitivity);
+                _entity.transform.Rotate(Vector3.forward,snappedAngle,space);
                 break;
             case RotateDirection.All:
-                _entity.transform.Rotate(Vector3.Cross(globalChange,gizmoCamera.transform.forward),cameraSpaceChange.magnitude*sensitivity,Space.World);
+                snappedAngle = ApplySnapping(cameraSpaceChange.magnitude*sensitivity);
+                _entity.transform.Rotate(Vector3.Cross(globalChange,gizmoCamera.transform.forward),snappedAngle,Space.World);
                 break;
             default:
                 throw new ArgumentOutOfRangeException();

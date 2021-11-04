@@ -2547,6 +2547,7 @@ GameObject:
   - component: {fileID: 358762089}
   - component: {fileID: 358762090}
   - component: {fileID: 358762091}
+  - component: {fileID: 358762092}
   m_Layer: 0
   m_Name: Scene
   m_TagString: Untagged
@@ -2677,6 +2678,18 @@ MonoBehaviour:
   OnUpdate:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &358762092
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 358762083}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 428b1ace58167fe40a716812edbc2631, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &375617525
 GameObject:
   m_ObjectHideFlags: 0
@@ -7268,6 +7281,7 @@ GameObject:
   - component: {fileID: 1331010006}
   - component: {fileID: 1331010005}
   - component: {fileID: 1331010004}
+  - component: {fileID: 1331010007}
   m_Layer: 5
   m_Name: Snapping
   m_TagString: Untagged
@@ -7338,7 +7352,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1331010005}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1331010007}
+        m_TargetAssemblyTypeName: SnappingButton, UI
+        m_MethodName: SwitchSnapping
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1331010005
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7377,6 +7403,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1331010002}
   m_CullTransparentMesh: 1
+--- !u!114 &1331010007
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1331010002}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08d4af7c486add54aa36ca68aa7084aa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _text: {fileID: 813777520}
 --- !u!1001 &1354651077
 PrefabInstance:
   m_ObjectHideFlags: 0
