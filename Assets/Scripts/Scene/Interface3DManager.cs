@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.EventSystems;
 using UnityEngine.UIElements;
 using Random = UnityEngine.Random;
 
@@ -24,6 +25,12 @@ public class Interface3DManager : MonoBehaviour
     private StateMachine.State _cameraMovingState;
     private StateMachine.State _holdingManipulatorState;
 
+    private static bool IsMouseOverGameWindow => 
+        !(0 > Input.mousePosition.x ||
+          0 > Input.mousePosition.y ||
+          Screen.width < Input.mousePosition.x ||
+          Screen.height < Input.mousePosition.y);
+
     [NonSerialized]
     public static UnityEvent onTransformChange = new UnityEvent();
 
@@ -40,32 +47,37 @@ public class Interface3DManager : MonoBehaviour
             Interface3DHover hoveredVisualIndicator = null;
             EntityManipulator hoveredManipulator = null;
             Entity hoveredEntity = null;
-
-            // First check, if mouse is hovering over Gizmo
-            if (!Input.GetMouseButton((int)MouseButton.RightMouse) && Physics.Raycast(mouseRay, out RaycastHit hitInfoGizmos, 10000, LayerMask.GetMask("Gizmos")))
-            {
-                hoveredManipulator = hitInfoGizmos.transform.GetComponent<EntityManipulator>();
-                if (hitInfoGizmos.transform.gameObject.TryGetComponent(out Interface3DHover hoverIndicator))
-                {
-                    hoveredVisualIndicator = hoverIndicator; // set the hover indicator if one is present
-                }
-            }
-            // Secondly check, if mouse is hovering over Entity
-            else if (!Input.GetMouseButton((int)MouseButton.RightMouse) && Physics.Raycast(mouseRay, out RaycastHit hitInfoEntity, 10000, LayerMask.GetMask("Entity")))
-            {
-                hoveredEntity = hitInfoEntity.transform.GetComponentInParent<Entity>();
-                if (hoveredEntity.gameObject.TryGetComponent(out Interface3DHover hoverIndicator))
-                {
-                    hoveredVisualIndicator = hoverIndicator; // set the hover indicator if one is present
-                }
-            }
             
-            if (Input.GetKeyDown(KeyCode.Delete))
+            // Do the following block only, if the mouse is over the scene view
+            if (!EventSystem.current.IsPointerOverGameObject() && IsMouseOverGameWindow) 
             {
-                if(SceneManager.SelectedEntity!=null)
+                // First check, if mouse is hovering over Gizmo
+                if (Physics.Raycast(mouseRay, out RaycastHit hitInfoGizmos, 10000, LayerMask.GetMask("Gizmos")))
                 {
-                    Destroy(SceneManager.SelectedEntity.gameObject);
-                    SceneManager.SelectedEntity = null;
+                    hoveredManipulator = hitInfoGizmos.transform.GetComponent<EntityManipulator>();
+                    if (hitInfoGizmos.transform.gameObject.TryGetComponent(out Interface3DHover hoverIndicator))
+                    {
+                        hoveredVisualIndicator = hoverIndicator; // set the hover indicator if one is present
+                    }
+                }
+                // Secondly check, if mouse is hovering over Entity
+                else if (Physics.Raycast(mouseRay, out RaycastHit hitInfoEntity, 10000, LayerMask.GetMask("Entity")))
+                {
+                    hoveredEntity = hitInfoEntity.transform.GetComponentInParent<Entity>();
+                    if (hoveredEntity.gameObject.TryGetComponent(out Interface3DHover hoverIndicator))
+                    {
+                        hoveredVisualIndicator = hoverIndicator; // set the hover indicator if one is present
+                    }
+                }
+
+                // Delete the Selected Entity
+                if (Input.GetKeyDown(KeyCode.Delete))
+                {
+                    if (SceneManager.SelectedEntity != null)
+                    {
+                        Destroy(SceneManager.SelectedEntity.gameObject);
+                        SceneManager.SelectedEntity = null;
+                    }
                 }
             }
 
@@ -80,7 +92,7 @@ public class Interface3DManager : MonoBehaviour
             }
 
             // When Left mouse button is clicked, do necessary actions
-            if (Input.GetMouseButtonDown((int)MouseButton.LeftMouse))
+            if (Input.GetMouseButtonDown((int)MouseButton.LeftMouse) && !EventSystem.current.IsPointerOverGameObject() && IsMouseOverGameWindow)
             {
                 if (hoveredManipulator != null)
                 {
@@ -95,7 +107,7 @@ public class Interface3DManager : MonoBehaviour
             }
 
             // When pressing Right mouse button, switch to "Camera moving state"
-            if (Input.GetMouseButton((int) MouseButton.RightMouse))
+            if (Input.GetMouseButtonDown((int) MouseButton.RightMouse) && !EventSystem.current.IsPointerOverGameObject() && IsMouseOverGameWindow)
             {
                 _interfaceStateMachine.ActiveState = _cameraMovingState;
             }
