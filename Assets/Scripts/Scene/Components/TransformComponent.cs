@@ -54,8 +54,8 @@ public class TransformComponent : EntityComponent
         var rot = transform.rotation;
         var scale = entity.componentsParent.transform.localScale;
 
-        return new Ts($"{entity.NameTsSymbol.ToCamelCase()}Transform",
-            $"const {entity.NameTsSymbol.ToCamelCase()}Transform = new Transform({{\n" +
+        return new Ts(InternalComponentSymbol,
+            $"const {InternalComponentSymbol} = new Transform({{\n" +
             $"  position: {pos.ToTS()},\n" + 
             $"  rotation: {rot.ToTS()},\n" +
             $"  scale: {scale.ToTS()}\n" +

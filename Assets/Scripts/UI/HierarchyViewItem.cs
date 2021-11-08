@@ -19,7 +19,7 @@ public class HierarchyViewItem : MonoBehaviour
 
     public void UpdateVisuals()
     {
-        nameText.text = entity.Name;
+        nameText.text = entity.ShownName;
         nameText.margin = new Vector4((indentLevel + 1) * 20f,0,0,0);
         nameText.color = IsSelected ? Color.blue : Color.black;
     }

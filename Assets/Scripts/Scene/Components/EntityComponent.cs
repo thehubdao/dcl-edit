@@ -45,6 +45,7 @@ public abstract class EntityComponent: MonoBehaviour
 
     public abstract string ComponentName { get; }
 
+    public string InternalComponentSymbol => entity.InternalSymbol + ComponentName;
 
     public struct Ts
     {

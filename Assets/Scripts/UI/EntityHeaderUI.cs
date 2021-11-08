@@ -14,12 +14,13 @@ public class EntityHeaderUI : MonoBehaviour
 
     public void UpdateVisuals()
     {
-        _nameInput.text = entity.Name;
+        _nameInput.text = entity.customName;
     }
 
     public void SetEntityName()
     {
-        entity.Name = _nameInput.text;
+        entity.customName = _nameInput.text;
+        SceneManager.OnUpdateSelection.Invoke();
     }
 
 }

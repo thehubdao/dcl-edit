@@ -22,7 +22,7 @@ public class BoxShapeComponent : EntityComponent
 
     public override Ts GetTypeScript()
     {
-        return new Ts( $"{entity.NameTsSymbol.ToCamelCase()}BoxShape", $"const {entity.NameTsSymbol.ToCamelCase()}BoxShape = new BoxShape()\n");
+        return new Ts( InternalComponentSymbol, $"const {InternalComponentSymbol} = new BoxShape()\n");
     }
 }
 

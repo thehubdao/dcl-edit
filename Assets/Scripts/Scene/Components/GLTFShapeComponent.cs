@@ -26,10 +26,10 @@ public class GLTFShapeComponent : EntityComponent
     public override string ComponentName => "GLTFShape";
     public override Ts GetTypeScript()
     {
-        return new Ts( $"{entity.NameTsSymbol.ToCamelCase()}GltfShape", $"const {entity.NameTsSymbol.ToCamelCase()}GltfShape = new GLTFShape(\"{glbPath}\")\n" +
-                                                                        $"{entity.NameTsSymbol.ToCamelCase()}GltfShape.withCollisions = true\n" +
-                                                                        $"{entity.NameTsSymbol.ToCamelCase()}GltfShape.isPointerBlocker = true\n" +
-                                                                        $"{entity.NameTsSymbol.ToCamelCase()}GltfShape.visible = true\n");
+        return new Ts( InternalComponentSymbol, $"const {InternalComponentSymbol} = new GLTFShape(\"{glbPath}\")\n" +
+                                                     $"{InternalComponentSymbol}.withCollisions = true\n" +
+                                                     $"{InternalComponentSymbol}.isPointerBlocker = true\n" +
+                                                     $"{InternalComponentSymbol}.visible = true\n");
     }
 
     public override void Start()

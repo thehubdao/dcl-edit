@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using PlasticGui.WorkspaceWindow.Items;
 using UnityEngine;
 using UnityEngine.Rendering;
 using static System.Char;
@@ -13,54 +14,123 @@ public class Entity : MonoBehaviour
     {
         public Json(Entity e)
         {
-            name = e.Name;
+            name = e.customName;
             uniqueNumber = e.uniqueNumber;
+            exposed = e.Exposed;
             components = e.Components.Select(c => new EntityComponent.Json(c)).ToList();
         }
          
         public string name;
         public int uniqueNumber;
+        public bool exposed;
         public List<EntityComponent.Json> components;
     }
-    /*
-    const darkCobblestoneTile21 = new Entity('darkCobblestoneTile21')
-    engine.addEntity(darkCobblestoneTile21)
-    darkCobblestoneTile21.setParent(_scene)
-    darkCobblestoneTile21.addComponentOrReplace(gltfShape3)
-    const transform29 = new Transform({
-        position: new Vector3(16, 0, 10),
-        rotation: Quaternion.Euler(0,90,0),
-        scale: new Vector3(1, 1, 1)
-    })
-    darkCobblestoneTile21.addComponentOrReplace(transform29)
-    */
 
-    public string UniqueName => Name + uniqueNumber.ToString();
+    // Names
 
-    public string Name
+    [Obsolete("you probably don't want to use this",true)]
+    [NonSerialized]
+    public new string name;
+    
+    /// <summary>
+    /// The name, that is used in the TypeScript constructor for the Entity.
+    /// </summary>
+    /// Might contain spaces and special characters.
+    /// Might not be Unique.
+    public string ShownName
     {
-        get => _customName;
-        set => _customName = value;
+        get => customName!=""?customName:DefaultName;
+        //set => customName = value;
     }
+
+    /// <summary>
+    /// The name, that is set by the User.
+    /// </summary>
+    /// Might contain spaces and special characters.
+    /// Might not be Unique.
+    /// Might be Empty.
     [SerializeField]
-    private string _customName = "Entity";
+    public string customName = "";
 
+    /// <summary>
+    /// The name, that is used as default 
+    /// </summary>
+    /// Is always "Entity"
+    private const string DefaultName = "Entity";
+
+    /// <summary>
+    /// The Symbol, that is used in the internal TypeScript
+    /// </summary>
+    /// Is always Unique
+    public string InternalSymbol => (ShownName + uniqueNumber.ToString()).ToCamelCase();
+
+    /// <summary>
+    /// The Symbol, that is exposed to the users TypeScript.
+    /// </summary>
+    /// Must be unique. This has to be made sure by the user.
+    /// 
+    /// Example:
+    /// scene.mySuperCoolEntity.transform
+    ///       `-- this part --´
+    public string ExposedSymbol => ShownName.ToCamelCase();
+    
     public int uniqueNumber = -1;
-
+    
     public static int uniqueNumberCounter = 0;
 
-    public string NameTsSymbol => (Name == "") ? "Entity" + uniqueNumber.ToString() : UniqueName;
+    [SerializeField]
+    private bool _exposed = false;
+    public bool Exposed
+    {
+        get => _exposed;
+        set
+        {
+            if (!TrySetExpose(value))
+            {
+                throw new IndexOutOfRangeException("Entity could not be exposed, because the symbol already exists");
+            }
+        }
+    }
+
+    public bool TrySetExpose(bool value)
+    {
+        if (!value)
+        {
+            _exposed = false;
+            return true;
+        } //else value == true
+
+        // build list of all already existing exposedSymbols
+        var allExposedSymbols = new List<string>();
+        foreach (var entity in SceneManager.Entities)
+        {
+            if (entity.Exposed)
+            {
+                allExposedSymbols.Add(entity.ExposedSymbol);
+            }
+        }
+
+        // Check if exposedSymbol already exists
+        if (allExposedSymbols.Contains(ExposedSymbol))
+        {
+            return false;
+        } //else
+
+        _exposed = true;
+        return true;
+    }
+    
 
 
     [Space]
     public GameObject gizmos;
-
     public GameObject componentsParent;
 
     
 
     public EntityComponent[] Components => GetComponents<EntityComponent>();
 
+    
     /// <summary>
     /// will be true, when the game object is to be destroyed
     /// </summary>
@@ -72,6 +142,7 @@ public class Entity : MonoBehaviour
         if (uniqueNumber < 0)
             uniqueNumber = uniqueNumberCounter++;
     }
+    
 
     //private static int nameFillCount = 0;
     public string GetTypeScript(ref List<ScriptGenerator.ExposedVars> exposed)
@@ -82,13 +153,13 @@ public class Entity : MonoBehaviour
         //}
         //var usedName = (Name == "") ? "Entity" + uniqueNumber.ToString() : UniqueName;
 
-        var script = $"const {NameTsSymbol.ToCamelCase()} = new Entity(\"{NameTsSymbol}\")\n";
-        script += $"engine.addEntity({NameTsSymbol.ToCamelCase()})\n";
+        var script = $"const {InternalSymbol} = new Entity(\"{ShownName}\")\n";
+        script += $"engine.addEntity({InternalSymbol})\n";
 
         var exposedVar = new ScriptGenerator.ExposedVars
         {
             exposedAs = "entity",
-            symbol = NameTsSymbol.ToCamelCase()
+            symbol = InternalSymbol
         };
         exposed.Add(exposedVar);
 
@@ -96,7 +167,7 @@ public class Entity : MonoBehaviour
         {
             var componentTs = component.GetTypeScript();
             script += componentTs.setup;
-            script += $"{NameTsSymbol.ToCamelCase()}.addComponentOrReplace({componentTs.symbol})\n";
+            script += $"{InternalSymbol}.addComponentOrReplace({componentTs.symbol})\n";
 
             var exposedComponentVar = new ScriptGenerator.ExposedVars
             {
