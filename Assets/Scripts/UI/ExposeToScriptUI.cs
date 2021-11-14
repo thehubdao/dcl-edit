@@ -7,10 +7,10 @@ using UnityEngine.UI;
 public class ExposeToScriptUI : MonoBehaviour
 {
     [SerializeField]
-    private Toggle _toggleButton;
+    private Toggle _toggleButton = default;
 
     [SerializeField]
-    private TextMeshProUGUI _exposedText;
+    private TextMeshProUGUI _exposedText = default;
 
     void Start()
     {
@@ -25,12 +25,15 @@ public class ExposeToScriptUI : MonoBehaviour
             return;
 
         _toggleButton.isOn = SceneManager.SelectedEntity.Exposed;
-        _exposedText.color = Color.black;
+        _exposedText.color = Color.white; // ToDo use Color manager
         _exposedText.text = SceneManager.SelectedEntity.Exposed ? SceneManager.SelectedEntity.ExposedSymbol : "";
     }
 
     public void SetExpose(bool _)
     {
+        if (SceneManager.SelectedEntity == null)
+            return;
+
         var expose = _toggleButton.isOn;
         
         if (!expose) 

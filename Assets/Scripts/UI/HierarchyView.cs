@@ -40,20 +40,20 @@ public class HierarchyView : MonoBehaviour
         }
 
         int i = 0;
-        foreach (var entity in SceneManager.Entities)
+        foreach (var entity in SceneManager.Entities) 
         {
             var newItem = Instantiate(itemTemplate, transform).GetComponentInChildren<HierarchyViewItem>();
             newItem.entity = entity;
 
-            var itemRectTransform = newItem.GetComponent<RectTransform>();
-            itemRectTransform.Translate(0, i++ * -20f, 0);// = new Vector3();
+            //var itemRectTransform = newItem.GetComponent<RectTransform>();
+            //itemRectTransform.Translate(0, i++ * -20f, 0);// = new Vector3();
 
             newItem.UpdateVisuals();
         }
 
-        var rectTransform = GetComponent<RectTransform>();
-        var newSize = rectTransform.sizeDelta;
-        newSize.y = i * 20;
-        rectTransform.sizeDelta = newSize;
+        //var rectTransform = GetComponent<RectTransform>();
+        //var newSize = rectTransform.sizeDelta;
+        //newSize.y = i * 20;
+        //rectTransform.sizeDelta = newSize;
     }
 }

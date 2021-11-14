@@ -54,29 +54,47 @@ public class TransformComponentUI : ComponentUI
     public void SetValueTranslate()
     {
         var transformComponent = (TransformComponent) entityComponent;
-        transformComponent.transform.localPosition = new Vector3( 
+        try
+        {
+            transformComponent.transform.localPosition = new Vector3( 
                 float.Parse(_translateXInput.text,CultureInfo.InvariantCulture),
                 float.Parse(_translateYInput.text,CultureInfo.InvariantCulture), 
                 float.Parse(_translateZInput.text,CultureInfo.InvariantCulture));
-
+        }
+        catch
+        {
+            // ignored
+        }
     }
     public void SetValueRotate()
     {
         var transformComponent = (TransformComponent) entityComponent;
-        transformComponent.transform.localEulerAngles = new Vector3( 
+        try
+        {
+            transformComponent.transform.localEulerAngles = new Vector3( 
                 float.Parse(_rotateXInput.text,CultureInfo.InvariantCulture),
                 float.Parse(_rotateYInput.text,CultureInfo.InvariantCulture), 
                 float.Parse(_rotateZInput.text,CultureInfo.InvariantCulture));
-
+        }
+        catch
+        {
+            // ignored
+        }
     }
     public void SetValueScale()
     {
         var transformComponent = (TransformComponent) entityComponent;
-        transformComponent.entity.componentsParent.transform.localScale = new Vector3( 
+        try
+        {
+            transformComponent.entity.componentsParent.transform.localScale = new Vector3( 
                 float.Parse(_scaleXInput.text,CultureInfo.InvariantCulture),
                 float.Parse(_scaleYInput.text,CultureInfo.InvariantCulture), 
                 float.Parse(_scaleZInput.text,CultureInfo.InvariantCulture));
-
+        }
+        catch
+        {
+            // ignored
+        }
     }
 
 }
