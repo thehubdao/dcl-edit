@@ -480,7 +480,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3010728171095694298}
   - component: {fileID: 3046741548462195912}
-  - component: {fileID: 1629109254046196519}
+  - component: {fileID: 6599894139810898019}
   m_Layer: 10
   m_Name: BaseEntity
   m_TagString: Untagged
@@ -517,11 +517,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a6160be4a952b14ea9a071ea9053d83, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _customName: Entity
+  customName: 
   uniqueNumber: -1
+  _exposed: 0
   gizmos: {fileID: 1457614427835357047}
   componentsParent: {fileID: 1971271215486186616}
---- !u!114 &1629109254046196519
+--- !u!114 &6599894139810898019
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -530,11 +531,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 2305240446249227317}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7c9659ef718a5e34a81c84ef7d4ecae5, type: 3}
+  m_Script: {fileID: 11500000, guid: 067468ff0aa30fa4489a18627e91bb2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  material: {fileID: 2100000, guid: 66613848a602b6d4eb2fd94cb17e8a42, type: 2}
-  components: {fileID: 1971271215486186616}
+  highlightPrefab: {fileID: 1986478556215084577, guid: 0d2e3da47ad827b489ec68e92e491f0c, type: 3}
+  targets: []
 --- !u!1 &2554240752179117319
 GameObject:
   m_ObjectHideFlags: 0
