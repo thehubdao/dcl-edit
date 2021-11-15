@@ -22,7 +22,10 @@ public class Interface3DManager : MonoBehaviour
 
     private StateMachine _interfaceStateMachine;
     private StateMachine.State _freeMouseState;
-    private StateMachine.State _cameraMovingState;
+    private StateMachine.State _cameraWasdMovingState;
+    private StateMachine.State _cameraMouseZoomingState;
+    private StateMachine.State _cameraRotateAroundState;
+    private StateMachine.State _cameraSlideMovingState;
     private StateMachine.State _holdingManipulatorState;
 
     private static bool IsMouseOverGameWindow => 
@@ -33,6 +36,8 @@ public class Interface3DManager : MonoBehaviour
 
     [NonSerialized]
     public static UnityEvent onTransformChange = new UnityEvent();
+
+    private Vector3? _mouseInWorldPoint;
 
     void Start()
     {
@@ -47,6 +52,7 @@ public class Interface3DManager : MonoBehaviour
             Interface3DHover hoveredVisualIndicator = null;
             EntityManipulator hoveredManipulator = null;
             Entity hoveredEntity = null;
+            _mouseInWorldPoint = null;
             
             // Do the following block only, if the mouse is over the scene view
             if (!EventSystem.current.IsPointerOverGameObject() && IsMouseOverGameWindow) 
@@ -59,6 +65,9 @@ public class Interface3DManager : MonoBehaviour
                     {
                         hoveredVisualIndicator = hoverIndicator; // set the hover indicator if one is present
                     }
+
+                    _mouseInWorldPoint = hitInfoGizmos.point;
+                    
                 }
                 // Secondly check, if mouse is hovering over Entity
                 else if (Physics.Raycast(mouseRay, out RaycastHit hitInfoEntity, 10000, LayerMask.GetMask("Entity")))
@@ -68,6 +77,8 @@ public class Interface3DManager : MonoBehaviour
                     {
                         hoveredVisualIndicator = hoverIndicator; // set the hover indicator if one is present
                     }
+                    
+                    _mouseInWorldPoint = hitInfoEntity.point;
                 }
 
                 // Delete the Selected Entity
@@ -81,6 +92,20 @@ public class Interface3DManager : MonoBehaviour
                 }
             }
 
+            if (_mouseInWorldPoint == null)
+            {
+                var groundPlane = new Plane(Vector3.up, Vector3.zero);
+                groundPlane.Raycast(mouseRay, out float enter);
+                if (enter > 2000 || enter < 0)
+                {
+                    _mouseInWorldPoint = mouseRay.GetPoint(10);
+                }
+                else
+                {
+                    _mouseInWorldPoint = mouseRay.GetPoint(enter);
+                }
+            }
+
             // Update hover indicator when necessary
             if (hoveredVisualIndicator != _lastHoveredVisualIndicator)
             {
@@ -90,9 +115,11 @@ public class Interface3DManager : MonoBehaviour
                     _lastHoveredVisualIndicator.EndHover();
                 _lastHoveredVisualIndicator = hoveredVisualIndicator;
             }
+            
+            var pressingAlt = Input.GetKey(KeyCode.LeftAlt)||Input.GetKey(KeyCode.RightAlt);
 
             // When Left mouse button is clicked, do necessary actions
-            if (Input.GetMouseButtonDown((int)MouseButton.LeftMouse) && !EventSystem.current.IsPointerOverGameObject() && IsMouseOverGameWindow)
+            if (Input.GetMouseButtonDown((int)MouseButton.LeftMouse) && !pressingAlt && !EventSystem.current.IsPointerOverGameObject() && IsMouseOverGameWindow)
             {
                 if (hoveredManipulator != null)
                 {
@@ -106,11 +133,33 @@ public class Interface3DManager : MonoBehaviour
                 }
             }
 
-            // When pressing Right mouse button, switch to "Camera moving state"
-            if (Input.GetMouseButtonDown((int) MouseButton.RightMouse) && !EventSystem.current.IsPointerOverGameObject() && IsMouseOverGameWindow)
+            
+            // When pressing Right mouse button (without alt), switch to "Camera WASD moving state"
+            if (Input.GetMouseButtonDown((int) MouseButton.RightMouse) && !pressingAlt && !EventSystem.current.IsPointerOverGameObject() && IsMouseOverGameWindow)
             {
-                _interfaceStateMachine.ActiveState = _cameraMovingState;
+                _interfaceStateMachine.ActiveState = _cameraWasdMovingState; 
             }
+
+            // When pressing ald and Right mouse button, switch to "Camera WASD moving state"
+            if (Input.GetMouseButtonDown((int) MouseButton.RightMouse) && pressingAlt && !EventSystem.current.IsPointerOverGameObject() && IsMouseOverGameWindow)
+            {
+                _interfaceStateMachine.ActiveState = _cameraMouseZoomingState;
+            }
+
+            // When pressing ald and Right mouse button, switch to "Camera rotate around state"
+            if (Input.GetMouseButtonDown((int) MouseButton.LeftMouse) && pressingAlt && !EventSystem.current.IsPointerOverGameObject() && IsMouseOverGameWindow)
+            {
+                _interfaceStateMachine.ActiveState = _cameraRotateAroundState;
+            }
+
+            // When pressing Middle mouse button, switch to "Camera slide moving state"
+            if (Input.GetMouseButtonDown((int) MouseButton.MiddleMouse) && !EventSystem.current.IsPointerOverGameObject() && IsMouseOverGameWindow)
+            {
+                _interfaceStateMachine.ActiveState = _cameraSlideMovingState;
+            }
+
+            // When scrolling Mouse wheel, zoom in or out
+            cameraController.ApplyZoom();
 
         };
 
@@ -156,13 +205,13 @@ public class Interface3DManager : MonoBehaviour
             onTransformChange.Invoke();
         };
 
-        // This state is active, when the user moves around
-        _cameraMovingState = new StateMachine.State("Camera moving state");
-        _cameraMovingState.OnStateEnter = _ => cameraController.StartMovement();
-        _cameraMovingState.OnStateExit = _ => cameraController.EndMovement();
-        _cameraMovingState.OnStateUpdate = _ =>
+        // This state is active, when the user moves around using the WASD controlls
+        _cameraWasdMovingState = new StateMachine.State("Camera WASD moving state");
+        _cameraWasdMovingState.OnStateEnter = _ => cameraController.StartMovement();
+        _cameraWasdMovingState.OnStateExit = _ => cameraController.EndMovement();
+        _cameraWasdMovingState.OnStateUpdate = _ =>
         {
-            cameraController.UpdateMovement();
+            cameraController.UpdateWasdMovement();
 
             // When releasing Right mouse button, switch to "Free mouse state"
             if (!Input.GetMouseButton((int) MouseButton.RightMouse))
@@ -170,6 +219,54 @@ public class Interface3DManager : MonoBehaviour
                 _interfaceStateMachine.ActiveState = _freeMouseState;
             }
         };
+
+        // This state is active, when the user zooms by holding alt + right mouse
+        _cameraMouseZoomingState = new StateMachine.State("Camera mouse zooming state");
+        _cameraMouseZoomingState.OnStateEnter = _ => cameraController.StartMovement();
+        _cameraMouseZoomingState.OnStateExit = _ => cameraController.EndMovement();
+        _cameraMouseZoomingState.OnStateUpdate = _ =>
+        {
+            cameraController.UpdateZoomMovement();
+
+            // When releasing Right mouse button, switch to "Free mouse state"
+            if (!Input.GetMouseButton((int) MouseButton.RightMouse))
+            {
+                _interfaceStateMachine.ActiveState = _freeMouseState;
+            }
+        };
+
+        // This state is active, when the user rotates the camera around a point in the scene
+        _cameraRotateAroundState = new StateMachine.State("Camera rotate around state");
+        _cameraRotateAroundState.OnStateEnter = _ => cameraController.StartMovement();
+        _cameraRotateAroundState.OnStateExit = _ => cameraController.EndMovement();
+        _cameraRotateAroundState.OnStateUpdate = _ =>
+        {
+            if (_mouseInWorldPoint != null) cameraController.UpdateRotateAroundMovement(_mouseInWorldPoint.Value);
+
+            // When releasing Left mouse button, switch to "Free mouse state"
+            if (!Input.GetMouseButton((int) MouseButton.LeftMouse))
+            {
+                _interfaceStateMachine.ActiveState = _freeMouseState;
+            }
+        };
+
+
+        // This state is active, when the user slides the camera around (Middle mouse button)
+        _cameraSlideMovingState = new StateMachine.State("Camera slide moving state");
+        _cameraSlideMovingState.OnStateEnter = _ => cameraController.StartMovement();
+        _cameraSlideMovingState.OnStateExit = _ => cameraController.EndMovement();
+        _cameraSlideMovingState.OnStateUpdate = _ =>
+        {
+            cameraController.UpdateSlideMovement();
+
+            // When releasing Middle mouse button, switch to "Free mouse state"
+            if (!Input.GetMouseButton((int) MouseButton.MiddleMouse))
+            {
+                _interfaceStateMachine.ActiveState = _freeMouseState;
+            }
+        };
+
+        
 
 
         _interfaceStateMachine = new StateMachine(_freeMouseState);
@@ -195,14 +292,14 @@ static class Util
 
         var startPoint = startRay.Value.origin;
 
-        // Put startpoint on plane
+        // Put start point on plane
         var startPointOnPlane = p.ClosestPointOnPlane(startPoint);
 
-        // Move startpoint to left border
+        // Move start point to left border
         var horizontalRay = new Ray(startPointOnPlane, Vector3.Cross(p.normal, startRay.Value.direction));
         startPointOnPlane = horizontalRay.GetPoint(-(lines - 1) * spacing / 2);
 
-        // Move startpoint to left bottom corner
+        // Move start point to left bottom corner
         var verticalRay = new Ray(startPointOnPlane, Vector3.Cross(p.normal, horizontalRay.direction));
 
         // Draw Horizontal lines
