@@ -38,8 +38,7 @@ public class HierarchyView : MonoBehaviour
         {
             Destroy(child.gameObject);
         }
-
-        int i = 0;
+        
         foreach (var entity in SceneManager.Entities) 
         {
             var newItem = Instantiate(itemTemplate, transform).GetComponentInChildren<HierarchyViewItem>();

@@ -7,20 +7,40 @@ using UnityEngine.Events;
 
 public class GizmoRelationManager : MonoBehaviour
 {
-    public enum RelationSetting
+    public enum RelationSettingEnum
     {
         Local,
         Global
     }
 
-    public RelationSetting relationSetting;
+    public static GizmoRelationManager instance;
+
+    void Start()
+    {
+        instance = this;
+    }
+    
+    [SerializeField]
+    private static RelationSettingEnum _relationSetting;
+
+    public static RelationSettingEnum RelationSetting
+    {
+        get => _relationSetting;
+        set
+        {
+            _relationSetting = value;
+            onUpdate.Invoke();
+        }
+    }
+    
+    
     //public TextMeshProUGUI relationSettingText;
-    public UnityEvent OnUpdate;
+    public static UnityEvent onUpdate = new UnityEvent();
     public void SwitchToNextRelationSetting()
     {
-        relationSetting = relationSetting.Next();
+        RelationSetting = RelationSetting.Next();
         //relationSettingText.text = relationSetting.ToString();
-        OnUpdate.Invoke();
+        onUpdate.Invoke();
         //UpdateGizmoOrientation();
     }
 
@@ -55,13 +75,13 @@ public static class GizmoManagerHelper
         return (arr.Length==j) ? arr[0] : arr[j];            
     }
 
-    public static Space ToSpace(this GizmoRelationManager.RelationSetting setting)
+    public static Space ToSpace(this GizmoRelationManager.RelationSettingEnum settingEnum)
     {
-        return setting switch 
+        return settingEnum switch 
         {
-            GizmoRelationManager.RelationSetting.Local => Space.Self,
-            GizmoRelationManager.RelationSetting.Global => Space.World,
-            _ => throw new ArgumentOutOfRangeException(nameof(setting), setting, null)
+            GizmoRelationManager.RelationSettingEnum.Local => Space.Self,
+            GizmoRelationManager.RelationSettingEnum.Global => Space.World,
+            _ => throw new ArgumentOutOfRangeException(nameof(settingEnum), settingEnum, null)
         };
     }
 }

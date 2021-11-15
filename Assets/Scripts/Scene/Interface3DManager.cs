@@ -121,7 +121,7 @@ public class Interface3DManager : MonoBehaviour
             // set null, to indicate that this state was just entered
             _lastMousePosition = null;
         };
-        _holdingManipulatorState.OnStateExit = state => SceneManager.GizmoRelationManager.OnUpdate.Invoke();
+        _holdingManipulatorState.OnStateExit = state => GizmoRelationManager.onUpdate.Invoke();
         _holdingManipulatorState.OnStateUpdate = state =>
         {
             // Get the ray from the camera, where the mouse currently is

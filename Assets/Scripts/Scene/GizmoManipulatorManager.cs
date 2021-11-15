@@ -10,8 +10,8 @@ public class GizmoManipulatorManager : MonoBehaviour
     [SerializeField]
     //private TextMeshProUGUI _currentManipulatorText;
 
-    public UnityEvent OnUpdate;
-
+    public static UnityEvent onUpdate = new UnityEvent();
+    
     public enum Manipulator
     {
         Translate,
@@ -19,13 +19,21 @@ public class GizmoManipulatorManager : MonoBehaviour
         Scale
     }
 
+    public static GizmoManipulatorManager instance;
+
+    void Start()
+    {
+        instance = this;
+    }
+
+
     public Manipulator CurrentManipulator
     {
         get => _currentManipulator;
         set
         {
             _currentManipulator = value;
-            OnUpdate.Invoke();
+            onUpdate.Invoke();
             //var mps = GetComponentsInChildren<ManipulatorParent>();
             //foreach (var mp in mps)
             //{
@@ -35,7 +43,7 @@ public class GizmoManipulatorManager : MonoBehaviour
             //_currentManipulatorText.text = _currentManipulator.ToString();
         }
     }
-
+    
     public void SwitchToNextManipulator()
     {
         CurrentManipulator = CurrentManipulator.Next();

@@ -54,7 +54,7 @@ public class Rotate : EntityManipulator
     {
         const float sensitivity = 500f;
 
-        var space = _gizmoRelationManager.relationSetting.ToSpace();
+        var space = GizmoRelationManager.RelationSetting.ToSpace();
 
         var snappedAngle = 0f;
 

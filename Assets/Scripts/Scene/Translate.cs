@@ -19,11 +19,9 @@ public class Translate : EntityManipulator
     public TranslateDirection direction;
 
     private Transform _entity;
-    private GizmoRelationManager _gizmoRelationManager;
     void Start()
     {
         _entity = GetComponentInParent<Entity>().transform;
-        _gizmoRelationManager = GetComponentInParent<GizmoRelationManager>();
     }
 
     private Vector3 _snapLeftOvers;
@@ -76,41 +74,41 @@ public class Translate : EntityManipulator
 
     public override void Change(Vector3 globalChange, Vector3 localChange, Vector3 cameraSpaceChange, Camera gizmoCamera)
     {
-        if (_gizmoRelationManager.relationSetting == GizmoRelationManager.RelationSetting.Local)
+        if (GizmoRelationManager.RelationSetting == GizmoRelationManager.RelationSettingEnum.Local)
             globalChange = _entity.InverseTransformDirection(globalChange);
 
         switch (direction)
         {
             case TranslateDirection.XAxis:
-                var changeOnX = Vector3.Project(globalChange, (_gizmoRelationManager.relationSetting == GizmoRelationManager.RelationSetting.Local) ? Vector3.right : transform.right);
+                var changeOnX = Vector3.Project(globalChange, (GizmoRelationManager.RelationSetting == GizmoRelationManager.RelationSettingEnum.Local) ? Vector3.right : transform.right);
                 changeOnX = ApplySnapping(changeOnX);
-                _entity.Translate(changeOnX, _gizmoRelationManager.relationSetting.ToSpace());
+                _entity.Translate(changeOnX, GizmoRelationManager.RelationSetting.ToSpace());
                 break;
             case TranslateDirection.YAxis:
-                var changeOnY = Vector3.Project(globalChange, (_gizmoRelationManager.relationSetting == GizmoRelationManager.RelationSetting.Local) ? Vector3.up : transform.up);
+                var changeOnY = Vector3.Project(globalChange, (GizmoRelationManager.RelationSetting == GizmoRelationManager.RelationSettingEnum.Local) ? Vector3.up : transform.up);
                 changeOnY = ApplySnapping(changeOnY);
-                _entity.Translate(changeOnY, _gizmoRelationManager.relationSetting.ToSpace());
+                _entity.Translate(changeOnY, GizmoRelationManager.RelationSetting.ToSpace());
                 break;
             case TranslateDirection.ZAxis:
-                var changeOnZ = Vector3.Project(globalChange, (_gizmoRelationManager.relationSetting == GizmoRelationManager.RelationSetting.Local) ? Vector3.forward : transform.forward);
+                var changeOnZ = Vector3.Project(globalChange, (GizmoRelationManager.RelationSetting == GizmoRelationManager.RelationSettingEnum.Local) ? Vector3.forward : transform.forward);
                 changeOnZ = ApplySnapping(changeOnZ);
-                _entity.Translate(changeOnZ, _gizmoRelationManager.relationSetting.ToSpace());
+                _entity.Translate(changeOnZ, GizmoRelationManager.RelationSetting.ToSpace());
                 break;
             case TranslateDirection.XYPlane:
                 globalChange = ApplySnapping(globalChange);
-                _entity.Translate(globalChange.x, globalChange.y, 0, _gizmoRelationManager.relationSetting.ToSpace());
+                _entity.Translate(globalChange.x, globalChange.y, 0, GizmoRelationManager.RelationSetting.ToSpace());
                 break;
             case TranslateDirection.YZPlane:
                 globalChange = ApplySnapping(globalChange);
-                _entity.Translate(0, globalChange.y, globalChange.z, _gizmoRelationManager.relationSetting.ToSpace());
+                _entity.Translate(0, globalChange.y, globalChange.z, GizmoRelationManager.RelationSetting.ToSpace());
                 break;
             case TranslateDirection.ZXPlane:
                 globalChange = ApplySnapping(globalChange);
-                _entity.Translate(globalChange.x, 0, globalChange.z, _gizmoRelationManager.relationSetting.ToSpace());
+                _entity.Translate(globalChange.x, 0, globalChange.z, GizmoRelationManager.RelationSetting.ToSpace());
                 break;
             case TranslateDirection.All:
                 globalChange = ApplySnapping(globalChange);
-                _entity.Translate(globalChange.x, globalChange.y, globalChange.z, _gizmoRelationManager.relationSetting.ToSpace());
+                _entity.Translate(globalChange.x, globalChange.y, globalChange.z, GizmoRelationManager.RelationSetting.ToSpace());
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
@@ -122,7 +120,7 @@ public class Translate : EntityManipulator
     public override Plane GetPlane(Camera camera)
     {
         _snapLeftOvers = Vector3.zero;
-        if (SnappingManager.IsSnapping && _gizmoRelationManager.relationSetting == GizmoRelationManager.RelationSetting.Global)
+        if (SnappingManager.IsSnapping && GizmoRelationManager.RelationSetting == GizmoRelationManager.RelationSettingEnum.Global)
         {
             var snappedPosition = ApplySnapping(_entity.transform.position); // Sets _snapLeftOvers to an initial state to snap onto the Global grid
 

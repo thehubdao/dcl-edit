@@ -5,16 +5,14 @@ using UnityEngine;
 
 public class RotateManipulators : VisualRepresentation
 {
-
-    private GizmoRelationManager relationManager;
+    
     private GizmoManipulatorManager manipulatorManager;
 
     void Start()
     {
-        relationManager = GetComponentInParent<GizmoRelationManager>();
-        relationManager.OnUpdate.AddListener(SetDirty);
+        GizmoRelationManager.onUpdate.AddListener(SetDirty);
         manipulatorManager = GetComponentInParent<GizmoManipulatorManager>();
-        manipulatorManager.OnUpdate.AddListener(SetDirty);
+        GizmoManipulatorManager.onUpdate.AddListener(SetDirty);
     }
 
     public override void UpdateVisuals()
@@ -27,12 +25,12 @@ public class RotateManipulators : VisualRepresentation
                 return;
             }
 
-            switch (relationManager.relationSetting)
+            switch (GizmoRelationManager.RelationSetting)
             {
-                case GizmoRelationManager.RelationSetting.Local:
+                case GizmoRelationManager.RelationSettingEnum.Local:
                     SceneManager.SelectedEntity.gizmos.transform.localRotation = Quaternion.identity;
                     break;
-                case GizmoRelationManager.RelationSetting.Global:
+                case GizmoRelationManager.RelationSettingEnum.Global:
                     SceneManager.SelectedEntity.gizmos.transform.rotation = Quaternion.identity;
                     break;
                 default:

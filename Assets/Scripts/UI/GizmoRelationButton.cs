@@ -3,27 +3,53 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.UI;
 
 public class GizmoRelationButton : MonoBehaviour
 {
-    [SerializeField]
-    private GizmoRelationManager relationManager;
 
     [SerializeField]
-    private TextMeshProUGUI text;
+    private TextMeshProUGUI _text = default;
+
+    [SerializeField]
+    private Button _localButton = default;
+
+    [SerializeField]
+    private Button _globalButton = default;
+
+
 
     void Start()
     {
-        relationManager.OnUpdate.AddListener(UpdateVisuals);
+        GizmoRelationManager.onUpdate.AddListener(UpdateVisuals);
+        UpdateVisuals();
     }
 
     void UpdateVisuals()
     {
-        text.text = relationManager.relationSetting.ToString();
+        if (_text != null)
+            _text.text = GizmoRelationManager.RelationSetting.ToString();
+
+        if (_localButton != null)
+            _localButton.interactable =
+                GizmoRelationManager.RelationSetting != GizmoRelationManager.RelationSettingEnum.Local;
+
+        if (_globalButton != null)
+            _globalButton.interactable =
+                GizmoRelationManager.RelationSetting != GizmoRelationManager.RelationSettingEnum.Global;
     }
 
     public void SetNextGizmoRelation()
     {
-        relationManager.SwitchToNextRelationSetting();
+        GizmoRelationManager.instance.SwitchToNextRelationSetting();
+    }
+
+    public void SetRelationLocal()
+    {
+        GizmoRelationManager.RelationSetting = GizmoRelationManager.RelationSettingEnum.Local;
+    }
+    public void SetRelationGlobal()
+    {
+        GizmoRelationManager.RelationSetting = GizmoRelationManager.RelationSettingEnum.Global;
     }
 }

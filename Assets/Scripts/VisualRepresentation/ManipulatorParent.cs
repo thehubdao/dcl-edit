@@ -12,18 +12,16 @@ public class ManipulatorParent : VisualRepresentation
     [SerializeField]
     private GameObject _scale;
 
-
-    private GizmoManipulatorManager _gizmoManipulatorManager;
+    
 
     void Start()
     {
-        _gizmoManipulatorManager = GetComponentInParent<GizmoManipulatorManager>();
-        _gizmoManipulatorManager.OnUpdate.AddListener(SetDirty);
+        GizmoManipulatorManager.onUpdate.AddListener(SetDirty);
     }
 
     public override void UpdateVisuals()
     {
-        var currentManipulator = _gizmoManipulatorManager.CurrentManipulator;
+        var currentManipulator = GizmoManipulatorManager.instance.CurrentManipulator;
 
         if (_translate)
             _translate.SetActive(currentManipulator == GizmoManipulatorManager.Manipulator.Translate);
