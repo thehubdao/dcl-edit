@@ -3484,6 +3484,34 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8040832510113638928, guid: 92d0ff83c1f6d274cbb15847895e5a23, type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8040832510113638928, guid: 92d0ff83c1f6d274cbb15847895e5a23, type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8040832510113638928, guid: 92d0ff83c1f6d274cbb15847895e5a23, type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 532318966}
+    - target: {fileID: 8040832510113638928, guid: 92d0ff83c1f6d274cbb15847895e5a23, type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8040832510113638928, guid: 92d0ff83c1f6d274cbb15847895e5a23, type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: SetEntityName
+      objectReference: {fileID: 0}
+    - target: {fileID: 8040832510113638928, guid: 92d0ff83c1f6d274cbb15847895e5a23, type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: EntityHeaderUI, UI
+      objectReference: {fileID: 0}
+    - target: {fileID: 8040832510113638928, guid: 92d0ff83c1f6d274cbb15847895e5a23, type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 92d0ff83c1f6d274cbb15847895e5a23, type: 3}
 --- !u!1001 &400922396
