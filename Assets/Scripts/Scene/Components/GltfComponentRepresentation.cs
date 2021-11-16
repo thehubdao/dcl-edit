@@ -35,6 +35,7 @@ public class GltfComponentRepresentation : MonoBehaviour
                     colliderGameObject.layer = LayerMask.NameToLayer("Entity");
                     var newCollider = colliderGameObject.AddComponent<MeshCollider>();
                     newCollider.sharedMesh = child.GetComponent<MeshFilter>().sharedMesh;
+                    child.gameObject.AddComponent<Hilightable>();
                 }
             }));
     }
