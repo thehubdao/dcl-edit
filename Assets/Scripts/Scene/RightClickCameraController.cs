@@ -11,6 +11,12 @@ public class RightClickCameraController : MonoBehaviour
     public float speed = 7;
     public float sprintSpeed = 13;
 
+    // TODO: Move into Camera Manager
+    public static Transform mainCameraTransform;
+    void Start()
+    {
+        mainCameraTransform = transform;
+    }
     
     public void StartMovement()
     {
