@@ -21,16 +21,19 @@ public class SceneManager : MonoBehaviour
     private static void SetProjectPath()
     {
 #if UNITY_EDITOR
+        
         var devProjectPathFilePath = Application.dataPath+"/dev_project_path.txt";
         if (File.Exists(devProjectPathFilePath))
         {
             DclProjectPath = File.ReadAllText(devProjectPathFilePath);
         }
-        else
+
+        if (!File.Exists(DclProjectPath + "/scene.json"))
         {
             DclProjectPath = EditorUtility.OpenFolderPanel("Select DCL project folder","","");
             File.WriteAllText(devProjectPathFilePath,DclProjectPath);
         }
+        
 #else
         DclProjectPath = ".";
 #endif
