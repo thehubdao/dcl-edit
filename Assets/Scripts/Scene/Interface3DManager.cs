@@ -47,6 +47,7 @@ public class Interface3DManager : MonoBehaviour
         {
             // Get the ray from the camera, where the mouse currently is
             var mouseRay = gizmoCamera.ViewportPointToRay(gizmoCamera.ScreenToViewportPoint(Input.mousePosition));
+            var isMouseIn3DView = !EventSystem.current.IsPointerOverGameObject() && IsMouseOverGameWindow;
 
             // Figuring out, what the mouse currently hovers
             Interface3DHover hoveredVisualIndicator = null;
@@ -55,7 +56,7 @@ public class Interface3DManager : MonoBehaviour
             _mouseInWorldPoint = null;
             
             // Do the following block only, if the mouse is over the scene view
-            if (!EventSystem.current.IsPointerOverGameObject() && IsMouseOverGameWindow) 
+            if (isMouseIn3DView) 
             {
                 // First check, if mouse is hovering over Gizmo
                 if (Physics.Raycast(mouseRay, out RaycastHit hitInfoGizmos, 10000, LayerMask.GetMask("Gizmos")))
@@ -81,15 +82,6 @@ public class Interface3DManager : MonoBehaviour
                     _mouseInWorldPoint = hitInfoEntity.point;
                 }
 
-                // Delete the Selected Entity
-                if (Input.GetKeyDown(KeyCode.Delete))
-                {
-                    if (SceneManager.SelectedEntity != null)
-                    {
-                        Destroy(SceneManager.SelectedEntity.gameObject);
-                        SceneManager.SelectedEntity = null;
-                    }
-                }
             }
 
             if (_mouseInWorldPoint == null)
@@ -119,7 +111,7 @@ public class Interface3DManager : MonoBehaviour
             var pressingAlt = Input.GetKey(KeyCode.LeftAlt)||Input.GetKey(KeyCode.RightAlt);
 
             // When Left mouse button is clicked, do necessary actions
-            if (Input.GetMouseButtonDown((int)MouseButton.LeftMouse) && !pressingAlt && !EventSystem.current.IsPointerOverGameObject() && IsMouseOverGameWindow)
+            if (Input.GetMouseButtonDown((int)MouseButton.LeftMouse) && !pressingAlt && isMouseIn3DView)
             {
                 if (hoveredManipulator != null)
                 {
@@ -134,32 +126,44 @@ public class Interface3DManager : MonoBehaviour
             }
 
             
+            // Delete the Selected Entity
+            if (Input.GetKeyDown(KeyCode.Delete) && isMouseIn3DView)
+            {
+                if (SceneManager.SelectedEntity != null)
+                {
+                    Destroy(SceneManager.SelectedEntity.gameObject);
+                    SceneManager.SelectedEntity = null;
+                }
+            }
+
+            
             // When pressing Right mouse button (without alt), switch to "Camera WASD moving state"
-            if (Input.GetMouseButtonDown((int) MouseButton.RightMouse) && !pressingAlt && !EventSystem.current.IsPointerOverGameObject() && IsMouseOverGameWindow)
+            if (Input.GetMouseButtonDown((int) MouseButton.RightMouse) && !pressingAlt && isMouseIn3DView)
             {
                 _interfaceStateMachine.ActiveState = _cameraWasdMovingState; 
             }
 
             // When pressing ald and Right mouse button, switch to "Camera WASD moving state"
-            if (Input.GetMouseButtonDown((int) MouseButton.RightMouse) && pressingAlt && !EventSystem.current.IsPointerOverGameObject() && IsMouseOverGameWindow)
+            if (Input.GetMouseButtonDown((int) MouseButton.RightMouse) && pressingAlt && isMouseIn3DView)
             {
                 _interfaceStateMachine.ActiveState = _cameraMouseZoomingState;
             }
 
             // When pressing ald and Right mouse button, switch to "Camera rotate around state"
-            if (Input.GetMouseButtonDown((int) MouseButton.LeftMouse) && pressingAlt && !EventSystem.current.IsPointerOverGameObject() && IsMouseOverGameWindow)
+            if (Input.GetMouseButtonDown((int) MouseButton.LeftMouse) && pressingAlt && isMouseIn3DView)
             {
                 _interfaceStateMachine.ActiveState = _cameraRotateAroundState;
             }
 
             // When pressing Middle mouse button, switch to "Camera slide moving state"
-            if (Input.GetMouseButtonDown((int) MouseButton.MiddleMouse) && !EventSystem.current.IsPointerOverGameObject() && IsMouseOverGameWindow)
+            if (Input.GetMouseButtonDown((int) MouseButton.MiddleMouse) && isMouseIn3DView)
             {
                 _interfaceStateMachine.ActiveState = _cameraSlideMovingState;
             }
 
             // When scrolling Mouse wheel, zoom in or out
-            cameraController.ApplyZoom();
+            if(isMouseIn3DView)
+                cameraController.ApplyZoom();
 
         };
 
@@ -265,9 +269,7 @@ public class Interface3DManager : MonoBehaviour
                 _interfaceStateMachine.ActiveState = _freeMouseState;
             }
         };
-
         
-
 
         _interfaceStateMachine = new StateMachine(_freeMouseState);
     }
