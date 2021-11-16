@@ -171,6 +171,27 @@ public class Interface3DManager : MonoBehaviour
             if(isMouseIn3DView)
                 cameraController.ApplyZoom();
 
+
+
+            // Switch Manipulator by shortcut
+            // E -> Translate
+            if (Input.GetKeyDown(KeyCode.E) && isMouseIn3DView)
+            {
+                GizmoManipulatorManager.instance.CurrentManipulator = GizmoManipulatorManager.Manipulator.Translate;
+            }
+            
+            // R -> Rotate
+            if (Input.GetKeyDown(KeyCode.R) && isMouseIn3DView)
+            {
+                GizmoManipulatorManager.instance.CurrentManipulator = GizmoManipulatorManager.Manipulator.Rotate;
+            }
+            
+            // T -> Scale
+            if (Input.GetKeyDown(KeyCode.T) && isMouseIn3DView)
+            {
+                GizmoManipulatorManager.instance.CurrentManipulator = GizmoManipulatorManager.Manipulator.Scale;
+            }
+
         };
 
         // This state is active, when the user is holding a Manipulator
