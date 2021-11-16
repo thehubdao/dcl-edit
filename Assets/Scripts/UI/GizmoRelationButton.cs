@@ -22,6 +22,7 @@ public class GizmoRelationButton : MonoBehaviour
     void Start()
     {
         GizmoRelationManager.onUpdate.AddListener(UpdateVisuals);
+        GizmoManipulatorManager.onUpdate.AddListener(UpdateVisuals);
         UpdateVisuals();
     }
 
@@ -32,11 +33,13 @@ public class GizmoRelationButton : MonoBehaviour
 
         if (_localButton != null)
             _localButton.interactable =
-                GizmoRelationManager.RelationSetting != GizmoRelationManager.RelationSettingEnum.Local;
+                GizmoRelationManager.RelationSetting != GizmoRelationManager.RelationSettingEnum.Local 
+                && GizmoManipulatorManager.instance.CurrentManipulator != GizmoManipulatorManager.Manipulator.Scale; // disable, when scaling is active
 
         if (_globalButton != null)
             _globalButton.interactable =
-                GizmoRelationManager.RelationSetting != GizmoRelationManager.RelationSettingEnum.Global;
+                GizmoRelationManager.RelationSetting != GizmoRelationManager.RelationSettingEnum.Global 
+                && GizmoManipulatorManager.instance.CurrentManipulator != GizmoManipulatorManager.Manipulator.Scale; // disable, when scaling is active
     }
 
     public void SetNextGizmoRelation()
