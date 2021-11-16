@@ -43,6 +43,12 @@ public class Interface3DManager : MonoBehaviour
     {
         // This State is normally active, when the user just hovers the mouse over the 3D view
         _freeMouseState = new StateMachine.State("Free mouse state");
+        _freeMouseState.OnStateExit = _ =>
+        {
+            if (_lastHoveredVisualIndicator != null)
+                _lastHoveredVisualIndicator.EndHover();
+            _lastHoveredVisualIndicator = null;
+        };
         _freeMouseState.OnStateUpdate = state =>
         {
             // Get the ray from the camera, where the mouse currently is
