@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 6657250792418038892}
   - component: {fileID: 8206940950052503868}
   - component: {fileID: 686588463821333606}
+  - component: {fileID: 2377146633477949877}
   m_Layer: 5
   m_Name: RemoveButton
   m_TagString: Untagged
@@ -183,6 +184,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 87f23ccc6dd347c45a0c737e6c29b48a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &2377146633477949877
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 422461941419098885}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 896fd8fe5aebcef4d84980be585e5b92, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _text: Remove Component
 --- !u!1001 &1901977486
 PrefabInstance:
   m_ObjectHideFlags: 0

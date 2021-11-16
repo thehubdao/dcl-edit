@@ -178,6 +178,7 @@ public class Interface3DManager : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.E) && isMouseIn3DView)
             {
                 GizmoManipulatorManager.instance.CurrentManipulator = GizmoManipulatorManager.Manipulator.Translate;
+                HoverLabelManager.OpenLabel("Test test 123 super test");
             }
             
             // R -> Rotate
