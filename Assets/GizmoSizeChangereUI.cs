@@ -25,8 +25,5 @@ public class GizmoSizeChangereUI : MonoBehaviour
     public void SetSize(Single value)
     {
         SceneManager.GizmoScale = value;
-        Debug.Log(value);
-        
-    }    
-    
+    }
 }
