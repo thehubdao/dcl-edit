@@ -12,7 +12,7 @@ public class SceneSaveManager : MonoBehaviour
 
     void Update()
     {
-        if(saveNow || ((Input.GetKey(KeyCode.LeftControl)||Input.GetKey(KeyCode.RightControl))&&Input.GetKeyDown(KeyCode.S)))
+        if(saveNow)
         {
             saveNow = false;
             Save();
@@ -24,7 +24,7 @@ public class SceneSaveManager : MonoBehaviour
         }
     }
 
-    public void Save()
+    public static void Save()
     {
         var jsonString = SceneManager.Entities.ToJson();
         Debug.Log(jsonString);
@@ -44,7 +44,7 @@ public class SceneSaveManager : MonoBehaviour
         }
     }
 
-    public void Load()
+    public static void Load()
     {
         if(File.Exists(SceneManager.DclProjectPath + "/scene/scene.json"))
         {

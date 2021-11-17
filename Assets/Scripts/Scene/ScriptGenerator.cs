@@ -10,7 +10,7 @@ public class ScriptGenerator : MonoBehaviour
     // Start is called before the first frame update
     void Update()
     {
-        if(makeScript || ((Input.GetKey(KeyCode.LeftControl)||Input.GetKey(KeyCode.RightControl))&&Input.GetKeyDown(KeyCode.S)))
+        if(makeScript)
         {
             MakeScript();
             makeScript = false;
@@ -23,7 +23,7 @@ public class ScriptGenerator : MonoBehaviour
         public string symbol;
     }
 
-    public void MakeScript()
+    public static void MakeScript()
     {
         Debug.Log("Making Script...");
         

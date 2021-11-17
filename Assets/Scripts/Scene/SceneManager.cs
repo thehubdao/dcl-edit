@@ -48,9 +48,7 @@ public class SceneManager : MonoBehaviour
         sr.Close();
 
         sceneJson = JsonUtility.FromJson<SceneJson>(fileContents);
-
-        _saveManager = saveManager;
-
+        
         _entityGameObject = entityGameObject;
         _entityTemplate = entityTemplate;
         //_hierarchyView = hierarchyView;
@@ -62,7 +60,7 @@ public class SceneManager : MonoBehaviour
         GizmoCamera = _gizmoCamera;
         GizmoScale = _gizmoScale;
 
-        SaveManager.Load();
+        SceneSaveManager.Load();
     }
 
 
@@ -128,11 +126,7 @@ public class SceneManager : MonoBehaviour
     public static float GizmoScale;
     [SerializeField]
     private float _gizmoScale;
-
-    // Saving and Loading
-    public SceneSaveManager saveManager;
-    private static SceneSaveManager _saveManager;
-    public static SceneSaveManager SaveManager => _saveManager;
+    
 
     // Entities
     public GameObject entityGameObject;

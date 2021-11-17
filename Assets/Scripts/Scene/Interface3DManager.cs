@@ -186,6 +186,13 @@ public class Interface3DManager : MonoBehaviour
                 GizmoManipulatorManager.instance.CurrentManipulator = GizmoManipulatorManager.Manipulator.Scale;
             }
 
+            var ctrlPlusS = (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) && Input.GetKeyDown(KeyCode.S);
+            if (ctrlPlusS && isMouseOverGameWindow)
+            {
+                ScriptGenerator.MakeScript();
+                SceneSaveManager.Save();
+            }
+
             
             // Delete the Selected Entity
             if (Input.GetKeyDown(KeyCode.Delete) && isMouseOverGameWindow)
