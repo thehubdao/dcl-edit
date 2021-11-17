@@ -27,6 +27,8 @@ public class TransformComponentUI : ComponentUI
     public override void UpdateVisuals()
     {
         var transformComponent = (TransformComponent)entityComponent;
+        if (transformComponent == null)
+            return;
         
         var numberFormat = (NumberFormatInfo) NumberFormatInfo.InvariantInfo.Clone();
 
