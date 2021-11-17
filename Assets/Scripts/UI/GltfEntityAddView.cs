@@ -42,6 +42,7 @@ public class GltfEntityAddView : MonoBehaviour
 
 
             entityItem.text.text = fileName;
+            entityItem.defaultName = fileName;
         }
         
     }

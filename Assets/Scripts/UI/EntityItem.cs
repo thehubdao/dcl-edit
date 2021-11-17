@@ -12,6 +12,8 @@ public class EntityItem : MonoBehaviour
 
     public string glbFileName = "";
 
+    public string defaultName = "";
+
     public void Spawn()
     {
         var newEntityObject = Instantiate(entityPrefab, Vector3.zero, Quaternion.identity, SceneManager.EntityParent);
@@ -22,6 +24,8 @@ public class EntityItem : MonoBehaviour
         }
 
         SceneManager.ChangedHierarchy();
-        SceneManager.SelectedEntity = newEntityObject.GetComponent<Entity>();
+        var newEntity = newEntityObject.GetComponent<Entity>();
+        newEntity.customName = defaultName;
+        SceneManager.SelectedEntity = newEntity;
     }
 }

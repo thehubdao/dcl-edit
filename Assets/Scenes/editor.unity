@@ -2416,6 +2416,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4071733387958803154, guid: 146833f25ebdd4e499ae42226314bc82, type: 3}
+      propertyPath: defaultName
+      value: Empty Entity
+      objectReference: {fileID: 0}
     - target: {fileID: 4071733387958803166, guid: 146833f25ebdd4e499ae42226314bc82, type: 3}
       propertyPath: m_Name
       value: AddEntityItem
@@ -4703,6 +4707,7 @@ MonoBehaviour:
   entityPrefab: {fileID: 2677705820408543756, guid: 603be0ca1ed44da4bb9fab6fd5bbe091, type: 3}
   text: {fileID: 0}
   glbFileName: 
+  defaultName: 
 --- !u!114 &523333066
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6891,6 +6896,10 @@ PrefabInstance:
     - target: {fileID: 4071733387958803153, guid: 146833f25ebdd4e499ae42226314bc82, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4071733387958803154, guid: 146833f25ebdd4e499ae42226314bc82, type: 3}
+      propertyPath: defaultName
+      value: Cube Entity
       objectReference: {fileID: 0}
     - target: {fileID: 4071733387958803154, guid: 146833f25ebdd4e499ae42226314bc82, type: 3}
       propertyPath: entityPrefab
@@ -13346,6 +13355,10 @@ PrefabInstance:
     - target: {fileID: 4071733387958803153, guid: 146833f25ebdd4e499ae42226314bc82, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4071733387958803154, guid: 146833f25ebdd4e499ae42226314bc82, type: 3}
+      propertyPath: defaultName
+      value: Sphere Entity
       objectReference: {fileID: 0}
     - target: {fileID: 4071733387958803154, guid: 146833f25ebdd4e499ae42226314bc82, type: 3}
       propertyPath: entityPrefab
