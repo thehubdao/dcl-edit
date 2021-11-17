@@ -37,6 +37,7 @@ public class HoverLabel : MonoBehaviour, IPointerEnterHandler,IPointerExitHandle
             if (_hoverTimer <= 0)
             {
                 HoverLabelManager.OpenLabel(_text);
+                _hoverTimer = float.PositiveInfinity;
             }
 
             _lastMousePosition = Input.mousePosition;

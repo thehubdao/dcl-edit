@@ -37,10 +37,13 @@ public class SceneSaveManager : MonoBehaviour
             fileWriter.WriteLine(jsonString);
 
             fileWriter.Close();
+
+            HoverLabelManager.OpenLabel("Scene Saved");
         }
         catch (IOException)
         {
             Debug.LogError("Error while saving scene");
+            HoverLabelManager.OpenLabel("Error while saving scene");
         }
     }
 
