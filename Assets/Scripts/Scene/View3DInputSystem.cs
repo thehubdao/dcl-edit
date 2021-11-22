@@ -120,7 +120,7 @@ public class View3DInputSystem : MonoBehaviour
 
             var pressingAlt = Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt);
 
-            // When Left mouse button is clicked, do necessary actions
+            // When Left mouse button is clicked, select or deselect Entity
             if (Input.GetMouseButtonDown((int)MouseButton.LeftMouse) && !pressingAlt && isMouseIn3DView)
             {
                 if (hoveredManipulator != null)
@@ -129,7 +129,7 @@ public class View3DInputSystem : MonoBehaviour
                     _activeManipulatorPlane = _activeManipulator.GetPlane(gizmoCamera);
                     _interfaceStateMachine.ActiveState = _holdingManipulatorState; // Switching state to "holding manipulator state"
                 }
-                else if (hoveredEntity != null)
+                else// if (hoveredEntity != null)
                 {
                     SceneManager.SelectedEntity = hoveredEntity;
                 }
