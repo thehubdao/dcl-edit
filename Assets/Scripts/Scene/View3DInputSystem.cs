@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UIElements;
 using Random = UnityEngine.Random;
 
-public class Interface3DManager : MonoBehaviour
+public class View3DInputSystem : MonoBehaviour
 {
     public Camera gizmoCamera;
     public RightClickCameraController cameraController;
@@ -171,26 +171,26 @@ public class Interface3DManager : MonoBehaviour
             // E -> Translate
             if (Input.GetKeyDown(KeyCode.E) && isMouseOverGameWindow)
             {
-                GizmoManipulatorManager.instance.CurrentManipulator = GizmoManipulatorManager.Manipulator.Translate;
+                GizmoManipulatorManager.CurrentManipulator = GizmoManipulatorManager.Manipulator.Translate;
             }
 
             // R -> Rotate
             if (Input.GetKeyDown(KeyCode.R) && isMouseOverGameWindow)
             {
-                GizmoManipulatorManager.instance.CurrentManipulator = GizmoManipulatorManager.Manipulator.Rotate;
+                GizmoManipulatorManager.CurrentManipulator = GizmoManipulatorManager.Manipulator.Rotate;
             }
 
             // T -> Scale
             if (Input.GetKeyDown(KeyCode.T) && isMouseOverGameWindow)
             {
-                GizmoManipulatorManager.instance.CurrentManipulator = GizmoManipulatorManager.Manipulator.Scale;
+                GizmoManipulatorManager.CurrentManipulator = GizmoManipulatorManager.Manipulator.Scale;
             }
 
             var ctrlPlusS = (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) && Input.GetKeyDown(KeyCode.S);
             if (ctrlPlusS && isMouseOverGameWindow)
             {
                 ScriptGenerator.MakeScript();
-                SceneSaveManager.Save();
+                SceneSaveSystem.Save();
             }
 
             

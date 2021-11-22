@@ -21,7 +21,7 @@ public class ManipulatorParent : VisualRepresentation
 
     public override void UpdateVisuals()
     {
-        var currentManipulator = GizmoManipulatorManager.instance.CurrentManipulator;
+        var currentManipulator = GizmoManipulatorManager.CurrentManipulator;
 
         if (_translate)
             _translate.SetActive(currentManipulator == GizmoManipulatorManager.Manipulator.Translate);

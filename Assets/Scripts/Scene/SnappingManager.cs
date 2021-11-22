@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.Events;
 
-public class SnappingManager : MonoBehaviour
+public class SnappingManager : Manager
 {
     private static bool _isSnapping = true;
     public static bool IsSnapping

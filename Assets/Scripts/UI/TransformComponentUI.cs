@@ -21,7 +21,7 @@ public class TransformComponentUI : ComponentUI
 
     void Start()
     {
-        Interface3DManager.onTransformChange.AddListener(UpdateVisuals);
+        View3DInputSystem.onTransformChange.AddListener(UpdateVisuals);
     }
 
     public override void UpdateVisuals()

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class HoverLabelManager : MonoBehaviour
+public class HoverLabelManager : Manager
 {
 
     public static UnityEvent<string> onOpenLabel = new UnityEvent<string>();

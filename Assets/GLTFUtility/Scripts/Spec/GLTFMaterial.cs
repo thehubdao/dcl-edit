@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -47,7 +47,12 @@ namespace Siccity.GLTFUtility {
 				while (en.MoveNext()) { yield return null; };
 			}
 			// Load fallback material
+			#if UNITY_2019_1_OR_NEWER
+			else if (GraphicsSettings.renderPipelineAsset) mat = new Material(Shader.Find("Universal Render Pipeline/Lit"));
 			else mat = new Material(Shader.Find("Standard"));
+			#else
+			else mat = new Material(Shader.Find("Standard"));
+			#endif
 			// Normal texture
 			if (normalTexture != null) {
 				en = TryGetTexture(textures, normalTexture, true, tex => {

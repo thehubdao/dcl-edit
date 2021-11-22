@@ -8,49 +8,49 @@ public class ComponentRepresentationList : MonoBehaviour
 
     [Header("Scene Representations")]
     [SerializeField]
-    private GameObject _transformComponentInScene;
-    public static GameObject TransformComponentInScene => _instance._transformComponentInScene;
+    private GameObject _transformComponentRepresentation = default;
+    public static GameObject TransformComponentInScene => _instance._transformComponentRepresentation;
     
     [SerializeField]
-    private GameObject _boxShapeComponentInScene;
-    public static GameObject BoxShapeComponentInScene => _instance._boxShapeComponentInScene;
+    private GameObject _boxShapeComponentRepresentation = default;
+    public static GameObject BoxShapeComponentInScene => _instance._boxShapeComponentRepresentation;
 
     [SerializeField]
-    private GameObject _sphereShapeComponentInScene;
-    public static GameObject SphereShapeComponentInScene => _instance._sphereShapeComponentInScene;
+    private GameObject _sphereShapeComponentRepresentation = default;
+    public static GameObject SphereShapeComponentInScene => _instance._sphereShapeComponentRepresentation;
     
     [SerializeField]
-    private GameObject _gltfShapeComponentInScene;
-    public static GameObject GltfShapeComponentInScene => _instance._gltfShapeComponentInScene;
+    private GameObject _gltfShapeComponentRepresentation = default;
+    public static GameObject GltfShapeComponentInScene => _instance._gltfShapeComponentRepresentation;
 
     [Header("UI Representations")]
     [SerializeField]
-    private GameObject _transformComponentUI;
+    private GameObject _transformComponentUI = default;
     public static GameObject TransformComponentUI => _instance._transformComponentUI;
     
     [SerializeField]
-    private GameObject _boxShapeComponentUI;
+    private GameObject _boxShapeComponentUI = default;
     public static GameObject BoxShapeComponentUI => _instance._boxShapeComponentUI;
 
     [SerializeField]
-    private GameObject _sphereShapeComponentUI;
+    private GameObject _sphereShapeComponentUI = default;
     public static GameObject SphereShapeComponentUI => _instance._sphereShapeComponentUI;
     
     [SerializeField]
-    private GameObject _gltfShapeComponentUI;
+    private GameObject _gltfShapeComponentUI = default;
     public static GameObject GltfShapeComponentUI => _instance._gltfShapeComponentUI;
     
-    public static Type TransformComponentComponent = typeof(TransformComponent);
-    public static Type BoxShapeComponentComponent = typeof(BoxShapeComponent);
-    public static Type SphereShapeComponentComponent = typeof(SphereShapeComponent);
-    public static Type GltfShapeComponentComponent = typeof(GLTFShapeComponent);
+    public static Type TransformComponentType = typeof(TransformComponent);
+    public static Type BoxShapeComponentType = typeof(BoxShapeComponent);
+    public static Type SphereShapeComponentType = typeof(SphereShapeComponent);
+    public static Type GltfShapeComponentType = typeof(GLTFShapeComponent);
 
-    public static Dictionary<string, Type> AllComponentComponents = new Dictionary<string, Type>()
+    public static Dictionary<string, Type> AllComponentTypes = new Dictionary<string, Type>()
     {
-        {"Transform", TransformComponentComponent},
-        {"Box Shape", BoxShapeComponentComponent},
-        {"Sphere Shape", SphereShapeComponentComponent},
-        {"GLTF Shape", GltfShapeComponentComponent}
+        {"Transform", TransformComponentType},
+        {"Box Shape", BoxShapeComponentType},
+        {"Sphere Shape", SphereShapeComponentType},
+        {"GLTF Shape", GltfShapeComponentType}
     };
     
 
@@ -58,10 +58,10 @@ public class ComponentRepresentationList : MonoBehaviour
     {
         return name switch
         {
-            "transform" => TransformComponentComponent,
-            "boxShape" => BoxShapeComponentComponent,
-            "sphereShape" => SphereShapeComponentComponent,
-            "GLTFShape" => GltfShapeComponentComponent,
+            "transform" => TransformComponentType,
+            "boxShape" => BoxShapeComponentType,
+            "sphereShape" => SphereShapeComponentType,
+            "GLTFShape" => GltfShapeComponentType,
             _ => throw new ArgumentOutOfRangeException(nameof(name), name, "Component name not found")
         };
     }

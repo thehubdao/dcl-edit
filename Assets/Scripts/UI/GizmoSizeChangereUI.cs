@@ -19,11 +19,11 @@ public class GizmoSizeChangereUI : MonoBehaviour
 
     private void UpdateVisuals()
     {
-        _slider.value = SceneManager.GizmoScale;
+        _slider.value = GizmoSizeManager.GizmoScale;
     }
 
     public void SetSize(Single value)
     {
-        SceneManager.GizmoScale = value;
+        GizmoSizeManager.GizmoScale = value;
     }
 }

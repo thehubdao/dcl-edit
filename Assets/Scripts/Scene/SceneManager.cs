@@ -13,7 +13,7 @@ using UnityEditor;
 #endif
 
 
-public class SceneManager : MonoBehaviour
+public class SceneManager : Manager
 {
     // Project Path
     public static string DclProjectPath = "";
@@ -35,7 +35,7 @@ public class SceneManager : MonoBehaviour
         }
         
 #else
-        DclProjectPath = ".";
+        DclProjectPath = Path.GetFullPath(".");
 #endif
     }
 
@@ -51,16 +51,13 @@ public class SceneManager : MonoBehaviour
         
         _entityGameObject = entityGameObject;
         _entityTemplate = entityTemplate;
-        //_hierarchyView = hierarchyView;
-        _gizmoRelationManager = gizmoRelationManager;
         ChangedHierarchy();
 
         SelectedEntity = null;
 
         GizmoCamera = _gizmoCamera;
-        GizmoScale = _gizmoScale;
 
-        SceneSaveManager.Load();
+        SceneSaveSystem.Load();
     }
 
 
@@ -123,9 +120,9 @@ public class SceneManager : MonoBehaviour
     public static Camera GizmoCamera;
     [SerializeField]
     private Camera _gizmoCamera;
-    public static float GizmoScale;
-    [SerializeField]
-    private float _gizmoScale;
+    //public static float GizmoScale;
+    //[SerializeField]
+    //private float _gizmoScale;
     
 
     // Entities
@@ -137,12 +134,7 @@ public class SceneManager : MonoBehaviour
     public GameObject entityTemplate;
     private static GameObject _entityTemplate;
     public static GameObject EntityTemplate => _entityTemplate;
-
-    // Manipulator manager
-    public GizmoRelationManager gizmoRelationManager;
-    private static GizmoRelationManager _gizmoRelationManager;
-    public static GizmoRelationManager GizmoRelationManager => _gizmoRelationManager;
-
+    
     // Hierarchy View
     public static UnityEvent OnUpdateHierarchy = new UnityEvent();
     //public HierarchyView hierarchyView;

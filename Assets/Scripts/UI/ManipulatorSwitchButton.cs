@@ -33,25 +33,25 @@ public class ManipulatorSwitchButton : MonoBehaviour
     void UpdateVisuals()
     {
         if(_text!=null)
-            _text.text = GizmoManipulatorManager.instance.CurrentManipulator.ToString();
+            _text.text = GizmoManipulatorManager.CurrentManipulator.ToString();
 
         if (_translateButton == null || _rotateButton == null || _scaleButton == null)
             return;
 
-        _translateButton.interactable = GizmoManipulatorManager.instance.CurrentManipulator != GizmoManipulatorManager.Manipulator.Translate;
-        _rotateButton.interactable = GizmoManipulatorManager.instance.CurrentManipulator != GizmoManipulatorManager.Manipulator.Rotate;
-        _scaleButton.interactable = GizmoManipulatorManager.instance.CurrentManipulator != GizmoManipulatorManager.Manipulator.Scale;
+        _translateButton.interactable = GizmoManipulatorManager.CurrentManipulator != GizmoManipulatorManager.Manipulator.Translate;
+        _rotateButton.interactable = GizmoManipulatorManager.CurrentManipulator != GizmoManipulatorManager.Manipulator.Rotate;
+        _scaleButton.interactable = GizmoManipulatorManager.CurrentManipulator != GizmoManipulatorManager.Manipulator.Scale;
         
     }
 
     public void SetNextManipulator()
     {
-        GizmoManipulatorManager.instance.SwitchToNextManipulator();
+        GizmoManipulatorManager.SwitchToNextManipulator();
     }
 
     public void SetManipulator(GizmoManipulatorManager.Manipulator manipulator) 
     {
-        GizmoManipulatorManager.instance.CurrentManipulator = manipulator;
+        GizmoManipulatorManager.CurrentManipulator = manipulator;
     }
 
     public void SetManipulatorTranslate()

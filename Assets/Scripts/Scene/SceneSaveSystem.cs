@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using UnityEngine;
 
-public class SceneSaveManager : MonoBehaviour
+public class SceneSaveSystem : MonoBehaviour
 {
     public bool saveNow = false;
     public bool loadNow = false;

@@ -8,6 +8,8 @@ public class GltfComponentRepresentation : MonoBehaviour
 
     public void UpdateVisuals(GLTFShapeComponent gltfShape)
     {
+        Debug.Log(SceneManager.DclProjectPath + "/" + gltfShape.glbPath);
+        
         Importer.LoadFromFileAsync(SceneManager.DclProjectPath + "/" + gltfShape.glbPath, new ImportSettings() { }, (
             (o, clips) =>
             {

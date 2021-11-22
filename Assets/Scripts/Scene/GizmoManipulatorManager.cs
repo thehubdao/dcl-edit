@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class GizmoManipulatorManager : MonoBehaviour
+public class GizmoManipulatorManager : Manager
 {
-    private Manipulator _currentManipulator = Manipulator.Translate;
+    private static Manipulator _currentManipulator = Manipulator.Translate;
 
     [SerializeField]
     //private TextMeshProUGUI _currentManipulatorText;
@@ -18,33 +18,18 @@ public class GizmoManipulatorManager : MonoBehaviour
         Rotate,
         Scale
     }
-
-    public static GizmoManipulatorManager instance;
-
-    void Start()
-    {
-        instance = this;
-    }
-
-
-    public Manipulator CurrentManipulator
+    
+    public static Manipulator CurrentManipulator
     {
         get => _currentManipulator;
         set
         {
             _currentManipulator = value;
             onUpdate.Invoke();
-            //var mps = GetComponentsInChildren<ManipulatorParent>();
-            //foreach (var mp in mps)
-            //{
-            //    mp.SetDirty();
-            //}
-            //
-            //_currentManipulatorText.text = _currentManipulator.ToString();
         }
     }
     
-    public void SwitchToNextManipulator()
+    public static void SwitchToNextManipulator()
     {
         CurrentManipulator = CurrentManipulator.Next();
     }

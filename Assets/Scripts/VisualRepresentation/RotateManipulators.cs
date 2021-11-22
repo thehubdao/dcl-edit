@@ -6,12 +6,10 @@ using UnityEngine;
 public class RotateManipulators : VisualRepresentation
 {
     
-    private GizmoManipulatorManager manipulatorManager;
 
     void Start()
     {
         GizmoRelationManager.onUpdate.AddListener(SetDirty);
-        manipulatorManager = GetComponentInParent<GizmoManipulatorManager>();
         GizmoManipulatorManager.onUpdate.AddListener(SetDirty);
     }
 
@@ -19,7 +17,7 @@ public class RotateManipulators : VisualRepresentation
     {
         if (SceneManager.SelectedEntity != null)
         {
-            if (manipulatorManager.CurrentManipulator == GizmoManipulatorManager.Manipulator.Scale)
+            if (GizmoManipulatorManager.CurrentManipulator == GizmoManipulatorManager.Manipulator.Scale)
             {
                 SceneManager.SelectedEntity.gizmos.transform.localRotation = Quaternion.identity;
                 return;

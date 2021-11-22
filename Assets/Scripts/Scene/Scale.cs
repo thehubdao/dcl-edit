@@ -16,11 +16,9 @@ public class Scale : EntityManipulator
     public TranslateDirection direction;
 
     private Entity _entity;
-    private GizmoRelationManager _gizmoRelationManager;
     void Start()
     {
         _entity = GetComponentInParent<Entity>();
-        _gizmoRelationManager = GetComponentInParent<GizmoRelationManager>();
     }
     
     private float _snapLeftOvers;

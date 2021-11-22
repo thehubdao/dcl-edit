@@ -21,7 +21,7 @@ public class ListAvailableComponentsUI : MonoBehaviour
             Destroy(child.gameObject);
         }
 
-        foreach (var c in ComponentRepresentationList.AllComponentComponents)
+        foreach (var c in ComponentRepresentationList.AllComponentTypes)
         {
             var componentName = c.Key;
             var componentType = c.Value;

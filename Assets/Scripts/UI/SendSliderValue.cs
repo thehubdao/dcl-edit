@@ -5,8 +5,6 @@ using UnityEngine.UI;
 
 public class SendSliderValue : MonoBehaviour
 {
-    [SerializeField]
-    private GizmoSizeManager _gizmoSizeManager;
 
     [SerializeField]
     private Slider _slider;
@@ -14,6 +12,6 @@ public class SendSliderValue : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        _gizmoSizeManager.SetSize(_slider.value);
+        GizmoSizeManager.GizmoScale = _slider.value;
     }
 }
