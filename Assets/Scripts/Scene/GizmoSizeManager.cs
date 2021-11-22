@@ -5,7 +5,7 @@ using UnityEngine;
 public class GizmoSizeManager : Manager
 {
     [SerializeField]
-    private static float _gizmoScale;
+    private static float _gizmoScale = 0.15f; 
 
     public static float GizmoScale
     {
