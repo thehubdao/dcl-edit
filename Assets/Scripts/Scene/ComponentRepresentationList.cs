@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ComponentRepresentationList : MonoBehaviour
+public class ComponentRepresentationList : MonoBehaviour, ISerializedFieldToStatic
 {
 
     [Header("Scene Representations")]
@@ -69,8 +69,14 @@ public class ComponentRepresentationList : MonoBehaviour
 
     private static ComponentRepresentationList _instance;
     // Start is called before the first frame update
-    void Start()
+    //void Start()
+    //{
+    //    _instance = this;
+    //}
+
+    public void SetupStatics()
     {
-        _instance = this;
+        Debug.Log("init component representation");
+        _instance = this; 
     }
 }

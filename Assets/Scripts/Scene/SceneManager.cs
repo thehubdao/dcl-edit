@@ -13,51 +13,24 @@ using UnityEditor;
 #endif
 
 
-public class SceneManager : Manager
+public class SceneManager : Manager, ISerializedFieldToStatic
 {
     // Project Path
     public static string DclProjectPath = "";
 
-    private static void SetProjectPath()
+    //void Start()
+    //{
+    //    _entityGameObject = entityGameObject;
+    //    _entityTemplate = entityTemplate;
+    //    GizmoCamera = _gizmoCamera;
+    //}
+
+    public void SetupStatics()
     {
-#if UNITY_EDITOR
-        
-        var devProjectPathFilePath = Application.dataPath+"/dev_project_path.txt";
-        if (File.Exists(devProjectPathFilePath))
-        {
-            DclProjectPath = File.ReadAllText(devProjectPathFilePath);
-        }
-
-        if (!File.Exists(DclProjectPath + "/scene.json"))
-        {
-            DclProjectPath = EditorUtility.OpenFolderPanel("Select DCL project folder","","");
-            File.WriteAllText(devProjectPathFilePath,DclProjectPath);
-        }
-        
-#else
-        DclProjectPath = Path.GetFullPath(".");
-#endif
-    }
-
-    void Start()
-    {
-        SetProjectPath();
-
-        var sr = new StreamReader(DclProjectPath + "/scene.json");
-        var fileContents = sr.ReadToEnd();
-        sr.Close();
-
-        sceneJson = JsonUtility.FromJson<SceneJson>(fileContents);
-        
+        Debug.Log("init scene manager");
         _entityGameObject = entityGameObject;
         _entityTemplate = entityTemplate;
-        ChangedHierarchy();
-
-        SelectedEntity = null;
-
         GizmoCamera = _gizmoCamera;
-
-        SceneSaveSystem.Load();
     }
 
 
@@ -123,7 +96,7 @@ public class SceneManager : Manager
     //public static float GizmoScale;
     //[SerializeField]
     //private float _gizmoScale;
-    
+
 
     // Entities
     public GameObject entityGameObject;
@@ -134,7 +107,7 @@ public class SceneManager : Manager
     public GameObject entityTemplate;
     private static GameObject _entityTemplate;
     public static GameObject EntityTemplate => _entityTemplate;
-    
+
     // Hierarchy View
     public static UnityEvent OnUpdateHierarchy = new UnityEvent();
     //public HierarchyView hierarchyView;
@@ -144,8 +117,6 @@ public class SceneManager : Manager
         //_hierarchyView.UpdateVisuals();
         OnUpdateHierarchy.Invoke();
     }
-
-    // Inspector
 
 
     // Selection
@@ -167,6 +138,7 @@ public class SceneManager : Manager
             OnUpdateSelection.Invoke();
         }
     }
+
 }
 
 public class EntityArray : List<Entity>

@@ -27,12 +27,12 @@ public class SceneSaveSystem : MonoBehaviour
     public static void Save()
     {
         var jsonString = SceneManager.Entities.ToJson();
-        Debug.Log(jsonString);
+        //Debug.Log(jsonString);
 
-        Directory.CreateDirectory(SceneManager.DclProjectPath + "/scene");
+        Directory.CreateDirectory(SceneManager.DclProjectPath + "/dcl-edit/saves");
         try
         {
-            var fileWriter = new StreamWriter(SceneManager.DclProjectPath + "/scene/scene.json", false);
+            var fileWriter = new StreamWriter(SceneManager.DclProjectPath + "/dcl-edit/saves/save.json", false);
 
             fileWriter.WriteLine(jsonString);
 
@@ -49,9 +49,19 @@ public class SceneSaveSystem : MonoBehaviour
 
     public static void Load()
     {
-        if(File.Exists(SceneManager.DclProjectPath + "/scene/scene.json"))
+        var saveFilePath = "";
+        if (File.Exists(SceneManager.DclProjectPath + "/dcl-edit/saves/save.json"))
         {
-            var reader = new StreamReader(SceneManager.DclProjectPath + "/scene/scene.json");
+            saveFilePath = SceneManager.DclProjectPath + "/dcl-edit/saves/save.json";
+        }
+        else if (File.Exists(SceneManager.DclProjectPath + "/scene/scene.json"))
+        {
+            saveFilePath = SceneManager.DclProjectPath + "/scene/scene.json";
+        }
+        
+        if(saveFilePath != "")
+        {
+            var reader = new StreamReader(saveFilePath);
             var entities = reader.ReadToEnd().FromJson();
             reader.Close();
 
