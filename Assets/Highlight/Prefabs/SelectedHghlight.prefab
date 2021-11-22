@@ -59,7 +59,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 98464c01b7379ef4c8b7d9b33f96b6cf, type: 2}
+  - {fileID: 2100000, guid: 1aad05c4f468b834881bb505f7673af9, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -221,7 +221,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 429f8f703a55f074d9df85df1c5dd062, type: 2}
+  - {fileID: 2100000, guid: 7ab27144542fb0e4e85a8197a5a46e85, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -254,7 +254,7 @@ GameObject:
   - component: {fileID: 3361784800173508091}
   - component: {fileID: 1986478556215084577}
   m_Layer: 0
-  m_Name: Hghlight
+  m_Name: SelectedHghlight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -293,4 +293,3 @@ MonoBehaviour:
   - {fileID: 3361784799491178015}
   - {fileID: 3361784799755714839}
   - {fileID: 3361784798679033863}
-  target: {fileID: 0}

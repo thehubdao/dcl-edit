@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: HighlightFillMaterial
-  m_Shader: {fileID: -6465566751694194690, guid: 62f6607367ea53144ab55ca3eb77e8b6, type: 3}
+  m_Name: HoverHighlightOutlineMaterial
+  m_Shader: {fileID: -6465566751694194690, guid: c00ea49d98a1b1544bccb047a4aa5ae7, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -32,8 +32,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - Vector1_2e01cdbee93a4f8f825f81c0f60e6e26: 0
-    - Vector1_9952e183f173427e849d583f0f218bf4: 0.5
+    - Vector1_2e01cdbee93a4f8f825f81c0f60e6e26: 0.5
     m_Colors:
-    - Color_8011b686d09b4b6fb198051ddb8c4407: {r: 0.9490197, g: 0.82745105, b: 0.16862746, a: 0}
+    - Color_8011b686d09b4b6fb198051ddb8c4407: {r: 3.7490196, g: 2.2588236, b: 0.078431375, a: 1}
   m_BuildTextureStacks: []

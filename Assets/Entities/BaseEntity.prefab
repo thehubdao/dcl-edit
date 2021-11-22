@@ -534,7 +534,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 067468ff0aa30fa4489a18627e91bb2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  highlightPrefab: {fileID: 1986478556215084577, guid: 0d2e3da47ad827b489ec68e92e491f0c, type: 3}
+  _hoverHighlightPrefab: {fileID: 1986478556215084577, guid: 0d2e3da47ad827b489ec68e92e491f0c, type: 3}
+  _selectedHighlightPrefab: {fileID: 1986478556215084577, guid: 29e9a523722e6574cbf47bac885f9bd2, type: 3}
 --- !u!1 &2554240752179117319
 GameObject:
   m_ObjectHideFlags: 0
