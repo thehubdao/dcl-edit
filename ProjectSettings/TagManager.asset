@@ -16,11 +16,11 @@ TagManager:
   - 
   - Gizmos
   - Entity
-  - Highlight Stencil
+  - Highlight Hover Stencil
   - Highlight Fill
-  - Highlight Outline
-  - 
-  - 
+  - Highlight Hover Outline
+  - Highlight Selected Stencil
+  - Highlight Selected Outline
   - 
   - 
   - 

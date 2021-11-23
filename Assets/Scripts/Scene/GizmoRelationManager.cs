@@ -12,22 +12,28 @@ public class GizmoRelationManager : Manager
         Local,
         Global
     }
-    
-    
-    [SerializeField]
-    private static RelationSettingEnum _relationSetting;
 
     public static RelationSettingEnum RelationSetting
     {
-        get => _relationSetting;
+        get => PersistentData.GizmoRelation switch
+        {
+            0 => RelationSettingEnum.Local,
+            1 => RelationSettingEnum.Global,
+            _ => throw new IndexOutOfRangeException()
+        };
         set
         {
-            _relationSetting = value;
+            PersistentData.GizmoRelation = value switch
+            {
+                RelationSettingEnum.Local => 0,
+                RelationSettingEnum.Global => 1,
+                _ => throw new IndexOutOfRangeException()
+            };
             onUpdate.Invoke();
         }
     }
-    
-    
+
+
     //public TextMeshProUGUI relationSettingText;
     public static UnityEvent onUpdate = new UnityEvent();
     public static void SwitchToNextRelationSetting()
@@ -35,14 +41,14 @@ public class GizmoRelationManager : Manager
         RelationSetting = RelationSetting.Next();
         onUpdate.Invoke();
     }
-    
+
 }
 
 public static class GizmoManagerHelper
 {
     public static Space ToSpace(this GizmoRelationManager.RelationSettingEnum settingEnum)
     {
-        return settingEnum switch 
+        return settingEnum switch
         {
             GizmoRelationManager.RelationSettingEnum.Local => Space.Self,
             GizmoRelationManager.RelationSettingEnum.Global => Space.World,

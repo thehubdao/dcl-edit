@@ -24,7 +24,7 @@ public class StartUpSystem : MonoBehaviour
         }
         
 #else
-        DclProjectPath = Path.GetFullPath(".");
+        SceneManager.DclProjectPath = Path.GetFullPath(".");
 #endif
     }
 

@@ -25,12 +25,90 @@ MonoBehaviour:
     overrideMaterial: {fileID: 0}
     overrideMaterialPassIndex: 0
     overrideDepthState: 1
-    depthCompareFunction: 4
+    depthCompareFunction: 8
     enableWrite: 0
     stencilSettings:
       overrideStencilState: 1
       stencilReference: 0
-      stencilCompareFunction: 6
+      stencilCompareFunction: 8
+      passOperation: 0
+      failOperation: 0
+      zFailOperation: 0
+    cameraSettings:
+      overrideCamera: 0
+      restoreCamera: 1
+      offset: {x: 0, y: 0, z: 0, w: 0}
+      cameraFieldOfView: 60
+--- !u!114 &-6794143812954092552
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b3d386ba5cd94485973aee1479b272e, type: 3}
+  m_Name: HighlightSelectedStencil
+  m_EditorClassIdentifier: 
+  m_Active: 1
+  settings:
+    passTag: HighlightSelectedStencil
+    Event: 450
+    filterSettings:
+      RenderQueueType: 0
+      LayerMask:
+        serializedVersion: 2
+        m_Bits: 16384
+      PassNames: []
+    overrideMaterial: {fileID: 0}
+    overrideMaterialPassIndex: 0
+    overrideDepthState: 1
+    depthCompareFunction: 0
+    enableWrite: 0
+    stencilSettings:
+      overrideStencilState: 1
+      stencilReference: 1
+      stencilCompareFunction: 1
+      passOperation: 2
+      failOperation: 2
+      zFailOperation: 2
+    cameraSettings:
+      overrideCamera: 0
+      restoreCamera: 1
+      offset: {x: 0, y: 0, z: 0, w: 0}
+      cameraFieldOfView: 60
+--- !u!114 &-5003767650484519886
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b3d386ba5cd94485973aee1479b272e, type: 3}
+  m_Name: HighlightSelectedOutline
+  m_EditorClassIdentifier: 
+  m_Active: 1
+  settings:
+    passTag: HighlightSelectedOutline
+    Event: 500
+    filterSettings:
+      RenderQueueType: 1
+      LayerMask:
+        serializedVersion: 2
+        m_Bits: 32768
+      PassNames: []
+    overrideMaterial: {fileID: 0}
+    overrideMaterialPassIndex: 0
+    overrideDepthState: 1
+    depthCompareFunction: 8
+    enableWrite: 0
+    stencilSettings:
+      overrideStencilState: 1
+      stencilReference: 1
+      stencilCompareFunction: 5
       passOperation: 0
       failOperation: 0
       zFailOperation: 0
@@ -52,10 +130,12 @@ MonoBehaviour:
   m_Name: ForwardRenderer
   m_EditorClassIdentifier: 
   m_RendererFeatures:
+  - {fileID: -6794143812954092552}
   - {fileID: 2366378476579156307}
   - {fileID: -8372685534086618630}
+  - {fileID: -5003767650484519886}
   - {fileID: 4640362134259761304}
-  m_RendererFeatureMap: 5371a1d4af10d720fa21b7fcdd3ece8b9800ba81c6e06540
+  m_RendererFeatureMap: f80bf4f3325ab6a15371a1d4af10d720fa21b7fcdd3ece8b327c473ed50b8fba9800ba81c6e06540
   postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
   xrSystemData: {fileID: 11400000, guid: 60e1133243b97e347b653163a8c01b64, type: 2}
   shaders:
@@ -94,11 +174,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6b3d386ba5cd94485973aee1479b272e, type: 3}
-  m_Name: HighlightStencil
+  m_Name: HighlightHoverStencil
   m_EditorClassIdentifier: 
   m_Active: 1
   settings:
-    passTag: HighlightStencil
+    passTag: HighlightHoverStencil
     Event: 450
     filterSettings:
       RenderQueueType: 0
@@ -113,7 +193,7 @@ MonoBehaviour:
     enableWrite: 0
     stencilSettings:
       overrideStencilState: 1
-      stencilReference: 1
+      stencilReference: 2
       stencilCompareFunction: 1
       passOperation: 2
       failOperation: 2
@@ -133,11 +213,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6b3d386ba5cd94485973aee1479b272e, type: 3}
-  m_Name: HighlightOutline
+  m_Name: HighlightHoverOutline
   m_EditorClassIdentifier: 
   m_Active: 1
   settings:
-    passTag: HighlightOutline
+    passTag: HighlightHoverOutline
     Event: 500
     filterSettings:
       RenderQueueType: 1
@@ -148,12 +228,12 @@ MonoBehaviour:
     overrideMaterial: {fileID: 0}
     overrideMaterialPassIndex: 0
     overrideDepthState: 1
-    depthCompareFunction: 0
-    enableWrite: 1
+    depthCompareFunction: 8
+    enableWrite: 0
     stencilSettings:
       overrideStencilState: 1
-      stencilReference: 0
-      stencilCompareFunction: 3
+      stencilReference: 2
+      stencilCompareFunction: 5
       passOperation: 0
       failOperation: 0
       zFailOperation: 0

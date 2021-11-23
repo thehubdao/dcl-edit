@@ -16,18 +16,18 @@ public class ManipulatorParent : VisualRepresentation
 
     void Start()
     {
-        GizmoManipulatorManager.onUpdate.AddListener(SetDirty);
+        GizmoToolManager.onUpdate.AddListener(SetDirty);
     }
 
     public override void UpdateVisuals()
     {
-        var currentManipulator = GizmoManipulatorManager.CurrentManipulator;
+        var currentManipulator = GizmoToolManager.CurrentTool;
 
         if (_translate)
-            _translate.SetActive(currentManipulator == GizmoManipulatorManager.Manipulator.Translate);
+            _translate.SetActive(currentManipulator == GizmoToolManager.Tool.Translate);
         if (_rotation)
-            _rotation.SetActive(currentManipulator == GizmoManipulatorManager.Manipulator.Rotate);
+            _rotation.SetActive(currentManipulator == GizmoToolManager.Tool.Rotate);
         if (_scale)
-            _scale.SetActive(currentManipulator == GizmoManipulatorManager.Manipulator.Scale);
+            _scale.SetActive(currentManipulator == GizmoToolManager.Tool.Scale);
     }
 }

@@ -10,14 +10,14 @@ public class RotateManipulators : VisualRepresentation
     void Start()
     {
         GizmoRelationManager.onUpdate.AddListener(SetDirty);
-        GizmoManipulatorManager.onUpdate.AddListener(SetDirty);
+        GizmoToolManager.onUpdate.AddListener(SetDirty);
     }
 
     public override void UpdateVisuals()
     {
         if (SceneManager.SelectedEntity != null)
         {
-            if (GizmoManipulatorManager.CurrentManipulator == GizmoManipulatorManager.Manipulator.Scale)
+            if (GizmoToolManager.CurrentTool == GizmoToolManager.Tool.Scale)
             {
                 SceneManager.SelectedEntity.gizmos.transform.localRotation = Quaternion.identity;
                 return;

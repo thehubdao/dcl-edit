@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3361784798679033856}
   - component: {fileID: 3361784798679033863}
   - component: {fileID: 3361784798679033862}
-  m_Layer: 13
+  m_Layer: 15
   m_Name: Highlight Outline
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -92,7 +92,7 @@ GameObject:
   - component: {fileID: 3361784799491178008}
   - component: {fileID: 3361784799491178015}
   - component: {fileID: 3361784799491178014}
-  m_Layer: 11
+  m_Layer: 14
   m_Name: Highlight Stencil
   m_TagString: Untagged
   m_Icon: {fileID: 0}

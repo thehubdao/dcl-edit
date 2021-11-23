@@ -4,17 +4,10 @@ using UnityEngine;
 
 public class GizmoSizeManager : Manager
 {
-    [SerializeField]
-    private static float _gizmoScale = 0.15f; 
-
     public static float GizmoScale
     {
-        get => _gizmoScale;
-        set
-        {
-            _gizmoScale = value;
-            
-        }
+        get => PersistentData.GizmoSize;
+        set => PersistentData.GizmoSize = value;
     }
     
 

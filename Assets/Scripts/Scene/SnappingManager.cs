@@ -4,13 +4,12 @@ using UnityEngine.Events;
 
 public class SnappingManager : Manager
 {
-    private static bool _isSnapping = true;
     public static bool IsSnapping
     {
-        get => _isSnapping;
+        get => PersistentData.IsSnapping>0;
         set
         {
-            _isSnapping = value; 
+            PersistentData.IsSnapping = value ? 1 : 0;
             onSnappingSettingsChange.Invoke();
         }
     }

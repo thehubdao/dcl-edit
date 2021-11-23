@@ -171,19 +171,19 @@ public class View3DInputSystem : MonoBehaviour
             // E -> Translate
             if (Input.GetKeyDown(KeyCode.E) && isMouseOverGameWindow)
             {
-                GizmoManipulatorManager.CurrentManipulator = GizmoManipulatorManager.Manipulator.Translate;
+                GizmoToolManager.CurrentTool = GizmoToolManager.Tool.Translate;
             }
 
             // R -> Rotate
             if (Input.GetKeyDown(KeyCode.R) && isMouseOverGameWindow)
             {
-                GizmoManipulatorManager.CurrentManipulator = GizmoManipulatorManager.Manipulator.Rotate;
+                GizmoToolManager.CurrentTool = GizmoToolManager.Tool.Rotate;
             }
 
             // T -> Scale
             if (Input.GetKeyDown(KeyCode.T) && isMouseOverGameWindow)
             {
-                GizmoManipulatorManager.CurrentManipulator = GizmoManipulatorManager.Manipulator.Scale;
+                GizmoToolManager.CurrentTool = GizmoToolManager.Tool.Scale;
             }
 
             var ctrlPlusS = (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) && Input.GetKeyDown(KeyCode.S);

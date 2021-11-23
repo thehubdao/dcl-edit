@@ -26,44 +26,44 @@ public class ManipulatorSwitchButton : MonoBehaviour
 
     void Start()
     {
-        GizmoManipulatorManager.onUpdate.AddListener(UpdateVisuals);
+        GizmoToolManager.onUpdate.AddListener(UpdateVisuals);
         UpdateVisuals();
     }
 
     void UpdateVisuals()
     {
         if(_text!=null)
-            _text.text = GizmoManipulatorManager.CurrentManipulator.ToString();
+            _text.text = GizmoToolManager.CurrentTool.ToString();
 
         if (_translateButton == null || _rotateButton == null || _scaleButton == null)
             return;
 
-        _translateButton.interactable = GizmoManipulatorManager.CurrentManipulator != GizmoManipulatorManager.Manipulator.Translate;
-        _rotateButton.interactable = GizmoManipulatorManager.CurrentManipulator != GizmoManipulatorManager.Manipulator.Rotate;
-        _scaleButton.interactable = GizmoManipulatorManager.CurrentManipulator != GizmoManipulatorManager.Manipulator.Scale;
+        _translateButton.interactable = GizmoToolManager.CurrentTool != GizmoToolManager.Tool.Translate;
+        _rotateButton.interactable = GizmoToolManager.CurrentTool != GizmoToolManager.Tool.Rotate;
+        _scaleButton.interactable = GizmoToolManager.CurrentTool != GizmoToolManager.Tool.Scale;
         
     }
 
     public void SetNextManipulator()
     {
-        GizmoManipulatorManager.SwitchToNextManipulator();
+        GizmoToolManager.SwitchToNextManipulator();
     }
 
-    public void SetManipulator(GizmoManipulatorManager.Manipulator manipulator) 
+    public void SetManipulator(GizmoToolManager.Tool tool) 
     {
-        GizmoManipulatorManager.CurrentManipulator = manipulator;
+        GizmoToolManager.CurrentTool = tool;
     }
 
     public void SetManipulatorTranslate()
     {
-        SetManipulator(GizmoManipulatorManager.Manipulator.Translate);
+        SetManipulator(GizmoToolManager.Tool.Translate);
     }
     public void SetManipulatorRotate()
     {
-        SetManipulator(GizmoManipulatorManager.Manipulator.Rotate);
+        SetManipulator(GizmoToolManager.Tool.Rotate);
     }
     public void SetManipulatorScale()
     {
-        SetManipulator(GizmoManipulatorManager.Manipulator.Scale);
+        SetManipulator(GizmoToolManager.Tool.Scale);
     }
 }
