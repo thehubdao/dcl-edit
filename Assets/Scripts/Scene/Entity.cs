@@ -13,12 +13,12 @@ public class Entity : MonoBehaviour
     {
         public Json(Entity e)
         {
-            name = e.customName;
+            name = e.CustomName;
             uniqueNumber = e.uniqueNumber;
             exposed = e.Exposed;
             components = e.Components.Select(c => new EntityComponent.Json(c)).ToList();
         }
-         
+
         public string name;
         public int uniqueNumber;
         public bool exposed;
@@ -27,10 +27,10 @@ public class Entity : MonoBehaviour
 
     // Names
 
-    [Obsolete("you probably don't want to use this",true)]
+    [Obsolete("you probably don't want to use this", true)]
     [NonSerialized]
     public new string name;
-    
+
     /// <summary>
     /// The name, that is used in the TypeScript constructor for the Entity.
     /// </summary>
@@ -38,7 +38,7 @@ public class Entity : MonoBehaviour
     /// Might not be Unique.
     public string ShownName
     {
-        get => customName!=""?customName:DefaultName;
+        get => CustomName != "" ? CustomName : DefaultName;
         //set => customName = value;
     }
 
@@ -48,8 +48,18 @@ public class Entity : MonoBehaviour
     /// Might contain spaces and special characters.
     /// Might not be Unique.
     /// Might be Empty.
+    public string CustomName
+    {
+        get => _customName;
+        set
+        {
+            _customName = value; 
+            ReevaluateExposeStatus();
+        }
+    }
+
     [SerializeField]
-    public string customName = "";
+    private string _customName = "";
 
     /// <summary>
     /// The name, that is used as default 
@@ -72,9 +82,9 @@ public class Entity : MonoBehaviour
     /// scene.mySuperCoolEntity.transform
     ///       `-- this part --´
     public string ExposedSymbol => ShownName.ToCamelCase();
-    
+
     public int uniqueNumber = -1;
-    
+
     public static int uniqueNumberCounter = 0;
 
     [SerializeField]
@@ -84,52 +94,70 @@ public class Entity : MonoBehaviour
         get => _exposed;
         set
         {
-            if (!TrySetExpose(value))
-            {
-                throw new IndexOutOfRangeException("Entity could not be exposed, because the symbol already exists");
-            }
+            _wantsToBeExposed = value;
+            ReevaluateExposeStatus();
         }
     }
 
-    public bool TrySetExpose(bool value)
+    private bool _wantsToBeExposed = false;
+    public bool WantsToBeExposed
     {
-        if (!value)
+        get => _wantsToBeExposed;
+        set
+        {
+            _wantsToBeExposed = value;
+            ReevaluateExposeStatus();
+        }
+    }
+
+
+    public bool ExposeFailed => _wantsToBeExposed ^ _exposed;
+
+    private void ReevaluateExposeStatus()
+    {
+        if (!_wantsToBeExposed)
         {
             _exposed = false;
-            return true;
-        } //else value == true
-
-        // build list of all already existing exposedSymbols
-        var allExposedSymbols = new List<string>();
-        foreach (var entity in SceneManager.Entities)
+        }
+        else // => _wantsToBeExposed == true
         {
-            if (entity.Exposed)
+            // build list of all already existing exposedSymbols
+            var allExposedSymbols = new List<string>();
+            foreach (var entity in SceneManager.Entities)
             {
-                allExposedSymbols.Add(entity.ExposedSymbol);
+                if (entity == this)
+                    continue;
+
+                if (entity.Exposed)
+                {
+                    allExposedSymbols.Add(entity.ExposedSymbol);
+                }
+            }
+
+            // Check if exposedSymbol already exists
+            if (allExposedSymbols.Contains(ExposedSymbol))
+            {
+                _exposed = false;
+            }
+            else // => exposedSymbol does not exist yet
+            {
+                _exposed = true;
             }
         }
-
-        // Check if exposedSymbol already exists
-        if (allExposedSymbols.Contains(ExposedSymbol))
-        {
-            return false;
-        } //else
-
-        _exposed = true;
-        return true;
+        SceneManager.OnUpdateSelection.Invoke();
     }
-    
+
 
 
     [Space]
     public GameObject gizmos;
     public GameObject componentsParent;
 
-    
+
 
     public EntityComponent[] Components => GetComponents<EntityComponent>();
 
-    
+
     /// <summary>
     /// will be true, when the game object is to be destroyed
     /// </summary>
@@ -141,7 +169,7 @@ public class Entity : MonoBehaviour
         if (uniqueNumber < 0)
             uniqueNumber = uniqueNumberCounter++;
     }
-    
+
 
     //private static int nameFillCount = 0;
     public string GetTypeScript(ref List<ScriptGenerator.ExposedVars> exposed)
@@ -199,7 +227,7 @@ public static class CamelCase
         {
             if (IsLetterOrDigit(c))
             {
-                retVal += lastWasSpace? ToUpper(c) :ToLower(c);
+                retVal += lastWasSpace ? ToUpper(c) : ToLower(c);
                 lastWasSpace = false;
             }
             else if (IsWhiteSpace(c))

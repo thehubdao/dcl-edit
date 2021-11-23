@@ -24,33 +24,26 @@ public class ExposeToScriptUI : MonoBehaviour
         if (SceneManager.SelectedEntity == null)
             return;
 
-        _toggleButton.isOn = SceneManager.SelectedEntity.Exposed;
-        _exposedText.color = Color.white; // ToDo use Color manager
-        _exposedText.text = SceneManager.SelectedEntity.Exposed ? SceneManager.SelectedEntity.ExposedSymbol : "";
+        if(_toggleButton.isOn != SceneManager.SelectedEntity.WantsToBeExposed)
+            _toggleButton.isOn = SceneManager.SelectedEntity.WantsToBeExposed;
+
+        if (SceneManager.SelectedEntity.ExposeFailed)
+        {
+            _exposedText.color = Color.red; // TODO: use Color manager
+            _exposedText.text = "Failed to expose";
+        }
+        else
+        {
+            _exposedText.color = Color.white; // TODO: use Color manager
+            _exposedText.text = SceneManager.SelectedEntity.Exposed ? SceneManager.SelectedEntity.ExposedSymbol : "";
+        }
     }
 
     public void SetExpose(bool _)
     {
         if (SceneManager.SelectedEntity == null)
             return;
-
-        var expose = _toggleButton.isOn;
         
-        if (!expose) 
-        {
-            SceneManager.SelectedEntity.Exposed = false;
-            UpdateVisuals();
-            return;
-        } 
-
-        if (!SceneManager.SelectedEntity.TrySetExpose(true))
-        {
-            UpdateVisuals();
-            _exposedText.color = Color.red;
-            _exposedText.text = "Failed to expose";
-            return;
-        }
-        
-        UpdateVisuals();
+        SceneManager.SelectedEntity.Exposed = _toggleButton.isOn;
     }
 }

@@ -78,7 +78,7 @@ public class SceneSaveSystem : MonoBehaviour
                 var newEntityGameObject = Instantiate(SceneManager.EntityTemplate, SceneManager.EntityParent);
                 var newEntity = newEntityGameObject.GetComponent<Entity>();
 
-                newEntity.customName = entity.name;
+                newEntity.CustomName = entity.name;
                 newEntity.uniqueNumber = entity.uniqueNumber;
                 newEntity.Exposed = entity.exposed;
 
