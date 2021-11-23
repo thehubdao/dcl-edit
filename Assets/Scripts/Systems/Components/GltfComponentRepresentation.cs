@@ -5,6 +5,10 @@ using UnityEngine;
 
 public class GltfComponentRepresentation : MonoBehaviour
 {
+    void Start()
+    {
+        UpdateVisuals(GetComponentInParent<GLTFShapeComponent>());
+    }
 
     public void UpdateVisuals(GLTFShapeComponent gltfShape)
     {

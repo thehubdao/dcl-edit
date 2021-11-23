@@ -29,9 +29,6 @@ public class View3DInputSystem : MonoBehaviour
     private StateMachine.State _holdingManipulatorState;
 
 
-    [NonSerialized]
-    public static UnityEvent onTransformChange = new UnityEvent();
-
     private Vector3? _mouseInWorldPoint;
 
     void Start()
@@ -246,7 +243,7 @@ public class View3DInputSystem : MonoBehaviour
                 _interfaceStateMachine.ActiveState = _freeMouseState;
             }
 
-            onTransformChange.Invoke();
+            SceneManager.OnSelectedEntityTransformChange.Invoke();
         };
 
         // This state is active, when the user moves around using the WASD controlls

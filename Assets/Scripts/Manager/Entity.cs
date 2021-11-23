@@ -169,46 +169,9 @@ public class Entity : MonoBehaviour
         if (uniqueNumber < 0)
             uniqueNumber = uniqueNumberCounter++;
     }
-
-
+    
     //private static int nameFillCount = 0;
-    public string GetTypeScript(ref List<ScriptGenerator.ExposedVars> exposed)
-    {
-        //if (Name == "")
-        //{
-        //    Name = "Entity " + nameFillCount++;
-        //}
-        //var usedName = (Name == "") ? "Entity" + uniqueNumber.ToString() : UniqueName;
-
-        var script = $"const {InternalSymbol} = new Entity(\"{ShownName}\")\n";
-        script += $"engine.addEntity({InternalSymbol})\n";
-
-        var exposedVar = new ScriptGenerator.ExposedVars
-        {
-            exposedAs = "entity",
-            symbol = InternalSymbol
-        };
-        exposed.Add(exposedVar);
-
-        foreach (var component in Components)
-        {
-            var componentTs = component.GetTypeScript();
-            script += componentTs.setup;
-            script += $"{InternalSymbol}.addComponentOrReplace({componentTs.symbol})\n";
-
-            var exposedComponentVar = new ScriptGenerator.ExposedVars
-            {
-                exposedAs = component.ComponentName,
-                symbol = componentTs.symbol
-            };
-            exposed.Add(exposedComponentVar);
-
-        }
-
-
-        return script;
-    }
-
+    
     public string ToJson()
     {
         return JsonUtility.ToJson(new Json(this));

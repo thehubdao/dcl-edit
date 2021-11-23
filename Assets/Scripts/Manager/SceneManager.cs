@@ -138,6 +138,7 @@ public class SceneManager : Manager, ISerializedFieldToStatic
             OnUpdateSelection.Invoke();
         }
     }
+    public static UnityEvent OnSelectedEntityTransformChange = new UnityEvent();
 
 }
 

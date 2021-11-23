@@ -5,8 +5,8 @@ using UnityEngine;
 
 public abstract class ComponentUI : MonoBehaviour
 {
-    [NonSerialized]
-    public EntityComponent entityComponent;
+    //[NonSerialized]
+    //public EntityComponent entityComponent;
     
 
     public abstract void UpdateVisuals();

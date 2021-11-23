@@ -23,6 +23,35 @@ public class ScriptGenerator : MonoBehaviour
         public string symbol;
     }
 
+    public static string GetTypeScriptForEntity(Entity entity, ref List<ScriptGenerator.ExposedVars> exposed)
+    {
+        var script = $"const {entity.InternalSymbol} = new Entity(\"{entity.ShownName}\")\n";
+        script += $"engine.addEntity({entity.InternalSymbol})\n";
+
+        var exposedVar = new ScriptGenerator.ExposedVars
+        {
+            exposedAs = "entity",
+            symbol = entity.InternalSymbol
+        };
+        exposed.Add(exposedVar);
+
+        foreach (var component in entity.Components)
+        {
+            var componentTs = component.GetTypeScript();
+            script += componentTs.setup;
+            script += $"{entity.InternalSymbol}.addComponentOrReplace({componentTs.symbol})\n";
+
+            var exposedComponentVar = new ScriptGenerator.ExposedVars
+            {
+                exposedAs = component.ComponentName,
+                symbol = componentTs.symbol
+            };
+            exposed.Add(exposedComponentVar);
+        }
+        
+        return script;
+    }
+
     public static void MakeScript()
     {
         Debug.Log("Making Script...");
@@ -36,7 +65,7 @@ public class ScriptGenerator : MonoBehaviour
         foreach (var entity in SceneManager.Entities)
         {
             var exposedVars = new List<ExposedVars>();
-            fileWriter.WriteLine(entity.GetTypeScript(ref exposedVars));
+            fileWriter.WriteLine(GetTypeScriptForEntity(entity,ref exposedVars));
 
             if(entity.Exposed)
             {

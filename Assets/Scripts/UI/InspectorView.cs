@@ -96,11 +96,11 @@ public class InspectorView : MonoBehaviour
                 var newComponentObject = Instantiate(component.UiItemTemplate, Vector3.zero, Quaternion.identity, _components.transform);
                 //var newComponentRectTransform = newComponentObject.GetComponent<RectTransform>();
                 //componentUiItemTemplate.GetComponent<RectTransform>().position += Vector3.down;
-                if (newComponentObject.TryGetComponent<ComponentUI>(out var newComponentUi))
-                {
-                    newComponentUi.entityComponent = component;
-                    newComponentUi.UpdateVisuals();
-                }
+                //if (newComponentObject.TryGetComponent<ComponentUI>(out var newComponentUi))
+                //{
+                //    newComponentUi.entityComponent = component;
+                //    newComponentUi.UpdateVisuals();
+                //}
 
                 if(component.GetType() != typeof(TransformComponent)) // Can't remove Transform component
                     newComponentObject.GetComponentInChildren<RemoveComponent>().component = component;
