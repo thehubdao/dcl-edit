@@ -169,19 +169,19 @@ public class View3DInputSystem : MonoBehaviour
 
             // Switch Manipulator by shortcut
             // E -> Translate
-            if (Input.GetKeyDown(KeyCode.E) && isMouseOverGameWindow)
+            if (Input.GetKeyDown(KeyCode.E) && isMouseOverGameWindow && !CanvasManager.IsAnyInputFieldFocused)
             {
                 GizmoToolManager.CurrentTool = GizmoToolManager.Tool.Translate;
             }
 
             // R -> Rotate
-            if (Input.GetKeyDown(KeyCode.R) && isMouseOverGameWindow)
+            if (Input.GetKeyDown(KeyCode.R) && isMouseOverGameWindow && !CanvasManager.IsAnyInputFieldFocused)
             {
                 GizmoToolManager.CurrentTool = GizmoToolManager.Tool.Rotate;
             }
 
             // T -> Scale
-            if (Input.GetKeyDown(KeyCode.T) && isMouseOverGameWindow)
+            if (Input.GetKeyDown(KeyCode.T) && isMouseOverGameWindow && !CanvasManager.IsAnyInputFieldFocused)
             {
                 GizmoToolManager.CurrentTool = GizmoToolManager.Tool.Scale;
             }
@@ -195,7 +195,7 @@ public class View3DInputSystem : MonoBehaviour
 
             
             // Delete the Selected Entity
-            if (Input.GetKeyDown(KeyCode.Delete) && isMouseOverGameWindow)
+            if (Input.GetKeyDown(KeyCode.Delete) && isMouseOverGameWindow && !CanvasManager.IsAnyInputFieldFocused)
             {
                 if (SceneManager.SelectedEntity != null)
                 {
@@ -322,11 +322,11 @@ public class View3DInputSystem : MonoBehaviour
 
 static class Util
 {
-    public static Vector3 randomVector3()
-    {
-
-        return new Vector3(Random.Range(-1.0f, 1.0f), Random.Range(-1.0f, 1.0f), Random.Range(-1.0f, 1.0f));
-    }
+    //public static Vector3 randomVector3()
+    //{
+    //
+    //    return new Vector3(Random.Range(-1.0f, 1.0f), Random.Range(-1.0f, 1.0f), Random.Range(-1.0f, 1.0f));
+    //}
 
     public static void DrawGizmo(this Plane p, Ray? startRay = null, int lines = 21, float spacing = 1)
     {

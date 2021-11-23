@@ -3486,6 +3486,7 @@ GameObject:
   - component: {fileID: 399934155}
   - component: {fileID: 399934154}
   - component: {fileID: 399934153}
+  - component: {fileID: 399934157}
   - component: {fileID: 399934156}
   m_Layer: 0
   m_Name: Manager
@@ -3588,6 +3589,18 @@ MonoBehaviour:
   _boxShapeComponentUI: {fileID: 2633832700437191501, guid: b4c23951f9888ce4d9aa4215e235b710, type: 3}
   _sphereShapeComponentUI: {fileID: 2633832700437191501, guid: f05b191f69024b04bbb00857d9025512, type: 3}
   _gltfShapeComponentUI: {fileID: 2633832700437191501, guid: 322dce32831d98540a8372c2265088ab, type: 3}
+--- !u!114 &399934157
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 399934149}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd85d4647e4a00f4898e87f86318d6ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &400922396
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7342,6 +7355,7 @@ GameObject:
   - component: {fileID: 898326563}
   - component: {fileID: 898326562}
   - component: {fileID: 898326561}
+  - component: {fileID: 898326565}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -7434,6 +7448,18 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &898326565
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 898326560}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a0df23880e03814dbfac57394c6556e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &898802167
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9770,7 +9796,7 @@ Camera:
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 15415
+    m_Bits: 64567
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
