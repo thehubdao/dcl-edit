@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class AssetManager : Manager
 {
@@ -13,6 +14,7 @@ public class AssetManager : Manager
         }
 
         public string name;
+        public string TypeName { get; protected set; } = "Asset";
 
         public override string ToString()
         {
@@ -24,11 +26,14 @@ public class AssetManager : Manager
     {
         public GLTFAsset(string name, string gltfPath) : base(name)
         {
+            TypeName = "GLTF";
             this.gltfPath = gltfPath;
         }
 
         public string gltfPath;
     }
+
+    public static UnityEvent OnAssetChange = new UnityEvent();
 
     public static List<Asset> allAssets = new List<Asset>();
 

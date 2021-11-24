@@ -14,4 +14,36 @@ public static class StaticUtils
         int j = Array.IndexOf<T>(arr, src) + 1;
         return (arr.Length==j) ? arr[0] : arr[j];            
     }
+
+    public static string ToHumanName(this string s)
+    {
+        var retVal = "";
+
+        for (var i = 0; i < s.Length; i++)
+        {
+            if (i == 0)
+            {
+                retVal += s[i];
+                continue;
+            }
+
+            var currentChar = s[i];
+            var lastChar = s[i-1];
+
+            if (Char.IsUpper(currentChar) && Char.IsLower(lastChar))
+            {
+                retVal += " " + currentChar;
+            }
+            else if(currentChar == '_')
+            {
+                retVal += " ";
+            }
+            else
+            {
+                retVal += currentChar;
+            }
+        }
+
+        return retVal;
+    }
 }

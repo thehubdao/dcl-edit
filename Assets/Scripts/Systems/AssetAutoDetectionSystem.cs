@@ -3,6 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Mime;
+using System.Threading;
+using Siccity.GLTFUtility;
 using UnityEngine;
 
 public class AssetAutoDetectionSystem : MonoBehaviour
@@ -10,7 +13,7 @@ public class AssetAutoDetectionSystem : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        DetectGltfAssets(); 
+        DetectGltfAssets();
     }
 
     public static void DetectGltfAssets()
@@ -31,10 +34,15 @@ public class AssetAutoDetectionSystem : MonoBehaviour
 
             if(!AssetManager.AllGltfAssets.Select(asset => asset.gltfPath).Contains(relativePath))
             {
-                Debug.Log("Added new asset "+fileName.Replace("_"," "));
+                Debug.Log("Added new asset " + fileName.ToHumanName());
                 
-                AssetManager.allAssets.Add(new AssetManager.GLTFAsset(fileName.Replace("_"," "), relativePath));
+
+                AssetManager.allAssets.Add(new AssetManager.GLTFAsset(fileName.ToHumanName(), relativePath));
             }
         }
+
+        AssetManager.OnAssetChange.Invoke();
     }
+    
+
 }
