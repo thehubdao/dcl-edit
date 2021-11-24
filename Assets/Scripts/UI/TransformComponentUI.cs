@@ -27,7 +27,7 @@ public class TransformComponentUI : ComponentUI
     
     public override void UpdateVisuals()
     {
-        var transformComponent = SceneManager.SelectedEntity.GetComponent<TransformComponent>();
+        var transformComponent = SceneManager.SelectedEntity?.GetComponent<TransformComponent>();
         if (transformComponent == null)
             return;
         

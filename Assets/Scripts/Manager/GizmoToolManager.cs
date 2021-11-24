@@ -6,7 +6,7 @@ using UnityEngine.Events;
 
 public class GizmoToolManager : Manager
 {
-    private static Tool _currentTool = Tool.Translate;
+    //private static Tool _currentTool = Tool.Translate;
 
     [SerializeField]
     //private TextMeshProUGUI _currentManipulatorText;

@@ -13,6 +13,11 @@ public class AssetManager : Manager
         }
 
         public string name;
+
+        public override string ToString()
+        {
+            return this.name + " " + base.ToString();
+        }
     }
 
     public class GLTFAsset : Asset
@@ -25,7 +30,7 @@ public class AssetManager : Manager
         public string gltfPath;
     }
 
-    public static List<Asset> allAssets;
+    public static List<Asset> allAssets = new List<Asset>();
 
     public static IEnumerable<GLTFAsset> AllGltfAssets => 
         allAssets

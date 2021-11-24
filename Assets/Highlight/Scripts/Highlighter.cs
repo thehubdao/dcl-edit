@@ -76,8 +76,6 @@ public class Highlighter : Interface3DHover
 
     private void SetHighlight([CanBeNull] Highlight highlight)
     {
-        Debug.Log(highlight);
-        
         if (activeHighlights.Length>0)
         {
             foreach (var h in activeHighlights)

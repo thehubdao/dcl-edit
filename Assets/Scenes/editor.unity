@@ -3487,6 +3487,7 @@ GameObject:
   - component: {fileID: 399934154}
   - component: {fileID: 399934153}
   - component: {fileID: 399934157}
+  - component: {fileID: 399934158}
   - component: {fileID: 399934156}
   m_Layer: 0
   m_Name: Manager
@@ -3599,6 +3600,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fd85d4647e4a00f4898e87f86318d6ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &399934158
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 399934149}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e30d9076c6985bd4f969268cb3814096, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &400922396
@@ -9548,6 +9561,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1171459965}
   - component: {fileID: 1171459966}
+  - component: {fileID: 1171459967}
   m_Layer: 0
   m_Name: Startup System
   m_TagString: Untagged
@@ -9579,6 +9593,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e5ddb7c91d0183b4791faeb1935cc7b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1171459967
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1171459964}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d01cb134727ebe498c7f1cb07e89624, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1180464239
