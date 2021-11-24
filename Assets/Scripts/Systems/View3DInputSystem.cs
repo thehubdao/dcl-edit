@@ -188,6 +188,7 @@ public class View3DInputSystem : MonoBehaviour
             {
                 ScriptGenerator.MakeScript();
                 SceneSaveSystem.Save();
+                AssetSaverSystem.Save();
             }
 
             

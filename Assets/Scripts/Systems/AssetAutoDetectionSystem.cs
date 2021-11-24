@@ -30,7 +30,11 @@ public class AssetAutoDetectionSystem : MonoBehaviour
             var fileName = pathParts[pathParts.Length - 1].Replace(".glb","");
 
             if(!AssetManager.AllGltfAssets.Select(asset => asset.gltfPath).Contains(relativePath))
+            {
+                Debug.Log("Added new asset "+fileName.Replace("_"," "));
+                
                 AssetManager.allAssets.Add(new AssetManager.GLTFAsset(fileName.Replace("_"," "), relativePath));
+            }
         }
     }
 }

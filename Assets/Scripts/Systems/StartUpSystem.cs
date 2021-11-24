@@ -47,6 +47,8 @@ public class StartUpSystem : MonoBehaviour
                 staticSerializer.SetupStatics();
             }
         }
+
+        AssetSaverSystem.Load();
         
         SceneManager.ChangedHierarchy();
 

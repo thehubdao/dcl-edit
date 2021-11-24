@@ -8,5 +8,6 @@ public class SaveButton : MonoBehaviour
     {
         SceneSaveSystem.Save(); 
         ScriptGenerator.MakeScript();
+        AssetSaverSystem.Save();
     }
 }
