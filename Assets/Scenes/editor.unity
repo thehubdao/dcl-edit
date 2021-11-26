@@ -1811,7 +1811,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3803484954343711873, guid: 122f75d0a167fbe409f90c4dfbca6d9c, type: 3}
       propertyPath: m_Name
-      value: AssetWindow
+      value: AssetBrowserWindow
       objectReference: {fileID: 0}
     - target: {fileID: 3803484955076653103, guid: 122f75d0a167fbe409f90c4dfbca6d9c, type: 3}
       propertyPath: m_SizeDelta.x
@@ -15560,7 +15560,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 8443903582673140652, guid: 3c23a0bcc4d4d3c4dabf00112e429b5d, type: 3}
       propertyPath: m_Name
-      value: Title Variant
+      value: AssetBrowserTitle
       objectReference: {fileID: 0}
     - target: {fileID: 8443903582673140653, guid: 3c23a0bcc4d4d3c4dabf00112e429b5d, type: 3}
       propertyPath: m_Pivot.x
@@ -15592,7 +15592,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8443903582673140653, guid: 3c23a0bcc4d4d3c4dabf00112e429b5d, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 300
+      value: 350
       objectReference: {fileID: 0}
     - target: {fileID: 8443903582673140653, guid: 3c23a0bcc4d4d3c4dabf00112e429b5d, type: 3}
       propertyPath: m_SizeDelta.y
@@ -15645,6 +15645,10 @@ PrefabInstance:
     - target: {fileID: 8443903582673140653, guid: 3c23a0bcc4d4d3c4dabf00112e429b5d, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8443903582673140654, guid: 3c23a0bcc4d4d3c4dabf00112e429b5d, type: 3}
+      propertyPath: m_text
+      value: Asset Browser
       objectReference: {fileID: 0}
     - target: {fileID: 8443903582673140654, guid: 3c23a0bcc4d4d3c4dabf00112e429b5d, type: 3}
       propertyPath: m_margin.x
