@@ -37,7 +37,7 @@ public class AssetAutoDetectionSystem : MonoBehaviour
                 Debug.Log("Added new asset " + fileName.ToHumanName());
                 
 
-                AssetManager.allAssets.Add(new AssetManager.GLTFAsset(fileName.ToHumanName(), relativePath));
+                AssetManager.allAssets.Add(new AssetManager.GLTFAsset(fileName.ToHumanName(), System.Guid.NewGuid(), relativePath));
             }
         }
 

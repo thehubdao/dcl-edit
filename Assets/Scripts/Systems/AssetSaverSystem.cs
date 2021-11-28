@@ -33,10 +33,12 @@ public class AssetSaverSystem : MonoBehaviour
             public GltfAssetWrapper(AssetManager.GLTFAsset asset)
             {
                 name = asset.name;
+                id = asset.id.ToString();    
                 gltfPath = asset.gltfPath;
             }
 
             public string name;
+            public string id;
             public string gltfPath;
         }
 
@@ -82,7 +84,7 @@ public class AssetSaverSystem : MonoBehaviour
 
             foreach (var gltfAsset in assetsJsonWrapper.gltfAssets)
             {
-                AssetManager.allAssets.Add(new AssetManager.GLTFAsset(gltfAsset.name,gltfAsset.gltfPath));
+                AssetManager.allAssets.Add(new AssetManager.GLTFAsset(gltfAsset.name, System.Guid.Parse(gltfAsset.id) ,gltfAsset.gltfPath));
             }
         }
     }

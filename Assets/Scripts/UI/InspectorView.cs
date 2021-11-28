@@ -104,6 +104,12 @@ public class InspectorView : MonoBehaviour
 
                 if(component.GetType() != typeof(TransformComponent)) // Can't remove Transform component
                     newComponentObject.GetComponentInChildren<RemoveComponent>().component = component;
+
+                if(component.GetType() == typeof(GLTFShapeComponent))
+                {
+                    var assetItem = newComponentObject.GetComponentInChildren<AssetItemUI>();
+                    assetItem.asset = ((GLTFShapeComponent)component).asset;
+                }
             }
 
             Canvas.ForceUpdateCanvases();

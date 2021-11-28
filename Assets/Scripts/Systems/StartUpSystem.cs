@@ -55,5 +55,12 @@ public class StartUpSystem : MonoBehaviour
         SceneManager.SelectedEntity = null;
         
         SceneSaveSystem.Load();
+
+        //AssetBrowserManager.OpenAssetBrowser(
+        //    (asset) => { Debug.Log(asset); },
+        //    () => { Debug.LogError("Error while selecting asset"); }
+        //    );
+        AssetBrowserManager.OpenAssetBrowser();
+
     }
 }

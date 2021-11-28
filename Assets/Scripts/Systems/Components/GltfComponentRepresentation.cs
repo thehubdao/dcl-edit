@@ -14,7 +14,7 @@ public class GltfComponentRepresentation : MonoBehaviour
     {
         //Debug.Log(SceneManager.DclProjectPath + "/" + gltfShape.glbPath);
         
-        Importer.LoadFromFileAsync(SceneManager.DclProjectPath + "/" + gltfShape.glbPath, new ImportSettings() { }, (
+        Importer.LoadFromFileAsync(SceneManager.DclProjectPath + "/" + gltfShape.asset.gltfPath, new ImportSettings() { }, (
             (o, clips) =>
             {
                 o.transform.SetParent(transform);

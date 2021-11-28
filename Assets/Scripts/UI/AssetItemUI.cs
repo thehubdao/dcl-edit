@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 
@@ -18,6 +19,9 @@ public class AssetItemUI : MonoBehaviour
 
     [SerializeField]
     private RawImage _thumbnail;
+
+    [SerializeField]
+    private Button _button;
 
 
     [NonSerialized]
@@ -37,6 +41,21 @@ public class AssetItemUI : MonoBehaviour
         _nameText.text = asset.name;
         _typeText.text = asset.TypeName;
 
+        _button.onClick = new Button.ButtonClickedEvent();
+        if (AssetBrowserManager.OnSelected != null)
+        {
+            _button.onClick.AddListener(
+                        () =>
+                        {
+                            AssetBrowserManager.OnSelected.Invoke(asset);
+                            AssetBrowserManager.CloseAssetBrowser();
+                        });
+        }
+        else
+        {
+            _button.interactable = false;
+        }
+
         _thumbnail.texture = AssetAssetsList.DefaultThumbnail;
 
         if (asset.GetType() == typeof(AssetManager.GLTFAsset))
@@ -53,7 +72,7 @@ public class AssetItemUI : MonoBehaviour
             //        .SelectMany(s => s)
             //) + "/thumbnail.png";
 
-            Debug.Log(thumbnailPath);
+            //Debug.Log(thumbnailPath);
 
 
             if (thumbnailPath != "" && File.Exists(thumbnailPath))

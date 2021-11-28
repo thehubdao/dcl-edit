@@ -14,13 +14,29 @@ public class EntityItem : MonoBehaviour
 
     public string defaultName = "";
 
+    public void GltfSpawn()
+    {
+        AssetBrowserManager.OpenAssetBrowser((asset)=> {
+            if (asset.GetType() != typeof(AssetManager.GLTFAsset))
+            {
+                throw new System.Exception("Wrong Asset Type");
+            }
+            Spawn((AssetManager.GLTFAsset)asset);
+        });
+    }
+
     public void Spawn()
+    {
+        Spawn(null);
+    }
+
+    public void Spawn(AssetManager.GLTFAsset gltfAsset)
     {
         var newEntityObject = Instantiate(entityPrefab, Vector3.zero, Quaternion.identity, SceneManager.EntityParent);
 
-        if (glbFileName != "")
+        if (gltfAsset != null)
         {
-            newEntityObject.GetComponent<GLTFShapeComponent>().glbPath = glbFileName;
+            newEntityObject.GetComponent<GLTFShapeComponent>().asset = gltfAsset;
         }
 
         SceneManager.ChangedHierarchy();

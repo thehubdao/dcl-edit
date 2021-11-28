@@ -13,15 +13,21 @@ public class OpenAssetBrowserSystem : MonoBehaviour,ISerializedFieldToStatic
     public void SetupStatics()
     {
         _assetBrowserWindowInstance = _assetBrowserWindow;
+        AssetBrowserManager.OnOpenAssetBrowser.AddListener(OpenAssetBrowser);
+        AssetBrowserManager.OnCloseAssetBrowser.AddListener(CloseAssetBrowser);
     }
 
     public void Start()
     {
-        AssetBrowserManager.OnOpenAssetBrowser.AddListener(OpenAssetBrowser);
     }
 
     public static void OpenAssetBrowser()
     {
         _assetBrowserWindowInstance.SetActive(true);
+    }
+
+    public static void CloseAssetBrowser()
+    {
+        _assetBrowserWindowInstance.SetActive(false);
     }
 }

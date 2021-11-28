@@ -8,25 +8,27 @@ public class GLTFShapeComponent : EntityComponent
     {
         public SpecificGltfShapeJson(GLTFShapeComponent sc)
         {
-            glbPath = sc.glbPath;
+            assetID = sc.asset.id.ToString();
         }
 
-        public string glbPath;
+        public string assetID;
     }
 
     public override string SpecificJson => JsonUtility.ToJson(new SpecificGltfShapeJson(this));
     public override void ApplySpecificJson(string jsonString)
     {
         var json = JsonUtility.FromJson<SpecificGltfShapeJson>(jsonString);
-        glbPath = json.glbPath;
+        //glbPath = json.glbPath;
+        asset = AssetManager.GetAssetById<AssetManager.GLTFAsset>(System.Guid.Parse(json.assetID));
     }
 
-    public string glbPath;
+    //public string glbPath;
+    public AssetManager.GLTFAsset asset;
 
     public override string ComponentName => "GLTFShape";
     public override Ts GetTypeScript()
     {
-        return new Ts( InternalComponentSymbol, $"const {InternalComponentSymbol} = new GLTFShape(\"{glbPath}\")\n" +
+        return new Ts( InternalComponentSymbol, $"const {InternalComponentSymbol} = new GLTFShape(\"{asset.gltfPath}\")\n" +
                                                      $"{InternalComponentSymbol}.withCollisions = true\n" +
                                                      $"{InternalComponentSymbol}.isPointerBlocker = true\n" +
                                                      $"{InternalComponentSymbol}.visible = true\n");

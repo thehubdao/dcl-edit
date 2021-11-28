@@ -97,6 +97,7 @@ MonoBehaviour:
   _nameText: {fileID: 7803630709201327522}
   _typeText: {fileID: 7803630708169035137}
   _thumbnail: {fileID: 222693068258609108}
+  _button: {fileID: 222693067428390296}
 --- !u!1 &222693067732056668
 GameObject:
   m_ObjectHideFlags: 0
