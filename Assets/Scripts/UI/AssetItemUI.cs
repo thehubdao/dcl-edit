@@ -23,6 +23,11 @@ public class AssetItemUI : MonoBehaviour
     [SerializeField]
     private Button _button;
 
+    [SerializeField]
+    public bool isInInspector = false;
+
+    
+
 
     [NonSerialized]
     public AssetManager.Asset asset;
@@ -35,32 +40,58 @@ public class AssetItemUI : MonoBehaviour
 
     public void UpdateVisuals()
     {
-        if (asset == null)
+        if (!gameObject.activeSelf)
             return;
 
-        _nameText.text = asset.name;
-        _typeText.text = asset.TypeName;
-
-        _button.onClick = new Button.ButtonClickedEvent();
-        if (AssetBrowserManager.OnSelected != null)
+        if (asset == null)
         {
-            _button.onClick.AddListener(
-                        () =>
-                        {
-                            AssetBrowserManager.OnSelected.Invoke(asset);
-                            AssetBrowserManager.CloseAssetBrowser();
-                        });
+            _nameText.text = "No Asset";
+            _typeText.text = "";
         }
         else
         {
-            _button.interactable = false;
+            _nameText.text = asset.name;
+            _typeText.text = asset.TypeName;
+        }
+
+
+        _button.onClick = new Button.ButtonClickedEvent();
+        _button.interactable = true;
+        if (isInInspector)
+        {
+            _button.onClick.AddListener(() =>
+            {
+                AssetBrowserManager.OpenAssetBrowser((asset) =>
+                {
+                    Debug.Log("New asset selected: "+asset);
+                    
+                    SceneManager.SelectedEntity.GetComponent<GLTFShapeComponent>().asset =
+                        (AssetManager.GLTFAsset)asset;
+                    SceneManager.OnUpdateSelection.Invoke();
+                });
+            });
+        }
+        else
+        {
+            if (AssetBrowserManager.OnSelected != null)
+            {
+                _button.onClick.AddListener(() =>
+                    {
+                        AssetBrowserManager.OnSelected.Invoke(asset);
+                        AssetBrowserManager.CloseAssetBrowser();
+                    });
+            }
+            else
+            {
+                _button.interactable = false;
+            }
         }
 
         _thumbnail.texture = AssetAssetsList.DefaultThumbnail;
 
-        if (asset.GetType() == typeof(AssetManager.GLTFAsset))
+        if (asset != null && asset.GetType() == typeof(AssetManager.GLTFAsset))
         {
-            var gltfAsset = asset as AssetManager.GLTFAsset;
+            var gltfAsset = (AssetManager.GLTFAsset)asset;
             var pathParts = gltfAsset.gltfPath.Split('/');
 
             var gltfFolderPath = SceneManager.DclProjectPath + "/" + Path.GetDirectoryName(gltfAsset.gltfPath);

@@ -67,7 +67,7 @@ public class Highlighter : Interface3DHover
         _isHovering = true;
         UpdateHovering();
     }
-    
+
     public override void EndHover()
     {
         _isHovering = false;
@@ -76,18 +76,21 @@ public class Highlighter : Interface3DHover
 
     private void SetHighlight([CanBeNull] Highlight highlight)
     {
-        if (activeHighlights.Length>0)
+        if (activeHighlights.Length > 0)
         {
             foreach (var h in activeHighlights)
             {
-                h.DestroyHighlight();
+                if (h != null)
+                    h.DestroyHighlight();
             }
         }
+
+        activeHighlights = Array.Empty<Highlight>();
 
         if (highlight != null)
         {
             var targets = GetComponentsInChildren<Hilightable>();
-        
+
             activeHighlights = new Highlight[targets.Length];
             for (int i = 0; i < targets.Length; i++)
             {
@@ -96,9 +99,9 @@ public class Highlighter : Interface3DHover
         }
         else
         {
-            activeHighlights = Array.Empty<Highlight>();
+
         }
 
     }
-    
+
 }

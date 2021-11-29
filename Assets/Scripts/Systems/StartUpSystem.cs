@@ -60,7 +60,7 @@ public class StartUpSystem : MonoBehaviour
         //    (asset) => { Debug.Log(asset); },
         //    () => { Debug.LogError("Error while selecting asset"); }
         //    );
-        AssetBrowserManager.OpenAssetBrowser();
+        //AssetBrowserManager.OpenAssetBrowser();
 
     }
 }

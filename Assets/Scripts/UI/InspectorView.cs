@@ -76,8 +76,7 @@ public class InspectorView : MonoBehaviour
             {
                 somethingSelectedObject.SetActive(true);
             }
-
-
+            
 
             // Entity Header
             _entityHeaderUi.entity = entity;
@@ -109,6 +108,7 @@ public class InspectorView : MonoBehaviour
                 {
                     var assetItem = newComponentObject.GetComponentInChildren<AssetItemUI>();
                     assetItem.asset = ((GLTFShapeComponent)component).asset;
+                    assetItem.isInInspector = true;
                 }
             }
 

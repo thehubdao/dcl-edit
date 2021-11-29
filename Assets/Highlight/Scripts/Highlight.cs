@@ -27,6 +27,7 @@ public class Highlight : MonoBehaviour
 
 	public void DestroyHighlight()
 	{
-		Destroy(gameObject);
+		if(gameObject!=null && gameObject)
+		    Destroy(gameObject);
 	}
 }
