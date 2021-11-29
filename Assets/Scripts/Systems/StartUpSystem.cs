@@ -52,7 +52,7 @@ public class StartUpSystem : MonoBehaviour
         
         SceneManager.ChangedHierarchy();
 
-        SceneManager.SelectedEntity = null;
+        SceneManager.SetSelection(null);
         
         SceneSaveSystem.Load();
 

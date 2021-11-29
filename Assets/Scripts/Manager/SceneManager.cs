@@ -121,23 +121,47 @@ public class SceneManager : Manager, ISerializedFieldToStatic
 
     // Selection
     public static UnityEvent OnUpdateSelection = new UnityEvent();
-    private static Entity _selectedEntity;
-    public static Entity SelectedEntity
+    private static Entity _primarySelectedEntity;
+
+    public static Entity PrimarySelectedEntity
     {
-        get => _selectedEntity;
-        set
+        get => _primarySelectedEntity;
+        private set
         {
-            _selectedEntity = value;
+            _primarySelectedEntity = value;
 
             foreach (var entity in Entities)
             {
-                var isSelected = entity == _selectedEntity;
+                var isSelected = entity == _primarySelectedEntity;
                 entity.gizmos.SetActive(isSelected);
             }
 
             OnUpdateSelection.Invoke();
         }
     }
+
+    private static List<Entity> _secondarySelectedEntity = new List<Entity>();
+    public static IEnumerable<Entity> SecondarySelectedEntity => _secondarySelectedEntity.AsEnumerable();
+
+    public static void SetSelection(Entity entity)
+    {
+        SceneManager._secondarySelectedEntity.Clear();
+        SceneManager.PrimarySelectedEntity = entity;
+    }
+
+    public static void AddSelection(Entity entity)
+    {
+        SceneManager._secondarySelectedEntity.Add(SceneManager.PrimarySelectedEntity);
+
+        if(SceneManager._secondarySelectedEntity.Contains(entity))
+            SceneManager._secondarySelectedEntity.Remove(entity);
+
+        SceneManager.PrimarySelectedEntity = entity;
+    }
+
+    public static IEnumerable<Entity> AllSelectedEntities => _secondarySelectedEntity.Append(PrimarySelectedEntity);
+    
+
     public static UnityEvent OnSelectedEntityTransformChange = new UnityEvent();
 
 }

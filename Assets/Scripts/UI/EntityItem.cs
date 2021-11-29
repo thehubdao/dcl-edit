@@ -42,6 +42,6 @@ public class EntityItem : MonoBehaviour
         SceneManager.ChangedHierarchy();
         var newEntity = newEntityObject.GetComponent<Entity>();
         newEntity.CustomName = defaultName;
-        SceneManager.SelectedEntity = newEntity;
+        SceneManager.SetSelection(newEntity);
     }
 }

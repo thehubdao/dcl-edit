@@ -6,6 +6,15 @@ using System.Threading.Tasks;
 
 public static class StaticUtils
 {
+
+    public static void Forall<T>(this IEnumerable<T> Ts,Action<T> action)
+    {
+        foreach (var t in Ts)
+        {
+            action.Invoke(t);
+        }
+    }
+
     public static T Next<T>(this T src) where T : Enum
     {
         if (!typeof(T).IsEnum) throw new ArgumentException($"Argument {typeof(T).FullName} is not an Enum");

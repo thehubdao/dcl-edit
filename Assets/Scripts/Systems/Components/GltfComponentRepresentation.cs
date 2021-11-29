@@ -10,7 +10,9 @@ public class GltfComponentRepresentation : MonoBehaviour
         UpdateVisuals(GetComponentInParent<GLTFShapeComponent>());
         SceneManager.OnUpdateSelection.AddListener(() =>
         {
-            UpdateVisuals(GetComponentInParent<GLTFShapeComponent>());
+            var gltfShapeComponent = GetComponentInParent<GLTFShapeComponent>();
+            if (gltfShapeComponent != null)
+                UpdateVisuals(gltfShapeComponent);
         });
     }
 

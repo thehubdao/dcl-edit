@@ -15,21 +15,21 @@ public class RotateManipulators : VisualRepresentation
 
     public override void UpdateVisuals()
     {
-        if (SceneManager.SelectedEntity != null)
+        if (SceneManager.PrimarySelectedEntity != null)
         {
             if (GizmoToolManager.CurrentTool == GizmoToolManager.Tool.Scale)
             {
-                SceneManager.SelectedEntity.gizmos.transform.localRotation = Quaternion.identity;
+                SceneManager.PrimarySelectedEntity.gizmos.transform.localRotation = Quaternion.identity;
                 return;
             }
 
             switch (GizmoRelationManager.RelationSetting)
             {
                 case GizmoRelationManager.RelationSettingEnum.Local:
-                    SceneManager.SelectedEntity.gizmos.transform.localRotation = Quaternion.identity;
+                    SceneManager.PrimarySelectedEntity.gizmos.transform.localRotation = Quaternion.identity;
                     break;
                 case GizmoRelationManager.RelationSettingEnum.Global:
-                    SceneManager.SelectedEntity.gizmos.transform.rotation = Quaternion.identity;
+                    SceneManager.PrimarySelectedEntity.gizmos.transform.rotation = Quaternion.identity;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

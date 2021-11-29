@@ -65,7 +65,7 @@ public class AssetItemUI : MonoBehaviour
                 {
                     Debug.Log("New asset selected: "+asset);
                     
-                    SceneManager.SelectedEntity.GetComponent<GLTFShapeComponent>().asset =
+                    SceneManager.PrimarySelectedEntity.GetComponent<GLTFShapeComponent>().asset =
                         (AssetManager.GLTFAsset)asset;
                     SceneManager.OnUpdateSelection.Invoke();
                 });

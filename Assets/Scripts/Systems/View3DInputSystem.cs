@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Security.Cryptography;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
@@ -116,6 +118,7 @@ public class View3DInputSystem : MonoBehaviour
             }
 
             var pressingAlt = Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt);
+            var pressingControl = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
 
             // When Left mouse button is clicked, select or deselect Entity
             if (Input.GetMouseButtonDown((int)MouseButton.LeftMouse) && !pressingAlt && isMouseIn3DView)
@@ -128,7 +131,22 @@ public class View3DInputSystem : MonoBehaviour
                 }
                 else// if (hoveredEntity != null)
                 {
-                    SceneManager.SelectedEntity = hoveredEntity;
+                    if (!pressingControl)
+                    {
+                        //SceneManager.SecondarySelectedEntity.Clear();
+                        //SceneManager.PrimarySelectedEntity = hoveredEntity;
+                        SceneManager.SetSelection(hoveredEntity);
+                    }
+                    else
+                    {
+                        //SceneManager.SecondarySelectedEntity.Add(SceneManager.PrimarySelectedEntity);
+                        //
+                        //if(SceneManager.SecondarySelectedEntity.Contains(hoveredEntity))
+                        //    SceneManager.SecondarySelectedEntity.Remove(hoveredEntity);
+                        //
+                        //SceneManager.PrimarySelectedEntity = hoveredEntity;
+                        SceneManager.AddSelection(hoveredEntity);
+                    }
                 }
             }
 
@@ -195,11 +213,18 @@ public class View3DInputSystem : MonoBehaviour
             // Delete the Selected Entity
             if (Input.GetKeyDown(KeyCode.Delete) && isMouseOverGameWindow && !CanvasManager.IsAnyInputFieldFocused)
             {
-                if (SceneManager.SelectedEntity != null)
+                //if (SceneManager.SelectedEntity)
+                //{
+                //    Destroy(SceneManager.SelectedEntity.gameObject);
+                //    SceneManager.SelectedEntity = null;
+                //}
+
+                foreach (var entity in SceneManager.AllSelectedEntities)
                 {
-                    Destroy(SceneManager.SelectedEntity.gameObject);
-                    SceneManager.SelectedEntity = null;
+                    Destroy(entity.gameObject);
                 }
+                
+                SceneManager.SetSelection(null);
             }
 
 

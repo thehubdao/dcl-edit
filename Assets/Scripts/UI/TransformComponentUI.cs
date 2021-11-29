@@ -27,7 +27,7 @@ public class TransformComponentUI : ComponentUI
     
     public override void UpdateVisuals()
     {
-        var transformComponent = SceneManager.SelectedEntity?.GetComponent<TransformComponent>();
+        var transformComponent = SceneManager.PrimarySelectedEntity?.GetComponent<TransformComponent>();
         if (transformComponent == null)
             return;
         
@@ -56,7 +56,7 @@ public class TransformComponentUI : ComponentUI
 
     public void SetValueTranslate()
     {
-        var transformComponent = SceneManager.SelectedEntity.GetComponent<TransformComponent>();
+        var transformComponent = SceneManager.PrimarySelectedEntity.GetComponent<TransformComponent>();
         try
         {
             transformComponent.transform.localPosition = new Vector3( 
@@ -71,7 +71,7 @@ public class TransformComponentUI : ComponentUI
     }
     public void SetValueRotate()
     {
-        var transformComponent = SceneManager.SelectedEntity.GetComponent<TransformComponent>();
+        var transformComponent = SceneManager.PrimarySelectedEntity.GetComponent<TransformComponent>();
         try
         {
             transformComponent.transform.localEulerAngles = new Vector3( 
@@ -86,7 +86,7 @@ public class TransformComponentUI : ComponentUI
     }
     public void SetValueScale()
     {
-        var transformComponent = SceneManager.SelectedEntity.GetComponent<TransformComponent>();
+        var transformComponent = SceneManager.PrimarySelectedEntity.GetComponent<TransformComponent>();
         try
         {
             transformComponent.entity.componentsParent.transform.localScale = new Vector3( 

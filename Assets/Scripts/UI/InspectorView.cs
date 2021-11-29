@@ -51,7 +51,7 @@ public class InspectorView : MonoBehaviour
     public void UpdateVisuals()
     {
         //EditorApplication.isPaused = true;
-        var entity = SceneManager.SelectedEntity;
+        var entity = SceneManager.PrimarySelectedEntity;
 
         if (entity == null)
         {

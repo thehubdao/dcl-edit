@@ -52,7 +52,7 @@ public class Highlighter : Interface3DHover
         {
             SetHighlight(_hoverHighlightPrefab);
         }
-        else if (OwnEntity == SceneManager.SelectedEntity)
+        else if (SceneManager.AllSelectedEntities.Contains(OwnEntity))
         {
             SetHighlight(_selectedHighlightPrefab);
         }

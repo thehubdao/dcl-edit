@@ -31,9 +31,12 @@ public abstract class EntityComponent: MonoBehaviour
     protected GameObject componentRepresentation;
 
     public void OnDestroy()
-    {
-        Destroy(componentRepresentation);
-        SceneManager.OnUpdateSelection.Invoke();
+    { 
+        if(componentRepresentation!=null)
+        {
+            Destroy(componentRepresentation);
+            SceneManager.OnUpdateSelection.Invoke();
+        }
     }
 
     public virtual void Start()

@@ -22,7 +22,7 @@ public class ComponentListItem : MonoBehaviour
 
     public void AddComponent()
     {
-        SceneManager.SelectedEntity.gameObject.AddComponent(componentType);
+        SceneManager.PrimarySelectedEntity.gameObject.AddComponent(componentType);
         GetComponentInParent<CloseUnstableWindow>().gameObject.SetActive(false);
         SceneManager.OnUpdateSelection.Invoke();
     }

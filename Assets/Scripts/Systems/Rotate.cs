@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Rotate : EntityManipulator
@@ -15,10 +16,10 @@ public class Rotate : EntityManipulator
 
     public RotateDirection direction;
 
-    private Entity _entity;
+    //private Entity _entity;
     void Start()
     {
-        _entity = GetComponentInParent<Entity>();
+        //_entity = GetComponentInParent<Entity>();
     }
 
     private float _snapLeftOvers;
@@ -43,8 +44,8 @@ public class Rotate : EntityManipulator
             newChange -= SnappingManager.rotateSnapDistance;
             _snapLeftOvers += SnappingManager.rotateSnapDistance;
         }
-        
-        
+
+
         return newChange;
     }
 
@@ -56,28 +57,46 @@ public class Rotate : EntityManipulator
 
         var snappedAngle = 0f;
 
+        var entities = SceneManager.AllSelectedEntities.Select(entity => entity.transform);
+        var primaryEntity = SceneManager.PrimarySelectedEntity;
+
+        Vector3 axis;
         switch (direction)
         {
             case RotateDirection.XAxis:
                 snappedAngle = ApplySnapping(cameraSpaceChange.x * sensitivity);
-                _entity.transform.Rotate(Vector3.right,snappedAngle,space);
+
+                axis = GizmoRelationManager.RelationSetting == GizmoRelationManager.RelationSettingEnum.Global ?
+                    Vector3.right :
+                    primaryEntity.transform.TransformDirection(Vector3.right);
+
+                entities.Forall(entity => entity.transform.RotateAround(primaryEntity.transform.position, axis, snappedAngle));
                 break;
             case RotateDirection.YAxis:
                 snappedAngle = ApplySnapping(cameraSpaceChange.x * sensitivity);
-                _entity.transform.Rotate(Vector3.up,snappedAngle,space);
+
+                axis = GizmoRelationManager.RelationSetting == GizmoRelationManager.RelationSettingEnum.Global ?
+                    Vector3.up :
+                    primaryEntity.transform.TransformDirection(Vector3.up);
+
+                entities.Forall(entity => entity.transform.RotateAround(primaryEntity.transform.position, axis, snappedAngle));
                 break;
             case RotateDirection.ZAxis:
                 snappedAngle = ApplySnapping(cameraSpaceChange.x * sensitivity);
-                _entity.transform.Rotate(Vector3.forward,snappedAngle,space);
+                axis = GizmoRelationManager.RelationSetting == GizmoRelationManager.RelationSettingEnum.Global ?
+                    Vector3.forward :
+                    primaryEntity.transform.TransformDirection(Vector3.forward);
+
+                entities.Forall(entity => entity.transform.RotateAround(primaryEntity.transform.position, axis, snappedAngle));
                 break;
             case RotateDirection.All:
-                snappedAngle = ApplySnapping(cameraSpaceChange.magnitude*sensitivity);
-                _entity.transform.Rotate(Vector3.Cross(globalChange,gizmoCamera.transform.forward),snappedAngle,Space.World);
+                snappedAngle = ApplySnapping(cameraSpaceChange.magnitude * sensitivity);
+                entities.Forall(entity => entity.transform.RotateAround(primaryEntity.transform.position, Vector3.Cross(globalChange, gizmoCamera.transform.forward), snappedAngle));
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
         }
-        
+
     }
 
     public override Plane GetPlane(Camera camera)
@@ -85,7 +104,7 @@ public class Rotate : EntityManipulator
         _snapLeftOvers = 0;
 
         return new Plane(camera.transform.forward, camera.transform.position + camera.transform.forward);
-        
+
         //switch (direction)
         //{
         //    case RotateDirection.XAxis:
@@ -107,16 +126,18 @@ public class Rotate : EntityManipulator
 
     public override Ray GetOneRay()
     {
+        var entity = SceneManager.PrimarySelectedEntity;
+
         switch (direction)
         {
             case RotateDirection.XAxis:
-                return new Ray(_entity.transform.position, _entity.transform.right);
+                return new Ray(entity.transform.position, entity.transform.right);
             case RotateDirection.YAxis:
-                return new Ray(_entity.transform.position, _entity.transform.up);
+                return new Ray(entity.transform.position, entity.transform.up);
             case RotateDirection.ZAxis:
-                return new Ray(_entity.transform.position, _entity.transform.forward);
+                return new Ray(entity.transform.position, entity.transform.forward);
             case RotateDirection.All:
-                return new Ray(_entity.transform.position, Vector3.up);
+                return new Ray(entity.transform.position, Vector3.up);
             default:
                 throw new ArgumentOutOfRangeException();
         }
