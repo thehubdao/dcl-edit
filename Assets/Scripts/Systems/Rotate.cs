@@ -26,7 +26,11 @@ public class Rotate : EntityManipulator
 
     private float ApplySnapping(float change)
     {
-        if (!SnappingManager.IsSnapping)
+        var snapping =
+            SnappingManager.IsSnapping ^ 
+            (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl));
+
+        if (!snapping)
         {
             return change;
         }

@@ -29,7 +29,11 @@ public class Translate : EntityManipulator
 
     private Vector3 ApplySnapping(Vector3 change)
     {
-        if (!SnappingManager.IsSnapping)
+        var snapping =
+            SnappingManager.IsSnapping ^ 
+            (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl));
+
+        if (!snapping)
         {
             return change;
         }
