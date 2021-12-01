@@ -48,6 +48,8 @@ public class StartUpSystem : MonoBehaviour
             }
         }
 
+        SaveFileUpgrader.CheckSaveFiles();
+
         AssetSaverSystem.Load();
         
         SceneManager.ChangedHierarchy();
