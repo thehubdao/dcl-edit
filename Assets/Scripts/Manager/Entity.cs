@@ -13,16 +13,30 @@ public class Entity : MonoBehaviour
     {
         public Json(Entity e)
         {
+            hierarchyOrder = e.HierarchyOrder;
             name = e.CustomName;
             uniqueNumber = e.uniqueNumber;
             exposed = e.Exposed;
             components = e.Components.Select(c => new EntityComponent.Json(c)).ToList();
         }
 
+        public float hierarchyOrder;
         public string name;
         public int uniqueNumber;
         public bool exposed;
         public List<EntityComponent.Json> components;
+    }
+    
+    [SerializeField]
+    private float _hierarchyOrder = 0f;
+    public float HierarchyOrder
+    {
+        get => _hierarchyOrder;
+        set
+        {
+            _hierarchyOrder = value;
+            SceneManager.OnUpdateHierarchy.Invoke();
+        }
     }
 
     // Names
@@ -150,12 +164,11 @@ public class Entity : MonoBehaviour
 
 
     [Space]
-    public GameObject gizmos;
     public GameObject componentsParent;
-
-
+    
 
     public EntityComponent[] Components => GetComponents<EntityComponent>();
+
 
 
     /// <summary>

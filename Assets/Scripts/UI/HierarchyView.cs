@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class HierarchyView : MonoBehaviour
@@ -34,25 +36,34 @@ public class HierarchyView : MonoBehaviour
 
     public void UpdateVisuals()
     {
+        RemoveAllHierarchyItems();
+        
+        foreach (var entity in AllEntitiesSortedByHierarchyOrder()) 
+        {
+            var newItem = Instantiate(itemTemplate, transform).GetComponentInChildren<HierarchyViewItem>();
+            newItem.entity = entity;
+            
+            newItem.UpdateVisuals();
+        }
+        
+    }
+
+    private void RemoveAllHierarchyItems()
+    {
         foreach (Transform child in transform)
         {
             Destroy(child.gameObject);
         }
-        
-        foreach (var entity in SceneManager.Entities) 
-        {
-            var newItem = Instantiate(itemTemplate, transform).GetComponentInChildren<HierarchyViewItem>();
-            newItem.entity = entity;
+    }
 
-            //var itemRectTransform = newItem.GetComponent<RectTransform>();
-            //itemRectTransform.Translate(0, i++ * -20f, 0);// = new Vector3();
+    private List<Entity> AllEntitiesSortedByHierarchyOrder()
+    {
+        var entities = SceneManager.Entities.ToList();
+        // sort entities by hierarchy order
+        entities.Sort(((left, right) => 
+            Math.Abs(left.HierarchyOrder - right.HierarchyOrder) < 0.0000001?0:
+            left.HierarchyOrder < right.HierarchyOrder?-1:1));
 
-            newItem.UpdateVisuals();
-        }
-
-        //var rectTransform = GetComponent<RectTransform>();
-        //var newSize = rectTransform.sizeDelta;
-        //newSize.y = i * 20;
-        //rectTransform.sizeDelta = newSize;
+        return entities;
     }
 }
