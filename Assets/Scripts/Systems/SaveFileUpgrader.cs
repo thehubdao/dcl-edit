@@ -46,8 +46,11 @@ public class SaveFileUpgrader : MonoBehaviour
     private static int UpgradeFrom0()
     {
         Debug.Log("Upgrading Save file from version 0 to 1");
-        
-        var saveVersionPath = SceneManager.DclProjectPath + "/dcl-edit/saves/version.json";
+
+        var savesDirectoryPath = SceneManager.DclProjectPath + "/dcl-edit/saves/";
+        var saveVersionPath = savesDirectoryPath + "version.json";
+
+        Directory.CreateDirectory(savesDirectoryPath);
         
         File.WriteAllText(saveVersionPath,JsonUtility.ToJson(new JsonWrapper()));
 
