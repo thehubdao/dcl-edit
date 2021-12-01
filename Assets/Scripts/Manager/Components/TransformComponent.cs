@@ -14,7 +14,7 @@ public class TransformComponent : EntityComponent
         {
             pos = tc.transform.position;
             rot = tc.transform.rotation;
-            scale = tc.entity.componentsParent.transform.localScale;
+            scale = tc.transform.localScale;
         }
 
         public Vector3 pos;
@@ -29,7 +29,7 @@ public class TransformComponent : EntityComponent
         transform.position = specifics.pos;
         transform.rotation = specifics.rot;
         // this is called, before start is called. Therefore we need to use GetComponent here
-        GetComponent<Entity>().componentsParent.transform.localScale = specifics.scale;
+        transform.localScale = specifics.scale;
     }
 
 
@@ -52,7 +52,7 @@ public class TransformComponent : EntityComponent
 
         var pos = transform.position;
         var rot = transform.rotation;
-        var scale = entity.componentsParent.transform.localScale;
+        var scale = transform.localScale;
 
         return new Ts(InternalComponentSymbol,
             $"const {InternalComponentSymbol} = new Transform({{\n" +

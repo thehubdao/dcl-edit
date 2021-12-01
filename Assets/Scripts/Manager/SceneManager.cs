@@ -130,11 +130,11 @@ public class SceneManager : Manager, ISerializedFieldToStatic
         {
             _primarySelectedEntity = value;
 
-            foreach (var entity in Entities)
-            {
-                var isSelected = entity == _primarySelectedEntity;
-                entity.gizmos.SetActive(isSelected);
-            }
+            //foreach (var entity in Entities)
+            //{
+            //    var isSelected = entity == _primarySelectedEntity;
+            //    entity.gizmos.SetActive(isSelected);
+            //}
 
             OnUpdateSelection.Invoke();
         }
