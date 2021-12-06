@@ -178,8 +178,13 @@ public class Entity : MonoBehaviour
     }
 }
 
-public static class CamelCase
+public static class EntityUtils
 {
+
+    public static string TryGetShownName(this Entity e)
+    {
+        return e == null ? "nothing" : e.ShownName;
+    }
 
     public static string ToCamelCase(this string s)
     {

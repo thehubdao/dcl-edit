@@ -145,18 +145,59 @@ public class SceneManager : Manager, ISerializedFieldToStatic
 
     public static void SetSelection(Entity entity)
     {
+        var currentSecondarySelection = SecondarySelectedEntity.ToList();
+        var currentPrimarySelection = PrimarySelectedEntity;
+
+        UndoManager.RecordUndoItem(
+            "Selected " + entity.TryGetShownName(),
+            () =>
+            {
+                _secondarySelectedEntity = currentSecondarySelection;
+                PrimarySelectedEntity = currentPrimarySelection;
+            },
+            () =>
+            {
+                _secondarySelectedEntity.Clear();
+                PrimarySelectedEntity = entity;
+            });
+
+
         SceneManager._secondarySelectedEntity.Clear();
         SceneManager.PrimarySelectedEntity = entity;
     }
 
     public static void AddSelection(Entity entity)
     {
+        if (entity == null)
+            return;
+
+        var beforeSecondarySelection = SecondarySelectedEntity.ToList();
+        var beforePrimarySelection = PrimarySelectedEntity;
+
+
         SceneManager._secondarySelectedEntity.Add(SceneManager.PrimarySelectedEntity);
 
         if(SceneManager._secondarySelectedEntity.Contains(entity))
             SceneManager._secondarySelectedEntity.Remove(entity);
 
         SceneManager.PrimarySelectedEntity = entity;
+        
+        var afterSecondarySelection = SecondarySelectedEntity.ToList();
+        var afterPrimarySelection = PrimarySelectedEntity;
+
+        UndoManager.RecordUndoItem(
+            "Selected " + entity.ShownName,
+            () =>
+            {
+                _secondarySelectedEntity = beforeSecondarySelection;
+                PrimarySelectedEntity = beforePrimarySelection;
+            },
+            () =>
+            {
+                _secondarySelectedEntity = afterSecondarySelection;
+                PrimarySelectedEntity = afterPrimarySelection;
+            });
+        
     }
 
     public static IEnumerable<Entity> AllSelectedEntities => _secondarySelectedEntity.Append(PrimarySelectedEntity);
