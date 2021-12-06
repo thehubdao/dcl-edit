@@ -47,7 +47,7 @@ public class TransformComponentUI : ComponentUI
         _rotateZInput.text = eulerRot.z.ToString("0.#",numberFormat);
 
         // Scale
-        var scale = transformComponent.entity.componentsParent.transform.localScale;
+        var scale = transformComponent.entity.transform.localScale;
         _scaleXInput.text = scale.x.ToString("0.###",numberFormat);
         _scaleYInput.text = scale.y.ToString("0.###",numberFormat);
         _scaleZInput.text = scale.z.ToString("0.###",numberFormat);
