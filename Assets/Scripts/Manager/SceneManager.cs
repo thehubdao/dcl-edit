@@ -200,7 +200,7 @@ public class SceneManager : Manager, ISerializedFieldToStatic
         
     }
 
-    public static IEnumerable<Entity> AllSelectedEntities => _secondarySelectedEntity.Append(PrimarySelectedEntity);
+    public static IEnumerable<Entity> AllSelectedEntities => _secondarySelectedEntity.Append(PrimarySelectedEntity).Where(entity => entity!=null);
     
 
     public static UnityEvent OnSelectedEntityTransformChange = new UnityEvent();

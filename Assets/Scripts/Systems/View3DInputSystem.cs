@@ -337,10 +337,10 @@ public class View3DInputSystem : MonoBehaviour
                 },
                 () =>
                 {
-                    Debug.Log("Redo");
+                    //Debug.Log("Redo");
                     foreach (var pair in _endingTransformations)
                     {
-                        Debug.Log(pair.Key.ShownName+" Undo");
+                        //Debug.Log(pair.Key.ShownName+" Undo");
                         
                         pair.Value.ApplyTo(pair.Key.transform);
                         SceneManager.OnUpdateSelection.Invoke();
