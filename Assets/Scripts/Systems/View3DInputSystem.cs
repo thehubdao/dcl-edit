@@ -278,83 +278,15 @@ public class View3DInputSystem : MonoBehaviour
         private Plane _activeManipulatorPlane;
         private Vector3? _lastMousePosition = null;
 
-        private struct TransformWrap
-        {
-            private Vector3 pos, scale;
-            private Quaternion rot;
-
-            public TransformWrap(Transform t)
-            {
-                pos = t.position;
-                scale = t.localScale;
-                rot = t.rotation;
-            }
-
-            public void ApplyTo(Transform t)
-            {
-                t.position = pos;
-                t.localScale = scale;
-                t.rotation = rot;
-            }
-        }
-
-        private List<Entity> _entities;
-
-        private Dictionary<Entity, TransformWrap> _beginningTransformations = new Dictionary<Entity, TransformWrap>();
-        private Dictionary<Entity, TransformWrap> _endingTransformations = new Dictionary<Entity, TransformWrap>();
-
-        private void SaveBeginningState()
-        {
-            foreach (var entity in _entities)
-            {
-                _beginningTransformations.Add(entity, new TransformWrap(entity.transform));
-            }
-        }
-
-        private void SaveEndingState()
-        {
-            foreach (var entity in _entities)
-            {
-                _endingTransformations.Add(entity, new TransformWrap(entity.transform));
-            }
-        }
-
-        private void AddUndoItem()
-        {
-            var name = _beginningTransformations.Count > 1
-                ? "Entities"
-                : _beginningTransformations.First().Key.TryGetShownName();
-
-            UndoManager.RecordUndoItem(
-                name,
-                () =>
-                {
-                    foreach (var pair in _beginningTransformations)
-                    {
-                        pair.Value.ApplyTo(pair.Key.transform);
-                        SceneManager.OnUpdateSelection.Invoke();
-                    }
-                },
-                () =>
-                {
-                    //Debug.Log("Redo");
-                    foreach (var pair in _endingTransformations)
-                    {
-                        //Debug.Log(pair.Key.ShownName+" Undo");
-                        
-                        pair.Value.ApplyTo(pair.Key.transform);
-                        SceneManager.OnUpdateSelection.Invoke();
-                    }
-                });
-        }
+        private TransformUndo transformUndo;
 
         public HoldingManipulatorState(EntityManipulator activeManipulator, Camera gizmoCamera, Action returnToFreeMouseState) : base("Holding manipulator state")
         {
             OnStateEnter = state =>
             {
-                _entities = SceneManager.AllSelectedEntities.ToList();
+                transformUndo = new TransformUndo(SceneManager.AllSelectedEntities);
 
-                SaveBeginningState();
+                transformUndo.SaveBeginningState();
 
                 _activeManipulatorPlane = activeManipulator.GetPlane(gizmoCamera);
 
@@ -363,9 +295,9 @@ public class View3DInputSystem : MonoBehaviour
             };
             OnStateExit = state =>
             {
-                SaveEndingState();
+                transformUndo.SaveEndingState();
 
-                AddUndoItem();
+                transformUndo.AddUndoItem();
 
                 GizmoRelationManager.onUpdate.Invoke();
             };
