@@ -141,6 +141,7 @@ public class View3DInputSystem : MonoBehaviour
 
             var pressingAlt = Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt);
             var pressingControl = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
+            var pressingShift = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
 
             // When Left mouse button is clicked, select or deselect Entity
             if (Input.GetMouseButtonDown((int)MouseButton.LeftMouse) && !pressingAlt && isMouseIn3DView)
@@ -245,13 +246,22 @@ public class View3DInputSystem : MonoBehaviour
             }
 
             if (pressingControl && Input.GetKeyDown(KeyCode.Z) && isMouseOverGameWindow &&
-                !CanvasManager.IsAnyInputFieldFocused)
+                !CanvasManager.IsAnyInputFieldFocused
+#if UNITY_EDITOR
+                && pressingShift
+#endif
+                )
             {
                 UndoManager.Undo();
             }
 
             if (pressingControl && Input.GetKeyDown(KeyCode.Y) && isMouseOverGameWindow &&
-                !CanvasManager.IsAnyInputFieldFocused)
+                !CanvasManager.IsAnyInputFieldFocused
+
+#if UNITY_EDITOR
+                && pressingShift
+#endif
+                )
             {
                 UndoManager.Redo();
             }

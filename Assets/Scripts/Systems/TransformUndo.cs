@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -22,12 +23,24 @@ public class TransformUndo
             t.localScale = scale;
             t.rotation = rot;
         }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is TransformWrap other)
+            { 
+                return pos == other.pos && 
+                       scale == other.scale && 
+                       rot == other.rot;
+            }
+
+            return false;
+        }
     }
 
     private IEnumerable<Entity> _entities;
 
-    private Dictionary<Entity, TransformWrap> _beginningTransformations = new Dictionary<Entity, TransformWrap>();
-    private Dictionary<Entity, TransformWrap> _endingTransformations = new Dictionary<Entity, TransformWrap>();
+    private Dictionary<Entity, TransformWrap> _beginningTransformations = null;
+    private Dictionary<Entity, TransformWrap> _endingTransformations = null;
 
     public TransformUndo(IEnumerable<Entity> entities)
     {
@@ -36,6 +49,7 @@ public class TransformUndo
 
     public void SaveBeginningState()
     {
+        _beginningTransformations = new Dictionary<Entity, TransformWrap>();
         foreach (var entity in _entities)
         {
             _beginningTransformations.Add(entity, new TransformWrap(entity.transform));
@@ -44,15 +58,32 @@ public class TransformUndo
 
     public void SaveEndingState()
     {
+        _endingTransformations = new Dictionary<Entity, TransformWrap>();
         foreach (var entity in _entities)
         {
             _endingTransformations.Add(entity, new TransformWrap(entity.transform));
         }
     }
 
+    public bool HasChanged()
+    {
+        if (_beginningTransformations == null || _endingTransformations == null)
+            throw new Exception("Beginning and end state has to be saved");
+
+        return _beginningTransformations.Any(pair => !pair.Value.Equals(_endingTransformations[pair.Key]));
+    }
+
     public void AddUndoItem()
     {
-        var name = _beginningTransformations.Count > 1
+        if(!HasChanged())
+        {
+            Debug.Log("not Changed");
+            
+            return;
+        }
+
+        var name = "Transforming ";
+        name += _beginningTransformations.Count > 1
             ? "Entities"
             : _beginningTransformations.First().Key.TryGetShownName();
 

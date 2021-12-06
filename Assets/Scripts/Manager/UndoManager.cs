@@ -1,8 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 public class UndoManager : MonoBehaviour
 {
@@ -68,6 +72,30 @@ public class UndoManager : MonoBehaviour
             RedoAction = redo;
         }
     }
+
+
+    internal IEnumerable<string> GetAllUndoItemNames => undoItems.Select(item => item.Name);
+    internal int GetCurrentIndex => currentIndex;
+
 }
 
+#if UNITY_EDITOR
 
+[CustomEditor(typeof(UndoManager))]
+public class LookAtPointEditor : Editor 
+{
+    public override void OnInspectorGUI()
+    {
+        if (target is UndoManager undoManager)
+        {
+            var i = 0;
+            foreach (var itemName in undoManager.GetAllUndoItemNames)
+            {
+                GUILayout.Label((i == undoManager.GetCurrentIndex ? "* " : "  ")+itemName);
+                i++;
+            }
+        }
+    }
+}
+
+#endif
