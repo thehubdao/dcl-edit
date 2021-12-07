@@ -1,17 +1,8 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Reflection.Emit;
-using System.Security.Cryptography;
-using ICSharpCode.NRefactory.Ast;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UIElements;
-using Random = UnityEngine.Random;
 
 public class View3DInputSystem : MonoBehaviour
 {
