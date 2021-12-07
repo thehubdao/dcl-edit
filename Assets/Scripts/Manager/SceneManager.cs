@@ -166,6 +166,12 @@ public class SceneManager : Manager, ISerializedFieldToStatic
         SceneManager.PrimarySelectedEntity = entity;
     }
 
+    public static void SetSelectionRaw(Entity entity)
+    {
+        SceneManager._secondarySelectedEntity.Clear();
+        SceneManager.PrimarySelectedEntity = entity;
+    }
+
     public static void AddSelection(Entity entity)
     {
         if (entity == null)
@@ -198,6 +204,20 @@ public class SceneManager : Manager, ISerializedFieldToStatic
                 PrimarySelectedEntity = afterPrimarySelection;
             });
         
+    }
+
+    public static void AddSelectedRaw(Entity entity)
+    {
+        if (entity == null)
+            return;
+
+        SceneManager._secondarySelectedEntity.Add(SceneManager.PrimarySelectedEntity);
+
+        if(SceneManager._secondarySelectedEntity.Contains(entity))
+            SceneManager._secondarySelectedEntity.Remove(entity);
+
+        SceneManager.PrimarySelectedEntity = entity;
+
     }
 
     public static IEnumerable<Entity> AllSelectedEntities => _secondarySelectedEntity.Append(PrimarySelectedEntity).Where(entity => entity!=null);

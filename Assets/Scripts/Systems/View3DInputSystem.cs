@@ -148,30 +148,9 @@ public class View3DInputSystem : MonoBehaviour
             {
                 if (hoveredManipulator != null)
                 {
-                    //_activeManipulator = hoveredManipulator;
-                    //_interfaceStateMachine.ActiveState = _holdingManipulatorState; // Switching state to "holding manipulator state"
-                    // Generate new holding manipulator state for the currently hovered manipulator
-
+                    // generate new holding manipulator state for the clicked Tool manipulator
                     _interfaceStateMachine.ActiveState = new HoldingManipulatorState(hoveredManipulator, gizmoCamera,
                         () => _interfaceStateMachine.ActiveState = _freeMouseState);
-
-                    //if (hoveredManipulator.GetType() == typeof(Translate))
-                    //{
-                    //    _interfaceStateMachine.ActiveState = new HoldingTranslationManipulatorState(
-                    //        hoveredManipulator, gizmoCamera,
-                    //        () => _interfaceStateMachine.ActiveState = _freeMouseState);
-                    //}else if (hoveredManipulator.GetType() == typeof(Rotate))
-                    //{
-                    //    _interfaceStateMachine.ActiveState = new HoldingRotateManipulatorState(
-                    //        hoveredManipulator, gizmoCamera,
-                    //        () => _interfaceStateMachine.ActiveState = _freeMouseState);
-                    //}else if (hoveredManipulator.GetType() == typeof(Scale))
-                    //{
-                    //    _interfaceStateMachine.ActiveState = new HoldingScaleManipulatorState(
-                    //        hoveredManipulator, gizmoCamera,
-                    //        () => _interfaceStateMachine.ActiveState = _freeMouseState);
-                    //}
-
                 }
                 else// if (hoveredEntity != null)
                 {
@@ -257,7 +236,6 @@ public class View3DInputSystem : MonoBehaviour
 
             if (pressingControl && Input.GetKeyDown(KeyCode.Y) && isMouseOverGameWindow &&
                 !CanvasManager.IsAnyInputFieldFocused
-
 #if UNITY_EDITOR
                 && pressingShift
 #endif
@@ -269,12 +247,36 @@ public class View3DInputSystem : MonoBehaviour
             // Delete the Selected Entity
             if (Input.GetKeyDown(KeyCode.Delete) && isMouseOverGameWindow && !CanvasManager.IsAnyInputFieldFocused)
             {
-                foreach (var entity in SceneManager.AllSelectedEntities)
+
+                var entities = SceneManager.AllSelectedEntities.ToList();
+
+                foreach (var entity in entities)
                 {
-                    Destroy(entity.gameObject);
+                    TrashBinManager.DeleteEntity(entity);
                 }
 
-                SceneManager.SetSelection(null);
+                UndoManager.RecordUndoItem("Delete "+(entities.Count>1?"Entities":entities.First().ShownName),
+                    () =>
+                    {
+                        SceneManager.SetSelectionRaw(null);
+                        foreach (var entity in entities)
+                        {
+                            TrashBinManager.RestoreEntity(entity);
+                            SceneManager.AddSelectedRaw(entity);
+                        }
+                        
+                    },
+                    () =>
+                    {
+                        foreach (var entity in entities)
+                        {
+                            TrashBinManager.DeleteEntity(entity);
+                        }
+                        
+                        SceneManager.SetSelectionRaw(null);
+                    });
+
+                SceneManager.SetSelectionRaw(null);
             }
 
 
