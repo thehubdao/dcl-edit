@@ -61,13 +61,32 @@ public class AssetItemUI : MonoBehaviour
         {
             _button.onClick.AddListener(() =>
             {
+                
                 AssetBrowserManager.OpenAssetBrowser((asset) =>
                 {
                     Debug.Log("New asset selected: "+asset);
                     
+                    var previousAsset = SceneManager.PrimarySelectedEntity.GetComponent<GLTFShapeComponent>().asset;
+                    var nextAsset = (AssetManager.GLTFAsset)asset;
+
                     SceneManager.PrimarySelectedEntity.GetComponent<GLTFShapeComponent>().asset =
-                        (AssetManager.GLTFAsset)asset;
+                        nextAsset;
                     SceneManager.OnUpdateSelection.Invoke();
+
+                    UndoManager.RecordUndoItem($"Select asset: {asset.name}",
+                        () =>
+                        {
+                            SceneManager.PrimarySelectedEntity.GetComponent<GLTFShapeComponent>().asset =
+                                previousAsset;
+                            SceneManager.OnUpdateSelection.Invoke();
+                        },
+                        () =>
+                        {
+                            SceneManager.PrimarySelectedEntity.GetComponent<GLTFShapeComponent>().asset =
+                                nextAsset;
+                            SceneManager.OnUpdateSelection.Invoke();
+                        });
+
                 });
             });
         }

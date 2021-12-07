@@ -15,6 +15,11 @@ public static class StaticUtils
         }
     }
 
+    public static IEnumerable<T> AsSingleInstanceInEnumerable<T>(this T value)
+    {
+        yield return value;
+    }
+
     public static T Next<T>(this T src) where T : Enum
     {
         if (!typeof(T).IsEnum) throw new ArgumentException($"Argument {typeof(T).FullName} is not an Enum");

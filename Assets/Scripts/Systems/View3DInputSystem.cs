@@ -2,7 +2,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
 using System.Security.Cryptography;
+using ICSharpCode.NRefactory.Ast;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
@@ -14,13 +18,6 @@ public class View3DInputSystem : MonoBehaviour
     public Camera gizmoCamera;
     public RightClickCameraController cameraController;
 
-    //private Material _lastHovered = null;
-    private Interface3DHover _lastHoveredVisualIndicator = null;
-
-    private EntityManipulator _activeManipulator;
-    private Vector3? _lastMousePosition = null;
-    private Plane _activeManipulatorPlane;
-
 
     private StateMachine _interfaceStateMachine;
     private StateMachine.State _freeMouseState;
@@ -28,7 +25,7 @@ public class View3DInputSystem : MonoBehaviour
     private StateMachine.State _cameraMouseZoomingState;
     private StateMachine.State _cameraRotateAroundState;
     private StateMachine.State _cameraSlideMovingState;
-    private StateMachine.State _holdingManipulatorState;
+    //private StateMachine.State _holdingManipulatorState;
 
 
     private Vector3? _mouseInWorldPoint;
@@ -36,14 +33,39 @@ public class View3DInputSystem : MonoBehaviour
     void Start()
     {
         // This State is normally active, when the user just hovers the mouse over the 3D view
-        _freeMouseState = new StateMachine.State("Free mouse state");
-        _freeMouseState.OnStateExit = _ =>
+        _freeMouseState = SetupFreeMouseState();
+
+        // This state is active, when the user is holding a Manipulator
+        //_holdingManipulatorState = SetupHoldingManipulatorState();
+
+        // This state is active, when the user moves around using the WASD controlls
+        _cameraWasdMovingState = SetupCameraWasdMovingState();
+
+        // This state is active, when the user zooms by holding alt + right mouse
+        _cameraMouseZoomingState = SetupCameraMouseZoomingState();
+
+        // This state is active, when the user rotates the camera around a point in the scene
+        _cameraRotateAroundState = SetupCameraRotateAroundState();
+
+        // This state is active, when the user slides the camera around (Middle mouse button)
+        _cameraSlideMovingState = SetupCameraSlideMovingState();
+
+        // Create the state machine starting with the free mouse state
+        _interfaceStateMachine = new StateMachine(_freeMouseState);
+    }
+
+
+    private Interface3DHover _lastHoveredVisualIndicator = null;
+    private StateMachine.State SetupFreeMouseState()
+    {
+        var freeMouseState = new StateMachine.State("Free mouse state");
+        freeMouseState.OnStateExit = _ =>
         {
             if (_lastHoveredVisualIndicator != null)
                 _lastHoveredVisualIndicator.EndHover();
             _lastHoveredVisualIndicator = null;
         };
-        _freeMouseState.OnStateUpdate = state =>
+        freeMouseState.OnStateUpdate = state =>
         {
             // Get the ray from the camera, where the mouse currently is
             var mouseRay = gizmoCamera.ViewportPointToRay(gizmoCamera.ScreenToViewportPoint(Input.mousePosition));
@@ -119,32 +141,25 @@ public class View3DInputSystem : MonoBehaviour
 
             var pressingAlt = Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt);
             var pressingControl = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
+            var pressingShift = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
 
             // When Left mouse button is clicked, select or deselect Entity
             if (Input.GetMouseButtonDown((int)MouseButton.LeftMouse) && !pressingAlt && isMouseIn3DView)
             {
                 if (hoveredManipulator != null)
                 {
-                    _activeManipulator = hoveredManipulator;
-                    _activeManipulatorPlane = _activeManipulator.GetPlane(gizmoCamera);
-                    _interfaceStateMachine.ActiveState = _holdingManipulatorState; // Switching state to "holding manipulator state"
+                    // generate new holding manipulator state for the clicked Tool manipulator
+                    _interfaceStateMachine.ActiveState = new HoldingManipulatorState(hoveredManipulator, gizmoCamera,
+                        () => _interfaceStateMachine.ActiveState = _freeMouseState);
                 }
                 else// if (hoveredEntity != null)
                 {
                     if (!pressingControl)
                     {
-                        //SceneManager.SecondarySelectedEntity.Clear();
-                        //SceneManager.PrimarySelectedEntity = hoveredEntity;
                         SceneManager.SetSelection(hoveredEntity);
                     }
                     else
                     {
-                        //SceneManager.SecondarySelectedEntity.Add(SceneManager.PrimarySelectedEntity);
-                        //
-                        //if(SceneManager.SecondarySelectedEntity.Contains(hoveredEntity))
-                        //    SceneManager.SecondarySelectedEntity.Remove(hoveredEntity);
-                        //
-                        //SceneManager.PrimarySelectedEntity = hoveredEntity;
                         SceneManager.AddSelection(hoveredEntity);
                     }
                 }
@@ -201,7 +216,7 @@ public class View3DInputSystem : MonoBehaviour
                 GizmoToolManager.CurrentTool = GizmoToolManager.Tool.Scale;
             }
 
-            var ctrlPlusS = (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) && Input.GetKeyDown(KeyCode.S);
+            var ctrlPlusS = pressingControl && Input.GetKeyDown(KeyCode.S);
             if (ctrlPlusS && isMouseOverGameWindow)
             {
                 ScriptGenerator.MakeScript();
@@ -209,74 +224,147 @@ public class View3DInputSystem : MonoBehaviour
                 AssetSaverSystem.Save();
             }
 
-            
+            if (pressingControl && Input.GetKeyDown(KeyCode.Z) && isMouseOverGameWindow &&
+                !CanvasManager.IsAnyInputFieldFocused
+#if UNITY_EDITOR
+                && pressingShift
+#endif
+                )
+            {
+                UndoManager.Undo();
+            }
+
+            if (pressingControl && Input.GetKeyDown(KeyCode.Y) && isMouseOverGameWindow &&
+                !CanvasManager.IsAnyInputFieldFocused
+#if UNITY_EDITOR
+                && pressingShift
+#endif
+                )
+            {
+                UndoManager.Redo();
+            }
+
             // Delete the Selected Entity
             if (Input.GetKeyDown(KeyCode.Delete) && isMouseOverGameWindow && !CanvasManager.IsAnyInputFieldFocused)
             {
-                //if (SceneManager.SelectedEntity)
-                //{
-                //    Destroy(SceneManager.SelectedEntity.gameObject);
-                //    SceneManager.SelectedEntity = null;
-                //}
 
-                foreach (var entity in SceneManager.AllSelectedEntities)
+                var entities = SceneManager.AllSelectedEntities.ToList();
+
+                foreach (var entity in entities)
                 {
-                    Destroy(entity.gameObject);
+                    TrashBinManager.DeleteEntity(entity);
                 }
-                
-                SceneManager.SetSelection(null);
+
+                UndoManager.RecordUndoItem("Delete "+(entities.Count>1?"Entities":entities.First().ShownName),
+                    () =>
+                    {
+                        SceneManager.SetSelectionRaw(null);
+                        foreach (var entity in entities)
+                        {
+                            TrashBinManager.RestoreEntity(entity);
+                            SceneManager.AddSelectedRaw(entity);
+                        }
+                        
+                    },
+                    () =>
+                    {
+                        foreach (var entity in entities)
+                        {
+                            TrashBinManager.DeleteEntity(entity);
+                        }
+                        
+                        SceneManager.SetSelectionRaw(null);
+                    });
+
+                SceneManager.SetSelectionRaw(null);
             }
 
 
         };
 
-        // This state is active, when the user is holding a Manipulator
-        _holdingManipulatorState = new StateMachine.State("Holding manipulator state");
-        _holdingManipulatorState.OnStateEnter = state =>
+        return freeMouseState;
+    }
+
+    private class HoldingManipulatorState : StateMachine.State
+    {
+        private Plane _activeManipulatorPlane;
+        private Vector3? _lastMousePosition = null;
+
+        private TransformUndo transformUndo;
+
+        public HoldingManipulatorState(EntityManipulator activeManipulator, Camera gizmoCamera, Action returnToFreeMouseState) : base("Holding manipulator state")
         {
-            // set null, to indicate that this state was just entered
-            _lastMousePosition = null;
-        };
-        _holdingManipulatorState.OnStateExit = state => GizmoRelationManager.onUpdate.Invoke();
-        _holdingManipulatorState.OnStateUpdate = state =>
-        {
-            // Get the ray from the camera, where the mouse currently is
-            var mouseRay = gizmoCamera.ViewportPointToRay(gizmoCamera.ScreenToViewportPoint(Input.mousePosition));
-
-            // Get the 3D position on the Manipulator plane
-            _activeManipulatorPlane.Raycast(mouseRay, out var distanceOnPlane);
-            var mousePositionOnPlane = mouseRay.GetPoint(distanceOnPlane);
-
-            //Debug.DrawLine(mousePositionOnPlane, _lastMousePosition.Value, Color.red, 10);
-            _activeManipulatorPlane.DrawGizmo(_activeManipulator.GetOneRay());
-
-            // if this is the first update, where the manipulator is hold, there is no movement to apply
-            if (_lastMousePosition != null)
+            OnStateEnter = state =>
             {
-                var globalMouseChange = mousePositionOnPlane - _lastMousePosition.Value;
-                var localMouseChange = _activeManipulator.transform.InverseTransformDirection(globalMouseChange);
-                var cameraSpaceMouseChange = gizmoCamera.transform.InverseTransformDirection(globalMouseChange);
-                _activeManipulator.Change(globalMouseChange, localMouseChange, cameraSpaceMouseChange, gizmoCamera);
-                //Debug.Log("Mouse change: "+globalMouseChange/Time.deltaTime);
-            }
+                transformUndo = new TransformUndo(SceneManager.AllSelectedEntities);
 
-            // save the mouse position in a field. This is used to calculate the mouse movement in the next update
-            _lastMousePosition = mousePositionOnPlane;
+                transformUndo.SaveBeginningState();
 
-            // When the left mouse button is released, return to "Free mouse state"
-            if (!Input.GetMouseButton((int)MouseButton.LeftMouse))
+                _activeManipulatorPlane = activeManipulator.GetPlane(gizmoCamera);
+
+                // set null, to indicate that this state was just entered
+                _lastMousePosition = null;
+            };
+            OnStateExit = state =>
             {
-                _interfaceStateMachine.ActiveState = _freeMouseState;
-            }
+                transformUndo.SaveEndingState();
 
-            SceneManager.OnSelectedEntityTransformChange.Invoke();
-        };
+                transformUndo.AddUndoItem();
 
-        // This state is active, when the user moves around using the WASD controlls
-        _cameraWasdMovingState = new StateMachine.State("Camera WASD moving state");
-        _cameraWasdMovingState.OnStateEnter = _ => cameraController.StartMovement();
-        _cameraWasdMovingState.OnStateExit = _ => cameraController.EndMovement();
-        _cameraWasdMovingState.OnStateUpdate = _ =>
+                GizmoRelationManager.onUpdate.Invoke();
+            };
+            OnStateUpdate = state =>
+            {
+                // Get the ray from the camera, where the mouse currently is
+                var mouseRay = gizmoCamera.ViewportPointToRay(gizmoCamera.ScreenToViewportPoint(Input.mousePosition));
+
+                // Get the 3D position on the Manipulator plane
+                _activeManipulatorPlane.Raycast(mouseRay, out var distanceOnPlane);
+                var mousePositionOnPlane = mouseRay.GetPoint(distanceOnPlane);
+
+                //Debug.DrawLine(mousePositionOnPlane, _lastMousePosition.Value, Color.red, 10);
+                _activeManipulatorPlane.DrawGizmo(activeManipulator.GetOneRay());
+
+                // if this is the first update, where the manipulator is hold, there is no movement to apply
+                if (_lastMousePosition != null)
+                {
+                    var globalMouseChange = mousePositionOnPlane - _lastMousePosition.Value;
+                    var localMouseChange = activeManipulator.transform.InverseTransformDirection(globalMouseChange);
+                    var cameraSpaceMouseChange = gizmoCamera.transform.InverseTransformDirection(globalMouseChange);
+                    activeManipulator.Change(globalMouseChange, localMouseChange, cameraSpaceMouseChange, gizmoCamera);
+                    //Debug.Log("Mouse change: "+globalMouseChange/Time.deltaTime);
+                }
+
+                // save the mouse position in a field. This is used to calculate the mouse movement in the next update
+                _lastMousePosition = mousePositionOnPlane;
+
+                // When the left mouse button is released, return to "Free mouse state"
+                if (!Input.GetMouseButton((int)MouseButton.LeftMouse))
+                {
+                    returnToFreeMouseState.Invoke();
+                    //_interfaceStateMachine.ActiveState = _freeMouseState;
+                }
+
+                SceneManager.OnSelectedEntityTransformChange.Invoke();
+            };
+        }
+    }
+
+
+
+    private StateMachine.State SetupHoldingManipulatorState()
+    {
+        var holdingManipulatorState = new StateMachine.State("Holding manipulator state");
+
+        return holdingManipulatorState;
+    }
+
+    private StateMachine.State SetupCameraWasdMovingState()
+    {
+        var cameraWasdMovingState = new StateMachine.State("Camera WASD moving state");
+        cameraWasdMovingState.OnStateEnter = _ => cameraController.StartMovement();
+        cameraWasdMovingState.OnStateExit = _ => cameraController.EndMovement();
+        cameraWasdMovingState.OnStateUpdate = _ =>
         {
             cameraController.UpdateWasdMovement();
 
@@ -287,11 +375,15 @@ public class View3DInputSystem : MonoBehaviour
             }
         };
 
-        // This state is active, when the user zooms by holding alt + right mouse
-        _cameraMouseZoomingState = new StateMachine.State("Camera mouse zooming state");
-        _cameraMouseZoomingState.OnStateEnter = _ => cameraController.StartMovement();
-        _cameraMouseZoomingState.OnStateExit = _ => cameraController.EndMovement();
-        _cameraMouseZoomingState.OnStateUpdate = _ =>
+        return cameraWasdMovingState;
+    }
+
+    private StateMachine.State SetupCameraMouseZoomingState()
+    {
+        var cameraMouseZoomingState = new StateMachine.State("Camera mouse zooming state");
+        cameraMouseZoomingState.OnStateEnter = _ => cameraController.StartMovement();
+        cameraMouseZoomingState.OnStateExit = _ => cameraController.EndMovement();
+        cameraMouseZoomingState.OnStateUpdate = _ =>
         {
             cameraController.UpdateZoomMovement();
 
@@ -302,11 +394,15 @@ public class View3DInputSystem : MonoBehaviour
             }
         };
 
-        // This state is active, when the user rotates the camera around a point in the scene
-        _cameraRotateAroundState = new StateMachine.State("Camera rotate around state");
-        _cameraRotateAroundState.OnStateEnter = _ => cameraController.StartMovement();
-        _cameraRotateAroundState.OnStateExit = _ => cameraController.EndMovement();
-        _cameraRotateAroundState.OnStateUpdate = _ =>
+        return cameraMouseZoomingState;
+    }
+
+    private StateMachine.State SetupCameraRotateAroundState()
+    {
+        var cameraRotateAroundState = new StateMachine.State("Camera rotate around state");
+        cameraRotateAroundState.OnStateEnter = _ => cameraController.StartMovement();
+        cameraRotateAroundState.OnStateExit = _ => cameraController.EndMovement();
+        cameraRotateAroundState.OnStateUpdate = _ =>
         {
             if (_mouseInWorldPoint != null) cameraController.UpdateRotateAroundMovement(_mouseInWorldPoint.Value);
 
@@ -317,12 +413,15 @@ public class View3DInputSystem : MonoBehaviour
             }
         };
 
+        return cameraRotateAroundState;
+    }
 
-        // This state is active, when the user slides the camera around (Middle mouse button)
-        _cameraSlideMovingState = new StateMachine.State("Camera slide moving state");
-        _cameraSlideMovingState.OnStateEnter = _ => cameraController.StartMovement();
-        _cameraSlideMovingState.OnStateExit = _ => cameraController.EndMovement();
-        _cameraSlideMovingState.OnStateUpdate = _ =>
+    private StateMachine.State SetupCameraSlideMovingState()
+    {
+        var cameraSlideMovingState = new StateMachine.State("Camera slide moving state");
+        cameraSlideMovingState.OnStateEnter = _ => cameraController.StartMovement();
+        cameraSlideMovingState.OnStateExit = _ => cameraController.EndMovement();
+        cameraSlideMovingState.OnStateUpdate = _ =>
         {
             cameraController.UpdateSlideMovement();
 
@@ -333,9 +432,9 @@ public class View3DInputSystem : MonoBehaviour
             }
         };
 
-
-        _interfaceStateMachine = new StateMachine(_freeMouseState);
+        return cameraSlideMovingState;
     }
+
 
     void Update()
     {

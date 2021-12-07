@@ -17,10 +17,40 @@ public class EntityHeaderUI : MonoBehaviour
         _nameInput.text = entity.CustomName;
     }
 
+
     public void SetEntityName()
     {
         entity.CustomName = _nameInput.text;
         SceneManager.OnUpdateSelection.Invoke();
+    }
+
+    // Undo stuff
+
+    private string _oldName = "";
+
+    public void StartUndoRecording()
+    {
+        _oldName = entity.CustomName;
+    }
+
+    public void EndUndoRecording()
+    {
+        if (_oldName != entity.CustomName)
+        {
+            var newName = entity.CustomName;
+            var oldName = _oldName;
+            UndoManager.RecordUndoItem($"Name changed from {oldName} to {newName}",
+                () =>
+                {
+                    entity.CustomName = oldName;
+                    SceneManager.OnUpdateSelection.Invoke();
+                },
+                () =>
+                {
+                    entity.CustomName = newName;
+                    SceneManager.OnUpdateSelection.Invoke();
+                });
+        }
     }
 
 }
