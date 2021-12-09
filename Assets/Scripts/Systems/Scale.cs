@@ -22,6 +22,10 @@ public class Scale : EntityManipulator
         //_entity = GetComponentInParent<Entity>();
     }
 
+    private Vector3 _initialLocalScale;
+    private float _initialAverageScale;
+
+
     private float _snapLeftOvers;
     private float ApplySnapping(float change)
     {
@@ -58,6 +62,7 @@ public class Scale : EntityManipulator
         
         var snappedChange = 0f;
 
+        
         switch (direction)
         {
             case TranslateDirection.XAxis:
@@ -91,9 +96,8 @@ public class Scale : EntityManipulator
                 snappedChange = ApplySnapping(cameraSpaceChange.x);
                 foreach (var entity in entities)
                 {
+                    var localScaleAveragized = _initialLocalScale / _initialAverageScale;
                     var localScale = entity.transform.localScale;
-                    var averageValue = (localScale.x + localScale.y + localScale.z) / 3f;
-                    var localScaleAveragized = localScale / averageValue;
                     localScale += localScaleAveragized * snappedChange;
                     entity.transform.localScale = localScale;
                 }
@@ -111,6 +115,14 @@ public class Scale : EntityManipulator
     {
         _snapLeftOvers = 0;
         var entity = SceneManager.PrimarySelectedEntity;
+
+        _initialLocalScale = entity.transform.localScale;
+        _initialAverageScale = (_initialLocalScale.x + _initialLocalScale.y + _initialLocalScale.z) / 3f;
+
+        if (Mathf.Abs(_initialAverageScale)<0.00000001)
+        {
+            _initialAverageScale = 1;
+        }
 
         switch (direction)
         {
