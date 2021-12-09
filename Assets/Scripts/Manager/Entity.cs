@@ -155,7 +155,15 @@ public class Entity : MonoBehaviour
 
 
 
-    public EntityComponent[] Components => GetComponents<EntityComponent>();
+    public IEnumerable<EntityComponent> Components
+    {
+        get
+        {
+            var entityComponents = GetComponents<EntityComponent>().ToList();
+            entityComponents.Sort((left, right) => left.InspectorOrder.CompareTo(right.InspectorOrder));
+            return entityComponents.AsEnumerable();
+        }
+    }
 
 
     /// <summary>

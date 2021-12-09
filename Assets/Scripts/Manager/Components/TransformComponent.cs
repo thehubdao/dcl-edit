@@ -45,6 +45,7 @@ public class TransformComponent : EntityComponent
     public override GameObject UiItemTemplate => ComponentRepresentationList.TransformComponentUI;
 
     public override string ComponentName => "transform";
+    public override int InspectorOrder => -100;
 
     public override Ts GetTypeScript()
     {

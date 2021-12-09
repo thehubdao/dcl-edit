@@ -19,6 +19,7 @@ public class BoxShapeComponent : EntityComponent
     public override GameObject UiItemTemplate => ComponentRepresentationList.BoxShapeComponentUI;
 
     public override string ComponentName => "boxShape";
+    public override int InspectorOrder => 100;
 
     public override Ts GetTypeScript()
     {

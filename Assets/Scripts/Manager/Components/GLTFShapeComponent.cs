@@ -26,6 +26,8 @@ public class GLTFShapeComponent : EntityComponent
     public AssetManager.GLTFAsset asset;
 
     public override string ComponentName => "GLTFShape";
+    public override int InspectorOrder => 100;
+
     public override Ts GetTypeScript()
     {
         return new Ts( InternalComponentSymbol, $"const {InternalComponentSymbol} = new GLTFShape(\"{asset.gltfPath}\")\n" +
