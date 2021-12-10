@@ -77,6 +77,8 @@ public class GltfComponentRepresentation : MonoBehaviour
                         newCollider.sharedMesh = child.GetComponent<MeshFilter>().sharedMesh;
                         child.gameObject.AddComponent<Hilightable>();
                     }
+
+                    SceneManager.OnUpdateHierarchy.Invoke();
                 }));
         }
     }

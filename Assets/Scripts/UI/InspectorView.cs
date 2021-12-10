@@ -74,7 +74,7 @@ public class InspectorView : MonoBehaviour
         {
             ShowObjects(_nothingSelectedObjects);
         }
-        else if (SceneManager.SecondarySelectedEntity.Any()) // When there are any Secondary selected entities
+        else if (SceneManager.SecondarySelectedEntity.Any(e => e!=null)) // When there are any Secondary selected entities
         {
             ShowObjects(_moreThanOneSelectedObjects);
         }

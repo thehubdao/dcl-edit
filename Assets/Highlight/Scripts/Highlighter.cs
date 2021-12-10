@@ -28,6 +28,8 @@ public class Highlighter : Interface3DHover
     void Start()
     {
         SceneManager.OnUpdateSelection.AddListener(SetDirty);
+        SceneManager.OnUpdateHierarchy.AddListener(SetDirty);
+        SetDirty();
     }
 
     private bool _isDirty = false;
