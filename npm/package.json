@@ -9,7 +9,7 @@
     "preinstall": "node ./uninstall.js"
   },
   "bin": {
-    "dcl-edit":"./run.js"
+    "dcl-edit": "./run.js"
   },
   "author": "",
   "license": "UNLICENSED",

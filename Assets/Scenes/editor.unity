@@ -2687,8 +2687,12 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 8024071907148859789, guid: 940a8e80e3325354b9baed45c93a96f0, type: 3}
       propertyPath: m_text
-      value: "Note: \nImporting scenes from \nthe Decentraland SDK or\nthe Decentraland
-        Builder \nis not supported yet"
+      value: 'Note: Importing existing scenes
+
+        that weren''t built with DCL-Edit
+
+        isn''t
+        supported yet'
       objectReference: {fileID: 0}
     - target: {fileID: 8024071907148859789, guid: 940a8e80e3325354b9baed45c93a96f0, type: 3}
       propertyPath: m_margin.x
