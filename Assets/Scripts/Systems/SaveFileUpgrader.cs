@@ -4,8 +4,19 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
-public class SaveFileUpgrader : MonoBehaviour
+public class SaveFileUpgrader : MonoBehaviour,ISerializedFieldToStatic
 {
+    [SerializeField]
+    private GameObject newSceneWindow;
+
+    private static GameObject _newSceneWindow;
+
+    public void SetupStatics()
+    {
+        _newSceneWindow = newSceneWindow;
+    }
+
+    
     private static readonly int currentSaveFileVersion = 1;
 
     private class JsonWrapper
@@ -25,6 +36,10 @@ public class SaveFileUpgrader : MonoBehaviour
         if (File.Exists(saveVersionPath))
         {
             projectSaveVersion = JsonUtility.FromJson<JsonWrapper>(File.ReadAllText(saveVersionPath)).version;
+        }
+        else
+        {
+            _newSceneWindow.SetActive(true);
         }
 
         UpgradeSaveFiles(projectSaveVersion);

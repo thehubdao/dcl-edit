@@ -7,6 +7,11 @@ using UnityEngine.SceneManagement;
 
 public class StartUpSystem : MonoBehaviour
 {
+    [SerializeField]
+    private GameObject _noProjectWindow;
+
+    
+
     private static void SetProjectPath()
     {
 #if UNITY_EDITOR
@@ -31,6 +36,13 @@ public class StartUpSystem : MonoBehaviour
     void Start()
     {
         SetProjectPath();
+
+        if (!File.Exists(SceneManager.DclProjectPath + "/scene.json"))
+        {
+            Debug.LogError("No Project found in selected Path");
+            _noProjectWindow.SetActive(true);
+            return;
+        }
 
         var sr = new StreamReader(SceneManager.DclProjectPath + "/scene.json");
         var fileContents = sr.ReadToEnd();
