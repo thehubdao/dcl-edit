@@ -48,6 +48,16 @@ public abstract class EntityComponent: MonoBehaviour
 
     public abstract string ComponentName { get; }
 
+
+    /// <summary>
+    /// The order in the Inspector. Small values appear further up
+    /// </summary>
+    ///
+    /// -100 => transform
+    /// 100 => shapes
+    /// 
+    public abstract int InspectorOrder { get; }
+
     public string InternalComponentSymbol => entity.InternalSymbol + ComponentName;
 
     public struct Ts
