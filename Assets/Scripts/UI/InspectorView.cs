@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Linq;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
@@ -13,6 +14,8 @@ public class InspectorView : MonoBehaviour
     [SerializeField]
     private GameObject _components;
 
+    [SerializeField]
+    private GameObject[] _moreThanOneSelectedObjects;
     [SerializeField]
     private GameObject[] _nothingSelectedObjects;
     [SerializeField]
@@ -48,6 +51,20 @@ public class InspectorView : MonoBehaviour
         }
     }
 
+    private void ShowObjects(GameObject[] objectsToActivate)
+    {
+        var allObjects = _moreThanOneSelectedObjects.Concat(_nothingSelectedObjects).Concat(_somethingSelectedObjects);
+        foreach (var go in allObjects)
+        {
+            go.SetActive(false);
+        }
+
+        foreach (var go in objectsToActivate)
+        {
+            go.SetActive(true);   
+        }
+    }
+
     public void UpdateVisuals()
     {
         //EditorApplication.isPaused = true;
@@ -55,28 +72,16 @@ public class InspectorView : MonoBehaviour
 
         if (entity == null)
         {
-            foreach (var nothingSelectedObject in _nothingSelectedObjects)
-            {
-                nothingSelectedObject.SetActive(true);
-            }
-
-            foreach (var somethingSelectedObject in _somethingSelectedObjects)
-            {
-                somethingSelectedObject.SetActive(false);
-            }
+            ShowObjects(_nothingSelectedObjects);
+        }
+        else if (SceneManager.SecondarySelectedEntity.Any(e => e!=null)) // When there are any Secondary selected entities
+        {
+            ShowObjects(_moreThanOneSelectedObjects);
         }
         else
         {
-            foreach (var nothingSelectedObject in _nothingSelectedObjects)
-            {
-                nothingSelectedObject.SetActive(false);
-            }
+            ShowObjects(_somethingSelectedObjects);
 
-            foreach (var somethingSelectedObject in _somethingSelectedObjects)
-            {
-                somethingSelectedObject.SetActive(true);
-            }
-            
 
             // Entity Header
             _entityHeaderUi.entity = entity;
@@ -101,10 +106,10 @@ public class InspectorView : MonoBehaviour
                 //    newComponentUi.UpdateVisuals();
                 //}
 
-                if(component.GetType() != typeof(TransformComponent)) // Can't remove Transform component
+                if (component.GetType() != typeof(TransformComponent)) // Can't remove Transform component
                     newComponentObject.GetComponentInChildren<RemoveComponent>().component = component;
 
-                if(component.GetType() == typeof(GLTFShapeComponent))
+                if (component.GetType() == typeof(GLTFShapeComponent))
                 {
                     var assetItem = newComponentObject.GetComponentInChildren<AssetItemUI>();
                     assetItem.asset = ((GLTFShapeComponent)component).asset;

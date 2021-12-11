@@ -1,17 +1,10 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Reflection.Emit;
-using System.Security.Cryptography;
-using ICSharpCode.NRefactory.Ast;
-using UnityEditor;
+using System.Security;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UIElements;
-using Random = UnityEngine.Random;
 
 public class View3DInputSystem : MonoBehaviour
 {
@@ -244,6 +237,74 @@ public class View3DInputSystem : MonoBehaviour
                 UndoManager.Redo();
             }
 
+            // Duplicate Selected Entities
+            if (pressingControl && Input.GetKeyDown(KeyCode.D) && isMouseOverGameWindow && !CanvasManager.IsAnyInputFieldFocused)
+            {
+                var newEntities = new List<Entity>();
+
+                foreach (var selectedEntity in SceneManager.AllSelectedEntities)
+                {
+                    var newEntityObject = Instantiate(SceneManager.EntityTemplate, selectedEntity.transform.position, selectedEntity.transform.rotation, selectedEntity.transform.parent);
+                    foreach (var component in selectedEntity.Components)
+                    {
+                        var newComponent = newEntityObject.AddComponent(component.GetType()) as EntityComponent;
+                        newComponent.ApplySpecificJson(component.SpecificJson);
+                    }
+
+
+                    var newEntity = newEntityObject.GetComponent<Entity>();
+                    newEntity.CustomName = selectedEntity.CustomName;
+                    newEntity.WantsToBeExposed = false; // always sets exposed status to false to prevent duplicate names
+                    newEntities.Add(newEntity);
+                }
+
+                var previouslySelected = SceneManager.AllSelectedEntities.ToList();
+
+                SceneManager.SetSelectionRaw(null);
+                foreach (var entity in newEntities)
+                {
+                    SceneManager.AddSelectedRaw(entity);
+                }
+
+                SceneManager.OnUpdateSelection.Invoke();
+                SceneManager.OnUpdateHierarchy.Invoke();
+
+                UndoManager.RecordUndoItem(
+                    "Duplicate " + (previouslySelected.Count > 1 ? "Entities" : previouslySelected.First().ShownName),
+                    () =>
+                    {
+                        foreach (var entity in newEntities)
+                        {
+                            TrashBinManager.DeleteEntity(entity);
+                        }
+
+                        SceneManager.SetSelectionRaw(null);
+                        foreach (var entity in previouslySelected)
+                        {
+                            SceneManager.AddSelectedRaw(entity);
+                        }
+
+                        SceneManager.OnUpdateSelection.Invoke();
+                        SceneManager.OnUpdateHierarchy.Invoke();
+
+                    },
+                    () =>
+                    {
+                        SceneManager.SetSelectionRaw(null);
+                        foreach (var entity in newEntities)
+                        {
+                            TrashBinManager.RestoreEntity(entity);
+                            SceneManager.AddSelectedRaw(entity);
+                        }
+
+                        SceneManager.OnUpdateSelection.Invoke();
+                        SceneManager.OnUpdateHierarchy.Invoke();
+
+                    });
+
+            }
+
+
             // Delete the Selected Entity
             if (Input.GetKeyDown(KeyCode.Delete) && isMouseOverGameWindow && !CanvasManager.IsAnyInputFieldFocused)
             {
@@ -255,7 +316,7 @@ public class View3DInputSystem : MonoBehaviour
                     TrashBinManager.DeleteEntity(entity);
                 }
 
-                UndoManager.RecordUndoItem("Delete "+(entities.Count>1?"Entities":entities.First().ShownName),
+                UndoManager.RecordUndoItem("Delete " + (entities.Count > 1 ? "Entities" : entities.First().ShownName),
                     () =>
                     {
                         SceneManager.SetSelectionRaw(null);
@@ -264,7 +325,7 @@ public class View3DInputSystem : MonoBehaviour
                             TrashBinManager.RestoreEntity(entity);
                             SceneManager.AddSelectedRaw(entity);
                         }
-                        
+
                     },
                     () =>
                     {
@@ -272,7 +333,7 @@ public class View3DInputSystem : MonoBehaviour
                         {
                             TrashBinManager.DeleteEntity(entity);
                         }
-                        
+
                         SceneManager.SetSelectionRaw(null);
                     });
 

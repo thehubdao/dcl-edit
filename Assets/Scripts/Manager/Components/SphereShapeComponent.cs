@@ -20,6 +20,7 @@ public class SphereShapeComponent : EntityComponent
     public override GameObject UiItemTemplate => ComponentRepresentationList.SphereShapeComponentUI;
 
     public override string ComponentName => "sphereShape";
+    public override int InspectorOrder => 100;
 
     public override Ts GetTypeScript()
     {
