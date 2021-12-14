@@ -59,6 +59,8 @@ public class UndoManager : MonoBehaviour
         onUpdate.Invoke();
     }
 
+    public static UndoItem CurrentItem => undoItems[currentIndex];
+
     public struct UndoItem
     {
         public string Name { get; }
