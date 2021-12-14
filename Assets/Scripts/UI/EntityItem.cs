@@ -35,11 +35,14 @@ public class EntityItem : MonoBehaviour
 
     public void Spawn()
     {
-        Spawn((_) => { });
+        Spawn(_ => { });
     }
 
     private void Spawn(Action<Entity> additionalSetup)
     {
+        // Find reasonable Spawn position
+        
+
         // Instantiate entity
         var newEntityObject = Instantiate(entityPrefab, Vector3.zero, Quaternion.identity, SceneManager.EntityParent);
         var newEntity = newEntityObject.GetComponent<Entity>();

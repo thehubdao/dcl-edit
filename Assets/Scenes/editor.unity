@@ -5719,6 +5719,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gizmoCamera: {fileID: 1191877227}
   cameraController: {fileID: 1191877230}
+  _cameraNormalFlySpeed: 7
+  _cameraFastFlySpeed: 20
+  _mouseSensitivity: 3
 --- !u!4 &904570398
 Transform:
   m_ObjectHideFlags: 0

@@ -5,11 +5,22 @@ using System.Security;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UIElements;
+using Cursor = UnityEngine.Cursor;
 
 public class View3DInputSystem : MonoBehaviour
 {
     public Camera gizmoCamera;
-    public RightClickCameraController cameraController;
+    public CameraController cameraController;
+
+    //[SerializeField]
+    //private float _cameraNormalFlySpeed;
+    //
+    //[SerializeField]
+    //private float _cameraFastFlySpeed;
+    //
+    //[SerializeField]
+    //private float _mouseSensitivity;
+
 
 
     private StateMachine _interfaceStateMachine;
@@ -186,8 +197,22 @@ public class View3DInputSystem : MonoBehaviour
 
             // When scrolling Mouse wheel, zoom in or out
             if (isMouseIn3DView)
-                cameraController.ApplyZoom();
+            {
+                var isSprinting = Input.GetButton("Sprint");
+                //var distanceToMoveForward = Input.GetAxis("Mouse ScrollWheel") * (isSprinting ? _cameraFastFlySpeed : _cameraNormalFlySpeed);
+                //
+                //if (Mathf.Abs(distanceToMoveForward) > 0)
+                //{
+                //    CameraManager.Position += CameraManager.Forward * distanceToMoveForward;
+                //}
 
+                if (Mathf.Abs(Input.GetAxis("Mouse ScrollWheel")) > 0)
+                {
+                    CameraManager.MoveStep(new Vector3(0, 0, Input.GetAxis("Mouse ScrollWheel")), isSprinting);
+                }
+
+                //cameraController.ApplyZoom();
+            }
 
 
             // Switch Manipulator by shortcut
@@ -423,11 +448,30 @@ public class View3DInputSystem : MonoBehaviour
     private StateMachine.State SetupCameraWasdMovingState()
     {
         var cameraWasdMovingState = new StateMachine.State("Camera WASD moving state");
-        cameraWasdMovingState.OnStateEnter = _ => cameraController.StartMovement();
-        cameraWasdMovingState.OnStateExit = _ => cameraController.EndMovement();
+        cameraWasdMovingState.OnStateEnter = _ => { Cursor.lockState = CursorLockMode.Locked; };
+        cameraWasdMovingState.OnStateExit = _ => { Cursor.lockState = CursorLockMode.None; };
         cameraWasdMovingState.OnStateUpdate = _ =>
         {
-            cameraController.UpdateWasdMovement();
+            //cameraController.UpdateWasdMovement();
+
+            // Rotate camera with mouse movement
+            CameraManager.RotateStep(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
+            //CameraManager.Pitch += Input.GetAxis("Mouse Y") * -_mouseSensitivity;
+            //CameraManager.Yaw += Input.GetAxis("Mouse X") * _mouseSensitivity;
+
+            // Move Camera with WASD controls
+            //var moveDirection = CameraManager.Right * Input.GetAxis("Horizontal") +
+            //                    CameraManager.Forward * Input.GetAxis("Vertical") +
+            //                    CameraManager.Up * Input.GetAxis("UpDown");
+            //var moveDistanceInThisFrame = (Input.GetButton("Sprint") ? _cameraFastFlySpeed : _cameraNormalFlySpeed) * Time.deltaTime;
+            //CameraManager.Position += moveDirection * moveDistanceInThisFrame;
+
+            CameraManager.MoveContinuously(
+                new Vector3(
+                        Input.GetAxis("Horizontal"),
+                        Input.GetAxis("UpDown"),
+                        Input.GetAxis("Vertical")),
+                Input.GetButton("Sprint"));
 
             // When releasing Right mouse button, switch to "Free mouse state"
             if (!Input.GetMouseButton((int)MouseButton.RightMouse))
@@ -442,11 +486,16 @@ public class View3DInputSystem : MonoBehaviour
     private StateMachine.State SetupCameraMouseZoomingState()
     {
         var cameraMouseZoomingState = new StateMachine.State("Camera mouse zooming state");
-        cameraMouseZoomingState.OnStateEnter = _ => cameraController.StartMovement();
-        cameraMouseZoomingState.OnStateExit = _ => cameraController.EndMovement();
+        cameraMouseZoomingState.OnStateEnter = _ => { Cursor.lockState = CursorLockMode.Locked; };
+        cameraMouseZoomingState.OnStateExit = _ => { Cursor.lockState = CursorLockMode.None; };
         cameraMouseZoomingState.OnStateUpdate = _ =>
         {
-            cameraController.UpdateZoomMovement();
+            //cameraController.UpdateZoomMovement();
+            var isSprinting = Input.GetButton("Sprint");
+            var targetMovement = Input.GetAxis("Mouse X") + Input.GetAxis("Mouse Y");
+            //transform.Translate(0,0,(isSprinting ? sprintSpeed : speed) * targetMovement*0.03f);
+
+            CameraManager.MoveStep(Vector3.forward * targetMovement * 0.03f, isSprinting);
 
             // When releasing Right mouse button, switch to "Free mouse state"
             if (!Input.GetMouseButton((int)MouseButton.RightMouse))
@@ -461,11 +510,20 @@ public class View3DInputSystem : MonoBehaviour
     private StateMachine.State SetupCameraRotateAroundState()
     {
         var cameraRotateAroundState = new StateMachine.State("Camera rotate around state");
-        cameraRotateAroundState.OnStateEnter = _ => cameraController.StartMovement();
-        cameraRotateAroundState.OnStateExit = _ => cameraController.EndMovement();
+        cameraRotateAroundState.OnStateEnter = _ => { Cursor.lockState = CursorLockMode.Locked; };
+        cameraRotateAroundState.OnStateExit = _ => { Cursor.lockState = CursorLockMode.None; };
         cameraRotateAroundState.OnStateUpdate = _ =>
         {
-            if (_mouseInWorldPoint != null) cameraController.UpdateRotateAroundMovement(_mouseInWorldPoint.Value);
+            //if (_mouseInWorldPoint != null) cameraController.UpdateRotateAroundMovement(_mouseInWorldPoint.Value);
+
+            if (_mouseInWorldPoint != null)
+            {
+                //transform.RotateAround(_mouseInWorldPoint.Value,Vector3.up, Input.GetAxis("Mouse X") * sensitivity);
+                //transform.RotateAround(_mouseInWorldPoint.Value,transform.right, Input.GetAxis("Mouse Y") * -sensitivity);
+
+                CameraManager.RotateAroundPointStep(_mouseInWorldPoint.Value, new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y")));
+            }
+
 
             // When releasing Left mouse button, switch to "Free mouse state"
             if (!Input.GetMouseButton((int)MouseButton.LeftMouse))
@@ -480,11 +538,17 @@ public class View3DInputSystem : MonoBehaviour
     private StateMachine.State SetupCameraSlideMovingState()
     {
         var cameraSlideMovingState = new StateMachine.State("Camera slide moving state");
-        cameraSlideMovingState.OnStateEnter = _ => cameraController.StartMovement();
-        cameraSlideMovingState.OnStateExit = _ => cameraController.EndMovement();
+        cameraSlideMovingState.OnStateEnter = _ => { Cursor.lockState = CursorLockMode.Locked; };
+        cameraSlideMovingState.OnStateExit = _ => { Cursor.lockState = CursorLockMode.None; };
         cameraSlideMovingState.OnStateUpdate = _ =>
         {
-            cameraController.UpdateSlideMovement();
+            //cameraController.UpdateSlideMovement();
+
+            var isSprinting = Input.GetButton("Sprint");
+            var targetMovement = new Vector3(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"), 0);
+            //transform.Translate((isSprinting ? sprintSpeed : speed) * targetMovement*-0.03f);
+
+            CameraManager.MoveStep(targetMovement * -0.03f, isSprinting);
 
             // When releasing Middle mouse button, switch to "Free mouse state"
             if (!Input.GetMouseButton((int)MouseButton.MiddleMouse))

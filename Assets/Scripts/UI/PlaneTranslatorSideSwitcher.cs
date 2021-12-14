@@ -21,7 +21,7 @@ public class PlaneTranslatorSideSwitcher : MonoBehaviour
     void Update()
     {
         var relativeCamPos =
-            transform.parent.InverseTransformPoint(RightClickCameraController.mainCameraTransform.position);
+            transform.parent.InverseTransformPoint(CameraManager.Position);
 
         var newLocalPos = Vector3.zero;
 

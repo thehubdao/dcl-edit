@@ -4,32 +4,55 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using Cursor = UnityEngine.Cursor;
 
-public class RightClickCameraController : MonoBehaviour
+public class CameraController : MonoBehaviour
 {
     public float sensitivity = 1;
 
     public float speed = 7;
     public float sprintSpeed = 13;
 
-    // TODO: Move into Camera Manager
-    public static Transform mainCameraTransform;
+    
+    //public static Transform mainCameraTransform;
     void Start()
     {
-        mainCameraTransform = transform;
+        //mainCameraTransform = transform;
+        CameraManager.MainCamera = GetComponent<Camera>();
+
+        CameraManager.OnCameraMoved.AddListener(SetDirty);
+
+        SetDirty();
+    }
+
+    private bool _isDirty = false;
+
+    public void SetDirty()
+    {
+        _isDirty = true;
+    }
+
+    void LateUpdate()
+    {
+        if (_isDirty)
+        {
+            _isDirty = false;
+            UpdateCameraTransform();
+        }
+    }
+
+    private void UpdateCameraTransform()
+    {
+        transform.position = CameraManager.Position;
+        transform.rotation = CameraManager.Rotation;
     }
     
-    public void StartMovement()
-    {
-        Cursor.lockState = CursorLockMode.Locked;
-    }
+    //public void StartMovement()
+    //{Cursor.lockState = CursorLockMode.Locked;}
 
-    public void EndMovement()
-    {
-        Cursor.lockState = CursorLockMode.None;
-    }
+    //public void EndMovement()
+    //{Cursor.lockState = CursorLockMode.None;}
 
     // Update is called once per frame
-    public void UpdateWasdMovement()
+    /*public void UpdateWasdMovement()
     {
         // Rotate View
         var v = transform.InverseTransformDirection(Vector3.up);
@@ -44,26 +67,26 @@ public class RightClickCameraController : MonoBehaviour
 
         var isSprinting = Input.GetButton("Sprint");
         transform.Translate((isSprinting ? sprintSpeed : speed) * Time.deltaTime * targetMovement);
-    }
-    public void UpdateZoomMovement()
+    }*/
+    /*public void UpdateZoomMovement()
     {
         var isSprinting = Input.GetButton("Sprint");
         var targetMovement = Input.GetAxis("Mouse X") + Input.GetAxis("Mouse Y");
         transform.Translate(0,0,(isSprinting ? sprintSpeed : speed) * targetMovement*0.03f);
-    }
+    }*//*
     public void UpdateSlideMovement()
     {
         var isSprinting = Input.GetButton("Sprint");
         var targetMovement = new Vector3(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"), 0);
         transform.Translate((isSprinting ? sprintSpeed : speed) * targetMovement*-0.03f);
     }
-
-    public void ApplyZoom()
+*/
+    /*public void ApplyZoom()
     {
         var isSprinting = Input.GetButton("Sprint");
         transform.Translate(0,0,Input.GetAxis("Mouse ScrollWheel")*(isSprinting ? sprintSpeed : speed));
-    }
-
+    }*/
+/*
     public void UpdateRotateAroundMovement(Vector3 rotationPoint)
     {
         // Rotate View
@@ -71,5 +94,5 @@ public class RightClickCameraController : MonoBehaviour
         //Debug.DrawRay(transform.position,transform.TransformDirection(v),Color.red,0.1f);
         transform.RotateAround(rotationPoint,Vector3.up, Input.GetAxis("Mouse X") * sensitivity);
         transform.RotateAround(rotationPoint,transform.right, Input.GetAxis("Mouse Y") * -sensitivity);
-    }
+    }*/
 }
