@@ -9,8 +9,8 @@ using Cursor = UnityEngine.Cursor;
 
 public class View3DInputSystem : MonoBehaviour
 {
-    public Camera gizmoCamera;
-    public CameraController cameraController;
+    //public Camera gizmoCamera;
+    //public CameraController cameraController;
 
     //[SerializeField]
     //private float _cameraNormalFlySpeed;
@@ -72,7 +72,7 @@ public class View3DInputSystem : MonoBehaviour
         freeMouseState.OnStateUpdate = state =>
         {
             // Get the ray from the camera, where the mouse currently is
-            var mouseRay = gizmoCamera.ViewportPointToRay(gizmoCamera.ScreenToViewportPoint(Input.mousePosition));
+            var mouseRay = CameraManager.MainCamera.ViewportPointToRay(CameraManager.MainCamera.ScreenToViewportPoint(Input.mousePosition));
 
             // Figure out, if the mouse is over the Game window
             var isMouseOverGameWindow =
@@ -153,7 +153,7 @@ public class View3DInputSystem : MonoBehaviour
                 if (hoveredManipulator != null)
                 {
                     // generate new holding manipulator state for the clicked Tool manipulator
-                    _interfaceStateMachine.ActiveState = new HoldingManipulatorState(hoveredManipulator, gizmoCamera,
+                    _interfaceStateMachine.ActiveState = new HoldingManipulatorState(hoveredManipulator, CameraManager.MainCamera,
                         () => _interfaceStateMachine.ActiveState = _freeMouseState);
                 }
                 else// if (hoveredEntity != null)
@@ -452,19 +452,8 @@ public class View3DInputSystem : MonoBehaviour
         cameraWasdMovingState.OnStateExit = _ => { Cursor.lockState = CursorLockMode.None; };
         cameraWasdMovingState.OnStateUpdate = _ =>
         {
-            //cameraController.UpdateWasdMovement();
-
             // Rotate camera with mouse movement
             CameraManager.RotateStep(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
-            //CameraManager.Pitch += Input.GetAxis("Mouse Y") * -_mouseSensitivity;
-            //CameraManager.Yaw += Input.GetAxis("Mouse X") * _mouseSensitivity;
-
-            // Move Camera with WASD controls
-            //var moveDirection = CameraManager.Right * Input.GetAxis("Horizontal") +
-            //                    CameraManager.Forward * Input.GetAxis("Vertical") +
-            //                    CameraManager.Up * Input.GetAxis("UpDown");
-            //var moveDistanceInThisFrame = (Input.GetButton("Sprint") ? _cameraFastFlySpeed : _cameraNormalFlySpeed) * Time.deltaTime;
-            //CameraManager.Position += moveDirection * moveDistanceInThisFrame;
 
             CameraManager.MoveContinuously(
                 new Vector3(
