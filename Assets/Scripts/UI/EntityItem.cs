@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,40 +16,44 @@ public class EntityItem : MonoBehaviour
 
     public void GltfSpawn()
     {
-        AssetBrowserManager.OpenAssetBrowser((asset)=> {
-            if (asset.GetType() != typeof(AssetManager.GLTFAsset))
+        AssetBrowserManager.OpenAssetBrowser((asset)=>
+        {
+            if (asset is AssetManager.GLTFAsset gltfAsset)
+            {
+                Spawn(entity =>
+                {
+                    entity.GetComponent<GLTFShapeComponent>().asset = gltfAsset;
+                    entity.CustomName = gltfAsset.name;
+                });
+            }
+            else
             {
                 throw new System.Exception("Wrong Asset Type");
             }
-            Spawn((AssetManager.GLTFAsset)asset);
         });
     }
 
     public void Spawn()
     {
-        Spawn(null);
+        Spawn((_) => { });
     }
 
-    public void Spawn(AssetManager.GLTFAsset gltfAsset)
+    private void Spawn(Action<Entity> additionalSetup)
     {
+        // Instantiate entity
         var newEntityObject = Instantiate(entityPrefab, Vector3.zero, Quaternion.identity, SceneManager.EntityParent);
-
         var newEntity = newEntityObject.GetComponent<Entity>();
 
-        if (gltfAsset != null)
-        {
-            newEntityObject.GetComponent<GLTFShapeComponent>().asset = gltfAsset;
-            newEntity.CustomName = gltfAsset.name;
-        }
-        else
-        {
-            newEntity.CustomName = defaultName;
-        }
-
-
+        // Setup entity
+        newEntity.CustomName = defaultName;
+        additionalSetup.Invoke(newEntity);
+        
+        // Record last selected entities for undo action
         var lastSelectedEntities = SceneManager.AllSelectedEntities.ToList();
-        SceneManager.ChangedHierarchy();
+
+        // Select new entity
         SceneManager.SetSelectionRaw(newEntity);
+        SceneManager.ChangedHierarchy();
 
         // Undo stuff
 
