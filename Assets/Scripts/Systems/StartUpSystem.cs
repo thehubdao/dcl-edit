@@ -60,6 +60,8 @@ public class StartUpSystem : MonoBehaviour
             }
         }
 
+        CameraManager.ChooseReasonableStartPosition();
+
         SaveFileUpgrader.CheckSaveFiles();
 
         AssetSaverSystem.Load();
