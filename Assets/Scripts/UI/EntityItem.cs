@@ -41,10 +41,22 @@ public class EntityItem : MonoBehaviour
     private void Spawn(Action<Entity> additionalSetup)
     {
         // Find reasonable Spawn position
-        
+        Vector3 spawnPosition;
+
+        var groundPlane = new Plane(Vector3.up, Vector3.zero);
+        var cameraRay = new Ray(CameraManager.Position, CameraManager.Forward);
+        var maxDistance = 20;
+        if (groundPlane.Raycast(cameraRay, out float distance) && distance < maxDistance)
+        {
+            spawnPosition = cameraRay.GetPoint(distance);
+        }
+        else
+        {
+            spawnPosition = cameraRay.GetPoint(maxDistance);
+        }
 
         // Instantiate entity
-        var newEntityObject = Instantiate(entityPrefab, Vector3.zero, Quaternion.identity, SceneManager.EntityParent);
+        var newEntityObject = Instantiate(entityPrefab, spawnPosition, Quaternion.identity, SceneManager.EntityParent);
         var newEntity = newEntityObject.GetComponent<Entity>();
 
         // Setup entity
