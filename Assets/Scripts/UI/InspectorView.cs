@@ -53,7 +53,7 @@ public class InspectorView : MonoBehaviour
 
     private void ShowObjects(GameObject[] objectsToActivate)
     {
-        var allObjects = _moreThanOneSelectedObjects.Concat(_nothingSelectedObjects).Concat(_somethingSelectedObjects);
+        var allObjects = _moreThanOneSelectedObjects.Concat(_nothingSelectedObjects).Concat(_somethingSelectedObjects).Where((o)=>!objectsToActivate.Contains(o));
         foreach (var go in allObjects)
         {
             go.SetActive(false);
