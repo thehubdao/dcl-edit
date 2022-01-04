@@ -44,6 +44,24 @@ public class ExposeToScriptUI : MonoBehaviour
         if (SceneManager.PrimarySelectedEntity == null)
             return;
         
+        if(SceneManager.PrimarySelectedEntity.Exposed == _toggleButton.isOn)
+            return;
+
         SceneManager.PrimarySelectedEntity.Exposed = _toggleButton.isOn;
+
+        // Undo stuff
+        
+        var selectedEnt = SceneManager.PrimarySelectedEntity;
+        var exposedState = _toggleButton.isOn;
+
+        UndoManager.RecordUndoItem($"{(exposedState ? "Exposed" : "Unexposed")} {selectedEnt}",
+            () =>
+            {
+                selectedEnt.Exposed = !exposedState;
+            },
+            () =>
+            {
+                selectedEnt.Exposed = exposedState;
+            });
     }
 }

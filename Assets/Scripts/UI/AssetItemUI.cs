@@ -61,13 +61,32 @@ public class AssetItemUI : MonoBehaviour
         {
             _button.onClick.AddListener(() =>
             {
+                
                 AssetBrowserManager.OpenAssetBrowser((asset) =>
                 {
                     Debug.Log("New asset selected: "+asset);
                     
+                    var previousAsset = SceneManager.PrimarySelectedEntity.GetComponent<GLTFShapeComponent>().asset;
+                    var nextAsset = (AssetManager.GLTFAsset)asset;
+
                     SceneManager.PrimarySelectedEntity.GetComponent<GLTFShapeComponent>().asset =
-                        (AssetManager.GLTFAsset)asset;
+                        nextAsset;
                     SceneManager.OnUpdateSelection.Invoke();
+
+                    UndoManager.RecordUndoItem($"Select asset: {asset.name}",
+                        () =>
+                        {
+                            SceneManager.PrimarySelectedEntity.GetComponent<GLTFShapeComponent>().asset =
+                                previousAsset;
+                            SceneManager.OnUpdateSelection.Invoke();
+                        },
+                        () =>
+                        {
+                            SceneManager.PrimarySelectedEntity.GetComponent<GLTFShapeComponent>().asset =
+                                nextAsset;
+                            SceneManager.OnUpdateSelection.Invoke();
+                        });
+
                 });
             });
         }
@@ -105,27 +124,33 @@ public class AssetItemUI : MonoBehaviour
 
             //Debug.Log(thumbnailPath);
 
-
-            if (thumbnailPath != "" && File.Exists(thumbnailPath))
+            ThumbnailManager.GetThumbnail(thumbnailPath,thumbnail =>
             {
-                StartCoroutine(GetGltfThumbnail(thumbnailPath));
-            }
+                if(_thumbnail == null)
+                    return;
+                _thumbnail.texture = thumbnail;
+            });
+
+            //if (thumbnailPath != "" && File.Exists(thumbnailPath))
+            //{
+            //    StartCoroutine(GetGltfThumbnail(thumbnailPath));
+            //}
         }
     }
 
-    private IEnumerator GetGltfThumbnail(string thumbnailPath)
-    {
-        var request = UnityWebRequestTexture.GetTexture("file://" + thumbnailPath);
-        yield return request.SendWebRequest();
-
-        if (request.result != UnityWebRequest.Result.Success)
-        {
-            Debug.Log(request.error);
-        }
-        else
-        {
-            _thumbnail.texture = DownloadHandlerTexture.GetContent(request);
-        }
-    }
+    //private IEnumerator GetGltfThumbnail(string thumbnailPath)
+    //{
+    //    var request = UnityWebRequestTexture.GetTexture("file://" + thumbnailPath);
+    //    yield return request.SendWebRequest();
+    //
+    //    if (request.result != UnityWebRequest.Result.Success)
+    //    {
+    //        Debug.Log(request.error);
+    //    }
+    //    else
+    //    {
+    //        _thumbnail.texture = DownloadHandlerTexture.GetContent(request);
+    //    }
+    //}
 
 }

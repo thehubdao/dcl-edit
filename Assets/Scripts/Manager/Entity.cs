@@ -167,7 +167,15 @@ public class Entity : MonoBehaviour
     public GameObject componentsParent;
     
 
-    public EntityComponent[] Components => GetComponents<EntityComponent>();
+    public IEnumerable<EntityComponent> Components
+    {
+        get
+        {
+            var entityComponents = GetComponents<EntityComponent>().ToList();
+            entityComponents.Sort((left, right) => left.InspectorOrder.CompareTo(right.InspectorOrder));
+            return entityComponents.AsEnumerable();
+        }
+    }
 
 
 
@@ -191,8 +199,13 @@ public class Entity : MonoBehaviour
     }
 }
 
-public static class CamelCase
+public static class EntityUtils
 {
+
+    public static string TryGetShownName(this Entity e)
+    {
+        return e == null ? "nothing" : e.ShownName;
+    }
 
     public static string ToCamelCase(this string s)
     {

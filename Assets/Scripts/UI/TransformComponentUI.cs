@@ -47,11 +47,33 @@ public class TransformComponentUI : ComponentUI
         _rotateZInput.text = eulerRot.z.ToString("0.#",numberFormat);
 
         // Scale
-        var scale = transformComponent.entity.componentsParent.transform.localScale;
+        var scale = transformComponent.entity.transform.localScale;
         _scaleXInput.text = scale.x.ToString("0.###",numberFormat);
         _scaleYInput.text = scale.y.ToString("0.###",numberFormat);
         _scaleZInput.text = scale.z.ToString("0.###",numberFormat);
         
+    }
+
+    private TransformUndo _transformUndo = null;
+
+    public void StartUndoRecording()
+    {
+        _transformUndo = new TransformUndo(SceneManager.PrimarySelectedEntity.AsSingleInstanceInEnumerable());
+        _transformUndo.SaveBeginningState();
+        
+        Debug.Log("start recording");
+    }
+
+    public void ApplyUndoRecording()
+    {
+        if (_transformUndo != null)
+        {
+            _transformUndo.SaveEndingState();
+            _transformUndo.AddUndoItem();
+            _transformUndo = null;
+            Debug.Log("recorded");
+            
+        }   
     }
 
     public void SetValueTranslate()
@@ -63,6 +85,7 @@ public class TransformComponentUI : ComponentUI
                 float.Parse(_translateXInput.text,CultureInfo.InvariantCulture),
                 float.Parse(_translateYInput.text,CultureInfo.InvariantCulture), 
                 float.Parse(_translateZInput.text,CultureInfo.InvariantCulture));
+
         }
         catch
         {
@@ -89,7 +112,7 @@ public class TransformComponentUI : ComponentUI
         var transformComponent = SceneManager.PrimarySelectedEntity.GetComponent<TransformComponent>();
         try
         {
-            transformComponent.entity.componentsParent.transform.localScale = new Vector3( 
+            transformComponent.transform.localScale = new Vector3( 
                 float.Parse(_scaleXInput.text,CultureInfo.InvariantCulture),
                 float.Parse(_scaleYInput.text,CultureInfo.InvariantCulture), 
                 float.Parse(_scaleZInput.text,CultureInfo.InvariantCulture));
