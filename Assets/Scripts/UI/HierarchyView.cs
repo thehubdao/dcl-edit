@@ -60,9 +60,7 @@ public class HierarchyView : MonoBehaviour
     {
         var entities = SceneManager.Entities.ToList();
         // sort entities by hierarchy order
-        entities.Sort(((left, right) => 
-            Math.Abs(left.HierarchyOrder - right.HierarchyOrder) < 0.0000001?0:
-            left.HierarchyOrder < right.HierarchyOrder?-1:1));
+        entities.Sort(((left, right) => left.HierarchyOrder.CompareTo(right.HierarchyOrder)));
 
         return entities;
     }
