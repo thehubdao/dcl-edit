@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 public class HierarchyView : MonoBehaviour
@@ -60,8 +61,27 @@ public class HierarchyView : MonoBehaviour
     {
         var entities = SceneManager.Entities.ToList();
         // sort entities by hierarchy order
-        entities.Sort(((left, right) => left.HierarchyOrder.CompareTo(right.HierarchyOrder)));
+        entities.Sort((left, right) => left.HierarchyOrder.CompareTo(right.HierarchyOrder));
 
         return entities;
+    }
+
+    public void EnableDropZones()
+    {
+        SetDropZonesActive(true);
+    }
+
+    public void DisableDropZones()
+    {
+        SetDropZonesActive(false);
+    }
+
+    private void SetDropZonesActive(bool value)
+    {
+        var items = GetComponentsInChildren<HierarchyViewItem>();
+        foreach (var item in items)
+        {
+            item.SetDropZoneActive(value);
+        }
     }
 }
