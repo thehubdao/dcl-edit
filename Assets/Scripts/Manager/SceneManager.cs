@@ -224,7 +224,8 @@ public class SceneManager : Manager, ISerializedFieldToStatic
     
 
     public static UnityEvent OnSelectedEntityTransformChange = new UnityEvent();
-
+    
+    public static RootSceneObject SceneRoot => EntityParent.GetComponent<RootSceneObject>();
 }
 
 public class EntityArray : List<Entity>

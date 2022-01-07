@@ -76,10 +76,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a6160be4a952b14ea9a071ea9053d83, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  childParent: {fileID: 6377200380530633907}
+  _hierarchyOrder: 0
   _customName: 
   uniqueNumber: -1
   _exposed: 0
-  gizmos: {fileID: 0}
   componentsParent: {fileID: 1971271215486186616}
 --- !u!114 &6599894139810898019
 MonoBehaviour:

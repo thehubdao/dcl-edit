@@ -39,15 +39,30 @@ public class HierarchyView : MonoBehaviour
     {
         RemoveAllHierarchyItems();
         
-        foreach (var entity in AllEntitiesSortedByHierarchyOrder()) 
+        //foreach (var entity in AllEntitiesSortedByHierarchyOrder()) 
+        //{
+        //    var newItem = Instantiate(itemTemplate, transform).GetComponentInChildren<HierarchyViewItem>();
+        //    newItem.entity = entity;
+        //    
+        //    newItem.UpdateVisuals();
+        //}
+        
+        AddItemsRecursive(SceneManager.SceneRoot);
+    }
+
+    private void AddItemsRecursive(SceneTreeObject sto)
+    {
+        foreach (var child in sto.Children) 
         {
             var newItem = Instantiate(itemTemplate, transform).GetComponentInChildren<HierarchyViewItem>();
-            newItem.entity = entity;
+            newItem.entity = child as Entity;
             
             newItem.UpdateVisuals();
+
+            AddItemsRecursive(child);
         }
-        
     }
+
 
     private void RemoveAllHierarchyItems()
     {

@@ -16,8 +16,8 @@ public class HierarchyViewItem : MonoBehaviour,ISerializedFieldToStatic,IPointer
     [NonSerialized]
     public Entity entity;
 
-    [NonSerialized]
-    public int indentLevel = 0;
+    //[NonSerialized]
+    //public int indentLevel = 0;
 
     private bool IsPrimarySelected => entity == SceneManager.PrimarySelectedEntity;
     private bool IsSecondarySelected => SceneManager.SecondarySelectedEntity.Contains(entity);
@@ -50,25 +50,46 @@ public class HierarchyViewItem : MonoBehaviour,ISerializedFieldToStatic,IPointer
     public void UpdateVisuals()
     {
         nameText.text = entity.ShownName;
-        nameText.margin = new Vector4((indentLevel + 1) * 20f,0,0,0);
+        nameText.margin = new Vector4((entity.Level + 1) * 20f,0,0,0);
         nameText.color = 
             IsPrimarySelected ? _primarySelectionBlue : 
             IsSecondarySelected ? _secondarySelectionBlue : _defaultWhite;
     }
 
-    public void MoveBefore(Entity entity)
+    public void MoveBefore(Entity otherEntity)
     {
-        Debug.Log("Move before "+entity.ShownName);
+        Debug.Log("Move before "+otherEntity.ShownName);
+        entity.Parent = otherEntity.Parent;
+        entity.HierarchyOrder = otherEntity.HierarchyOrder-0.5f;
+        NormalizeHierarchyOrderValues.Normalize();
+        SceneManager.OnUpdateHierarchy.Invoke();
     }
 
-    public void MoveAfter(Entity entity)
+    public void MoveAfter(Entity otherEntity)
     {
-        Debug.Log("Move after "+entity.ShownName);
+        Debug.Log("Move after "+otherEntity.ShownName);
+        entity.Parent = otherEntity.Parent;
+        entity.HierarchyOrder = otherEntity.HierarchyOrder+0.5f;
+        NormalizeHierarchyOrderValues.Normalize();
+        SceneManager.OnUpdateHierarchy.Invoke();
     }
 
-    public void MoveToChild(Entity entity)
+    public void MoveLast()
     {
-        Debug.Log("Move to child of "+entity.ShownName);
+        Debug.Log("Move to last place");
+        entity.Parent = SceneManager.SceneRoot;
+        entity.HierarchyOrder = float.MaxValue;
+        NormalizeHierarchyOrderValues.Normalize();
+        SceneManager.OnUpdateHierarchy.Invoke();
+    }
+
+    public void MoveToChild(Entity otherEntity)
+    {
+        Debug.Log("Move to child of "+otherEntity.ShownName);
+        entity.Parent = otherEntity;
+        entity.HierarchyOrder = float.MaxValue;
+        NormalizeHierarchyOrderValues.Normalize();
+        SceneManager.OnUpdateHierarchy.Invoke();
     }
 
     public void SelectEntity()
@@ -120,7 +141,7 @@ public class HierarchyViewItem : MonoBehaviour,ISerializedFieldToStatic,IPointer
             IsPrimarySelected ? _primarySelectionBlue : 
             IsSecondarySelected ? _secondarySelectionBlue : _defaultWhite;
 
-        
+        Debug.Log(SceneManager.EntityParent.GetComponent<RootSceneObject>().GetTree());
     }
 
     public void OnDrag(PointerEventData eventData)
