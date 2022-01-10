@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 public static class StaticUtils
 {
@@ -59,5 +61,13 @@ public static class StaticUtils
         }
 
         return retVal;
+    }
+
+    public static IEnumerable<Transform> Children(this Transform t)
+    {
+        foreach (Transform child in t)
+        {
+            yield return child;
+        }
     }
 }

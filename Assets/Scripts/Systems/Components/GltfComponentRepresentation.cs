@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Siccity.GLTFUtility;
 using UnityEngine;
 
@@ -25,7 +26,7 @@ public class GltfComponentRepresentation : MonoBehaviour
         if (shownAsset != gltfShape.asset)
         {
             Debug.Log("Updating GLTF Component representation");
-            
+
             shownAsset = gltfShape.asset;
             Importer.LoadFromFileAsync(SceneManager.DclProjectPath + "/" + gltfShape.asset.gltfPath, new ImportSettings() { }, (
                 (o, clips) =>
@@ -39,30 +40,30 @@ public class GltfComponentRepresentation : MonoBehaviour
                     o.transform.localPosition = Vector3.zero;
                     o.transform.localScale = Vector3.one;
                     o.transform.localRotation = Quaternion.identity;
-                    var visibleChildren = new List<Transform>();
 
-                    if (o.transform.childCount == 0)
-                    {
-                        if (!o.name.EndsWith("_collider"))
-                        {
-                            visibleChildren.Add(o.transform);
-                        }
-                    }
-                    else
-                    {
-                        foreach (Transform child in o.transform)
-                        {
-                            if (child.name.EndsWith("_collider"))
-                            {
-                                child.gameObject.SetActive(false);
-                            }
-                            else
-                            {
-                                visibleChildren.Add(child);
-                            }
-                        }
-                    }
 
+                    var allTransforms = new List<Transform>(); // all loaded transforms including all children of any level
+
+                    var stack = new Stack<Transform>();
+                    stack.Push(o.transform);
+                    while(stack.Any())
+                    {
+                        var next = stack.Pop();
+                        allTransforms.Add(next);
+
+                        foreach(var child in next.Children())
+                            stack.Push(child);
+                    }
+                    
+
+                    allTransforms
+                        .Where(t => t.name.EndsWith("_collider"))
+                        .Where(t => t.TryGetComponent<MeshFilter>(out _))
+                        .Forall(t => t.gameObject.SetActive(false));
+
+                    var visibleChildren = allTransforms
+                        .Where(t => !t.name.EndsWith("_collider"))
+                        .Where(t => t.TryGetComponent<MeshFilter>(out _));
 
 
                     foreach (var child in visibleChildren)
