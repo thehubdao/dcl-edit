@@ -7,7 +7,17 @@ using UnityEngine;
 
 public class HierarchyView : MonoBehaviour
 {
-    public GameObject itemTemplate;
+    [SerializeField]
+    private GameObject itemTemplate;
+
+    [SerializeField]
+    private GameObject dropIndicatorTemplate;
+
+
+
+    [NonSerialized]
+    public DropIndicatorUI dropIndicator;
+
 
     void Start()
     {
@@ -46,6 +56,9 @@ public class HierarchyView : MonoBehaviour
         //    
         //    newItem.UpdateVisuals();
         //}
+
+        dropIndicator = Instantiate(dropIndicatorTemplate, transform).GetComponent<DropIndicatorUI>();
+        dropIndicator.HideIndicator();
         
         AddItemsRecursive(SceneManager.SceneRoot);
     }

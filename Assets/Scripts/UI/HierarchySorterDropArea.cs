@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 
 public class HierarchySorterDropArea : MonoBehaviour,IDropHandler
 {
-    enum DropPlace
+    public enum DropPlace
     {
         Before,
         Child,
@@ -14,10 +14,10 @@ public class HierarchySorterDropArea : MonoBehaviour,IDropHandler
     }
     
     [SerializeField]
-    private HierarchyViewItem _ownViewItem;
+    public HierarchyViewItem ownViewItem;
 
     [SerializeField]
-    private DropPlace place;
+    public DropPlace place;
 
 
     public void OnDrop(PointerEventData eventData)
@@ -29,13 +29,13 @@ public class HierarchySorterDropArea : MonoBehaviour,IDropHandler
             switch (place)
             {
                 case DropPlace.Before:
-                    viewItem.MoveBefore(_ownViewItem.entity);
+                    viewItem.MoveBefore(ownViewItem.entity);
                     break;
                 case DropPlace.Child:
-                    viewItem.MoveToChild(_ownViewItem.entity);
+                    viewItem.MoveToChild(ownViewItem.entity);
                     break;
                 case DropPlace.After:
-                    viewItem.MoveAfter(_ownViewItem.entity);
+                    viewItem.MoveAfter(ownViewItem.entity);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

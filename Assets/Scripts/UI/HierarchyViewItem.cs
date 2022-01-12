@@ -143,13 +143,29 @@ public class HierarchyViewItem : MonoBehaviour,ISerializedFieldToStatic,IPointer
 
         Debug.Log(SceneManager.EntityParent.GetComponent<RootSceneObject>().GetTree());
     }
-
+    
     public void OnDrag(PointerEventData eventData)
     {
         //Debug.Log("OnDrag");
         if(_dragCopy != null)
         {
             _dragCopy.GetComponent<RectTransform>().anchoredPosition += eventData.delta / CanvasManager.MainCanvas.scaleFactor;
+        }
+
+
+        var indicatorWasSet = 
+            eventData.hovered // All hovered objects
+            .Where(o => o.TryGetComponent<HierarchySorterDropArea>(out _)) // The hovered objects that contain a HierarchySorterDropArea
+            .Select(o => o.GetComponent<HierarchySorterDropArea>()) // The HierarchySorterDropAreas from those objects
+            .Any(dropArea => // Set indicator to the fist available HierarchySorterDropArea
+            {
+                GetComponentInParent<HierarchyView>().dropIndicator.SetIndicatorToItem(dropArea.ownViewItem, dropArea.place);
+                return true;
+            });
+
+        if (!indicatorWasSet) // Hide indicator when no HierarchySorterDropArea was hovered
+        {
+            GetComponentInParent<HierarchyView>().dropIndicator.HideIndicator();
         }
     }
 
