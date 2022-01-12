@@ -47,7 +47,7 @@ public abstract class SceneTreeObject : MonoBehaviour
         }
     }
 
-    public int ChildCount => childParent.childCount;
+    public int AllChildCount => GetComponentsInChildren<SceneTreeObject>().Length - 1;
 
     public SceneTreeObject LastChild => Children.Any() ? Children.Last() : null;
 

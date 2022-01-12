@@ -68,8 +68,18 @@ public class HierarchyViewItem : MonoBehaviour,ISerializedFieldToStatic,IPointer
     public void MoveAfter(Entity otherEntity)
     {
         Debug.Log("Move after "+otherEntity.ShownName);
-        entity.Parent = otherEntity.Parent;
-        entity.HierarchyOrder = otherEntity.HierarchyOrder+0.5f;
+
+        if (otherEntity.AllChildCount > 0)
+        {
+            entity.Parent = otherEntity;
+            entity.HierarchyOrder = -1;
+        }
+        else
+        {
+            entity.Parent = otherEntity.Parent;
+            entity.HierarchyOrder = otherEntity.HierarchyOrder+0.5f;
+        }
+
         NormalizeHierarchyOrderValues.Normalize();
         SceneManager.OnUpdateHierarchy.Invoke();
     }

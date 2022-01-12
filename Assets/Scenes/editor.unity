@@ -9355,6 +9355,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7716862978317634560, guid: 969af96d88b4e0149aad8d63dc2b5057, type: 3}
+      propertyPath: m_Padding.m_Bottom
+      value: 300
+      objectReference: {fileID: 0}
+    - target: {fileID: 7716862978317634560, guid: 969af96d88b4e0149aad8d63dc2b5057, type: 3}
       propertyPath: m_ChildControlHeight
       value: 1
       objectReference: {fileID: 0}
