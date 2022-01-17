@@ -58,7 +58,7 @@ public class Scale : EntityManipulator
 
     public override void Change(Vector3 globalChange, Vector3 localChange, Vector3 cameraSpaceChange, Camera gizmoCamera)
     {
-        var entities = SceneManager.AllSelectedEntities;
+        var entities = SceneManager.AllSelectedEntitiesWithoutChildren;
         
         var snappedChange = 0f;
 
