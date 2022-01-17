@@ -65,6 +65,25 @@ public abstract class SceneTreeObject : MonoBehaviour
         }
     }
 
+    public SceneTreeObject PreviousSibling 
+    {
+        get
+        {
+            SceneTreeObject lastSibling = null;
+            foreach (var sibling in Parent.Children)
+            {
+                if (sibling._hierarchyOrder >= _hierarchyOrder)
+                {
+                    return lastSibling;
+                }
+
+                lastSibling = sibling;
+            }
+
+            return null;
+        }
+    }
+    
     public string GetTree(int level = 0)
     {
         var retVal = "";

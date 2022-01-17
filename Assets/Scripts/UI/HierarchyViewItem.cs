@@ -56,19 +56,62 @@ public class HierarchyViewItem : MonoBehaviour,ISerializedFieldToStatic,IPointer
             IsSecondarySelected ? _secondarySelectionBlue : _defaultWhite;
     }
 
+    private class ChangeHierarchyUndoRecorder
+    {
+        private SceneTreeObject oldParent;
+        private SceneTreeObject oldPrevious;
+        public ChangeHierarchyUndoRecorder(SceneTreeObject entity)
+        {
+            this.oldParent = entity.Parent;
+            this.oldPrevious = entity.PreviousSibling;
+        }
+
+        public void StopRecording(SceneTreeObject entity)
+        {
+            var currentParent = entity.Parent;
+            var currentPrevious = entity.PreviousSibling;
+
+
+            UndoManager.RecordUndoItem(
+                "Changed Hierarchy",
+                () =>
+                {
+                    entity.Parent = oldParent;
+                    entity.HierarchyOrder = oldPrevious.HierarchyOrder+0.5f;
+                    
+                    NormalizeHierarchyOrderValues.Normalize();
+                    SceneManager.OnUpdateHierarchy.Invoke();
+                },
+                () =>
+                {
+                    entity.Parent = currentParent;
+                    entity.HierarchyOrder = currentPrevious.HierarchyOrder + 0.5f;
+                    
+                    NormalizeHierarchyOrderValues.Normalize();
+                    SceneManager.OnUpdateHierarchy.Invoke();
+                }
+                );
+        }
+
+    }
+
     public void MoveBefore(Entity otherEntity)
     {
         Debug.Log("Move before "+otherEntity.ShownName);
+        var undoItemReorder = new ChangeHierarchyUndoRecorder(entity);
         entity.Parent = otherEntity.Parent;
         entity.HierarchyOrder = otherEntity.HierarchyOrder-0.5f;
         NormalizeHierarchyOrderValues.Normalize();
         SceneManager.OnUpdateHierarchy.Invoke();
+        undoItemReorder.StopRecording(entity);
+
     }
 
     public void MoveAfter(Entity otherEntity)
     {
         Debug.Log("Move after "+otherEntity.ShownName);
-
+        
+        var undoItemReorder = new ChangeHierarchyUndoRecorder(entity);
         if (otherEntity.AllChildCount > 0)
         {
             entity.Parent = otherEntity;
@@ -82,24 +125,29 @@ public class HierarchyViewItem : MonoBehaviour,ISerializedFieldToStatic,IPointer
 
         NormalizeHierarchyOrderValues.Normalize();
         SceneManager.OnUpdateHierarchy.Invoke();
+        undoItemReorder.StopRecording(entity);
     }
 
     public void MoveLast()
     {
         Debug.Log("Move to last place");
+        var undoItemReorder = new ChangeHierarchyUndoRecorder(entity);
         entity.Parent = SceneManager.SceneRoot;
         entity.HierarchyOrder = float.MaxValue;
         NormalizeHierarchyOrderValues.Normalize();
         SceneManager.OnUpdateHierarchy.Invoke();
+        undoItemReorder.StopRecording(entity);
     }
 
     public void MoveToChild(Entity otherEntity)
     {
         Debug.Log("Move to child of "+otherEntity.ShownName);
+        var undoItemReorder = new ChangeHierarchyUndoRecorder(entity);
         entity.Parent = otherEntity;
         entity.HierarchyOrder = float.MaxValue;
         NormalizeHierarchyOrderValues.Normalize();
         SceneManager.OnUpdateHierarchy.Invoke();
+        undoItemReorder.StopRecording(entity);
     }
 
     public void SelectEntity()
