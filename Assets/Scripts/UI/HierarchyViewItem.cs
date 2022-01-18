@@ -40,6 +40,11 @@ public class HierarchyViewItem : MonoBehaviour,ISerializedFieldToStatic,IPointer
     private static Color _primarySelectionBlue;
     private static Color _secondarySelectionBlue;
 
+
+    [SerializeField]
+    private CollapseArrowUI _collapseArrow;
+
+    
     public void SetupStatics()
     {
         _defaultWhite = defaultWhite;
@@ -50,10 +55,19 @@ public class HierarchyViewItem : MonoBehaviour,ISerializedFieldToStatic,IPointer
     public void UpdateVisuals()
     {
         nameText.text = entity.ShownName;
-        nameText.margin = new Vector4((entity.Level + 1) * 20f,0,0,0);
+        //nameText.margin = new Vector4((entity.Level + 2) * 20f,0,0,0);
         nameText.color = 
             IsPrimarySelected ? _primarySelectionBlue : 
             IsSecondarySelected ? _secondarySelectionBlue : _defaultWhite;
+
+        GetComponent<RectTransform>().SetLeft(entity.Level*20f);
+        
+        _collapseArrow.gameObject.SetActive(entity.AllChildCount > 0);
+
+        _collapseArrow.gameObject.GetComponent<RectTransform>().eulerAngles = 
+            entity.CollapsedChildren ? 
+                new Vector3(0, 0, 90):
+                new Vector3(0, 0, 0);
     }
 
     private class ChangeHierarchyUndoRecorder

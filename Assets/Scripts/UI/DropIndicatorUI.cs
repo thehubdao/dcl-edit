@@ -27,7 +27,7 @@ public class DropIndicatorUI : MonoBehaviour
                 _thisRectTransform.anchoredPosition =
                     item.transform.parent.GetComponent<RectTransform>().anchoredPosition;
 
-                _lineRectTransform.SetLeft((item.entity.Level + 1) * 20);
+                _lineRectTransform.SetLeft((item.entity.Level + 1.25f) * 20);
 
                 break;
 
@@ -36,7 +36,7 @@ public class DropIndicatorUI : MonoBehaviour
                     item.transform.parent.GetComponent<RectTransform>().anchoredPosition
                     - new Vector2(0, 30);
 
-                _lineRectTransform.SetLeft((item.entity.Level + (item.entity.AllChildCount > 0 ? 2 : 1)) * 20);
+                _lineRectTransform.SetLeft((item.entity.Level + (item.entity.AllChildCount > 0 ? 2 : 1.25f)) * 20);
 
                 break;
 
@@ -45,7 +45,7 @@ public class DropIndicatorUI : MonoBehaviour
                     item.transform.parent.GetComponent<RectTransform>().anchoredPosition
                     - new Vector2(0, (item.entity.AllChildCount + 1) * 30);
 
-                _lineRectTransform.SetLeft((item.entity.Level + 2) * 20);
+                _lineRectTransform.SetLeft((item.entity.Level + 2.25f) * 20);
 
                 break;
 

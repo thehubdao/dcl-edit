@@ -72,7 +72,8 @@ public class HierarchyView : MonoBehaviour
             
             newItem.UpdateVisuals();
 
-            AddItemsRecursive(child);
+            if(!newItem.entity.CollapsedChildren)
+                AddItemsRecursive(child);
         }
     }
 

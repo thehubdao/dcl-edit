@@ -86,6 +86,7 @@ public class SceneSaveSystem : MonoBehaviour
                 newEntity.CustomName = entity.name;
                 newEntity.uniqueNumber = entity.uniqueNumber;
                 newEntity.Exposed = entity.exposed;
+                newEntity.CollapsedChildren = entity.collapsedChildren;
                 parentNumbers.Add(newEntity,entity.parent);
                 uniqueNumbers.Add(entity.uniqueNumber, newEntity);
 

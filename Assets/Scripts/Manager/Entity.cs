@@ -18,6 +18,7 @@ public class Entity : SceneTreeObject
             uniqueNumber = e.uniqueNumber;
             parent = (e.Parent as Entity)?.uniqueNumber ?? -1;
             exposed = e.Exposed;
+            collapsedChildren = e.CollapsedChildren;
             components = e.Components.Select(c => new EntityComponent.Json(c)).ToList();
         }
 
@@ -26,6 +27,7 @@ public class Entity : SceneTreeObject
         public int uniqueNumber;
         public int parent;
         public bool exposed;
+        public bool collapsedChildren;
         public List<EntityComponent.Json> components;
     }
 

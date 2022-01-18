@@ -83,6 +83,18 @@ public abstract class SceneTreeObject : MonoBehaviour
             return null;
         }
     }
+
+    public bool CollapsedChildren
+    {
+        get => _collapsedChildren;
+        set
+        {
+            _collapsedChildren = value;
+            SceneManager.OnUpdateHierarchy.Invoke();
+        }
+    }
+
+    private bool _collapsedChildren = false;
     
     public string GetTree(int level = 0)
     {
