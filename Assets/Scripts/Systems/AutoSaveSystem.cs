@@ -14,7 +14,7 @@ public class AutoSaveSystem : MonoBehaviour
         StartCoroutine(AutoSaveCoroutine());
     }
 
-    private UndoManager.UndoItem _lastSavedAtUndoItemReference;
+    private UndoManager.UndoItem? _lastSavedAtUndoItemReference;
 
     private IEnumerator AutoSaveCoroutine()
     {
@@ -22,12 +22,23 @@ public class AutoSaveSystem : MonoBehaviour
         {
             yield return new WaitForSeconds(SaveIntervalInSeconds);
 
-            if ( !_lastSavedAtUndoItemReference.Equals(UndoManager.CurrentItem))
+            UndoManager.UndoItem? currentUndoItem = null;
+
+            try
+            {
+                currentUndoItem = UndoManager.CurrentItem;
+            }
+            catch
+            {
+                // ignored
+            }
+
+            if ( !_lastSavedAtUndoItemReference.Equals(currentUndoItem))
             {
                 Debug.Log("Auto Saving");
                 
                 SceneSaveSystem.Save();
-                _lastSavedAtUndoItemReference = UndoManager.CurrentItem;
+                _lastSavedAtUndoItemReference = currentUndoItem;
             }
             else
             {

@@ -79,7 +79,7 @@ public class Translate : EntityManipulator
 
     public override void Change(Vector3 globalChange, Vector3 localChange, Vector3 cameraSpaceChange, Camera gizmoCamera)
     {
-        var entities = SceneManager.AllSelectedEntities.Select(entity => entity.transform);
+        var entities = SceneManager.AllSelectedEntitiesWithoutChildren.Select(entity => entity.transform);
         var primaryEntity = SceneManager.PrimarySelectedEntity;
 
         //foreach (var entity in SceneManager.AllSelectedEntities.Select(entity => entity.transform))

@@ -61,7 +61,7 @@ public class Rotate : EntityManipulator
 
         var snappedAngle = 0f;
 
-        var entities = SceneManager.AllSelectedEntities.Select(entity => entity.transform);
+        var entities = SceneManager.AllSelectedEntitiesWithoutChildren.Select(entity => entity.transform);
         var primaryEntity = SceneManager.PrimarySelectedEntity;
 
         Vector3 axis;

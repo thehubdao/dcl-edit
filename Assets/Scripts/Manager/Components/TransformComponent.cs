@@ -51,8 +51,8 @@ public class TransformComponent : EntityComponent
     {
         //Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator = ".";
 
-        var pos = transform.position;
-        var rot = transform.rotation;
+        var pos = transform.localPosition;
+        var rot = transform.localRotation;
         var scale = transform.localScale;
 
         return new Ts(InternalComponentSymbol,

@@ -26,6 +26,8 @@ public class SceneSaveSystem : MonoBehaviour
 
     public static void Save()
     {
+        NormalizeHierarchyOrderValues.Normalize();
+
         var jsonString = SceneManager.Entities.ToJson();
         //Debug.Log(jsonString);
 
@@ -73,14 +75,20 @@ public class SceneSaveSystem : MonoBehaviour
                 Destroy(entity.gameObject);
             }
 
+            var parentNumbers = new Dictionary<Entity, int>();
+            var uniqueNumbers = new Dictionary<int, Entity>();
             foreach (var entity in entities.entities)
             {
                 var newEntityGameObject = Instantiate(SceneManager.EntityTemplate, SceneManager.EntityParent);
                 var newEntity = newEntityGameObject.GetComponent<Entity>();
 
+                newEntity.HierarchyOrder = entity.hierarchyOrder;
                 newEntity.CustomName = entity.name;
                 newEntity.uniqueNumber = entity.uniqueNumber;
                 newEntity.Exposed = entity.exposed;
+                newEntity.CollapsedChildren = entity.collapsedChildren;
+                parentNumbers.Add(newEntity,entity.parent);
+                uniqueNumbers.Add(entity.uniqueNumber, newEntity);
 
                 foreach (var component in entity.components)
                 {
@@ -96,6 +104,14 @@ public class SceneSaveSystem : MonoBehaviour
                     newComponent.ApplySpecificJson(component.specifics);
                 }
             }
+
+            foreach (var entity in SceneManager.Entities)
+            {
+                entity.Parent = uniqueNumbers.TryGetValue(parentNumbers[entity], out var e)
+                    ? (SceneTreeObject)e
+                    : (SceneTreeObject)SceneManager.SceneRoot;
+            }
+            
 
             SceneManager.ChangedHierarchy();
         }

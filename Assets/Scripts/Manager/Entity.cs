@@ -6,23 +6,39 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using static System.Char;
 
-public class Entity : MonoBehaviour
+public class Entity : SceneTreeObject
 {
     [Serializable]
-    public struct Json
+    public class Json
     {
         public Json(Entity e)
         {
+            hierarchyOrder = e.HierarchyOrder;
             name = e.CustomName;
             uniqueNumber = e.uniqueNumber;
+            parent = (e.Parent as Entity)?.uniqueNumber ?? -1;
             exposed = e.Exposed;
+            collapsedChildren = e.CollapsedChildren;
             components = e.Components.Select(c => new EntityComponent.Json(c)).ToList();
         }
 
+        public float hierarchyOrder;
         public string name;
         public int uniqueNumber;
+        public int parent;
         public bool exposed;
+        public bool collapsedChildren;
         public List<EntityComponent.Json> components;
+    }
+
+    public override SceneTreeObject Parent
+    {
+        get => transform.parent.GetComponentInParent<SceneTreeObject>();
+        set
+        {
+            transform.parent = value.childParent;
+            SceneManager.OnUpdateHierarchy.Invoke();
+        }
     }
 
     // Names
@@ -53,7 +69,7 @@ public class Entity : MonoBehaviour
         get => _customName;
         set
         {
-            _customName = value; 
+            _customName = value;
             ReevaluateExposeStatus();
         }
     }
@@ -85,7 +101,7 @@ public class Entity : MonoBehaviour
 
     public int uniqueNumber = -1;
 
-    public static int uniqueNumberCounter = 0;
+    public static int uniqueNumberCounter = 1;
 
     [SerializeField]
     private bool _exposed = false;
@@ -150,9 +166,7 @@ public class Entity : MonoBehaviour
 
 
     [Space]
-    public GameObject gizmos;
     public GameObject componentsParent;
-
 
 
     public IEnumerable<EntityComponent> Components
@@ -166,6 +180,7 @@ public class Entity : MonoBehaviour
     }
 
 
+
     /// <summary>
     /// will be true, when the game object is to be destroyed
     /// </summary>
@@ -177,9 +192,9 @@ public class Entity : MonoBehaviour
         if (uniqueNumber < 0)
             uniqueNumber = uniqueNumberCounter++;
     }
-    
+
     //private static int nameFillCount = 0;
-    
+
     public string ToJson()
     {
         return JsonUtility.ToJson(new Json(this));

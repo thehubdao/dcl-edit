@@ -221,10 +221,41 @@ public class SceneManager : Manager, ISerializedFieldToStatic
     }
 
     public static IEnumerable<Entity> AllSelectedEntities => _secondarySelectedEntity.Append(PrimarySelectedEntity).Where(entity => entity!=null);
+
+    public static IEnumerable<Entity> AllSelectedEntitiesWithoutChildren
+    {
+        get
+        {
+            var allSelected = AllSelectedEntities.ToList();
+            var selectedWithoutChildren = new List<Entity>();
+
+            // Walk though entire scene tree
+            var currentTreeObject = new Stack<SceneTreeObject>();
+            currentTreeObject.Push(SceneRoot);
+
+            while (currentTreeObject.Count > 0)
+            {
+                foreach (var child in currentTreeObject.Pop().Children)
+                {
+                    if (allSelected.Contains(child))
+                    {
+                        selectedWithoutChildren.Add(child as Entity); // if current object is selected, add it to returned list
+                    }
+                    else
+                    {
+                        currentTreeObject.Push(child); // else push it to the stack to be traversed
+                    }
+                }
+            }
+
+            return selectedWithoutChildren.AsEnumerable();
+        }
+    }
     
 
     public static UnityEvent OnSelectedEntityTransformChange = new UnityEvent();
-
+    
+    public static RootSceneObject SceneRoot => EntityParent.GetComponent<RootSceneObject>();
 }
 
 public class EntityArray : List<Entity>
