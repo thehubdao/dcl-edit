@@ -41,15 +41,15 @@ public class Scale : EntityManipulator
         _snapLeftOvers += change;
         var newChange = 0f;
 
-        while (_snapLeftOvers > SnappingManager.scaleSnapDistance / 2)
+        while (_snapLeftOvers > SnappingManager.ScaleSnapDistance / 2)
         {
-            newChange += SnappingManager.scaleSnapDistance;
-            _snapLeftOvers -= SnappingManager.scaleSnapDistance;
+            newChange += SnappingManager.ScaleSnapDistance;
+            _snapLeftOvers -= SnappingManager.ScaleSnapDistance;
         }
-        while (_snapLeftOvers < -SnappingManager.scaleSnapDistance / 2)
+        while (_snapLeftOvers < -SnappingManager.ScaleSnapDistance / 2)
         {
-            newChange -= SnappingManager.scaleSnapDistance;
-            _snapLeftOvers += SnappingManager.scaleSnapDistance;
+            newChange -= SnappingManager.ScaleSnapDistance;
+            _snapLeftOvers += SnappingManager.ScaleSnapDistance;
         }
 
 

@@ -15,9 +15,9 @@ public class SnappingManager : Manager
     }
 
 
-    public static float translateSnapDistance = 0.25f;
-    public static float rotateSnapDistance = 15f;
-    public static float scaleSnapDistance = 0.25f;
+    public static float TranslateSnapDistance => ProjectData.translateSnapStep;
+    public static float RotateSnapDistance => ProjectData.rotateSnapStep;
+    public static float ScaleSnapDistance => ProjectData.scaleSnapStep;
 
     public static UnityEvent onSnappingSettingsChange = new UnityEvent();
 

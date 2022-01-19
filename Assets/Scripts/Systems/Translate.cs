@@ -41,37 +41,37 @@ public class Translate : EntityManipulator
         _snapLeftOvers += change;
         var newChange = Vector3.zero;
 
-        while (_snapLeftOvers.x > SnappingManager.translateSnapDistance / 2)
+        while (_snapLeftOvers.x > SnappingManager.TranslateSnapDistance / 2)
         {
-            newChange.x += SnappingManager.translateSnapDistance;
-            _snapLeftOvers.x -= SnappingManager.translateSnapDistance;
+            newChange.x += SnappingManager.TranslateSnapDistance;
+            _snapLeftOvers.x -= SnappingManager.TranslateSnapDistance;
         }
-        while (_snapLeftOvers.x < -SnappingManager.translateSnapDistance / 2)
+        while (_snapLeftOvers.x < -SnappingManager.TranslateSnapDistance / 2)
         {
-            newChange.x -= SnappingManager.translateSnapDistance;
-            _snapLeftOvers.x += SnappingManager.translateSnapDistance;
-        }
-
-        while (_snapLeftOvers.y > SnappingManager.translateSnapDistance / 2)
-        {
-            newChange.y += SnappingManager.translateSnapDistance;
-            _snapLeftOvers.y -= SnappingManager.translateSnapDistance;
-        }
-        while (_snapLeftOvers.y < -SnappingManager.translateSnapDistance / 2)
-        {
-            newChange.y -= SnappingManager.translateSnapDistance;
-            _snapLeftOvers.y += SnappingManager.translateSnapDistance;
+            newChange.x -= SnappingManager.TranslateSnapDistance;
+            _snapLeftOvers.x += SnappingManager.TranslateSnapDistance;
         }
 
-        while (_snapLeftOvers.z > SnappingManager.translateSnapDistance / 2)
+        while (_snapLeftOvers.y > SnappingManager.TranslateSnapDistance / 2)
         {
-            newChange.z += SnappingManager.translateSnapDistance;
-            _snapLeftOvers.z -= SnappingManager.translateSnapDistance;
+            newChange.y += SnappingManager.TranslateSnapDistance;
+            _snapLeftOvers.y -= SnappingManager.TranslateSnapDistance;
         }
-        while (_snapLeftOvers.z < -SnappingManager.translateSnapDistance / 2)
+        while (_snapLeftOvers.y < -SnappingManager.TranslateSnapDistance / 2)
         {
-            newChange.z -= SnappingManager.translateSnapDistance;
-            _snapLeftOvers.z += SnappingManager.translateSnapDistance;
+            newChange.y -= SnappingManager.TranslateSnapDistance;
+            _snapLeftOvers.y += SnappingManager.TranslateSnapDistance;
+        }
+
+        while (_snapLeftOvers.z > SnappingManager.TranslateSnapDistance / 2)
+        {
+            newChange.z += SnappingManager.TranslateSnapDistance;
+            _snapLeftOvers.z -= SnappingManager.TranslateSnapDistance;
+        }
+        while (_snapLeftOvers.z < -SnappingManager.TranslateSnapDistance / 2)
+        {
+            newChange.z -= SnappingManager.TranslateSnapDistance;
+            _snapLeftOvers.z += SnappingManager.TranslateSnapDistance;
         }
 
         return newChange;

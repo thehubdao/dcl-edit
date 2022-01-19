@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class CanvasManager : Manager, ISerializedFieldToStatic
 {
@@ -21,4 +22,17 @@ public class CanvasManager : Manager, ISerializedFieldToStatic
         FloatingListItemParent = floatingListItemParent;
         MainCanvas = mainCanvas;
     }
+
+    public static float UiScale
+    {
+        get => PersistentData.UiScale;
+        set
+        {
+            PersistentData.UiScale = value;
+            PersistentData.UiScale = PersistentData.UiScale.Clamp(0.5f, 3f);
+            onUiChange.Invoke();
+        }
+    }
+
+    public static UnityEvent onUiChange = new UnityEvent();
 }
