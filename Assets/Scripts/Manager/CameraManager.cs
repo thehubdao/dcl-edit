@@ -9,9 +9,9 @@ public class CameraManager : Manager
     public static Camera MainCamera { get; set; }
 
 
-    private static float _cameraNormalFlySpeed = 20;
-    private static float _cameraFastFlySpeed = 50;
-    private static float _mouseSensitivity = 3;
+    private static float CameraNormalFlySpeed => PersistentData.CameraSpeed;
+    private static float CameraFastFlySpeed => CameraNormalFlySpeed * 3;
+    private static float MouseSensitivity => PersistentData.MouseSensitivity;
 
 
     private static Vector3 _position;
@@ -94,8 +94,8 @@ public class CameraManager : Manager
 
     public static void RotateStep(float directionX, float directionY)
     {
-        Yaw += directionX * _mouseSensitivity;
-        Pitch += directionY * -_mouseSensitivity;
+        Yaw += directionX * MouseSensitivity;
+        Pitch += directionY * -MouseSensitivity;
     }
 
     public static void MoveContinuously(Vector3 localDirection, bool isFast)
@@ -105,7 +105,7 @@ public class CameraManager : Manager
 
     public static void MoveStep(Vector3 localDirection, bool isFast)
     {
-        Position += Rotation * localDirection * (isFast ? _cameraFastFlySpeed : _cameraNormalFlySpeed);
+        Position += Rotation * localDirection * (isFast ? CameraFastFlySpeed : CameraNormalFlySpeed);
     }
     private static void MoveFixed(Vector3 localDirection)
     {
@@ -122,8 +122,8 @@ public class CameraManager : Manager
         MoveFixed(moveToPivot);
 
         // Rotate
-        Yaw += direction.x * _mouseSensitivity;
-        Pitch += direction.y * -_mouseSensitivity;
+        Yaw += direction.x * MouseSensitivity;
+        Pitch += direction.y * -MouseSensitivity;
 
         // Move back from pivot
         MoveFixed(-moveToPivot);

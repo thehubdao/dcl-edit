@@ -8,7 +8,10 @@ using UnityEngine;
 
 public static class StaticUtils
 {
-
+    public static float Clamp(this float value, float min, float max)
+    {
+        return Mathf.Clamp(value, min, max);
+    }
     public static void Forall<T>(this IEnumerable<T> Ts,Action<T> action)
     {
         foreach (var t in Ts)

@@ -38,15 +38,15 @@ public class Rotate : EntityManipulator
         _snapLeftOvers += change;
         var newChange = 0f;
 
-        while (_snapLeftOvers > SnappingManager.rotateSnapDistance / 2)
+        while (_snapLeftOvers > SnappingManager.RotateSnapDistance / 2)
         {
-            newChange += SnappingManager.rotateSnapDistance;
-            _snapLeftOvers -= SnappingManager.rotateSnapDistance;
+            newChange += SnappingManager.RotateSnapDistance;
+            _snapLeftOvers -= SnappingManager.RotateSnapDistance;
         }
-        while (_snapLeftOvers < -SnappingManager.rotateSnapDistance / 2)
+        while (_snapLeftOvers < -SnappingManager.RotateSnapDistance / 2)
         {
-            newChange -= SnappingManager.rotateSnapDistance;
-            _snapLeftOvers += SnappingManager.rotateSnapDistance;
+            newChange -= SnappingManager.RotateSnapDistance;
+            _snapLeftOvers += SnappingManager.RotateSnapDistance;
         }
 
 

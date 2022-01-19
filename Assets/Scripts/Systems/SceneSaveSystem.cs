@@ -27,20 +27,42 @@ public class SceneSaveSystem : MonoBehaviour
     public static void Save()
     {
         NormalizeHierarchyOrderValues.Normalize();
-
-        var jsonString = SceneManager.Entities.ToJson();
-        //Debug.Log(jsonString);
-
-        Directory.CreateDirectory(SceneManager.DclProjectPath + "/dcl-edit/saves");
+        
         try
         {
-            var fileWriter = new StreamWriter(SceneManager.DclProjectPath + "/dcl-edit/saves/save.json", false);
+            Directory.CreateDirectory(SceneManager.DclProjectPath + "/dcl-edit/saves");
+            try
+            {
+                var fileWriter = new StreamWriter(SceneManager.DclProjectPath + "/dcl-edit/saves/save.json", false);
 
-            fileWriter.WriteLine(jsonString);
+                fileWriter.WriteLine(SceneManager.Entities.ToJson());
 
-            fileWriter.Close();
+                fileWriter.Close();
 
-            HoverLabelManager.OpenLabel("Scene Saved");
+                HoverLabelManager.OpenLabel("Scene Saved");
+            }
+            catch (IOException)
+            {
+                Debug.LogError("Error while saving scene");
+                HoverLabelManager.OpenLabel("Error while saving scene");
+            }
+
+            try
+            {
+                var fileWriter = new StreamWriter(SceneManager.DclProjectPath + "/dcl-edit/saves/project.json", false);
+
+                fileWriter.WriteLine(ProjectData.ToJson());
+
+                fileWriter.Close();
+
+                HoverLabelManager.OpenLabel("Scene Saved");
+            }
+            catch (IOException)
+            {
+                Debug.LogError("Error while saving scene");
+                HoverLabelManager.OpenLabel("Error while saving scene");
+            }
+
         }
         catch (IOException)
         {
@@ -51,19 +73,27 @@ public class SceneSaveSystem : MonoBehaviour
 
     public static void Load()
     {
-        var saveFilePath = "";
+        var sceneSaveFilePath = "";
+        var projectSaveFilePath = "";
         if (File.Exists(SceneManager.DclProjectPath + "/dcl-edit/saves/save.json"))
         {
-            saveFilePath = SceneManager.DclProjectPath + "/dcl-edit/saves/save.json";
+            sceneSaveFilePath = SceneManager.DclProjectPath + "/dcl-edit/saves/save.json";
+            projectSaveFilePath = SceneManager.DclProjectPath + "/dcl-edit/saves/project.json";
         }
         else if (File.Exists(SceneManager.DclProjectPath + "/scene/scene.json"))
         {
-            saveFilePath = SceneManager.DclProjectPath + "/scene/scene.json";
+            sceneSaveFilePath = SceneManager.DclProjectPath + "/scene/scene.json";
+        }
+
+        if (projectSaveFilePath != "")
+        {
+            var projectJsonString = File.ReadAllText(projectSaveFilePath);
+            ProjectData.ApplyJsonString(projectJsonString);
         }
         
-        if(saveFilePath != "")
+        if(sceneSaveFilePath != "")
         {
-            var reader = new StreamReader(saveFilePath);
+            var reader = new StreamReader(sceneSaveFilePath);
             var entities = reader.ReadToEnd().FromJson();
             reader.Close();
 
