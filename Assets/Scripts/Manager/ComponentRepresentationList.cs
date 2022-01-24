@@ -20,6 +20,10 @@ public class ComponentRepresentationList : MonoBehaviour, ISerializedFieldToStat
     public static GameObject SphereShapeComponentInScene => _instance._sphereShapeComponentRepresentation;
     
     [SerializeField]
+    private GameObject _planeShapeComponentRepresentation = default;
+    public static GameObject PlaneShapeComponentInScene => _instance._planeShapeComponentRepresentation;
+    
+    [SerializeField]
     private GameObject _gltfShapeComponentRepresentation = default;
     public static GameObject GltfShapeComponentInScene => _instance._gltfShapeComponentRepresentation;
 
@@ -37,12 +41,17 @@ public class ComponentRepresentationList : MonoBehaviour, ISerializedFieldToStat
     public static GameObject SphereShapeComponentUI => _instance._sphereShapeComponentUI;
     
     [SerializeField]
+    private GameObject _planeShapeComponentUI = default;
+    public static GameObject PlaneShapeComponentUI => _instance._planeShapeComponentUI;
+    
+    [SerializeField]
     private GameObject _gltfShapeComponentUI = default;
     public static GameObject GltfShapeComponentUI => _instance._gltfShapeComponentUI;
     
     public static Type TransformComponentType = typeof(TransformComponent);
     public static Type BoxShapeComponentType = typeof(BoxShapeComponent);
     public static Type SphereShapeComponentType = typeof(SphereShapeComponent);
+    public static Type PlaneShapeComponentType = typeof(PlaneShapeComponent);
     public static Type GltfShapeComponentType = typeof(GLTFShapeComponent);
 
     public static Dictionary<string, Type> AllComponentTypes = new Dictionary<string, Type>()
@@ -50,6 +59,7 @@ public class ComponentRepresentationList : MonoBehaviour, ISerializedFieldToStat
         {"Transform", TransformComponentType},
         {"Box Shape", BoxShapeComponentType},
         {"Sphere Shape", SphereShapeComponentType},
+        {"Plane Shape", PlaneShapeComponentType},
         {"GLTF Shape", GltfShapeComponentType}
     };
     
