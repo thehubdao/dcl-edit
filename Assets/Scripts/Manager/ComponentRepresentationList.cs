@@ -28,6 +28,10 @@ public class ComponentRepresentationList : MonoBehaviour, ISerializedFieldToStat
     public static GameObject CylinderShapeComponentInScene => _instance._cylinderShapeComponentRepresentation;
     
     [SerializeField]
+    private GameObject _coneShapeComponentRepresentation = default;
+    public static GameObject ConeShapeComponentInScene => _instance._coneShapeComponentRepresentation;
+    
+    [SerializeField]
     private GameObject _gltfShapeComponentRepresentation = default;
     public static GameObject GltfShapeComponentInScene => _instance._gltfShapeComponentRepresentation;
 
@@ -53,6 +57,10 @@ public class ComponentRepresentationList : MonoBehaviour, ISerializedFieldToStat
     public static GameObject CylinderShapeComponentUI => _instance._cylinderShapeComponentUI;
     
     [SerializeField]
+    private GameObject _coneShapeComponentUi = default;
+    public static GameObject ConeShapeComponentUI => _instance._coneShapeComponentUi;
+    
+    [SerializeField]
     private GameObject _gltfShapeComponentUI = default;
     public static GameObject GltfShapeComponentUI => _instance._gltfShapeComponentUI;
     
@@ -61,6 +69,7 @@ public class ComponentRepresentationList : MonoBehaviour, ISerializedFieldToStat
     public static Type SphereShapeComponentType = typeof(SphereShapeComponent);
     public static Type PlaneShapeComponentType = typeof(PlaneShapeComponent);
     public static Type CylinderShapeComponentType = typeof(CylinderShapeComponent);
+    public static Type ConeShapeComponentType = typeof(ConeShapeComponent);
     public static Type GltfShapeComponentType = typeof(GLTFShapeComponent);
 
     public static Dictionary<string, Type> AllComponentTypes = new Dictionary<string, Type>()
@@ -70,21 +79,22 @@ public class ComponentRepresentationList : MonoBehaviour, ISerializedFieldToStat
         {"Sphere Shape", SphereShapeComponentType},
         {"Plane Shape", PlaneShapeComponentType},
         {"Cylinder Shape", CylinderShapeComponentType},
+        {"Cone Shape", ConeShapeComponentType},
         {"GLTF Shape", GltfShapeComponentType}
     };
     
 
-    public static Type GetComponentByName(string name)
-    {
-        return name switch
-        {
-            "transform" => TransformComponentType,
-            "boxShape" => BoxShapeComponentType,
-            "sphereShape" => SphereShapeComponentType,
-            "GLTFShape" => GltfShapeComponentType,
-            _ => throw new ArgumentOutOfRangeException(nameof(name), name, "Component name not found")
-        };
-    }
+    //public static Type GetComponentByName(string name)
+    //{
+    //    return name switch
+    //    {
+    //        "transform" => TransformComponentType,
+    //        "boxShape" => BoxShapeComponentType,
+    //        "sphereShape" => SphereShapeComponentType,
+    //        "GLTFShape" => GltfShapeComponentType,
+    //        _ => throw new ArgumentOutOfRangeException(nameof(name), name, "Component name not found")
+    //    };
+    //}
 
 
     private static ComponentRepresentationList _instance;

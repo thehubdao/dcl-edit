@@ -2900,12 +2900,14 @@ MonoBehaviour:
   _sphereShapeComponentRepresentation: {fileID: 5034175284151747857, guid: 7cfa1b7140dd6d547a5937e84e15fcd7, type: 3}
   _planeShapeComponentRepresentation: {fileID: 5034175284151747857, guid: 0577d97d4a5446f458854511b2092874, type: 3}
   _cylinderShapeComponentRepresentation: {fileID: 5034175284151747857, guid: ddbeaf4624450054abb43c5449a11f02, type: 3}
+  _coneShapeComponentRepresentation: {fileID: 5034175284151747857, guid: 16b2ecb715c9bd54bb6dae6f771ffe90, type: 3}
   _gltfShapeComponentRepresentation: {fileID: 5034175284151747857, guid: 462545f67f63c3b418ac7d1e8c8ff300, type: 3}
   _transformComponentUI: {fileID: 2633832700437191501, guid: dc1cbf2e2a541f04db0b350a6d165c31, type: 3}
   _boxShapeComponentUI: {fileID: 2633832700437191501, guid: b4c23951f9888ce4d9aa4215e235b710, type: 3}
   _sphereShapeComponentUI: {fileID: 2633832700437191501, guid: f05b191f69024b04bbb00857d9025512, type: 3}
   _planeShapeComponentUI: {fileID: 2633832700437191501, guid: 7da6239ad26faca449ae7326d87e581b, type: 3}
   _cylinderShapeComponentUI: {fileID: 2633832700437191501, guid: 29286a91731b4914693ca91f0ccf2804, type: 3}
+  _coneShapeComponentUi: {fileID: 2633832700437191501, guid: b1ad8946e82e1fa4e85b9c0100f28bf8, type: 3}
   _gltfShapeComponentUI: {fileID: 2633832700437191501, guid: 322dce32831d98540a8372c2265088ab, type: 3}
 --- !u!114 &399934157
 MonoBehaviour:
