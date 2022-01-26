@@ -103,7 +103,7 @@ public class SceneSaveSystem : MonoBehaviour
             {
                 entity.doomed = true;
                 Destroy(entity.gameObject);
-            }
+            } 
 
             var parentNumbers = new Dictionary<Entity, int>();
             var uniqueNumbers = new Dictionary<int, Entity>();
@@ -122,19 +122,12 @@ public class SceneSaveSystem : MonoBehaviour
 
                 foreach (var component in entity.components)
                 {
-                    EntityComponent newComponent = component.name switch
-                    {
-                        "transform" => newEntityGameObject.AddComponent<TransformComponent>(),
-                        "sphereShape" => newEntityGameObject.AddComponent<SphereShapeComponent>(),
-                        "boxShape" => newEntityGameObject.AddComponent<BoxShapeComponent>(),
-                        "planeShape" => newEntityGameObject.AddComponent<PlaneShapeComponent>(),
-                        "cylinderShape" => newEntityGameObject.AddComponent<CylinderShapeComponent>(),
-                        "coneShape" => newEntityGameObject.AddComponent<ConeShapeComponent>(),
-                        "GLTFShape" => newEntityGameObject.AddComponent<GLTFShapeComponent>(),
-                        _ => throw new NotImplementedException("Unknown component name: " + component.name)
-                    };
+                    var newComponent = 
+                        newEntityGameObject
+                            .AddComponent(ComponentRepresentationList.GetComponentByName(component.name)) 
+                            as EntityComponent;
 
-                    newComponent.ApplySpecificJson(component.specifics);
+                    newComponent?.ApplySpecificJson(component.specifics);
                 }
             }
 

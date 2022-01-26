@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class ComponentRepresentationList : MonoBehaviour, ISerializedFieldToStatic
 {
+    
 
     [Header("Scene Representations")]
     [SerializeField]
@@ -35,6 +36,10 @@ public class ComponentRepresentationList : MonoBehaviour, ISerializedFieldToStat
     private GameObject _gltfShapeComponentRepresentation = default;
     public static GameObject GltfShapeComponentInScene => _instance._gltfShapeComponentRepresentation;
 
+    [SerializeField]
+    private GameObject _materialComponentRepresentation = default;
+    public static GameObject MaterialComponentInScene => _instance._materialComponentRepresentation;
+    
     [Header("UI Representations")]
     [SerializeField]
     private GameObject _transformComponentUI = default;
@@ -64,6 +69,13 @@ public class ComponentRepresentationList : MonoBehaviour, ISerializedFieldToStat
     private GameObject _gltfShapeComponentUI = default;
     public static GameObject GltfShapeComponentUI => _instance._gltfShapeComponentUI;
     
+    [SerializeField]
+    private GameObject _materialComponentUI = default;
+    public static GameObject MaterialComponentUI => _instance._materialComponentUI;
+
+    // Template: comp
+    
+
     public static Type TransformComponentType = typeof(TransformComponent);
     public static Type BoxShapeComponentType = typeof(BoxShapeComponent);
     public static Type SphereShapeComponentType = typeof(SphereShapeComponent);
@@ -71,6 +83,7 @@ public class ComponentRepresentationList : MonoBehaviour, ISerializedFieldToStat
     public static Type CylinderShapeComponentType = typeof(CylinderShapeComponent);
     public static Type ConeShapeComponentType = typeof(ConeShapeComponent);
     public static Type GltfShapeComponentType = typeof(GLTFShapeComponent);
+    public static Type MaterialComponentType = typeof(MaterialComponent);
 
     public static Dictionary<string, Type> AllComponentTypes = new Dictionary<string, Type>()
     {
@@ -80,21 +93,26 @@ public class ComponentRepresentationList : MonoBehaviour, ISerializedFieldToStat
         {"Plane Shape", PlaneShapeComponentType},
         {"Cylinder Shape", CylinderShapeComponentType},
         {"Cone Shape", ConeShapeComponentType},
-        {"GLTF Shape", GltfShapeComponentType}
+        {"GLTF Shape", GltfShapeComponentType},
+        {"Material", MaterialComponentType}
     };
     
 
-    //public static Type GetComponentByName(string name)
-    //{
-    //    return name switch
-    //    {
-    //        "transform" => TransformComponentType,
-    //        "boxShape" => BoxShapeComponentType,
-    //        "sphereShape" => SphereShapeComponentType,
-    //        "GLTFShape" => GltfShapeComponentType,
-    //        _ => throw new ArgumentOutOfRangeException(nameof(name), name, "Component name not found")
-    //    };
-    //}
+    public static Type GetComponentByName(string name)
+    {
+        return name switch
+        {
+            "transform" => TransformComponentType,
+            "sphereShape" => SphereShapeComponentType,
+            "boxShape" => BoxShapeComponentType,
+            "planeShape" => PlaneShapeComponentType,
+            "cylinderShape" => CylinderShapeComponentType,
+            "coneShape" => ConeShapeComponentType,
+            "GLTFShape" => GltfShapeComponentType,
+            "material" => MaterialComponentType,  
+            _ => throw new ArgumentOutOfRangeException(nameof(name), name, "Component name not found")
+        };
+    }
 
 
     private static ComponentRepresentationList _instance;

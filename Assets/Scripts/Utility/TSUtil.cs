@@ -25,6 +25,11 @@ public static class TSUtil
         return (addNewKeyword ? "new " : "") + $"Quaternion({q.x.ToTS()}, {q.y.ToTS()}, {q.z.ToTS()}, {q.w.ToTS()})";
     }
 
+    public static string ToTS(this Color c, bool addNewKeyword = true)
+    {
+        return (addNewKeyword ? "new " : "") + $"Color3({c.r.ToTS()}, {c.g.ToTS()}, {c.b.ToTS()})";
+    }
+
     public static Vector3 OnGroundPlane(this Vector3 position)
     {
         return new Vector3(position.x,0, position.z);
