@@ -35,6 +35,11 @@ public class TransformUndo
 
             return false;
         }
+
+        public override int GetHashCode() // Overriding to shut up the compiler
+        {
+            return base.GetHashCode();
+        }
     }
 
     private IEnumerable<Entity> _entities;

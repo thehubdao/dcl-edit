@@ -32,6 +32,10 @@ public class MaterialComponent : EntityComponent
                 other.emissiveColor == emissiveColor;
         }
 
+        public override int GetHashCode() // Overriding to shut up the compiler
+        {
+            return base.GetHashCode();
+        }
     }
 
     [NonSerialized]

@@ -16,7 +16,7 @@ public class DropIndicatorUI : MonoBehaviour
 
     public void SetIndicatorToItem(HierarchyViewItem item, HierarchySorterDropArea.DropPlace place)
     {
-        Debug.Log("set indicator");
+        //Debug.Log("set indicator");
 
         _lineRectTransform.gameObject.SetActive(true);
 
@@ -57,7 +57,7 @@ public class DropIndicatorUI : MonoBehaviour
 
     public void HideIndicator()
     {
-        Debug.Log("hide indicator");
+        //Debug.Log("hide indicator");
 
         _lineRectTransform.gameObject.SetActive(false);
     }
