@@ -71,7 +71,9 @@ public class CameraManager : Manager
         {
             averageCenter += (Vector2)parcel * 16 + new Vector2(8, 8);
         }
-        averageCenter /= SceneManager.sceneJson.scene.Parcels.Length;
+
+        if(SceneManager.sceneJson.scene.Parcels.Length>0)
+            averageCenter /= SceneManager.sceneJson.scene.Parcels.Length;
 
         var averageCenterWorldPoint = new Vector3(averageCenter.x, 0, averageCenter.y);
         //Debug.DrawRay(averageCenterWorldPoint,Vector3.up,Color.red,10);
@@ -81,8 +83,13 @@ public class CameraManager : Manager
         // Move Camera up
         Yaw = 45;
         Pitch = 30;
+        
+        var dist = Mathf.Log(SceneManager.sceneJson.scene.Parcels.Length, 2);
 
-        MoveFixed(new Vector3(0, 0, -10 * Mathf.Log(SceneManager.sceneJson.scene.Parcels.Length,2)));
+        if (dist < 0)
+            dist = 0;
+
+        MoveFixed(new Vector3(0, 0, -10 * (dist + 1)));
 
         Pitch = 45;
     }
