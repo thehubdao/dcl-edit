@@ -91,7 +91,7 @@ public class Highlighter : Interface3DHover
 
         if (highlight != null)
         {
-            var targets = GetComponentsInChildren<Hilightable>();
+            var targets = OwnEntity.componentsParent.GetComponentsInChildren<Hilightable>();
 
             activeHighlights = new Highlight[targets.Length];
             for (int i = 0; i < targets.Length; i++)
