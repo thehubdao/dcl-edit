@@ -1,3 +1,5 @@
+#if UNITY_EDITOR
+
 using UnityEngine;
 using UnityEditor;
 
@@ -51,3 +53,5 @@ public class DclUtilityWindow : EditorWindow
         Selection.activeGameObject = SceneManager.PrimarySelectedEntity?.gameObject;
     }
 }
+
+#endif
