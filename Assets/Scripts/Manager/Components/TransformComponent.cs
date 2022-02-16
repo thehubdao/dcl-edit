@@ -47,7 +47,7 @@ public class TransformComponent : EntityComponent
     public override string ComponentName => "transform";
     public override int InspectorOrder => -100;
 
-    public override Ts GetTypeScript()
+    public override Ts? GetTypeScript()
     {
         //Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator = ".";
 

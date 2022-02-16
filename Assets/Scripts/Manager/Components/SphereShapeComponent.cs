@@ -22,7 +22,7 @@ public class SphereShapeComponent : EntityComponent
     public override string ComponentName => "sphereShape";
     public override int InspectorOrder => 100;
 
-    public override Ts GetTypeScript()
+    public override Ts? GetTypeScript()
     {
         return new Ts( InternalComponentSymbol, $"const {InternalComponentSymbol} = new SphereShape()\n");
     }

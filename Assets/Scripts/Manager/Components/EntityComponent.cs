@@ -72,7 +72,7 @@ public abstract class EntityComponent: MonoBehaviour
         public string setup;
     }
 
-    public abstract Ts GetTypeScript();
+    public abstract Ts? GetTypeScript();
     //{
     //    return new Ts( $"{entityName}setup", $"const {entityName}setup = new BoxShape()\n");
     //}

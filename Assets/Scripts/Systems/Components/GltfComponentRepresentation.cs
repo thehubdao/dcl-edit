@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Siccity.GLTFUtility;
 using UnityEngine;
@@ -17,70 +18,91 @@ public class GltfComponentRepresentation : MonoBehaviour
         });
     }
 
-    private AssetManager.Asset shownAsset = null;
+    private AssetManager.Asset _shownAsset = AssetManager.Asset.emptyAsset;
 
     public void UpdateVisuals(GLTFShapeComponent gltfShape)
     {
         //Debug.Log(SceneManager.DclProjectPath + "/" + gltfShape.glbPath);
 
-        if (shownAsset != gltfShape.asset)
+        if (_shownAsset != gltfShape.asset)
         {
             Debug.Log("Updating GLTF Component representation");
 
-            shownAsset = gltfShape.asset;
-            Importer.LoadFromFileAsync(SceneManager.DclProjectPath + "/" + gltfShape.asset.gltfPath, new ImportSettings() { }, (
-                (o, clips) =>
-                {
-                    foreach (Transform child in transform)
+            _shownAsset = gltfShape.asset;
+            try
+            {
+                if (gltfShape.asset == null)
+                    throw new IOException("No asset selected");
+
+                Importer.LoadFromFileAsync(
+                    SceneManager.DclProjectPath + "/" + gltfShape.asset.gltfPath,
+                    new ImportSettings() { },
+                    (o, clips) =>
                     {
-                        Destroy(child.gameObject);
-                    }
+                        foreach (Transform child in transform)
+                        {
+                            Destroy(child.gameObject);
+                        }
 
-                    o.transform.SetParent(transform);
-                    o.transform.localPosition = Vector3.zero;
-                    o.transform.localScale = Vector3.one;
-                    o.transform.localRotation = Quaternion.identity;
-
-
-                    var allTransforms = new List<Transform>(); // all loaded transforms including all children of any level
-
-                    var stack = new Stack<Transform>();
-                    stack.Push(o.transform);
-                    while(stack.Any())
-                    {
-                        var next = stack.Pop();
-                        allTransforms.Add(next);
-
-                        foreach(var child in next.Children())
-                            stack.Push(child);
-                    }
-                    
-
-                    allTransforms
-                        .Where(t => t.name.EndsWith("_collider"))
-                        .Where(t => t.TryGetComponent<MeshFilter>(out _))
-                        .Forall(t => t.gameObject.SetActive(false));
-
-                    var visibleChildren = allTransforms
-                        .Where(t => !t.name.EndsWith("_collider"))
-                        .Where(t => t.TryGetComponent<MeshFilter>(out _));
+                        o.transform.SetParent(transform);
+                        o.transform.localPosition = Vector3.zero;
+                        o.transform.localScale = Vector3.one;
+                        o.transform.localRotation = Quaternion.identity;
 
 
-                    foreach (var child in visibleChildren)
-                    {
-                        var colliderGameObject = Instantiate(new GameObject("Collider"), o.transform);
-                        colliderGameObject.transform.position = child.position;
-                        colliderGameObject.transform.rotation = child.rotation;
-                        colliderGameObject.transform.localScale = child.localScale;
+                        var allTransforms =
+                            new List<Transform>(); // all loaded transforms including all children of any level
 
-                        colliderGameObject.layer = LayerMask.NameToLayer("Entity");
-                        var newCollider = colliderGameObject.AddComponent<MeshCollider>();
-                        newCollider.sharedMesh = child.GetComponent<MeshFilter>().sharedMesh;
-                        child.gameObject.AddComponent<Hilightable>();
-                    }
+                        var stack = new Stack<Transform>();
+                        stack.Push(o.transform);
+                        while (stack.Any())
+                        {
+                            var next = stack.Pop();
+                            allTransforms.Add(next);
 
-                    SceneManager.OnUpdateHierarchy.Invoke();
-                }));
+                            foreach (var child in next.Children())
+                                stack.Push(child);
+                        }
+
+
+                        allTransforms
+                            .Where(t => t.name.EndsWith("_collider"))
+                            .Where(t => t.TryGetComponent<MeshFilter>(out _))
+                            .Forall(t => t.gameObject.SetActive(false));
+
+                        var visibleChildren = allTransforms
+                            .Where(t => !t.name.EndsWith("_collider"))
+                            .Where(t => t.TryGetComponent<MeshFilter>(out _));
+
+
+                        foreach (var child in visibleChildren)
+                        {
+                            var colliderGameObject = Instantiate(new GameObject("Collider"), o.transform);
+                            colliderGameObject.transform.position = child.position;
+                            colliderGameObject.transform.rotation = child.rotation;
+                            colliderGameObject.transform.localScale = child.localScale;
+
+                            colliderGameObject.layer = LayerMask.NameToLayer("Entity");
+                            var newCollider = colliderGameObject.AddComponent<MeshCollider>();
+                            newCollider.sharedMesh = child.GetComponent<MeshFilter>().sharedMesh;
+                            child.gameObject.AddComponent<Hilightable>();
+                        }
+
+                        SceneManager.OnUpdateHierarchy.Invoke();
+                    });
+            }
+            catch (IOException e)
+            {
+                Debug.LogWarning(e.Message);
+
+                var errorObject = Instantiate(AssetAssetsList.ErrorModel);
+
+                errorObject.transform.SetParent(transform);
+                errorObject.transform.localPosition = Vector3.zero;
+                errorObject.transform.localScale = Vector3.one;
+                errorObject.transform.localRotation = Quaternion.identity;
+            }
         }
+        
     }
 }

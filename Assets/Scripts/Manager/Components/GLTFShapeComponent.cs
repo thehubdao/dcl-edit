@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,7 +9,7 @@ public class GLTFShapeComponent : EntityComponent
     {
         public SpecificGltfShapeJson(GLTFShapeComponent sc)
         {
-            assetID = sc.asset.id.ToString();
+            assetID = sc.asset?.id.ToString() ?? Guid.Empty.ToString();
         }
 
         public string assetID;
@@ -19,7 +20,14 @@ public class GLTFShapeComponent : EntityComponent
     {
         var json = JsonUtility.FromJson<SpecificGltfShapeJson>(jsonString);
         //glbPath = json.glbPath;
-        asset = AssetManager.GetAssetById<AssetManager.GLTFAsset>(System.Guid.Parse(json.assetID));
+        try
+        {
+            asset = AssetManager.GetAssetById<AssetManager.GLTFAsset>(System.Guid.Parse(json.assetID));
+        }
+        catch (AssetManager.AssetNotFoundException e)
+        {
+            asset = null;
+        }
     }
 
     //public string glbPath;
@@ -28,8 +36,11 @@ public class GLTFShapeComponent : EntityComponent
     public override string ComponentName => "GLTFShape";
     public override int InspectorOrder => 100;
 
-    public override Ts GetTypeScript()
+    public override Ts? GetTypeScript()
     {
+        if(asset == null)
+            return null;
+        
         return new Ts( InternalComponentSymbol, $"const {InternalComponentSymbol} = new GLTFShape(\"{asset.gltfPath}\")\n" +
                                                      $"{InternalComponentSymbol}.withCollisions = true\n" +
                                                      $"{InternalComponentSymbol}.isPointerBlocker = true\n" +

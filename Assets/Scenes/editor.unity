@@ -2951,6 +2951,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _defaultThumbnail: {fileID: 2800000, guid: 69c0f58792b28084a8657f24ea3807a5, type: 3}
+  _errorModel: {fileID: 6504601161887710305, guid: 831ff32fe892a894ca0586aa133eb24d, type: 3}
   _assetUiTemplate: {fileID: 222693067428390298, guid: caf97471bde253444b0dc0bb571dbe52, type: 3}
 --- !u!114 &399934160
 MonoBehaviour:

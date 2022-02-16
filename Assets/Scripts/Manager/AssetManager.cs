@@ -1,11 +1,21 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.UIElements;
 
 public class AssetManager : Manager
 {
+    public class AssetNotFoundException : Exception
+    {
+        public AssetNotFoundException(string message):base(message)
+        {
+            
+        }
+    }
+     
     public class Asset
     {
         public Asset(string name,System.Guid id)
@@ -22,6 +32,8 @@ public class AssetManager : Manager
         {
             return this.name + " " + base.ToString();
         }
+
+        public static Asset emptyAsset = new Asset("Empty", Guid.Empty);
     }
 
     public class GLTFAsset : Asset
@@ -49,9 +61,9 @@ public class AssetManager : Manager
     {
         var asset = GetAssetById(id);
 
-        if (asset == null)
-            throw new System.Exception("Asset not found");
-
+        if (asset == Asset.emptyAsset)
+            throw new AssetNotFoundException("Asset not found");
+        
         return (T)asset;
         
     }
@@ -63,6 +75,6 @@ public class AssetManager : Manager
             if (asset.id == id)
                 return asset;
         }
-        return null;
+        return Asset.emptyAsset;
     }
 }

@@ -9,6 +9,10 @@ public class AssetAssetsList : MonoBehaviour, ISerializedFieldToStatic
     public static Texture2D DefaultThumbnail { get; private set; }
 
     [SerializeField]
+    private GameObject _errorModel;
+    public static GameObject ErrorModel { get; private set; }
+
+    [SerializeField]
     private GameObject _assetUiTemplate;
     public static GameObject AssetUiTemplate { get; private set; }
 
@@ -16,6 +20,7 @@ public class AssetAssetsList : MonoBehaviour, ISerializedFieldToStatic
     public void SetupStatics()
     {
         DefaultThumbnail = _defaultThumbnail;
+        ErrorModel = _errorModel;
         AssetUiTemplate = _assetUiTemplate;
     }
-} 
+}
