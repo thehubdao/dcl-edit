@@ -237,6 +237,7 @@ public class View3DInputSystem : MonoBehaviour
             var ctrlPlusS = pressingControl && Input.GetKeyDown(KeyCode.S);
             if (ctrlPlusS && isMouseOverGameWindow)
             {
+                SaveBackupSystem.BackupSave();
                 ScriptGenerator.MakeScript();
                 SceneSaveSystem.Save();
                 AssetSaverSystem.Save();
