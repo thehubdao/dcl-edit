@@ -87,8 +87,15 @@ public class SceneSaveSystem : MonoBehaviour
 
         if (projectSaveFilePath != "")
         {
-            var projectJsonString = File.ReadAllText(projectSaveFilePath);
-            ProjectData.ApplyJsonString(projectJsonString);
+            try
+            {
+                var projectJsonString = File.ReadAllText(projectSaveFilePath);
+                ProjectData.ApplyJsonString(projectJsonString);
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
         }
         
         if(sceneSaveFilePath != "")

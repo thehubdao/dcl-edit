@@ -21,7 +21,7 @@ public class PlaneShapeComponent : EntityComponent
     public override string ComponentName => "planeShape";
     public override int InspectorOrder => 100;
 
-    public override Ts GetTypeScript()
+    public override Ts? GetTypeScript()
     {
         return new Ts( InternalComponentSymbol, $"const {InternalComponentSymbol} = new PlaneShape()\n");
     }

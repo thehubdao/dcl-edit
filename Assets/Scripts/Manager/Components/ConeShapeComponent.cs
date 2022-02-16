@@ -21,7 +21,7 @@ public class ConeShapeComponent : EntityComponent
     public override string ComponentName => "coneShape";
     public override int InspectorOrder => 100;
 
-    public override Ts GetTypeScript()
+    public override Ts? GetTypeScript()
     {
         return new Ts( InternalComponentSymbol, $"const {InternalComponentSymbol} = new ConeShape()\n");
     }

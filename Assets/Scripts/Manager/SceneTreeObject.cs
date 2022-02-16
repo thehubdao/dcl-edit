@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using log4net.Util;
 using UnityEngine;
-using UnityEngine.SocialPlatforms;
 using Random = UnityEngine.Random;
 using Transform = UnityEngine.Transform;
 

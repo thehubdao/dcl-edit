@@ -56,7 +56,7 @@ public class MaterialComponent : EntityComponent
     public override GameObject UiItemTemplate => ComponentRepresentationList.MaterialComponentUI;
     public override string ComponentName => "material";
     public override int InspectorOrder => 150;
-    public override Ts GetTypeScript()
+    public override Ts? GetTypeScript()
     {
         return new Ts(InternalComponentSymbol, $"const {InternalComponentSymbol} = new Material()\n" +
                                                $"{InternalComponentSymbol}.albedoColor = {materialValues.albedoColor.ToTS()}\n" +
