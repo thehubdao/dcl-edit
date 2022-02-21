@@ -6,6 +6,7 @@ public class SaveButton : MonoBehaviour
 {
     public void Save()
     {
+        SaveBackupSystem.BackupSave();
         SceneSaveSystem.Save(); 
         ScriptGenerator.MakeScript();
         AssetSaverSystem.Save();

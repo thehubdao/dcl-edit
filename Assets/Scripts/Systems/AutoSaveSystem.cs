@@ -37,7 +37,9 @@ public class AutoSaveSystem : MonoBehaviour
             {
                 Debug.Log("Auto Saving");
                 
+                SaveBackupSystem.BackupSave();
                 SceneSaveSystem.Save();
+                AssetSaverSystem.Save();
                 _lastSavedAtUndoItemReference = currentUndoItem;
             }
             else
