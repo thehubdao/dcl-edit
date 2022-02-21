@@ -140,9 +140,9 @@ public class SceneSaveSystem : MonoBehaviour
 
             foreach (var entity in SceneManager.Entities)
             {
-                entity.Parent = uniqueNumbers.TryGetValue(parentNumbers[entity], out var e)
+                entity.SetParentKeepLocalScale(uniqueNumbers.TryGetValue(parentNumbers[entity], out var e)
                     ? (SceneTreeObject)e
-                    : (SceneTreeObject)SceneManager.SceneRoot;
+                    : (SceneTreeObject)SceneManager.SceneRoot);
             }
             
 
