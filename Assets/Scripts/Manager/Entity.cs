@@ -34,11 +34,21 @@ public class Entity : SceneTreeObject
     public override SceneTreeObject Parent
     {
         get => transform.parent.GetComponentInParent<SceneTreeObject>();
-        set
-        {
-            transform.parent = value.childParent;
-            SceneManager.OnUpdateHierarchy.Invoke();
-        }
+        set => SetParentKeepGlobalTransform(value);
+    }
+    
+    public void SetParentKeepGlobalTransform(SceneTreeObject newParent)
+    {
+        transform.SetParent(newParent.childParent, true);
+        SceneManager.OnUpdateHierarchy.Invoke();
+    }
+
+    public void SetParentKeepLocalScale(SceneTreeObject newParent)
+    {
+        var localScale = transform.localScale;
+        transform.SetParent(newParent.childParent,true);
+        transform.localScale = localScale;
+        SceneManager.OnUpdateHierarchy.Invoke();
     }
 
     // Names
