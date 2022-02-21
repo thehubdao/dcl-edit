@@ -2,8 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
 using Siccity.GLTFUtility;
 using UnityEngine;
+using UnityGLTF;
+using UnityGLTF.Loader;
+
 
 public class GltfComponentRepresentation : MonoBehaviour
 {
@@ -33,6 +37,10 @@ public class GltfComponentRepresentation : MonoBehaviour
             {
                 if (gltfShape.asset == null)
                     throw new IOException("No asset selected");
+
+                var filePath = DclSceneManager.DclProjectPath + "/" + gltfShape.asset.gltfPath;
+
+                
 
                 Importer.LoadFromFileAsync(
                     DclSceneManager.DclProjectPath + "/" + gltfShape.asset.gltfPath,
