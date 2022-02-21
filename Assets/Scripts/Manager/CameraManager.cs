@@ -67,13 +67,13 @@ public class CameraManager : Manager
     {
         // Calculate average parcel center
         var averageCenter = Vector2.zero;
-        foreach (var parcel in SceneManager.sceneJson.scene.Parcels)
+        foreach (var parcel in DclSceneManager.sceneJson.scene.Parcels)
         {
             averageCenter += (Vector2)parcel * 16 + new Vector2(8, 8);
         }
 
-        if(SceneManager.sceneJson.scene.Parcels.Length>0)
-            averageCenter /= SceneManager.sceneJson.scene.Parcels.Length;
+        if(DclSceneManager.sceneJson.scene.Parcels.Length>0)
+            averageCenter /= DclSceneManager.sceneJson.scene.Parcels.Length;
 
         var averageCenterWorldPoint = new Vector3(averageCenter.x, 0, averageCenter.y);
         //Debug.DrawRay(averageCenterWorldPoint,Vector3.up,Color.red,10);
@@ -84,7 +84,7 @@ public class CameraManager : Manager
         Yaw = 45;
         Pitch = 30;
         
-        var dist = Mathf.Log(SceneManager.sceneJson.scene.Parcels.Length, 2);
+        var dist = Mathf.Log(DclSceneManager.sceneJson.scene.Parcels.Length, 2);
 
         if (dist < 0)
             dist = 0;

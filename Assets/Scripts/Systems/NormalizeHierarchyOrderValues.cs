@@ -7,7 +7,7 @@ public class NormalizeHierarchyOrderValues : MonoBehaviour
 {
     public static void Normalize()
     {
-        var root = SceneManager.SceneRoot;
+        var root = DclSceneManager.SceneRoot;
         if (root == null)
             throw new Exception("EntityParent should have a SceneTreeObject");
         

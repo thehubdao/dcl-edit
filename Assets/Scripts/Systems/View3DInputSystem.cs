@@ -160,11 +160,11 @@ public class View3DInputSystem : MonoBehaviour
                 {
                     if (!pressingControl)
                     {
-                        SceneManager.SetSelection(hoveredEntity);
+                        DclSceneManager.SetSelection(hoveredEntity);
                     }
                     else
                     {
-                        SceneManager.AddSelection(hoveredEntity);
+                        DclSceneManager.AddSelection(hoveredEntity);
                     }
                 }
             }
@@ -268,9 +268,9 @@ public class View3DInputSystem : MonoBehaviour
             {
                 var newEntities = new List<Entity>();
 
-                foreach (var selectedEntity in SceneManager.AllSelectedEntities)
+                foreach (var selectedEntity in DclSceneManager.AllSelectedEntities)
                 {
-                    var newEntityObject = Instantiate(SceneManager.EntityTemplate, selectedEntity.transform.position, selectedEntity.transform.rotation, selectedEntity.transform.parent);
+                    var newEntityObject = Instantiate(DclSceneManager.EntityTemplate, selectedEntity.transform.position, selectedEntity.transform.rotation, selectedEntity.transform.parent);
                     foreach (var component in selectedEntity.Components)
                     {
                         var newComponent = newEntityObject.AddComponent(component.GetType()) as EntityComponent;
@@ -284,16 +284,16 @@ public class View3DInputSystem : MonoBehaviour
                     newEntities.Add(newEntity);
                 }
 
-                var previouslySelected = SceneManager.AllSelectedEntities.ToList();
+                var previouslySelected = DclSceneManager.AllSelectedEntities.ToList();
 
-                SceneManager.SetSelectionRaw(null);
+                DclSceneManager.SetSelectionRaw(null);
                 foreach (var entity in newEntities)
                 {
-                    SceneManager.AddSelectedRaw(entity);
+                    DclSceneManager.AddSelectedRaw(entity);
                 }
 
-                SceneManager.OnUpdateSelection.Invoke();
-                SceneManager.OnUpdateHierarchy.Invoke();
+                DclSceneManager.OnUpdateSelection.Invoke();
+                DclSceneManager.OnUpdateHierarchy.Invoke();
 
                 UndoManager.RecordUndoItem(
                     "Duplicate " + (previouslySelected.Count > 1 ? "Entities" : previouslySelected.First().ShownName),
@@ -304,27 +304,27 @@ public class View3DInputSystem : MonoBehaviour
                             TrashBinManager.DeleteEntity(entity);
                         }
 
-                        SceneManager.SetSelectionRaw(null);
+                        DclSceneManager.SetSelectionRaw(null);
                         foreach (var entity in previouslySelected)
                         {
-                            SceneManager.AddSelectedRaw(entity);
+                            DclSceneManager.AddSelectedRaw(entity);
                         }
 
-                        SceneManager.OnUpdateSelection.Invoke();
-                        SceneManager.OnUpdateHierarchy.Invoke();
+                        DclSceneManager.OnUpdateSelection.Invoke();
+                        DclSceneManager.OnUpdateHierarchy.Invoke();
 
                     },
                     () =>
                     {
-                        SceneManager.SetSelectionRaw(null);
+                        DclSceneManager.SetSelectionRaw(null);
                         foreach (var entity in newEntities)
                         {
                             TrashBinManager.RestoreEntity(entity);
-                            SceneManager.AddSelectedRaw(entity);
+                            DclSceneManager.AddSelectedRaw(entity);
                         }
 
-                        SceneManager.OnUpdateSelection.Invoke();
-                        SceneManager.OnUpdateHierarchy.Invoke();
+                        DclSceneManager.OnUpdateSelection.Invoke();
+                        DclSceneManager.OnUpdateHierarchy.Invoke();
 
                     });
 
@@ -335,7 +335,7 @@ public class View3DInputSystem : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Delete) && isMouseOverGameWindow && !CanvasManager.IsAnyInputFieldFocused)
             {
 
-                var entities = SceneManager.AllSelectedEntities.ToList();
+                var entities = DclSceneManager.AllSelectedEntities.ToList();
 
                 foreach (var entity in entities)
                 {
@@ -345,11 +345,11 @@ public class View3DInputSystem : MonoBehaviour
                 UndoManager.RecordUndoItem("Delete " + (entities.Count > 1 ? "Entities" : entities.First().ShownName),
                     () =>
                     {
-                        SceneManager.SetSelectionRaw(null);
+                        DclSceneManager.SetSelectionRaw(null);
                         foreach (var entity in entities)
                         {
                             TrashBinManager.RestoreEntity(entity);
-                            SceneManager.AddSelectedRaw(entity);
+                            DclSceneManager.AddSelectedRaw(entity);
                         }
 
                     },
@@ -360,10 +360,10 @@ public class View3DInputSystem : MonoBehaviour
                             TrashBinManager.DeleteEntity(entity);
                         }
 
-                        SceneManager.SetSelectionRaw(null);
+                        DclSceneManager.SetSelectionRaw(null);
                     });
 
-                SceneManager.SetSelectionRaw(null);
+                DclSceneManager.SetSelectionRaw(null);
             }
 
 
@@ -383,7 +383,7 @@ public class View3DInputSystem : MonoBehaviour
         {
             OnStateEnter = state =>
             {
-                transformUndo = new TransformUndo(SceneManager.AllSelectedEntities);
+                transformUndo = new TransformUndo(DclSceneManager.AllSelectedEntities);
 
                 transformUndo.SaveBeginningState();
 
@@ -432,7 +432,7 @@ public class View3DInputSystem : MonoBehaviour
                     //_interfaceStateMachine.ActiveState = _freeMouseState;
                 }
 
-                SceneManager.OnSelectedEntityTransformChange.Invoke();
+                DclSceneManager.OnSelectedEntityTransformChange.Invoke();
             };
         }
     }

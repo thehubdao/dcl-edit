@@ -30,7 +30,7 @@ public class SaveFileUpgrader : MonoBehaviour,ISerializedFieldToStatic
 
     public static void CheckSaveFiles()
     {
-        var saveVersionPath = SceneManager.DclProjectPath + "/dcl-edit/saves/version.json";
+        var saveVersionPath = DclSceneManager.DclProjectPath + "/dcl-edit/saves/version.json";
         var projectSaveVersion = 0;
 
         if (File.Exists(saveVersionPath))
@@ -62,7 +62,7 @@ public class SaveFileUpgrader : MonoBehaviour,ISerializedFieldToStatic
     {
         Debug.Log("Upgrading Save file from version 0 to 1");
 
-        var savesDirectoryPath = SceneManager.DclProjectPath + "/dcl-edit/saves/";
+        var savesDirectoryPath = DclSceneManager.DclProjectPath + "/dcl-edit/saves/";
         var saveVersionPath = savesDirectoryPath + "version.json";
 
         Directory.CreateDirectory(savesDirectoryPath);

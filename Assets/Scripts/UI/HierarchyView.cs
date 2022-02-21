@@ -21,8 +21,8 @@ public class HierarchyView : MonoBehaviour
 
     void Start()
     {
-        SceneManager.OnUpdateHierarchy.AddListener(SetDirty);
-        SceneManager.OnUpdateSelection.AddListener(SetDirty);
+        DclSceneManager.OnUpdateHierarchy.AddListener(SetDirty);
+        DclSceneManager.OnUpdateSelection.AddListener(SetDirty);
     }
 
     void OnEnable()
@@ -60,7 +60,7 @@ public class HierarchyView : MonoBehaviour
         dropIndicator = Instantiate(dropIndicatorTemplate, transform).GetComponent<DropIndicatorUI>();
         dropIndicator.HideIndicator();
         
-        AddItemsRecursive(SceneManager.SceneRoot);
+        AddItemsRecursive(DclSceneManager.SceneRoot);
     }
 
     private void AddItemsRecursive(SceneTreeObject sto)
@@ -88,7 +88,7 @@ public class HierarchyView : MonoBehaviour
 
     private List<Entity> AllEntitiesSortedByHierarchyOrder()
     {
-        var entities = SceneManager.Entities.ToList();
+        var entities = DclSceneManager.Entities.ToList();
         // sort entities by hierarchy order
         entities.Sort((left, right) => left.HierarchyOrder.CompareTo(right.HierarchyOrder));
 

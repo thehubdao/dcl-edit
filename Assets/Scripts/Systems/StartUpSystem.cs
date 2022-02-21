@@ -19,13 +19,13 @@ public class StartUpSystem : MonoBehaviour
         var devProjectPathFilePath = Application.dataPath+"/dev_project_path.txt";
         if (File.Exists(devProjectPathFilePath))
         {
-            SceneManager.DclProjectPath = File.ReadAllText(devProjectPathFilePath);
+            DclSceneManager.DclProjectPath = File.ReadAllText(devProjectPathFilePath);
         }
 
-        if (!File.Exists(SceneManager.DclProjectPath + "/scene.json"))
+        if (!File.Exists(DclSceneManager.DclProjectPath + "/scene.json"))
         {
-            SceneManager.DclProjectPath = EditorUtility.OpenFolderPanel("Select DCL project folder","","");
-            File.WriteAllText(devProjectPathFilePath,SceneManager.DclProjectPath);
+            DclSceneManager.DclProjectPath = EditorUtility.OpenFolderPanel("Select DCL project folder","","");
+            File.WriteAllText(devProjectPathFilePath,DclSceneManager.DclProjectPath);
         }
         
 #else
@@ -37,18 +37,18 @@ public class StartUpSystem : MonoBehaviour
     {
         SetProjectPath();
 
-        if (!File.Exists(SceneManager.DclProjectPath + "/scene.json"))
+        if (!File.Exists(DclSceneManager.DclProjectPath + "/scene.json"))
         {
             Debug.LogError("No Project found in selected Path");
             _noProjectWindow.SetActive(true);
             return;
         }
 
-        var sr = new StreamReader(SceneManager.DclProjectPath + "/scene.json");
+        var sr = new StreamReader(DclSceneManager.DclProjectPath + "/scene.json");
         var fileContents = sr.ReadToEnd();
         sr.Close();
 
-        SceneManager.sceneJson = JsonUtility.FromJson<SceneManager.SceneJson>(fileContents);
+        DclSceneManager.sceneJson = JsonUtility.FromJson<DclSceneManager.SceneJson>(fileContents);
 
         var rootObjects = UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects();
 
@@ -66,9 +66,9 @@ public class StartUpSystem : MonoBehaviour
 
         AssetSaverSystem.Load();
         
-        SceneManager.ChangedHierarchy();
+        DclSceneManager.ChangedHierarchy();
 
-        SceneManager.SetSelection(null);
+        DclSceneManager.SetSelection(null);
         
         SceneSaveSystem.Load();
 

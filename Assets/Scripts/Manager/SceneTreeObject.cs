@@ -20,7 +20,7 @@ public abstract class SceneTreeObject : MonoBehaviour
         set
         {
             _hierarchyOrder = value;
-            SceneManager.OnUpdateHierarchy.Invoke();
+            DclSceneManager.OnUpdateHierarchy.Invoke();
         }
     }
 
@@ -88,7 +88,7 @@ public abstract class SceneTreeObject : MonoBehaviour
         set
         {
             _collapsedChildren = value;
-            SceneManager.OnUpdateHierarchy.Invoke();
+            DclSceneManager.OnUpdateHierarchy.Invoke();
         }
     }
 

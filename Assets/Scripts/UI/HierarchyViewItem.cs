@@ -19,8 +19,8 @@ public class HierarchyViewItem : MonoBehaviour,ISerializedFieldToStatic,IPointer
     //[NonSerialized]
     //public int indentLevel = 0;
 
-    private bool IsPrimarySelected => entity == SceneManager.PrimarySelectedEntity;
-    private bool IsSecondarySelected => SceneManager.SecondarySelectedEntity.Contains(entity);
+    private bool IsPrimarySelected => entity == DclSceneManager.PrimarySelectedEntity;
+    private bool IsSecondarySelected => DclSceneManager.SecondarySelectedEntity.Contains(entity);
 
 
     [SerializeField]
@@ -94,7 +94,7 @@ public class HierarchyViewItem : MonoBehaviour,ISerializedFieldToStatic,IPointer
                     entity.HierarchyOrder = oldPrevious.HierarchyOrder+0.5f;
                     
                     NormalizeHierarchyOrderValues.Normalize();
-                    SceneManager.OnUpdateHierarchy.Invoke();
+                    DclSceneManager.OnUpdateHierarchy.Invoke();
                 },
                 () =>
                 {
@@ -102,7 +102,7 @@ public class HierarchyViewItem : MonoBehaviour,ISerializedFieldToStatic,IPointer
                     entity.HierarchyOrder = currentPrevious.HierarchyOrder + 0.5f;
                     
                     NormalizeHierarchyOrderValues.Normalize();
-                    SceneManager.OnUpdateHierarchy.Invoke();
+                    DclSceneManager.OnUpdateHierarchy.Invoke();
                 }
                 );
         }
@@ -116,7 +116,7 @@ public class HierarchyViewItem : MonoBehaviour,ISerializedFieldToStatic,IPointer
         entity.Parent = otherEntity.Parent;
         entity.HierarchyOrder = otherEntity.HierarchyOrder-0.5f;
         NormalizeHierarchyOrderValues.Normalize();
-        SceneManager.OnUpdateHierarchy.Invoke();
+        DclSceneManager.OnUpdateHierarchy.Invoke();
         undoItemReorder.StopRecording(entity);
 
     }
@@ -138,7 +138,7 @@ public class HierarchyViewItem : MonoBehaviour,ISerializedFieldToStatic,IPointer
         }
 
         NormalizeHierarchyOrderValues.Normalize();
-        SceneManager.OnUpdateHierarchy.Invoke();
+        DclSceneManager.OnUpdateHierarchy.Invoke();
         undoItemReorder.StopRecording(entity);
     }
 
@@ -146,10 +146,10 @@ public class HierarchyViewItem : MonoBehaviour,ISerializedFieldToStatic,IPointer
     {
         Debug.Log("Move to last place");
         var undoItemReorder = new ChangeHierarchyUndoRecorder(entity);
-        entity.Parent = SceneManager.SceneRoot;
+        entity.Parent = DclSceneManager.SceneRoot;
         entity.HierarchyOrder = float.MaxValue;
         NormalizeHierarchyOrderValues.Normalize();
-        SceneManager.OnUpdateHierarchy.Invoke();
+        DclSceneManager.OnUpdateHierarchy.Invoke();
         undoItemReorder.StopRecording(entity);
     }
 
@@ -160,7 +160,7 @@ public class HierarchyViewItem : MonoBehaviour,ISerializedFieldToStatic,IPointer
         entity.Parent = otherEntity;
         entity.HierarchyOrder = float.MaxValue;
         NormalizeHierarchyOrderValues.Normalize();
-        SceneManager.OnUpdateHierarchy.Invoke();
+        DclSceneManager.OnUpdateHierarchy.Invoke();
         undoItemReorder.StopRecording(entity);
     }
 
@@ -171,11 +171,11 @@ public class HierarchyViewItem : MonoBehaviour,ISerializedFieldToStatic,IPointer
 
         if (!pressingControl)
         {
-            SceneManager.SetSelection(entity);
+            DclSceneManager.SetSelection(entity);
         }
         else
         {
-            SceneManager.AddSelection(entity);
+            DclSceneManager.AddSelection(entity);
         }
     }
 
@@ -213,7 +213,7 @@ public class HierarchyViewItem : MonoBehaviour,ISerializedFieldToStatic,IPointer
             IsPrimarySelected ? _primarySelectionBlue : 
             IsSecondarySelected ? _secondarySelectionBlue : _defaultWhite;
 
-        Debug.Log(SceneManager.EntityParent.GetComponent<RootSceneObject>().GetTree());
+        Debug.Log(DclSceneManager.EntityParent.GetComponent<RootSceneObject>().GetTree());
     }
     
     public void OnDrag(PointerEventData eventData)

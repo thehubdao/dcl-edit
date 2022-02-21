@@ -13,7 +13,7 @@ using UnityEditor;
 #endif
 
 
-public class SceneManager : Manager, ISerializedFieldToStatic
+public class DclSceneManager : Manager, ISerializedFieldToStatic
 {
     // Project Path
     public static string DclProjectPath = "";
@@ -162,14 +162,14 @@ public class SceneManager : Manager, ISerializedFieldToStatic
             });
 
 
-        SceneManager._secondarySelectedEntity.Clear();
-        SceneManager.PrimarySelectedEntity = entity;
+        DclSceneManager._secondarySelectedEntity.Clear();
+        DclSceneManager.PrimarySelectedEntity = entity;
     }
 
     public static void SetSelectionRaw(Entity entity)
     {
-        SceneManager._secondarySelectedEntity.Clear();
-        SceneManager.PrimarySelectedEntity = entity;
+        DclSceneManager._secondarySelectedEntity.Clear();
+        DclSceneManager.PrimarySelectedEntity = entity;
     }
 
     public static void AddSelection(Entity entity)
@@ -181,12 +181,12 @@ public class SceneManager : Manager, ISerializedFieldToStatic
         var beforePrimarySelection = PrimarySelectedEntity;
 
 
-        SceneManager._secondarySelectedEntity.Add(SceneManager.PrimarySelectedEntity);
+        DclSceneManager._secondarySelectedEntity.Add(DclSceneManager.PrimarySelectedEntity);
 
-        if(SceneManager._secondarySelectedEntity.Contains(entity))
-            SceneManager._secondarySelectedEntity.Remove(entity);
+        if(DclSceneManager._secondarySelectedEntity.Contains(entity))
+            DclSceneManager._secondarySelectedEntity.Remove(entity);
 
-        SceneManager.PrimarySelectedEntity = entity;
+        DclSceneManager.PrimarySelectedEntity = entity;
         
         var afterSecondarySelection = SecondarySelectedEntity.ToList();
         var afterPrimarySelection = PrimarySelectedEntity;
@@ -211,12 +211,12 @@ public class SceneManager : Manager, ISerializedFieldToStatic
         if (entity == null)
             return;
 
-        SceneManager._secondarySelectedEntity.Add(SceneManager.PrimarySelectedEntity);
+        DclSceneManager._secondarySelectedEntity.Add(DclSceneManager.PrimarySelectedEntity);
 
-        if(SceneManager._secondarySelectedEntity.Contains(entity))
-            SceneManager._secondarySelectedEntity.Remove(entity);
+        if(DclSceneManager._secondarySelectedEntity.Contains(entity))
+            DclSceneManager._secondarySelectedEntity.Remove(entity);
 
-        SceneManager.PrimarySelectedEntity = entity;
+        DclSceneManager.PrimarySelectedEntity = entity;
 
     }
 

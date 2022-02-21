@@ -61,8 +61,8 @@ public class Rotate : EntityManipulator
 
         var snappedAngle = 0f;
 
-        var entities = SceneManager.AllSelectedEntitiesWithoutChildren.Select(entity => entity.transform);
-        var primaryEntity = SceneManager.PrimarySelectedEntity;
+        var entities = DclSceneManager.AllSelectedEntitiesWithoutChildren.Select(entity => entity.transform);
+        var primaryEntity = DclSceneManager.PrimarySelectedEntity;
 
         Vector3 axis;
         switch (direction)
@@ -130,7 +130,7 @@ public class Rotate : EntityManipulator
 
     public override Ray GetOneRay()
     {
-        var entity = SceneManager.PrimarySelectedEntity;
+        var entity = DclSceneManager.PrimarySelectedEntity;
 
         switch (direction)
         {

@@ -58,7 +58,7 @@ public class Scale : EntityManipulator
 
     public override void Change(Vector3 globalChange, Vector3 localChange, Vector3 cameraSpaceChange, Camera gizmoCamera)
     {
-        var entities = SceneManager.AllSelectedEntitiesWithoutChildren;
+        var entities = DclSceneManager.AllSelectedEntitiesWithoutChildren;
         
         var snappedChange = 0f;
 
@@ -114,7 +114,7 @@ public class Scale : EntityManipulator
     public override Plane GetPlane(Camera camera)
     {
         _snapLeftOvers = 0;
-        var entity = SceneManager.PrimarySelectedEntity;
+        var entity = DclSceneManager.PrimarySelectedEntity;
 
         _initialLocalScale = entity.transform.localScale;
         _initialAverageScale = (_initialLocalScale.x + _initialLocalScale.y + _initialLocalScale.z) / 3f;
@@ -145,7 +145,7 @@ public class Scale : EntityManipulator
 
     public override Ray GetOneRay()
     {
-        var entity = SceneManager.PrimarySelectedEntity;
+        var entity = DclSceneManager.PrimarySelectedEntity;
         switch (direction)
         {
             case TranslateDirection.XAxis:

@@ -30,12 +30,12 @@ public class SceneSaveSystem : MonoBehaviour
         
         try
         {
-            Directory.CreateDirectory(SceneManager.DclProjectPath + "/dcl-edit/saves");
+            Directory.CreateDirectory(DclSceneManager.DclProjectPath + "/dcl-edit/saves");
             try
             {
-                var fileWriter = new StreamWriter(SceneManager.DclProjectPath + "/dcl-edit/saves/save.json", false);
+                var fileWriter = new StreamWriter(DclSceneManager.DclProjectPath + "/dcl-edit/saves/save.json", false);
 
-                fileWriter.WriteLine(SceneManager.Entities.ToJson());
+                fileWriter.WriteLine(DclSceneManager.Entities.ToJson());
 
                 fileWriter.Close();
 
@@ -49,7 +49,7 @@ public class SceneSaveSystem : MonoBehaviour
 
             try
             {
-                var fileWriter = new StreamWriter(SceneManager.DclProjectPath + "/dcl-edit/saves/project.json", false);
+                var fileWriter = new StreamWriter(DclSceneManager.DclProjectPath + "/dcl-edit/saves/project.json", false);
 
                 fileWriter.WriteLine(ProjectData.ToJson());
 
@@ -75,14 +75,14 @@ public class SceneSaveSystem : MonoBehaviour
     {
         var sceneSaveFilePath = "";
         var projectSaveFilePath = "";
-        if (File.Exists(SceneManager.DclProjectPath + "/dcl-edit/saves/save.json"))
+        if (File.Exists(DclSceneManager.DclProjectPath + "/dcl-edit/saves/save.json"))
         {
-            sceneSaveFilePath = SceneManager.DclProjectPath + "/dcl-edit/saves/save.json";
-            projectSaveFilePath = SceneManager.DclProjectPath + "/dcl-edit/saves/project.json";
+            sceneSaveFilePath = DclSceneManager.DclProjectPath + "/dcl-edit/saves/save.json";
+            projectSaveFilePath = DclSceneManager.DclProjectPath + "/dcl-edit/saves/project.json";
         }
-        else if (File.Exists(SceneManager.DclProjectPath + "/scene/scene.json"))
+        else if (File.Exists(DclSceneManager.DclProjectPath + "/scene/scene.json"))
         {
-            sceneSaveFilePath = SceneManager.DclProjectPath + "/scene/scene.json";
+            sceneSaveFilePath = DclSceneManager.DclProjectPath + "/scene/scene.json";
         }
 
         if (projectSaveFilePath != "")
@@ -106,7 +106,7 @@ public class SceneSaveSystem : MonoBehaviour
 
             Entity.uniqueNumberCounter = entities.entityNumberCounter;
 
-            foreach (var entity in SceneManager.Entities)
+            foreach (var entity in DclSceneManager.Entities)
             {
                 entity.doomed = true;
                 Destroy(entity.gameObject);
@@ -116,7 +116,7 @@ public class SceneSaveSystem : MonoBehaviour
             var uniqueNumbers = new Dictionary<int, Entity>();
             foreach (var entity in entities.entities)
             {
-                var newEntityGameObject = Instantiate(SceneManager.EntityTemplate, SceneManager.EntityParent);
+                var newEntityGameObject = Instantiate(DclSceneManager.EntityTemplate, DclSceneManager.EntityParent);
                 var newEntity = newEntityGameObject.GetComponent<Entity>();
 
                 newEntity.HierarchyOrder = entity.hierarchyOrder;
@@ -138,15 +138,15 @@ public class SceneSaveSystem : MonoBehaviour
                 }
             }
 
-            foreach (var entity in SceneManager.Entities)
+            foreach (var entity in DclSceneManager.Entities)
             {
                 entity.SetParentKeepLocalScale(uniqueNumbers.TryGetValue(parentNumbers[entity], out var e)
                     ? (SceneTreeObject)e
-                    : (SceneTreeObject)SceneManager.SceneRoot);
+                    : (SceneTreeObject)DclSceneManager.SceneRoot);
             }
             
 
-            SceneManager.ChangedHierarchy();
+            DclSceneManager.ChangedHierarchy();
         }
         else
         {

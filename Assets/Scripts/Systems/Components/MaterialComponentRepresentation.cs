@@ -7,8 +7,8 @@ public class MaterialComponentRepresentation : MonoBehaviour
     void Start()
     {
         UpdateVisuals();
-        SceneManager.OnUpdateHierarchy.AddListener(UpdateVisuals);
-        SceneManager.OnUpdateSelection.AddListener(UpdateVisuals);
+        DclSceneManager.OnUpdateHierarchy.AddListener(UpdateVisuals);
+        DclSceneManager.OnUpdateSelection.AddListener(UpdateVisuals);
     }
 
     private static bool EntityHasBasicShape(Entity e)

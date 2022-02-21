@@ -40,7 +40,7 @@ public class Entity : SceneTreeObject
     public void SetParentKeepGlobalTransform(SceneTreeObject newParent)
     {
         transform.SetParent(newParent.childParent, true);
-        SceneManager.OnUpdateHierarchy.Invoke();
+        DclSceneManager.OnUpdateHierarchy.Invoke();
     }
 
     public void SetParentKeepLocalScale(SceneTreeObject newParent)
@@ -48,7 +48,7 @@ public class Entity : SceneTreeObject
         var localScale = transform.localScale;
         transform.SetParent(newParent.childParent,true);
         transform.localScale = localScale;
-        SceneManager.OnUpdateHierarchy.Invoke();
+        DclSceneManager.OnUpdateHierarchy.Invoke();
     }
 
     // Names
@@ -149,7 +149,7 @@ public class Entity : SceneTreeObject
         {
             // build list of all already existing exposedSymbols
             var allExposedSymbols = new List<string>();
-            foreach (var entity in SceneManager.Entities)
+            foreach (var entity in DclSceneManager.Entities)
             {
                 if (entity == this)
                     continue;
@@ -170,7 +170,7 @@ public class Entity : SceneTreeObject
                 _exposed = true;
             }
         }
-        SceneManager.OnUpdateSelection.Invoke();
+        DclSceneManager.OnUpdateSelection.Invoke();
     }
 
 

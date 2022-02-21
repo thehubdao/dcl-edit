@@ -21,13 +21,13 @@ public class TransformComponentUI : ComponentUI
 
     void Start()
     {
-        SceneManager.OnSelectedEntityTransformChange.AddListener(UpdateVisuals);
+        DclSceneManager.OnSelectedEntityTransformChange.AddListener(UpdateVisuals);
         UpdateVisuals();
     }
     
     public override void UpdateVisuals()
     {
-        var transformComponent = SceneManager.PrimarySelectedEntity?.GetComponent<TransformComponent>();
+        var transformComponent = DclSceneManager.PrimarySelectedEntity?.GetComponent<TransformComponent>();
         if (transformComponent == null)
             return;
         
@@ -58,7 +58,7 @@ public class TransformComponentUI : ComponentUI
 
     public void StartUndoRecording()
     {
-        _transformUndo = new TransformUndo(SceneManager.PrimarySelectedEntity.AsSingleInstanceInEnumerable());
+        _transformUndo = new TransformUndo(DclSceneManager.PrimarySelectedEntity.AsSingleInstanceInEnumerable());
         _transformUndo.SaveBeginningState();
         
         Debug.Log("start recording");
@@ -78,7 +78,7 @@ public class TransformComponentUI : ComponentUI
 
     public void SetValueTranslate()
     {
-        var transformComponent = SceneManager.PrimarySelectedEntity.GetComponent<TransformComponent>();
+        var transformComponent = DclSceneManager.PrimarySelectedEntity.GetComponent<TransformComponent>();
         try
         {
             transformComponent.transform.localPosition = new Vector3( 
@@ -94,7 +94,7 @@ public class TransformComponentUI : ComponentUI
     }
     public void SetValueRotate()
     {
-        var transformComponent = SceneManager.PrimarySelectedEntity.GetComponent<TransformComponent>();
+        var transformComponent = DclSceneManager.PrimarySelectedEntity.GetComponent<TransformComponent>();
         try
         {
             transformComponent.transform.localEulerAngles = new Vector3( 
@@ -109,7 +109,7 @@ public class TransformComponentUI : ComponentUI
     }
     public void SetValueScale()
     {
-        var transformComponent = SceneManager.PrimarySelectedEntity.GetComponent<TransformComponent>();
+        var transformComponent = DclSceneManager.PrimarySelectedEntity.GetComponent<TransformComponent>();
         try
         {
             transformComponent.transform.localScale = new Vector3( 

@@ -10,7 +10,7 @@ public class GltfComponentRepresentation : MonoBehaviour
     void Start()
     {
         UpdateVisuals(GetComponentInParent<GLTFShapeComponent>());
-        SceneManager.OnUpdateSelection.AddListener(() =>
+        DclSceneManager.OnUpdateSelection.AddListener(() =>
         {
             var gltfShapeComponent = GetComponentInParent<GLTFShapeComponent>();
             if (gltfShapeComponent != null)
@@ -35,7 +35,7 @@ public class GltfComponentRepresentation : MonoBehaviour
                     throw new IOException("No asset selected");
 
                 Importer.LoadFromFileAsync(
-                    SceneManager.DclProjectPath + "/" + gltfShape.asset.gltfPath,
+                    DclSceneManager.DclProjectPath + "/" + gltfShape.asset.gltfPath,
                     new ImportSettings() { },
                     (o, clips) =>
                     {
@@ -88,7 +88,7 @@ public class GltfComponentRepresentation : MonoBehaviour
                             child.gameObject.AddComponent<Hilightable>();
                         }
 
-                        SceneManager.OnUpdateHierarchy.Invoke();
+                        DclSceneManager.OnUpdateHierarchy.Invoke();
                     });
             }
             catch (IOException e)

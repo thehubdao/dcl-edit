@@ -21,7 +21,7 @@ public class EntityHeaderUI : MonoBehaviour
     public void SetEntityName()
     {
         entity.CustomName = _nameInput.text;
-        SceneManager.OnUpdateSelection.Invoke();
+        DclSceneManager.OnUpdateSelection.Invoke();
     }
 
     // Undo stuff
@@ -43,12 +43,12 @@ public class EntityHeaderUI : MonoBehaviour
                 () =>
                 {
                     entity.CustomName = oldName;
-                    SceneManager.OnUpdateSelection.Invoke();
+                    DclSceneManager.OnUpdateSelection.Invoke();
                 },
                 () =>
                 {
                     entity.CustomName = newName;
-                    SceneManager.OnUpdateSelection.Invoke();
+                    DclSceneManager.OnUpdateSelection.Invoke();
                 });
         }
     }

@@ -6,7 +6,7 @@ using UnityEditor.AssetImporters;
 #endif
 
 namespace Siccity.GLTFUtility {
-	[ScriptedImporter(1, "glb")]
+	//[ScriptedImporter(1, "glb")]
 	public class GLBImporter : GLTFImporter {
 
 		public override void OnImportAsset(AssetImportContext ctx) {

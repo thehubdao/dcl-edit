@@ -17,13 +17,13 @@ public class MaterialComponentUI : ComponentUI
 
     void Start()
     {
-        SceneManager.OnSelectedEntityTransformChange.AddListener(UpdateVisuals);
+        DclSceneManager.OnSelectedEntityTransformChange.AddListener(UpdateVisuals);
         UpdateVisuals();
     }
 
     public override void UpdateVisuals()
     {
-        var materialComponent = SceneManager.PrimarySelectedEntity?.GetComponent<MaterialComponent>();
+        var materialComponent = DclSceneManager.PrimarySelectedEntity?.GetComponent<MaterialComponent>();
         if (materialComponent == null)
             return;
 
@@ -47,7 +47,7 @@ public class MaterialComponentUI : ComponentUI
 
     public void StartUndoRecording()
     {
-        var materialComponent = SceneManager.PrimarySelectedEntity?.GetComponent<MaterialComponent>();
+        var materialComponent = DclSceneManager.PrimarySelectedEntity?.GetComponent<MaterialComponent>();
         if (materialComponent == null)
             return;
 
@@ -57,7 +57,7 @@ public class MaterialComponentUI : ComponentUI
 
     public void ApplyUndoRecording()
     {
-        var materialComponent = SceneManager.PrimarySelectedEntity?.GetComponent<MaterialComponent>();
+        var materialComponent = DclSceneManager.PrimarySelectedEntity?.GetComponent<MaterialComponent>();
         if (materialComponent == null)
             return;
 
@@ -74,12 +74,12 @@ public class MaterialComponentUI : ComponentUI
                     () =>
                     {
                         materialComponent.materialValues = beforeValues;
-                        SceneManager.OnUpdateSelection.Invoke();
+                        DclSceneManager.OnUpdateSelection.Invoke();
                     },
                     () =>
                     {
                         materialComponent.materialValues = afterValues;
-                        SceneManager.OnUpdateSelection.Invoke();
+                        DclSceneManager.OnUpdateSelection.Invoke();
                     }
                 );
             }
@@ -87,12 +87,12 @@ public class MaterialComponentUI : ComponentUI
 
         }
 
-        SceneManager.OnUpdateSelection.Invoke();
+        DclSceneManager.OnUpdateSelection.Invoke();
     }
 
     public void SetValueAlbedoColor()
     {
-        var materialComponent = SceneManager.PrimarySelectedEntity?.GetComponent<MaterialComponent>();
+        var materialComponent = DclSceneManager.PrimarySelectedEntity?.GetComponent<MaterialComponent>();
         if (materialComponent == null)
             return;
         try
@@ -110,7 +110,7 @@ public class MaterialComponentUI : ComponentUI
     }
     public void SetValueEmissiveColor()
     {
-        var materialComponent = SceneManager.PrimarySelectedEntity?.GetComponent<MaterialComponent>();
+        var materialComponent = DclSceneManager.PrimarySelectedEntity?.GetComponent<MaterialComponent>();
         if (materialComponent == null)
             return;
         try

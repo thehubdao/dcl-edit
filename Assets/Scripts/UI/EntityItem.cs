@@ -56,7 +56,7 @@ public class EntityItem : MonoBehaviour
         }
 
         // Instantiate entity
-        var newEntityObject = Instantiate(entityPrefab, spawnPosition, Quaternion.identity, SceneManager.EntityParent);
+        var newEntityObject = Instantiate(entityPrefab, spawnPosition, Quaternion.identity, DclSceneManager.EntityParent);
         var newEntity = newEntityObject.GetComponent<Entity>();
 
         // Setup entity
@@ -64,11 +64,11 @@ public class EntityItem : MonoBehaviour
         additionalSetup.Invoke(newEntity);
         
         // Record last selected entities for undo action
-        var lastSelectedEntities = SceneManager.AllSelectedEntities.ToList();
+        var lastSelectedEntities = DclSceneManager.AllSelectedEntities.ToList();
 
         // Select new entity
-        SceneManager.SetSelectionRaw(newEntity);
-        SceneManager.ChangedHierarchy();
+        DclSceneManager.SetSelectionRaw(newEntity);
+        DclSceneManager.ChangedHierarchy();
 
         // Undo stuff
 
@@ -76,19 +76,19 @@ public class EntityItem : MonoBehaviour
             () =>
             {
                 TrashBinManager.DeleteEntity(newEntity);
-                SceneManager.ChangedHierarchy();
-                SceneManager.SetSelectionRaw(null);
+                DclSceneManager.ChangedHierarchy();
+                DclSceneManager.SetSelectionRaw(null);
 
                 foreach (var entity in lastSelectedEntities)
                 {
-                    SceneManager.AddSelectedRaw(entity);
+                    DclSceneManager.AddSelectedRaw(entity);
                 }
             },
             () =>
             {
                 TrashBinManager.RestoreEntity(newEntity);
-                SceneManager.ChangedHierarchy();
-                SceneManager.SetSelectionRaw(newEntity);
+                DclSceneManager.ChangedHierarchy();
+                DclSceneManager.SetSelectionRaw(newEntity);
             });
     }
 }

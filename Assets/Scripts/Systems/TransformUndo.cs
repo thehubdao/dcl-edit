@@ -99,7 +99,7 @@ public class TransformUndo
                 foreach (var pair in _beginningTransformations)
                 {
                     pair.Value.ApplyTo(pair.Key.transform);
-                    SceneManager.OnUpdateSelection.Invoke();
+                    DclSceneManager.OnUpdateSelection.Invoke();
                 }
             },
             () =>
@@ -107,7 +107,7 @@ public class TransformUndo
                 foreach (var pair in _endingTransformations)
                 {
                     pair.Value.ApplyTo(pair.Key.transform);
-                    SceneManager.OnUpdateSelection.Invoke();
+                    DclSceneManager.OnUpdateSelection.Invoke();
                 }
             });
     }
