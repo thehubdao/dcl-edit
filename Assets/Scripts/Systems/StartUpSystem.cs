@@ -27,9 +27,9 @@ public class StartUpSystem : MonoBehaviour
             DclSceneManager.DclProjectPath = EditorUtility.OpenFolderPanel("Select DCL project folder","","");
             File.WriteAllText(devProjectPathFilePath,DclSceneManager.DclProjectPath);
         }
-        
+
 #else
-        SceneManager.DclProjectPath = Path.GetFullPath(".");
+        DclSceneManager.DclProjectPath = Path.GetFullPath(".");
 #endif
     }
 
