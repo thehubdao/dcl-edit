@@ -58,10 +58,10 @@ public class AssetSaverSystem : MonoBehaviour
         var assetsJsonWrapper = new AssetsJsonWrapper();
         var jsonString = JsonUtility.ToJson(assetsJsonWrapper,true);
 
-        Directory.CreateDirectory(SceneManager.DclProjectPath + "/dcl-edit/saves");
+        Directory.CreateDirectory(DclSceneManager.DclProjectPath + "/dcl-edit/saves");
         try
         {
-            var fileWriter = new StreamWriter(SceneManager.DclProjectPath + "/dcl-edit/saves/assets.json", false);
+            var fileWriter = new StreamWriter(DclSceneManager.DclProjectPath + "/dcl-edit/saves/assets.json", false);
 
             fileWriter.WriteLine(jsonString);
 
@@ -77,9 +77,9 @@ public class AssetSaverSystem : MonoBehaviour
     {
         AssetManager.allAssets = new List<AssetManager.Asset>();
 
-        if (File.Exists(SceneManager.DclProjectPath + "/dcl-edit/saves/assets.json"))
+        if (File.Exists(DclSceneManager.DclProjectPath + "/dcl-edit/saves/assets.json"))
         {
-            var fileContent = File.ReadAllText(SceneManager.DclProjectPath + "/dcl-edit/saves/assets.json");
+            var fileContent = File.ReadAllText(DclSceneManager.DclProjectPath + "/dcl-edit/saves/assets.json");
             var assetsJsonWrapper = JsonUtility.FromJson<AssetsJsonWrapper>(fileContent);
 
             foreach (var gltfAsset in assetsJsonWrapper.gltfAssets)

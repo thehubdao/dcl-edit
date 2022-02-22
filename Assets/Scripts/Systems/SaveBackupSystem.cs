@@ -8,9 +8,9 @@ public class SaveBackupSystem : MonoBehaviour
 {
     public static void BackupSave()
     {
-        Directory.CreateDirectory(SceneManager.DclProjectPath + "/dcl-edit/backups");
+        Directory.CreateDirectory(DclSceneManager.DclProjectPath + "/dcl-edit/backups");
 
-        var savesPath = SceneManager.DclProjectPath + "/dcl-edit/saves";
+        var savesPath = DclSceneManager.DclProjectPath + "/dcl-edit/saves";
 
         if (Directory.Exists(savesPath))
         {
@@ -22,7 +22,7 @@ public class SaveBackupSystem : MonoBehaviour
                 var now = DateTime.Now;
                 var backupName = $"backup_{now.Year}-{now.Month}-{now.Day}_{now.Hour}-{now.Minute}-{now.Second}" + (i > 1 ? $"_{i}" : "");
 
-                backupPath = SceneManager.DclProjectPath + "/dcl-edit/backups/" + backupName;
+                backupPath = DclSceneManager.DclProjectPath + "/dcl-edit/backups/" + backupName;
             } while (Directory.Exists(backupPath));
 
             Directory.CreateDirectory(backupPath);

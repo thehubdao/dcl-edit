@@ -2331,7 +2331,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 358762083}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3409b1cb7a2cb1149b3ecb32f639ffeb, type: 3}
+  m_Script: {fileID: 11500000, guid: e8443c34ab881df4a988f10764ae8780, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _gizmoCamera: {fileID: 105068609}

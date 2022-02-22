@@ -27,7 +27,7 @@ public class InspectorView : MonoBehaviour
     void Start()
     {
         _rectTransform = GetComponent<RectTransform>();
-        SceneManager.OnUpdateSelection.AddListener(SetDirty);
+        DclSceneManager.OnUpdateSelection.AddListener(SetDirty);
     }
 
     void OnEnable()
@@ -68,13 +68,13 @@ public class InspectorView : MonoBehaviour
     public void UpdateVisuals()
     {
         //EditorApplication.isPaused = true;
-        var entity = SceneManager.PrimarySelectedEntity;
+        var entity = DclSceneManager.PrimarySelectedEntity;
 
         if (entity == null)
         {
             ShowObjects(_nothingSelectedObjects);
         }
-        else if (SceneManager.SecondarySelectedEntity.Any(e => e!=null)) // When there are any Secondary selected entities
+        else if (DclSceneManager.SecondarySelectedEntity.Any(e => e!=null)) // When there are any Secondary selected entities
         {
             ShowObjects(_moreThanOneSelectedObjects);
         }

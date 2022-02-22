@@ -27,8 +27,8 @@ public class Highlighter : Interface3DHover
 
     void Start()
     {
-        SceneManager.OnUpdateSelection.AddListener(SetDirty);
-        SceneManager.OnUpdateHierarchy.AddListener(SetDirty);
+        DclSceneManager.OnUpdateSelection.AddListener(SetDirty);
+        DclSceneManager.OnUpdateHierarchy.AddListener(SetDirty);
         SetDirty();
     }
 
@@ -54,7 +54,7 @@ public class Highlighter : Interface3DHover
         {
             SetHighlight(_hoverHighlightPrefab);
         }
-        else if (SceneManager.AllSelectedEntities.Contains(OwnEntity))
+        else if (DclSceneManager.AllSelectedEntities.Contains(OwnEntity))
         {
             SetHighlight(_selectedHighlightPrefab);
         }

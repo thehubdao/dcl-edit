@@ -79,8 +79,8 @@ public class Translate : EntityManipulator
 
     public override void Change(Vector3 globalChange, Vector3 localChange, Vector3 cameraSpaceChange, Camera gizmoCamera)
     {
-        var entities = SceneManager.AllSelectedEntitiesWithoutChildren.Select(entity => entity.transform);
-        var primaryEntity = SceneManager.PrimarySelectedEntity;
+        var entities = DclSceneManager.AllSelectedEntitiesWithoutChildren.Select(entity => entity.transform);
+        var primaryEntity = DclSceneManager.PrimarySelectedEntity;
 
         //foreach (var entity in SceneManager.AllSelectedEntities.Select(entity => entity.transform))
         //{
@@ -145,7 +145,7 @@ public class Translate : EntityManipulator
     public override Plane GetPlane(Camera camera)
     {
 
-        var entity = SceneManager.PrimarySelectedEntity.transform;
+        var entity = DclSceneManager.PrimarySelectedEntity.transform;
 
         _snapLeftOvers = Vector3.zero;
         if (SnappingManager.IsSnapping && GizmoRelationManager.RelationSetting == GizmoRelationManager.RelationSettingEnum.Global)
@@ -214,7 +214,7 @@ public class Translate : EntityManipulator
 
     public override Ray GetOneRay()
     {
-        var entity = SceneManager.PrimarySelectedEntity.transform;
+        var entity = DclSceneManager.PrimarySelectedEntity.transform;
 
         switch (direction)
         {

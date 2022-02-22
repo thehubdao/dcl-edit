@@ -18,13 +18,13 @@ public class ToolVisuals : VisualRepresentation
     {
         GizmoToolManager.onUpdate.AddListener(SetDirty);
         GizmoRelationManager.onUpdate.AddListener(SetDirty);
-        SceneManager.OnUpdateSelection.AddListener(SetDirty);
-        SceneManager.OnSelectedEntityTransformChange.AddListener(SetDirty);
+        DclSceneManager.OnUpdateSelection.AddListener(SetDirty);
+        DclSceneManager.OnSelectedEntityTransformChange.AddListener(SetDirty);
     }
 
     public override void UpdateVisuals()
     {
-        if (SceneManager.PrimarySelectedEntity == null)
+        if (DclSceneManager.PrimarySelectedEntity == null)
         {
             _translate.SetActive(false);
             _rotation.SetActive(false);
@@ -44,21 +44,21 @@ public class ToolVisuals : VisualRepresentation
             _scale.SetActive(currentManipulator == GizmoToolManager.Tool.Scale);
 
         // move the tools to the correct position
-        transform.position = SceneManager.PrimarySelectedEntity.transform.position;
+        transform.position = DclSceneManager.PrimarySelectedEntity.transform.position;
 
         // Rotate the tools into the correct orientation
-        if (SceneManager.PrimarySelectedEntity != null)
+        if (DclSceneManager.PrimarySelectedEntity != null)
         {
             if (GizmoToolManager.CurrentTool == GizmoToolManager.Tool.Scale)
             {
-                transform.localRotation = SceneManager.PrimarySelectedEntity.transform.rotation;
+                transform.localRotation = DclSceneManager.PrimarySelectedEntity.transform.rotation;
                 return;
             }
 
             switch (GizmoRelationManager.RelationSetting)
             {
                 case GizmoRelationManager.RelationSettingEnum.Local:
-                    transform.rotation = SceneManager.PrimarySelectedEntity.transform.rotation;
+                    transform.rotation = DclSceneManager.PrimarySelectedEntity.transform.rotation;
                     break;
                 case GizmoRelationManager.RelationSettingEnum.Global:
                     transform.rotation = Quaternion.identity;

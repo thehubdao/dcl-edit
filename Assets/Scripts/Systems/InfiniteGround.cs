@@ -28,7 +28,7 @@ public class InfiniteGround : MonoBehaviour
 
     void Start()
     {
-        foreach (var sceneParcel in SceneManager.sceneJson.scene.Parcels)
+        foreach (var sceneParcel in DclSceneManager.sceneJson.scene.Parcels)
         {
             noGrassTiles.Add(sceneParcel);
         }

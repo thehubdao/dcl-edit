@@ -12,7 +12,7 @@ public class AutoResize : MonoBehaviour
 
     void LateUpdate()
     {
-        var distance = Vector3.Distance(SceneManager.GizmoCamera.transform.position, transform.position);
+        var distance = Vector3.Distance(DclSceneManager.GizmoCamera.transform.position, transform.position);
         distance *= GizmoSizeManager.GizmoScale;
         transform.localScale = new Vector3(distance, distance, distance);
     }

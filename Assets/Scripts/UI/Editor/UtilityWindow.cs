@@ -39,18 +39,18 @@ public class DclUtilityWindow : EditorWindow
         {
             if (go.TryGetComponent<Entity>(out var e))
             {
-                SceneManager.SetSelection(e);
+                DclSceneManager.SetSelection(e);
                 return;
             }
 
             go = go.transform.parent?.gameObject;
         }
 
-        SceneManager.SetSelection(null);
+        DclSceneManager.SetSelection(null);
     }
     private void SelectDclToUnity()
     {
-        Selection.activeGameObject = SceneManager.PrimarySelectedEntity?.gameObject;
+        Selection.activeGameObject = DclSceneManager.PrimarySelectedEntity?.gameObject;
     }
 }
 

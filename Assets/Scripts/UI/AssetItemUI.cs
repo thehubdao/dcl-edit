@@ -66,25 +66,25 @@ public class AssetItemUI : MonoBehaviour
                 {
                     Debug.Log("New asset selected: "+asset);
                     
-                    var previousAsset = SceneManager.PrimarySelectedEntity.GetComponent<GLTFShapeComponent>().asset;
+                    var previousAsset = DclSceneManager.PrimarySelectedEntity.GetComponent<GLTFShapeComponent>().asset;
                     var nextAsset = (AssetManager.GLTFAsset)asset;
 
-                    SceneManager.PrimarySelectedEntity.GetComponent<GLTFShapeComponent>().asset =
+                    DclSceneManager.PrimarySelectedEntity.GetComponent<GLTFShapeComponent>().asset =
                         nextAsset;
-                    SceneManager.OnUpdateSelection.Invoke();
+                    DclSceneManager.OnUpdateSelection.Invoke();
 
                     UndoManager.RecordUndoItem($"Select asset: {asset.name}",
                         () =>
                         {
-                            SceneManager.PrimarySelectedEntity.GetComponent<GLTFShapeComponent>().asset =
+                            DclSceneManager.PrimarySelectedEntity.GetComponent<GLTFShapeComponent>().asset =
                                 previousAsset;
-                            SceneManager.OnUpdateSelection.Invoke();
+                            DclSceneManager.OnUpdateSelection.Invoke();
                         },
                         () =>
                         {
-                            SceneManager.PrimarySelectedEntity.GetComponent<GLTFShapeComponent>().asset =
+                            DclSceneManager.PrimarySelectedEntity.GetComponent<GLTFShapeComponent>().asset =
                                 nextAsset;
-                            SceneManager.OnUpdateSelection.Invoke();
+                            DclSceneManager.OnUpdateSelection.Invoke();
                         });
 
                 });
@@ -113,7 +113,7 @@ public class AssetItemUI : MonoBehaviour
             var gltfAsset = (AssetManager.GLTFAsset)asset;
             var pathParts = gltfAsset.gltfPath.Split('/');
 
-            var gltfFolderPath = SceneManager.DclProjectPath + "/" + Path.GetDirectoryName(gltfAsset.gltfPath);
+            var gltfFolderPath = DclSceneManager.DclProjectPath + "/" + Path.GetDirectoryName(gltfAsset.gltfPath);
             var thumbnailPath = gltfFolderPath + "/thumbnail.png";
 
             //var thumbnailPath = string.Concat(

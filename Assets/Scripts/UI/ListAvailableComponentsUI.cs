@@ -14,7 +14,7 @@ public class ListAvailableComponentsUI : MonoBehaviour
 
     public void UpdateVisuals()
     {
-        var entity = SceneManager.PrimarySelectedEntity;
+        var entity = DclSceneManager.PrimarySelectedEntity;
 
         foreach (Transform child in transform)
         {

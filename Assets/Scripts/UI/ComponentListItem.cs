@@ -22,8 +22,8 @@ public class ComponentListItem : MonoBehaviour
 
     public void AddComponent()
     {
-        SceneManager.PrimarySelectedEntity.gameObject.AddComponent(componentType);
+        DclSceneManager.PrimarySelectedEntity.gameObject.AddComponent(componentType);
         GetComponentInParent<CloseUnstableWindow>().gameObject.SetActive(false);
-        SceneManager.OnUpdateSelection.Invoke();
+        DclSceneManager.OnUpdateSelection.Invoke();
     }
 }

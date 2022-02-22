@@ -15,19 +15,19 @@ public class ExposeToScriptUI : MonoBehaviour
     void Start()
     {
         UpdateVisuals();
-        SceneManager.OnUpdateSelection.AddListener(UpdateVisuals);
+        DclSceneManager.OnUpdateSelection.AddListener(UpdateVisuals);
         _toggleButton.onValueChanged.AddListener(SetExpose);
     }
 
     public void UpdateVisuals()
     {
-        if (SceneManager.PrimarySelectedEntity == null)
+        if (DclSceneManager.PrimarySelectedEntity == null)
             return;
 
-        if(_toggleButton.isOn != SceneManager.PrimarySelectedEntity.WantsToBeExposed)
-            _toggleButton.isOn = SceneManager.PrimarySelectedEntity.WantsToBeExposed;
+        if(_toggleButton.isOn != DclSceneManager.PrimarySelectedEntity.WantsToBeExposed)
+            _toggleButton.isOn = DclSceneManager.PrimarySelectedEntity.WantsToBeExposed;
 
-        if (SceneManager.PrimarySelectedEntity.ExposeFailed)
+        if (DclSceneManager.PrimarySelectedEntity.ExposeFailed)
         {
             _exposedText.color = Color.red; // TODO: use Color manager
             _exposedText.text = "Failed to expose";
@@ -35,23 +35,23 @@ public class ExposeToScriptUI : MonoBehaviour
         else
         {
             _exposedText.color = Color.white; // TODO: use Color manager
-            _exposedText.text = SceneManager.PrimarySelectedEntity.Exposed ? SceneManager.PrimarySelectedEntity.ExposedSymbol : "";
+            _exposedText.text = DclSceneManager.PrimarySelectedEntity.Exposed ? DclSceneManager.PrimarySelectedEntity.ExposedSymbol : "";
         }
     }
 
     public void SetExpose(bool _)
     {
-        if (SceneManager.PrimarySelectedEntity == null)
+        if (DclSceneManager.PrimarySelectedEntity == null)
             return;
         
-        if(SceneManager.PrimarySelectedEntity.Exposed == _toggleButton.isOn)
+        if(DclSceneManager.PrimarySelectedEntity.Exposed == _toggleButton.isOn)
             return;
 
-        SceneManager.PrimarySelectedEntity.Exposed = _toggleButton.isOn;
+        DclSceneManager.PrimarySelectedEntity.Exposed = _toggleButton.isOn;
 
         // Undo stuff
         
-        var selectedEnt = SceneManager.PrimarySelectedEntity;
+        var selectedEnt = DclSceneManager.PrimarySelectedEntity;
         var exposedState = _toggleButton.isOn;
 
         UndoManager.RecordUndoItem($"{(exposedState ? "Exposed" : "Unexposed")} {selectedEnt}",

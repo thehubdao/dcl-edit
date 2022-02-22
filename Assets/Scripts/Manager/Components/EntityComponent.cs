@@ -35,7 +35,7 @@ public abstract class EntityComponent: MonoBehaviour
         if(componentRepresentation!=null)
         {
             Destroy(componentRepresentation);
-            SceneManager.OnUpdateSelection.Invoke();
+            DclSceneManager.OnUpdateSelection.Invoke();
         }
     }
 
