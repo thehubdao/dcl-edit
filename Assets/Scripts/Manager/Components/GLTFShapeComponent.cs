@@ -24,7 +24,7 @@ public class GLTFShapeComponent : EntityComponent
         {
             asset = AssetManager.GetAssetById<AssetManager.GLTFAsset>(System.Guid.Parse(json.assetID));
         }
-        catch (AssetManager.AssetNotFoundException e)
+        catch (AssetManager.AssetNotFoundException)
         {
             asset = null;
         }

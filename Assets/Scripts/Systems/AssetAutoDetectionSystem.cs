@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Net.Mime;
 using System.Threading;
-using Siccity.GLTFUtility;
 using UnityEngine;
 
 public class AssetAutoDetectionSystem : MonoBehaviour

@@ -1,12 +1,12 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.Serialization;
-using Siccity.GLTFUtility;
 using UnityEngine;
 using UnityGLTF;
 using UnityGLTF.Loader;
+using ImportOptions = UnityGLTF.ImportOptions;
 
 
 public class GltfComponentRepresentation : MonoBehaviour
@@ -39,14 +39,27 @@ public class GltfComponentRepresentation : MonoBehaviour
                     throw new IOException("No asset selected");
 
                 var filePath = DclSceneManager.DclProjectPath + "/" + gltfShape.asset.gltfPath;
+                var filePathParts = filePath.Split('/', '\\');
 
+                var options = new ImportOptions()
+                {
+                    DataLoader = new FileLoader(URIHelper.GetDirectoryName(filePath)),
+                    AsyncCoroutineHelper = gameObject.AddComponent<AsyncCoroutineHelper>()
+                };
                 
+                var importer = new GLTFSceneImporter(filePathParts[filePathParts.Length - 1], options);
 
-                Importer.LoadFromFileAsync(
-                    DclSceneManager.DclProjectPath + "/" + gltfShape.asset.gltfPath,
-                    new ImportSettings() { },
-                    (o, clips) =>
+                importer.CustomShaderName = "Shader Graphs/GLTFShader";
+
+                StartCoroutine(importer.LoadScene(
+                    onLoadComplete: (o, info) =>
                     {
+                        if(o == null)
+                        {
+                            Debug.LogError(info.SourceException.Message+"\n"+info.SourceException.StackTrace);
+                            return;
+                        }
+
                         foreach (Transform child in transform)
                         {
                             Destroy(child.gameObject);
@@ -97,7 +110,9 @@ public class GltfComponentRepresentation : MonoBehaviour
                         }
 
                         DclSceneManager.OnUpdateHierarchy.Invoke();
-                    });
+
+                    }));
+                
             }
             catch (IOException e)
             {
@@ -111,6 +126,6 @@ public class GltfComponentRepresentation : MonoBehaviour
                 errorObject.transform.localRotation = Quaternion.identity;
             }
         }
-        
+
     }
 }
