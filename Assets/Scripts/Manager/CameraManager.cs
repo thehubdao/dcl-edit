@@ -69,7 +69,8 @@ public class CameraManager : Manager
         var averageCenter = Vector2.zero;
         foreach (var parcel in DclSceneManager.sceneJson.scene.Parcels)
         {
-            averageCenter += (Vector2)parcel * 16 + new Vector2(8, 8);
+            var nulledParcel = parcel - DclSceneManager.sceneJson.scene.Base;
+            averageCenter += (Vector2)nulledParcel * 16 + new Vector2(8, 8);
         }
 
         if(DclSceneManager.sceneJson.scene.Parcels.Length>0)
