@@ -30,7 +30,7 @@ public class InfiniteGround : MonoBehaviour
     {
         foreach (var sceneParcel in DclSceneManager.sceneJson.scene.Parcels)
         {
-            noGrassTiles.Add(sceneParcel);
+            noGrassTiles.Add(sceneParcel - DclSceneManager.sceneJson.scene.Base);
         }
 
         UpdateGrassShowing();
@@ -43,7 +43,7 @@ public class InfiniteGround : MonoBehaviour
             t.Value.ShowDefaultGrass = !noGrassTiles.Contains(t.Key);
         }
     }
-    
+
 
 
     // Update is called once per frame
@@ -53,9 +53,9 @@ public class InfiniteGround : MonoBehaviour
 
         // Create new stuff
         var startPos = campos - new Vector2Int(createDistance, createDistance);
-        for (int i = 0; i < createDistance*2+1; i++)
+        for (int i = 0; i < createDistance * 2 + 1; i++)
         {
-            for (int j = 0; j < createDistance*2+1; j++)
+            for (int j = 0; j < createDistance * 2 + 1; j++)
             {
                 var currentPos = startPos + new Vector2Int(i, j);
                 if (!_tiles.ContainsKey(currentPos))
@@ -87,7 +87,7 @@ public class InfiniteGround : MonoBehaviour
             }
         }
 
-        if(keyToRemove!=null)
+        if (keyToRemove != null)
             _tiles.Remove(keyToRemove.Value);
     }
 
