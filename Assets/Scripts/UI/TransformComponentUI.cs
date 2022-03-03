@@ -24,34 +24,33 @@ public class TransformComponentUI : ComponentUI
         DclSceneManager.OnSelectedEntityTransformChange.AddListener(UpdateVisuals);
         UpdateVisuals();
     }
-    
+
     public override void UpdateVisuals()
     {
         var transformComponent = DclSceneManager.PrimarySelectedEntity?.GetComponent<TransformComponent>();
         if (transformComponent == null)
             return;
-        
-        var numberFormat = (NumberFormatInfo) NumberFormatInfo.InvariantInfo.Clone();
+
+        var numberFormat = (NumberFormatInfo)NumberFormatInfo.InvariantInfo.Clone();
 
         // Position
         var pos = transformComponent.transform.localPosition;
-        _translateXInput.text = pos.x.ToString("0.###",numberFormat);
-        _translateYInput.text = pos.y.ToString("0.###",numberFormat);
-        _translateZInput.text = pos.z.ToString("0.###",numberFormat);
+        _translateXInput.text = pos.x.ToString("0.###", numberFormat);
+        _translateYInput.text = pos.y.ToString("0.###", numberFormat);
+        _translateZInput.text = pos.z.ToString("0.###", numberFormat);
 
-        
         // Rotation
         var eulerRot = transformComponent.transform.localEulerAngles;
-        _rotateXInput.text = eulerRot.x.ToString("0.#",numberFormat);
-        _rotateYInput.text = eulerRot.y.ToString("0.#",numberFormat);
-        _rotateZInput.text = eulerRot.z.ToString("0.#",numberFormat);
+        _rotateXInput.text = eulerRot.x.ToString("0.#", numberFormat);
+        _rotateYInput.text = eulerRot.y.ToString("0.#", numberFormat);
+        _rotateZInput.text = eulerRot.z.ToString("0.#", numberFormat);
 
         // Scale
         var scale = transformComponent.entity.transform.localScale;
-        _scaleXInput.text = scale.x.ToString("0.###",numberFormat);
-        _scaleYInput.text = scale.y.ToString("0.###",numberFormat);
-        _scaleZInput.text = scale.z.ToString("0.###",numberFormat);
-        
+        _scaleXInput.text = scale.x.ToString("0.###", numberFormat);
+        _scaleYInput.text = scale.y.ToString("0.###", numberFormat);
+        _scaleZInput.text = scale.z.ToString("0.###", numberFormat);
+
     }
 
     private TransformUndo _transformUndo = null;
@@ -60,7 +59,7 @@ public class TransformComponentUI : ComponentUI
     {
         _transformUndo = new TransformUndo(DclSceneManager.PrimarySelectedEntity.AsSingleInstanceInEnumerable());
         _transformUndo.SaveBeginningState();
-        
+
         Debug.Log("start recording");
     }
 
@@ -72,8 +71,8 @@ public class TransformComponentUI : ComponentUI
             _transformUndo.AddUndoItem();
             _transformUndo = null;
             Debug.Log("recorded");
-            
-        }   
+
+        }
     }
 
     public void SetValueTranslate()
@@ -81,11 +80,16 @@ public class TransformComponentUI : ComponentUI
         var transformComponent = DclSceneManager.PrimarySelectedEntity.GetComponent<TransformComponent>();
         try
         {
-            transformComponent.transform.localPosition = new Vector3( 
-                float.Parse(_translateXInput.text,CultureInfo.InvariantCulture),
-                float.Parse(_translateYInput.text,CultureInfo.InvariantCulture), 
-                float.Parse(_translateZInput.text,CultureInfo.InvariantCulture));
+            var newLocalPosition = new Vector3(
+                float.Parse(_translateXInput.text, CultureInfo.InvariantCulture),
+                float.Parse(_translateYInput.text, CultureInfo.InvariantCulture),
+                float.Parse(_translateZInput.text, CultureInfo.InvariantCulture));
 
+            if (newLocalPosition != transformComponent.transform.localPosition)
+            {
+                transformComponent.transform.localPosition = newLocalPosition;
+                DclSceneManager.OnSelectedEntityTransformChange.Invoke();
+            }
         }
         catch
         {
@@ -97,10 +101,16 @@ public class TransformComponentUI : ComponentUI
         var transformComponent = DclSceneManager.PrimarySelectedEntity.GetComponent<TransformComponent>();
         try
         {
-            transformComponent.transform.localEulerAngles = new Vector3( 
-                float.Parse(_rotateXInput.text,CultureInfo.InvariantCulture),
-                float.Parse(_rotateYInput.text,CultureInfo.InvariantCulture), 
-                float.Parse(_rotateZInput.text,CultureInfo.InvariantCulture));
+            var newLocalEulerAngles = new Vector3(
+                float.Parse(_rotateXInput.text, CultureInfo.InvariantCulture),
+                float.Parse(_rotateYInput.text, CultureInfo.InvariantCulture),
+                float.Parse(_rotateZInput.text, CultureInfo.InvariantCulture));
+
+            if (transformComponent.transform.localEulerAngles != newLocalEulerAngles)
+            {
+                transformComponent.transform.localEulerAngles = newLocalEulerAngles;
+                DclSceneManager.OnSelectedEntityTransformChange.Invoke();
+            }
         }
         catch
         {
@@ -112,10 +122,16 @@ public class TransformComponentUI : ComponentUI
         var transformComponent = DclSceneManager.PrimarySelectedEntity.GetComponent<TransformComponent>();
         try
         {
-            transformComponent.transform.localScale = new Vector3( 
-                float.Parse(_scaleXInput.text,CultureInfo.InvariantCulture),
-                float.Parse(_scaleYInput.text,CultureInfo.InvariantCulture), 
-                float.Parse(_scaleZInput.text,CultureInfo.InvariantCulture));
+            var newLocalScale = new Vector3(
+                float.Parse(_scaleXInput.text, CultureInfo.InvariantCulture),
+                float.Parse(_scaleYInput.text, CultureInfo.InvariantCulture),
+                float.Parse(_scaleZInput.text, CultureInfo.InvariantCulture));
+
+            if (transformComponent.transform.localScale != newLocalScale)
+            {
+                transformComponent.transform.localScale = newLocalScale;
+                DclSceneManager.OnSelectedEntityTransformChange.Invoke();
+            }
         }
         catch
         {
