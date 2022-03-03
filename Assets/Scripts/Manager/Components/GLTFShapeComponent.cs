@@ -35,13 +35,29 @@ public class GLTFShapeComponent : EntityComponent
 
     public override string ComponentName => "GLTFShape";
     public override int InspectorOrder => 100;
+    
+    // This is not good. TODO: change, when refactoring script generator
+    private static Dictionary<string, string> _availableGltfShapes = new Dictionary<string, string>();
+
+    // resets the shape cache. This has to be called before every script generation
+    public static void ClearShapeCache()
+    {
+        _availableGltfShapes = new Dictionary<string, string>();
+    }
 
     public override Ts? GetTypeScript()
     {
-        if(asset == null)
+        if (asset == null)
             return null;
-        
-        return new Ts( InternalComponentSymbol, $"const {InternalComponentSymbol} = new GLTFShape(\"{asset.gltfPath}\")\n" +
+
+        if (_availableGltfShapes.ContainsKey(asset.gltfPath))
+        {
+            return new Ts(_availableGltfShapes[asset.gltfPath], "");
+        }
+
+        _availableGltfShapes.Add(asset.gltfPath, InternalComponentSymbol);
+
+        return new Ts(InternalComponentSymbol, $"const {InternalComponentSymbol} = new GLTFShape(\"{asset.gltfPath}\")\n" +
                                                      $"{InternalComponentSymbol}.withCollisions = true\n" +
                                                      $"{InternalComponentSymbol}.isPointerBlocker = true\n" +
                                                      $"{InternalComponentSymbol}.visible = true\n");
