@@ -57,14 +57,12 @@ public class SaveBackupSystem : MonoBehaviour
                 Array.Sort(backups);//Sorting by name ought to yield oldest first
                 string oldestBackupDirectory = backups[0];
                 backups = Directory.GetFiles(oldestBackupDirectory);
-                Debug.Log(oldestBackupDirectory.ToString());
 
                 foreach (string oldAdress in backups)
                 {
-                    File.Delete(oldAdress);
+                    File.Delete(oldAdress);//delete files first 
                 }
-                //oldestBackup = DclSceneManager.DclProjectPath + "/dcl-edit/backups/" + oldestBackup;
-                Directory.Delete(oldestBackupDirectory);
+                Directory.Delete(oldestBackupDirectory);//then delelete directory 
             }
         }
     }
