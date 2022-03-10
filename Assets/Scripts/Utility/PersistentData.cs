@@ -80,7 +80,12 @@ public static class PersistentData
         set => _uiScaleData.Set(value);
         get => _uiScaleData.Get();
     }
-    
+    private static Data<int> _numberOfBackups = MakeNewIntData("NumberOfBackups", -1);
+    public static int NumberOfBackups
+        {
+            set=>_numberOfBackups.Set(value);
+            get=> _numberOfBackups.Get();
+        }
 
 
     private static Data<int> MakeNewIntData(string key, int defaultValue)

@@ -26,8 +26,9 @@ public class SettingsUI : MonoBehaviour
     [Header("Editor")]
     [SerializeField]
     private TMP_InputField _uiScaleText;
-    
-    
+    [SerializeField]
+    private TMP_InputField _numberOfBackupsText;
+
     [Header("Generator")]
     [SerializeField]
     private TMP_InputField _scriptLocationText;
@@ -61,6 +62,8 @@ public class SettingsUI : MonoBehaviour
         AddEndEditListener(ref _scaleSnappingText, value => ProjectData.scaleSnapStep = float.Parse(value));
 
         AddEndEditListener(ref _uiScaleText, value => CanvasManager.UiScale = float.Parse(value));
+        AddEndEditListener(ref _numberOfBackupsText, value => PersistentData.NumberOfBackups = int.Parse(value));
+
 
         AddEndEditListener(ref _scriptLocationText, value => ProjectData.generateScriptLocation = value);
 
@@ -98,6 +101,7 @@ public class SettingsUI : MonoBehaviour
         _scaleSnappingText.text = ProjectData.scaleSnapStep.ToString("#0.###");
 
         _uiScaleText.text = CanvasManager.UiScale.ToString("#0.###");
+        _numberOfBackupsText.text = PersistentData.NumberOfBackups.ToString();
 
         _scriptLocationText.text = ProjectData.generateScriptLocation;
     }

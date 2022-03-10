@@ -8,6 +8,8 @@ public class SaveBackupSystem : MonoBehaviour
 {
     public static void BackupSave()
     {
+
+
         Directory.CreateDirectory(DclSceneManager.DclProjectPath + "/dcl-edit/backups");
 
         var savesPath = DclSceneManager.DclProjectPath + "/dcl-edit/saves";
@@ -24,12 +26,49 @@ public class SaveBackupSystem : MonoBehaviour
 
                 backupPath = DclSceneManager.DclProjectPath + "/dcl-edit/backups/" + backupName;
             } while (Directory.Exists(backupPath));
+            if (PersistentData.NumberOfBackups != 0)
+            {
+                Directory.CreateDirectory(backupPath);
 
-            Directory.CreateDirectory(backupPath);
-            CopyFilesRecursively(savesPath, backupPath);
+                CopyFilesRecursively(savesPath, backupPath);
+            }
+            NumberOfBackups(backupPath);
+
         }
     }
-    
+    private static void NumberOfBackups(string backupPath)
+    {
+
+        int number = PersistentData.NumberOfBackups;
+        if (number < 0)
+        {
+            //Unlimited Backups
+        }
+        else if (number == 0)
+        {
+            //No Backups
+            //Should Prevent Saving
+        }
+        else
+        {
+            string[] backups = Directory.GetDirectories(DclSceneManager.DclProjectPath + "/dcl-edit/backups/");
+            if (backups.Length > number)
+            {
+                Array.Sort(backups);//Sorting by name ought to yield oldest first
+                string oldestBackupDirectory = backups[0];
+                backups = Directory.GetFiles(oldestBackupDirectory);
+                Debug.Log(oldestBackupDirectory.ToString());
+
+                foreach (string oldAdress in backups)
+                {
+                    File.Delete(oldAdress);
+                }
+                //oldestBackup = DclSceneManager.DclProjectPath + "/dcl-edit/backups/" + oldestBackup;
+                Directory.Delete(oldestBackupDirectory);
+            }
+        }
+    }
+
     private static void CopyFilesRecursively(string sourcePath, string targetPath)
     {
         //Now Create all of the directories
