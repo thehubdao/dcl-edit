@@ -77,11 +77,17 @@ public class SettingsUI : MonoBehaviour
         if (framerateCapToggle.isOn)
         {
             PersistentData.FramerateCap = Screen.currentResolution.refreshRate;
+            _frameRateCap.enabled = true;
+
         }
         else
         {
+            _frameRateCap.SetTextWithoutNotify(0.ToString());
             PersistentData.FramerateCap = 0;
+            _frameRateCap.enabled = false;
+
         }
+        SetDirty();
     }
 
     public void SetDirty()
@@ -119,14 +125,12 @@ public class SettingsUI : MonoBehaviour
         if (PersistentData.FramerateCap > 0)
         {
             _framerateCapToggle.isOn=true;
-            _frameRateCap.ActivateInputField();
         }
         else
         {
             _framerateCapToggle.isOn = false;
-            _frameRateCap.DeactivateInputField();
         }
         _scriptLocationText.text = ProjectData.generateScriptLocation;
-
+        Debug.Log(PersistentData.FramerateCap.ToString());
     }
 }
