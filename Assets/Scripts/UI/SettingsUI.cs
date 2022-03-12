@@ -5,6 +5,7 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Assertions.Comparers;
+using UnityEngine.UI;
 
 public class SettingsUI : MonoBehaviour
 {
@@ -22,12 +23,15 @@ public class SettingsUI : MonoBehaviour
     [SerializeField]
     private TMP_InputField _scaleSnappingText;
 
-    
+
     [Header("Editor")]
     [SerializeField]
     private TMP_InputField _uiScaleText;
-    
-    
+
+    [SerializeField]
+    private TMP_InputField _frameRateCap;
+    [SerializeField]
+    private Toggle _framerateCapToggle;
     [Header("Generator")]
     [SerializeField]
     private TMP_InputField _scriptLocationText;
@@ -61,10 +65,23 @@ public class SettingsUI : MonoBehaviour
         AddEndEditListener(ref _scaleSnappingText, value => ProjectData.scaleSnapStep = float.Parse(value));
 
         AddEndEditListener(ref _uiScaleText, value => CanvasManager.UiScale = float.Parse(value));
-
+        AddEndEditListener(ref _frameRateCap, value => PersistentData.FramerateCap = int.Parse(value));
         AddEndEditListener(ref _scriptLocationText, value => ProjectData.generateScriptLocation = value);
+        _framerateCapToggle.onValueChanged.AddListener(delegate { FrmerateCapToggleChanged(_framerateCapToggle); });
 
         CanvasManager.onUiChange.AddListener(SetDirty);
+    }
+
+    private void FrmerateCapToggleChanged(Toggle framerateCapToggle)
+    {
+        if (framerateCapToggle.isOn)
+        {
+            PersistentData.FramerateCap = Screen.currentResolution.refreshRate;
+        }
+        else
+        {
+            PersistentData.FramerateCap = 0;
+        }
     }
 
     public void SetDirty()
@@ -98,7 +115,18 @@ public class SettingsUI : MonoBehaviour
         _scaleSnappingText.text = ProjectData.scaleSnapStep.ToString("#0.###");
 
         _uiScaleText.text = CanvasManager.UiScale.ToString("#0.###");
-
+        _frameRateCap.text = PersistentData.FramerateCap.ToString();
+        if (PersistentData.FramerateCap > 0)
+        {
+            _framerateCapToggle.isOn=true;
+            _frameRateCap.ActivateInputField();
+        }
+        else
+        {
+            _framerateCapToggle.isOn = false;
+            _frameRateCap.DeactivateInputField();
+        }
         _scriptLocationText.text = ProjectData.generateScriptLocation;
+
     }
 }

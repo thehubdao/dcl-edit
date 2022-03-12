@@ -80,8 +80,12 @@ public static class PersistentData
         set => _uiScaleData.Set(value);
         get => _uiScaleData.Get();
     }
-    
-
+    private static Data<int> _framerateCap = MakeNewIntData("FramerateCap", 0);
+    public static int FramerateCap
+    {
+        get => _framerateCap.Get();
+        set => _framerateCap.Set(value);
+    }
 
     private static Data<int> MakeNewIntData(string key, int defaultValue)
     {
@@ -104,9 +108,9 @@ public static class PersistentData
 
         private T _value;
 
-        private Action<string,T> _setFunc;
+        private Action<string, T> _setFunc;
 
-        public Data(string key, T defaultValue, Func<string,T> getFunc,Action<string,T> setFunc)
+        public Data(string key, T defaultValue, Func<string, T> getFunc, Action<string, T> setFunc)
         {
             _value = !PlayerPrefs.HasKey(key) ? defaultValue : getFunc(key);
 
@@ -121,7 +125,7 @@ public static class PersistentData
         public void Set(T value)
         {
             _value = value;
-            _setFunc(_key,value);
+            _setFunc(_key, value);
         }
     }
 }
