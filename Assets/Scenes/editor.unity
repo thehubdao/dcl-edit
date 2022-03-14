@@ -10126,7 +10126,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8040832510113638928, guid: 30170a75cc628e04d894295834d5d641, type: 3}
   m_PrefabInstance: {fileID: 758602354}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 1998302838}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2da0c512f12947e489f739169773d7ca, type: 3}
@@ -14840,6 +14840,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _listItemTemplate: {fileID: 2368039828389971565, guid: c6fea17e55aa87b468ddc57d467e7d51, type: 3}
+--- !u!1 &1998302838 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8040832510113638941, guid: 30170a75cc628e04d894295834d5d641, type: 3}
+  m_PrefabInstance: {fileID: 758602354}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1998302843
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1998302838}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 896fd8fe5aebcef4d84980be585e5b92, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _text: '>0 No Backup    0=Inf    >0 #of backups'
 --- !u!114 &2002962626 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8040832510113638928, guid: 30170a75cc628e04d894295834d5d641, type: 3}

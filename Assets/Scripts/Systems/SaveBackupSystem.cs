@@ -26,6 +26,7 @@ public class SaveBackupSystem : MonoBehaviour
 
                 backupPath = DclSceneManager.DclProjectPath + "/dcl-edit/backups/" + backupName;
             } while (Directory.Exists(backupPath));
+
             if (PersistentData.NumberOfBackups != 0)
             {
                 Directory.CreateDirectory(backupPath);
@@ -40,16 +41,7 @@ public class SaveBackupSystem : MonoBehaviour
     {
 
         int number = PersistentData.NumberOfBackups;
-        if (number < 0)
-        {
-            //Unlimited Backups
-        }
-        else if (number == 0)
-        {
-            //No Backups
-            //Should Prevent Saving
-        }
-        else
+        if (number > 0)
         {
             string[] backups = Directory.GetDirectories(DclSceneManager.DclProjectPath + "/dcl-edit/backups/");
             if (backups.Length > number)
@@ -58,11 +50,11 @@ public class SaveBackupSystem : MonoBehaviour
                 string oldestBackupDirectory = backups[0];
                 backups = Directory.GetFiles(oldestBackupDirectory);
 
-                foreach (string oldAdress in backups)
+                foreach (string oldAddress in backups)
                 {
-                    File.Delete(oldAdress);//delete files first 
+                    File.Delete(oldAddress);//delete files first 
                 }
-                Directory.Delete(oldestBackupDirectory);//then delelete directory 
+                Directory.Delete(oldestBackupDirectory);//then delete directory 
             }
         }
     }
