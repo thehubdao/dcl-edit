@@ -27,11 +27,12 @@ public class SettingsUI : MonoBehaviour
     [Header("Editor")]
     [SerializeField]
     private TMP_InputField _uiScaleText;
-
     [SerializeField]
     private TMP_InputField _frameRateCap;
     [SerializeField]
     private Toggle _framerateCapToggle;
+
+
     [Header("Generator")]
     [SerializeField]
     private TMP_InputField _scriptLocationText;
@@ -65,28 +66,26 @@ public class SettingsUI : MonoBehaviour
         AddEndEditListener(ref _scaleSnappingText, value => ProjectData.scaleSnapStep = float.Parse(value));
 
         AddEndEditListener(ref _uiScaleText, value => CanvasManager.UiScale = float.Parse(value));
-        AddEndEditListener(ref _frameRateCap, value => PersistentData.FramerateCap = int.Parse(value));
         AddEndEditListener(ref _scriptLocationText, value => ProjectData.generateScriptLocation = value);
-        _framerateCapToggle.onValueChanged.AddListener(delegate { FrmerateCapToggleChanged(_framerateCapToggle); });
+        AddEndEditListener(ref _frameRateCap, value => PersistentData.FramerateCap = int.Parse(value));
+        _frameRateCap.onEndEdit.AddListener(delegate { FramerateCap.SetFramerate(); });
+        _framerateCapToggle.onValueChanged.AddListener(delegate { FramerateCapToggleChanged(_framerateCapToggle); });
 
         CanvasManager.onUiChange.AddListener(SetDirty);
     }
 
-    private void FrmerateCapToggleChanged(Toggle framerateCapToggle)
+
+    private void FramerateCapToggleChanged(Toggle framerateCapToggle)//Besser Persistent data abfragen
     {
-        if (framerateCapToggle.isOn)
+        if (PersistentData.FramerateCap==0)
         {
             PersistentData.FramerateCap = Screen.currentResolution.refreshRate;
-            _frameRateCap.enabled = true;
-
         }
         else
         {
-            _frameRateCap.SetTextWithoutNotify(0.ToString());
             PersistentData.FramerateCap = 0;
-            _frameRateCap.enabled = false;
-
         }
+        FramerateCap.SetFramerate();
         SetDirty();
     }
 
@@ -111,7 +110,6 @@ public class SettingsUI : MonoBehaviour
 
     private void UpdateVisuals()
     {
-        //Debug.Log("update settings visuals");
 
         _cameraSpeedText.text = PersistentData.CameraSpeed.ToString("#0.###");
         _mouseSensitivityText.text = PersistentData.MouseSensitivity.ToString("#0.###");
@@ -122,15 +120,15 @@ public class SettingsUI : MonoBehaviour
 
         _uiScaleText.text = CanvasManager.UiScale.ToString("#0.###");
         _frameRateCap.text = PersistentData.FramerateCap.ToString();
+        _framerateCapToggle.SetIsOnWithoutNotify(PersistentData.FramerateCap>0);
         if (PersistentData.FramerateCap > 0)
         {
-            _framerateCapToggle.isOn=true;
+            _frameRateCap.enabled = true;
         }
         else
         {
-            _framerateCapToggle.isOn = false;
+            _frameRateCap.enabled = false;
         }
         _scriptLocationText.text = ProjectData.generateScriptLocation;
-        Debug.Log(PersistentData.FramerateCap.ToString());
     }
 }

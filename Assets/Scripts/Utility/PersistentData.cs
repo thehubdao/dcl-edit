@@ -80,7 +80,10 @@ public static class PersistentData
         set => _uiScaleData.Set(value);
         get => _uiScaleData.Get();
     }
+
+
     private static Data<int> _framerateCap = MakeNewIntData("FramerateCap", 0);
+
     public static int FramerateCap
     {
         get => _framerateCap.Get();

@@ -4,18 +4,12 @@ using UnityEngine;
 
 public class FramerateCap : MonoBehaviour
 {
-    private void Start()
+    void Start()
     {
-        if (PersistentData.FramerateCap <= 0)
-        {
-            Application.targetFrameRate = -1;
-        }
-        else if (PersistentData.FramerateCap != Application.targetFrameRate)
-        {
-            Application.targetFrameRate = PersistentData.FramerateCap;
-        }
+        SetFramerate();
     }
-    void LateUpdate()
+
+    public static void SetFramerate()
     {
         if (PersistentData.FramerateCap <= 0)
         {
