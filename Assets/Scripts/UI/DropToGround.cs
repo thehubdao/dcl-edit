@@ -1,49 +1,40 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
-public class DropToGround : MonoBehaviour
+public class DropToGround : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 {
     Rigidbody rb;
-    Vector3 originalPosition;
-    Quaternion originalRotation;
+
     void Start()
     {
-
+        
     }
 
     private void Drop()
     {
-
+        //do a sweep to determine distance then move object down that distance
     }
-    public void Button()
+    public void OnPointerDown(PointerEventData eventData)//make button hold and release instead of toggle//tool visuals//shortcut G STRG+G//systems view 3d input system
     {
-        if (DclSceneManager.PrimarySelectedEntity.TryGetComponent(out Rigidbody rb))
-        {
-            Reset();
-        }
-        else
-        {
-            DropWithPhysics();
-        }
+        DropWithPhysics();
     }
-    private void Reset()
+    public void OnPointerUp(PointerEventData eventData)
+    {
+        RemoveRigidBody();
+    }
+    private void RemoveRigidBody()
     {
         var primaryEntity = DclSceneManager.PrimarySelectedEntity;
         Destroy(primaryEntity.GetComponent(typeof(Rigidbody)));
-        primaryEntity.transform.SetPositionAndRotation(originalPosition,originalRotation);
     }
     private void DropWithPhysics()
     {
         var primaryEntity = DclSceneManager.PrimarySelectedEntity;
-        originalPosition = primaryEntity.transform.position;
-        originalRotation = primaryEntity.transform.rotation;
-        rb=primaryEntity.gameObject.AddComponent(typeof(Rigidbody)) as Rigidbody;
-        rb.mass = 0;
-        rb.drag = 0;
-        rb.angularDrag = 0;
-        rb.angularVelocity = new Vector3(0,0,0);
-       // rb.isKinematic = false;
-        //rb.useGravity = true;
+
+        rb = primaryEntity.gameObject.AddComponent(typeof(Rigidbody)) as Rigidbody;
+
+
     }
 }
