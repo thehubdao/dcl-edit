@@ -24,7 +24,7 @@ public class ExposeToScriptUI : MonoBehaviour
         if (DclSceneManager.PrimarySelectedEntity == null)
             return;
 
-        if(_toggleButton.isOn != DclSceneManager.PrimarySelectedEntity.WantsToBeExposed)
+        if (_toggleButton.isOn != DclSceneManager.PrimarySelectedEntity.WantsToBeExposed)
             _toggleButton.isOn = DclSceneManager.PrimarySelectedEntity.WantsToBeExposed;
 
         if (DclSceneManager.PrimarySelectedEntity.ExposeFailed)
