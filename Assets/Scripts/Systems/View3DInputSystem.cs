@@ -234,6 +234,22 @@ public class View3DInputSystem : MonoBehaviour
                 GizmoToolManager.CurrentTool = GizmoToolManager.Tool.Scale;
             }
 
+            // G-> Gravity
+            if (Input.GetKeyDown(KeyCode.G) && isMouseOverGameWindow && !CanvasManager.IsAnyInputFieldFocused)
+            {
+                DropToGround.DropWithPhysics();
+            }
+            if (Input.GetKeyUp(KeyCode.G) && isMouseOverGameWindow && !CanvasManager.IsAnyInputFieldFocused)
+            {
+                DropToGround.RemoveRigidBody();
+            }
+            // CTRL+G
+            if (pressingControl&&Input.GetKeyDown(KeyCode.G) && isMouseOverGameWindow && !CanvasManager.IsAnyInputFieldFocused)
+            {
+                DropToGround.Drop();
+            }
+
+
             var ctrlPlusS = pressingControl && Input.GetKeyDown(KeyCode.S);
             if (ctrlPlusS && isMouseOverGameWindow)
             {
