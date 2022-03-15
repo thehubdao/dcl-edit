@@ -24,7 +24,6 @@ public class DropToGround : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
             if (rb.SweepTest(new Vector3(0, -1, 0), out hit, collisionCheckDistance))//this only works with simple or convex meshes
             {
                 distanceToCollision = hit.distance;
-                Debug.Log(distanceToCollision);
                 primaryEntity.transform.position += new Vector3(0, -1, 0) * hit.distance;
             }
             Destroy(primaryEntity.GetComponent(typeof(Rigidbody)));
