@@ -11,7 +11,6 @@ public class DropToGround : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
         if (DclSceneManager.PrimarySelectedEntity != null)
         {
             var primaryEntity = DclSceneManager.PrimarySelectedEntity;
-            float distanceToCollision;
             float collisionCheckDistance = 256;
             Rigidbody rb = primaryEntity.GetComponent(typeof(Rigidbody)) as Rigidbody;
             if (rb == null)
@@ -53,7 +52,7 @@ public class DropToGround : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
         {
             var primaryEntity = DclSceneManager.PrimarySelectedEntity;
 
-            Rigidbody rb = primaryEntity.gameObject.AddComponent(typeof(Rigidbody)) as Rigidbody;
+            primaryEntity.gameObject.AddComponent(typeof(Rigidbody));
         }
     }
 }
