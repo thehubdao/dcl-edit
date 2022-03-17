@@ -6,35 +6,40 @@ using UnityEngine;
 
 public class SaveBackupSystem : MonoBehaviour
 {
+    private static UndoManager.UndoItem? _lastSavedAtUndoItemReference;
+
     public static void BackupSave()
     {
-
-
-        Directory.CreateDirectory(DclSceneManager.DclProjectPath + "/dcl-edit/backups");
-
-        var savesPath = DclSceneManager.DclProjectPath + "/dcl-edit/saves";
-
-        if (Directory.Exists(savesPath))
+        UndoManager.UndoItem? currentUndoItem = null;
+        currentUndoItem = UndoManager.CurrentItem;
+        if (!_lastSavedAtUndoItemReference.Equals(currentUndoItem))
         {
-            var backupPath = "";
-            var i = 0;
-            do
+            Directory.CreateDirectory(DclSceneManager.DclProjectPath + "/dcl-edit/backups");
+            var savesPath = DclSceneManager.DclProjectPath + "/dcl-edit/saves";
+
+            if (Directory.Exists(savesPath))
             {
-                i++;
-                var now = DateTime.Now;
-                var backupName = $"backup_{now.Year}-{now.Month}-{now.Day}_{now.Hour}-{now.Minute}-{now.Second}" + (i > 1 ? $"_{i}" : "");
+                var backupPath = "";
+                var i = 0;
+                do
+                {
+                    i++;
+                    var now = DateTime.Now;
+                    var backupName = $"backup_{now.Year}-{now.Month}-{now.Day}_{now.Hour}-{now.Minute}-{now.Second}" + (i > 1 ? $"_{i}" : "");
 
-                backupPath = DclSceneManager.DclProjectPath + "/dcl-edit/backups/" + backupName;
-            } while (Directory.Exists(backupPath));
+                    backupPath = DclSceneManager.DclProjectPath + "/dcl-edit/backups/" + backupName;
+                } while (Directory.Exists(backupPath));
 
-            if (PersistentData.NumberOfBackups != 0)
-            {
-                Directory.CreateDirectory(backupPath);
+                if (PersistentData.NumberOfBackups != 0)
+                {
+                    Directory.CreateDirectory(backupPath);
 
-                CopyFilesRecursively(savesPath, backupPath);
-            }
-            NumberOfBackups(backupPath);
+                    CopyFilesRecursively(savesPath, backupPath);
+                }
+                NumberOfBackups(backupPath);
 
+                }
+        _lastSavedAtUndoItemReference = currentUndoItem;
         }
     }
     private static void NumberOfBackups(string backupPath)
