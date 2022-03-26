@@ -6,18 +6,98 @@ using UnityEngine;
 
 public class MaterialComponentUI : ComponentUI
 {
-    [SerializeField] private TMP_InputField _albedoColorRInput;
-    [SerializeField] private TMP_InputField _albedoColorGInput;
-    [SerializeField] private TMP_InputField _albedoColorBInput;
 
-    [SerializeField] private TMP_InputField _emissiveColorRInput;
-    [SerializeField] private TMP_InputField _emissiveColorGInput;
-    [SerializeField] private TMP_InputField _emissiveColorBInput;
+    [SerializeField]
+    private ColorProperty _albedoColorProperty = default;
+    [SerializeField]
+    private ColorProperty _emissiveColorProperty = default;
 
 
     void Start()
     {
         DclSceneManager.OnSelectedEntityTransformChange.AddListener(UpdateVisuals);
+
+        _albedoColorProperty.OnClickedColorField.AddListener(() =>
+        {
+            var materialComponent = DclSceneManager.PrimarySelectedEntity?.GetComponent<MaterialComponent>();
+            if (materialComponent == null)
+                return;
+
+            var currentAlbedoColor = materialComponent.materialValues.albedoColor;
+
+            OpenColorPickerWindowSystem.RequestColor(currentAlbedoColor, color =>
+            {
+                var materialComponent = DclSceneManager.PrimarySelectedEntity?.GetComponent<MaterialComponent>();
+                if (materialComponent == null)
+                    return;
+
+                var oldColor = materialComponent.materialValues.albedoColor;
+
+                materialComponent.materialValues.albedoColor = color;
+
+                if (!oldColor.Equals(color))
+                {
+
+                    UndoManager.RecordUndoItem(
+                        "Changed Material Albedo Color",
+                        () =>
+                        {
+                            materialComponent.materialValues.albedoColor = oldColor;
+                            DclSceneManager.OnUpdateSelection.Invoke();
+                        },
+                        () =>
+                        {
+                            materialComponent.materialValues.albedoColor = color;
+                            DclSceneManager.OnUpdateSelection.Invoke();
+                        }
+                    );
+                }
+
+                DclSceneManager.OnUpdateSelection.Invoke();
+            });
+        });
+
+
+        _emissiveColorProperty.OnClickedColorField.AddListener(() =>
+        {
+            var materialComponent = DclSceneManager.PrimarySelectedEntity?.GetComponent<MaterialComponent>();
+            if (materialComponent == null)
+                return;
+
+            var currentEmissiveColor = materialComponent.materialValues.emissiveColor;
+
+            OpenColorPickerWindowSystem.RequestColor(currentEmissiveColor, color =>
+            {
+                var materialComponent = DclSceneManager.PrimarySelectedEntity?.GetComponent<MaterialComponent>();
+                if (materialComponent == null)
+                    return;
+
+                var oldColor = materialComponent.materialValues.emissiveColor;
+
+                materialComponent.materialValues.emissiveColor = color;
+
+                if (!oldColor.Equals(color))
+                {
+
+                    UndoManager.RecordUndoItem(
+                        "Changed Material Emissive Color",
+                        () =>
+                        {
+                            materialComponent.materialValues.emissiveColor = oldColor;
+                            DclSceneManager.OnUpdateSelection.Invoke();
+                        },
+                        () =>
+                        {
+                            materialComponent.materialValues.emissiveColor = color;
+                            DclSceneManager.OnUpdateSelection.Invoke();
+                        }
+                    );
+                }
+
+                DclSceneManager.OnUpdateSelection.Invoke();
+            });
+        });
+
         UpdateVisuals();
     }
 
@@ -27,103 +107,7 @@ public class MaterialComponentUI : ComponentUI
         if (materialComponent == null)
             return;
 
-        var numberFormat = (NumberFormatInfo)NumberFormatInfo.InvariantInfo.Clone();
-
-        // Albedo Color
-        var albedo = materialComponent.materialValues.albedoColor;
-        _albedoColorRInput.text = albedo.r.ToString("0.###", numberFormat);
-        _albedoColorGInput.text = albedo.g.ToString("0.###", numberFormat);
-        _albedoColorBInput.text = albedo.b.ToString("0.###", numberFormat);
-
-
-        // Emissive Color
-        var emissive = materialComponent.materialValues.emissiveColor;
-        _emissiveColorRInput.text = emissive.r.ToString("0.###", numberFormat);
-        _emissiveColorGInput.text = emissive.g.ToString("0.###", numberFormat);
-        _emissiveColorBInput.text = emissive.b.ToString("0.###", numberFormat);
-    }
-
-    private MaterialComponent.MaterialValues _valuesBeforeEditing;
-
-    public void StartUndoRecording()
-    {
-        var materialComponent = DclSceneManager.PrimarySelectedEntity?.GetComponent<MaterialComponent>();
-        if (materialComponent == null)
-            return;
-
-        _valuesBeforeEditing = materialComponent.materialValues.Copy();
-
-    }
-
-    public void ApplyUndoRecording()
-    {
-        var materialComponent = DclSceneManager.PrimarySelectedEntity?.GetComponent<MaterialComponent>();
-        if (materialComponent == null)
-            return;
-
-        if (_valuesBeforeEditing != null)
-        {
-            var beforeValues = _valuesBeforeEditing;
-            var afterValues = materialComponent.materialValues.Copy();
-            
-            if (!beforeValues.Equals(afterValues))
-            {
-                
-                UndoManager.RecordUndoItem(
-                    "Changed Material",
-                    () =>
-                    {
-                        materialComponent.materialValues = beforeValues;
-                        DclSceneManager.OnUpdateSelection.Invoke();
-                    },
-                    () =>
-                    {
-                        materialComponent.materialValues = afterValues;
-                        DclSceneManager.OnUpdateSelection.Invoke();
-                    }
-                );
-            }
-
-
-        }
-
-        DclSceneManager.OnUpdateSelection.Invoke();
-    }
-
-    public void SetValueAlbedoColor()
-    {
-        var materialComponent = DclSceneManager.PrimarySelectedEntity?.GetComponent<MaterialComponent>();
-        if (materialComponent == null)
-            return;
-        try
-        {
-            materialComponent.materialValues.albedoColor = new Color(
-                float.Parse(_albedoColorRInput.text, CultureInfo.InvariantCulture),
-                float.Parse(_albedoColorGInput.text, CultureInfo.InvariantCulture),
-                float.Parse(_albedoColorBInput.text, CultureInfo.InvariantCulture));
-
-        }
-        catch
-        {
-            // ignored
-        }
-    }
-    public void SetValueEmissiveColor()
-    {
-        var materialComponent = DclSceneManager.PrimarySelectedEntity?.GetComponent<MaterialComponent>();
-        if (materialComponent == null)
-            return;
-        try
-        {
-            materialComponent.materialValues.emissiveColor = new Color(
-                float.Parse(_emissiveColorRInput.text, CultureInfo.InvariantCulture),
-                float.Parse(_emissiveColorGInput.text, CultureInfo.InvariantCulture),
-                float.Parse(_emissiveColorBInput.text, CultureInfo.InvariantCulture));
-
-        }
-        catch
-        {
-            // ignored
-        }
+        _albedoColorProperty.SetColor(materialComponent.materialValues.albedoColor);
+        _emissiveColorProperty.SetColor(materialComponent.materialValues.emissiveColor);
     }
 }
