@@ -108,6 +108,8 @@ public static class PersistentData
 
         public Data(string key, T defaultValue, Func<string,T> getFunc,Action<string,T> setFunc)
         {
+            _key = key;
+
             _value = !PlayerPrefs.HasKey(key) ? defaultValue : getFunc(key);
 
             _setFunc = setFunc;
