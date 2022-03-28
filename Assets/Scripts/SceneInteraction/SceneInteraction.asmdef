@@ -1,0 +1,17 @@
+{
+    "name": "SceneInteraction",
+    "rootNamespace": "",
+    "references": [
+        "GUID:b882599d087b02e4691b090e7e01ffbb",
+        "GUID:6756ec8e32f5a594081909037fcd0fc9"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
