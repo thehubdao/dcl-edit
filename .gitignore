@@ -64,3 +64,5 @@ crashlytics-build.properties
 
 Assets/dev_project_path.txt
 Assets/dev_project_path.txt.meta
+
+CodeCoverage/
