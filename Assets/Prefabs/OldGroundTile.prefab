@@ -9,10 +9,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 712689250049334223}
+  - component: {fileID: 3129137454644534263}
   - component: {fileID: 1641361936010298356}
-  - component: {fileID: 8620314322519948409}
   m_Layer: 0
-  m_Name: GroundTile
+  m_Name: OldGroundTile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -34,6 +34,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3129137454644534263
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 712689250049334220}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52e8aab77d5e8404d8fae82ebeb37c7f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DefaultGrass: {fileID: 8994193644119510740}
 --- !u!65 &1641361936010298356
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -47,19 +60,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 16, y: 0.1, z: 16}
   m_Center: {x: 0, y: -0.05, z: 0}
---- !u!114 &8620314322519948409
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 712689250049334220}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8bdaff2139ac89e4c9c66d0ce1cc951a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  DefaultGrass: {fileID: 8994193644119510740}
 --- !u!1 &4720465893913537696
 GameObject:
   m_ObjectHideFlags: 0

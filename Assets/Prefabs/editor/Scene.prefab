@@ -159,10 +159,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 20aa3b53ce8f7e143a467574f2be2161, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  camera: {fileID: 562269423997369389}
-  groundTemplate: {fileID: 712689250049334220, guid: 7820a735f3acc404caf03f4872f6e5e6, type: 3}
-  createDistance: 10
-  destroyDistance: 12
+  _groundTemplate: {fileID: 712689250049334220, guid: cf30ed2a2f96e6c4faf3d0d8dc89ec68, type: 3}
+  _createDistance: 10
+  _destroyDistance: 13
 --- !u!1 &562269422925795462
 GameObject:
   m_ObjectHideFlags: 0
@@ -253,7 +252,7 @@ GameObject:
   - component: {fileID: 562269423997369389}
   - component: {fileID: 562269423997369388}
   - component: {fileID: 562269423997369391}
-  - component: {fileID: 562269423997369390}
+  - component: {fileID: 5447247356922799119}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -360,7 +359,7 @@ MonoBehaviour:
   m_RequiresDepthTexture: 0
   m_RequiresColorTexture: 0
   m_Version: 2
---- !u!114 &562269423997369390
+--- !u!114 &5447247356922799119
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -369,12 +368,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 562269423997369379}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a520253104524104aace9af976ff1bb7, type: 3}
+  m_Script: {fileID: 11500000, guid: d2bfb5fe01ffae0489f5cf7792fcb9bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sensitivity: 3
-  speed: 7
-  sprintSpeed: 20
 --- !u!1 &562269424434746559
 GameObject:
   m_ObjectHideFlags: 0
