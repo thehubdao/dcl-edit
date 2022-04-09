@@ -33,7 +33,7 @@ namespace Assets.Scripts.EditorState
             {
                 _pitch = value;
 
-                if (_pitch > 100)
+                if (_pitch > 100) // Yes, 100 degrees is correct. In my opinion, it feels less restrictive when looking straight up or down.
                     _pitch = 100;
 
                 if (_pitch < -100)

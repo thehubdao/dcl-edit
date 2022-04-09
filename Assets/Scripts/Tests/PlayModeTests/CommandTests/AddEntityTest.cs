@@ -16,22 +16,32 @@ namespace Assets.Scripts.Tests.PlayModeTests.CommandTests
         private DclScene _scene;
         
         
-        [SetUp]
-        public void SetUp()
+        //[SetUp]
+        //public void SetUp()
+        //{
+        //    //_scene = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/editor/Scene.prefab")).GetComponent<DclScene>();
+        //}
+
+        private IEnumerator SetupScene()
         {
-            _scene = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/editor/Scene.prefab")).GetComponent<DclScene>();
+            SceneManager.LoadScene(0);
+            yield return null;
+            _scene = SceneManager.GetActiveScene().GetRootGameObjects().First(o => o.TryGetComponent(out DclScene _)).GetComponent<DclScene>();
+            yield return null;
         }
 
-        [TearDown]
-        public void TearDown()
-        {
-            Object.Destroy(_scene);
-        }
+        //[TearDown]
+        //public void TearDown()
+        //{
+        //    Object.Destroy(_scene);
+        //}
         
         
-        [Test]
-        public void AddingSingleEntity()
+        [UnityTest]
+        public IEnumerator AddingSingleEntity()
         {
+            yield return SetupScene();
+
             Command.Command.ExecuteCommand(new AddEntity(_scene, "cool name", null));
             Assert.AreEqual(1, _scene.AllEntities.Length);
 
@@ -41,9 +51,11 @@ namespace Assets.Scripts.Tests.PlayModeTests.CommandTests
             Assert.AreEqual(_scene,entity.Scene);
         }
 
-        [Test]
-        public void AddingEntityWithParent()
+        [UnityTest]
+        public IEnumerator AddingEntityWithParent()
         {
+            yield return SetupScene();
+
             Command.Command.ExecuteCommand(new AddEntity(_scene, "parent", null));
             var parent = _scene.AllEntities.First(e => e.ShownName == "parent");
             Command.Command.ExecuteCommand(new AddEntity(_scene, "child", parent));
@@ -59,6 +71,8 @@ namespace Assets.Scripts.Tests.PlayModeTests.CommandTests
         [UnityTest]
         public IEnumerator AddEntityHistory()
         {
+            yield return SetupScene();
+
             Command.Command.ExecuteCommand(new AddEntity(_scene, "entity 1", null));
             Command.Command.ExecuteCommand(new AddEntity(_scene, "entity 2", null));
 
