@@ -1,3 +1,4 @@
+using System;
 using Assets.Scripts.Utility;
 using UnityEngine;
 using UnityEngine.Events;
@@ -105,5 +106,9 @@ namespace Assets.Scripts.EditorState
 
 
         public UnityEvent OnCameraStateChanged = new UnityEvent();
+
+        // The main camera, through with the user sees the scene
+        [NonSerialized]
+        public Camera MainCamera;
     }
 }

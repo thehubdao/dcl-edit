@@ -7,6 +7,8 @@ namespace Assets.Scripts.System
     {
         public void CameraStartup()
         {
+            EditorStates.CurrentCameraState.MainCamera = Camera.main;
+
             ChooseReasonableStartPosition();
         }
 
