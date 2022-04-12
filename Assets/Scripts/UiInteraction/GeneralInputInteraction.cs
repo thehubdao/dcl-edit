@@ -3,7 +3,6 @@ using System.Diagnostics;
 using Assets.Scripts.EditorState;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.UIElements;
 using Cursor = UnityEngine.Cursor;
 using Debug = UnityEngine.Debug;
 
@@ -55,18 +54,19 @@ namespace Assets.Scripts.UiInteraction
             var pressingAlt = _inputSystemAsset.Modifier.Alt.IsPressed();
             var pressingControl = _inputSystemAsset.Modifier.Ctrl.IsPressed();
             var pressingShift = _inputSystemAsset.Modifier.Shift.IsPressed();
-            
+
             var isSprinting = _inputSystemAsset.CameraMovement.Fast.IsPressed();
 
             // Get the ray from the camera, where the mouse currently is
-            var mouseRay = EditorStates.CurrentCameraState.MainCamera.ViewportPointToRay(EditorStates.CurrentCameraState.MainCamera.ScreenToViewportPoint(Input.mousePosition));
+            var mouseRay = EditorStates.CurrentCameraState.MainCamera.ViewportPointToRay(EditorStates.CurrentCameraState.MainCamera.ScreenToViewportPoint(InputHelper.GetMousePosition()));
 
             // Figure out, if the mouse is over the Game window
+            var mousePosition = InputHelper.GetMousePosition();
             var isMouseOverGameWindow =
-                !(0 > Input.mousePosition.x ||
-                  0 > Input.mousePosition.y ||
-                  Screen.width < Input.mousePosition.x ||
-                  Screen.height < Input.mousePosition.y);
+                !(0 > mousePosition.x ||
+                  0 > mousePosition.y ||
+                  Screen.width < mousePosition.x ||
+                  Screen.height < mousePosition.y);
 
             // Figure out, if the mouse is over the 3D viewport (not hovering over any UI)
             var isMouseIn3DView = /*!EventSystem.current.IsPointerOverGameObject() &&*/ isMouseOverGameWindow;
@@ -107,21 +107,21 @@ namespace Assets.Scripts.UiInteraction
 
 
             // When pressing Right mouse button (without alt), switch to Camera WASD moving state
-            if (Input.GetMouseButtonDown((int)MouseButton.RightMouse) && !pressingAlt && isMouseIn3DView)
+            if (InputHelper.IsRightMouseButtonPressed() && !pressingAlt && isMouseIn3DView)
             {
                 EditorStates.CurrentInputState.InState = InputState.InStateType.WasdMovement;
                 InputHelper.HideMouse();
             }
 
             // When pressing alt and Right mouse button, switch to Mouse Zooming state
-            if (Input.GetMouseButtonDown((int) MouseButton.RightMouse) && pressingAlt && isMouseIn3DView)
+            if (InputHelper.IsRightMouseButtonPressed() && pressingAlt && isMouseIn3DView)
             {
                 EditorStates.CurrentInputState.InState = InputState.InStateType.MouseZoom;
                 InputHelper.HideMouse();
             }
 
-            // When pressing ald and Right mouse button, switch to Rotate around point state
-            if (Input.GetMouseButtonDown((int) MouseButton.LeftMouse) && pressingAlt && isMouseIn3DView)
+            // When pressing ald and Left mouse button, switch to Rotate around point state
+            if (InputHelper.IsLeftMouseButtonPressed() && pressingAlt && isMouseIn3DView)
             {
                 EditorStates.CurrentInputState.RotateCameraAroundPoint = mousePositionIn3DView;
                 EditorStates.CurrentInputState.InState = InputState.InStateType.RotateAroundPoint;
@@ -129,21 +129,20 @@ namespace Assets.Scripts.UiInteraction
             }
 
             // When pressing Middle mouse button, switch to "Camera slide moving state"
-            if (Input.GetMouseButtonDown((int)MouseButton.MiddleMouse) && isMouseIn3DView)
+            if (InputHelper.IsMiddleMouseButtonPressed() && isMouseIn3DView)
             {
                 EditorStates.CurrentInputState.InState = InputState.InStateType.SlideSideways;
                 InputHelper.HideMouse();
             }
 
             // When scrolling Mouse wheel, zoom in or out
-            if(isMouseIn3DView)
+            if (isMouseIn3DView)
             {
-                var mouseScroll = Mouse.current.scroll.ReadValue().y/1000;
-                
+                var mouseScroll = Mouse.current.scroll.ReadValue().y / 1000;
+
                 if (Mathf.Abs(mouseScroll) > 0)
                 {
                     EditorStates.CurrentCameraState.MoveStep(new Vector3(0, 0, mouseScroll), isSprinting);
-                    Debug.Log("Mouse scroll: " + mouseScroll);
                 }
             }
         }
@@ -153,7 +152,7 @@ namespace Assets.Scripts.UiInteraction
             var isSprinting = _inputSystemAsset.CameraMovement.Fast.IsPressed();
 
             // Rotate camera with mouse movement
-            EditorStates.CurrentCameraState.RotateStep(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
+            EditorStates.CurrentCameraState.RotateStep(InputHelper.GetMouseMovement());
 
             // Move camera with WASD keys. To go faster, hold shift
             EditorStates.CurrentCameraState.MoveContinuously(
@@ -164,7 +163,7 @@ namespace Assets.Scripts.UiInteraction
                     isSprinting);
 
             // When releasing Right mouse button, switch to "No input state"
-            if (!Input.GetMouseButton((int)MouseButton.RightMouse))
+            if (!InputHelper.IsRightMouseButtonPressed())
             {
                 EditorStates.CurrentInputState.InState = InputState.InStateType.NoInput;
                 InputHelper.ShowMouse();
@@ -174,13 +173,14 @@ namespace Assets.Scripts.UiInteraction
         private void UpdateMouseZoom()
         {
             var isSprinting = _inputSystemAsset.CameraMovement.Fast.IsPressed();
-            var targetMovement = Input.GetAxis("Mouse X") + Input.GetAxis("Mouse Y");
+            var mouseMovement = InputHelper.GetMouseMovement();
+            var targetMovement = mouseMovement.x + mouseMovement.y;
 
             EditorStates.CurrentCameraState.MoveStep(Vector3.forward * targetMovement * 0.03f, isSprinting);
 
 
             // When releasing Right mouse button, switch to "No input state"
-            if (!Input.GetMouseButton((int)MouseButton.RightMouse))
+            if (!InputHelper.IsRightMouseButtonPressed())
             {
                 EditorStates.CurrentInputState.InState = InputState.InStateType.NoInput;
                 InputHelper.ShowMouse();
@@ -193,10 +193,10 @@ namespace Assets.Scripts.UiInteraction
             if (EditorStates.CurrentInputState.RotateCameraAroundPoint != null)
                 EditorStates.CurrentCameraState.RotateAroundPointStep(
                     EditorStates.CurrentInputState.RotateCameraAroundPoint.Value,
-                    new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y")));
+                    InputHelper.GetMouseMovement());
 
             // When releasing Left mouse button, switch to "No input state"
-            if (!Input.GetMouseButton((int)MouseButton.LeftMouse))
+            if (!InputHelper.IsLeftMouseButtonPressed())
             {
                 EditorStates.CurrentInputState.InState = InputState.InStateType.NoInput;
                 InputHelper.ShowMouse();
@@ -207,11 +207,12 @@ namespace Assets.Scripts.UiInteraction
         {
             var isSprinting = _inputSystemAsset.CameraMovement.Fast.IsPressed();
             // Move camera sideways with mouse movement
-            var targetMovement = new Vector3(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"), 0);
+            var mouseMovement = InputHelper.GetMouseMovement();
+            var targetMovement = new Vector3(mouseMovement.x, mouseMovement.y, 0);
             EditorStates.CurrentCameraState.MoveStep(targetMovement * -0.03f, isSprinting);
 
             // When releasing Middle mouse button, switch to "No input state"
-            if (!Input.GetMouseButton((int)MouseButton.MiddleMouse))
+            if (!InputHelper.IsMiddleMouseButtonPressed())
             {
                 EditorStates.CurrentInputState.InState = InputState.InStateType.NoInput;
                 InputHelper.ShowMouse();
@@ -236,9 +237,35 @@ namespace Assets.Scripts.UiInteraction
             {
                 Cursor.visible = true;
                 Cursor.lockState = CursorLockMode.None;
-                
+
                 // set the mouse to its old position
                 Mouse.current.WarpCursorPosition(_mousePositionWhenHiding);
+            }
+
+            public static Vector2 GetMouseMovement()
+            {
+                return Mouse.current.delta.ReadValue()/20;
+            }
+
+            public static Vector2 GetMousePosition()
+            {
+                return Mouse.current.position.ReadValue();
+            }
+
+            // check for mouse buttons
+            public static bool IsLeftMouseButtonPressed()
+            {
+                return Mouse.current.leftButton.isPressed;
+            }
+
+            public static bool IsRightMouseButtonPressed()
+            {
+                return Mouse.current.rightButton.isPressed;
+            }
+
+            public static bool IsMiddleMouseButtonPressed()
+            {
+                return Mouse.current.middleButton.isPressed;
             }
         }
     }
