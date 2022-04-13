@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Linq;
 
 public class Highlight : MonoBehaviour
 {
@@ -15,7 +14,7 @@ public class Highlight : MonoBehaviour
     {
         Highlight instance = Instantiate(gameObject, target.transform).GetComponent<Highlight>();
 
-        Mesh targetMesh = target.OwnMeshFilter.sharedMesh;
+        Mesh targetMesh = target.OwnSharedMesh;
         foreach (MeshFilter meshFilter in instance.meshFilters)
         {
             meshFilter.mesh = targetMesh;

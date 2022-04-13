@@ -2,20 +2,29 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using JetBrains.Annotations;
 
 
 [RequireComponent(typeof(MeshFilter))]
 public class Hilightable : MonoBehaviour
 {
     private static List<Mesh> highlightableMeshes = new List<Mesh>();
-    public MeshFilter OwnMeshFilter { get; private set; }
+    //public MeshFilter OwnMeshFilter { get; private set; }
+
+    [CanBeNull] 
+    public Mesh OwnSharedMesh { get; private set; } = null;
 
 
     void Awake()
     {
-        OwnMeshFilter = GetComponent<MeshFilter>();
+        if (TryGetComponent(out MeshFilter meshFilter))
+            OwnSharedMesh = meshFilter.sharedMesh;
+        
+        if (OwnSharedMesh == null && TryGetComponent(out SkinnedMeshRenderer skinnedMeshRenderer))
+            OwnSharedMesh = skinnedMeshRenderer.sharedMesh;
 
-        MakeMeshHighlightable(OwnMeshFilter.sharedMesh);
+        MakeMeshHighlightable(OwnSharedMesh);
+        
     }
 
 

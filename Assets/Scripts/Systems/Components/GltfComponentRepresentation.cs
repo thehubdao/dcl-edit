@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -30,7 +29,7 @@ public class GltfComponentRepresentation : MonoBehaviour
 
         if (_shownAsset != gltfShape.asset)
         {
-            Debug.Log("Updating GLTF Component representation");
+            //Debug.Log("Updating GLTF Component representation");
 
             _shownAsset = gltfShape.asset;
             try
@@ -52,9 +51,9 @@ public class GltfComponentRepresentation : MonoBehaviour
                 importer.CustomShaderName = "Shader Graphs/GLTFShader";
 
                 StartCoroutine(importer.LoadScene(
-                    onLoadComplete: (o, info) =>
+                    onLoadComplete: (loadedObject, info) =>
                     {
-                        if(o == null)
+                        if(loadedObject == null)
                         {
                             Debug.LogError(info.SourceException.Message+"\n"+info.SourceException.StackTrace);
                             return;
@@ -65,17 +64,17 @@ public class GltfComponentRepresentation : MonoBehaviour
                             Destroy(child.gameObject);
                         }
 
-                        o.transform.SetParent(transform);
-                        o.transform.localPosition = Vector3.zero;
-                        o.transform.localScale = Vector3.one;
-                        o.transform.localRotation = Quaternion.identity;
+                        loadedObject.transform.SetParent(transform);
+                        loadedObject.transform.localPosition = Vector3.zero;
+                        loadedObject.transform.localScale = Vector3.one;
+                        loadedObject.transform.localRotation = Quaternion.identity;
 
 
                         var allTransforms =
                             new List<Transform>(); // all loaded transforms including all children of any level
 
                         var stack = new Stack<Transform>();
-                        stack.Push(o.transform);
+                        stack.Push(loadedObject.transform);
                         while (stack.Any())
                         {
                             var next = stack.Pop();
@@ -93,19 +92,27 @@ public class GltfComponentRepresentation : MonoBehaviour
 
                         var visibleChildren = allTransforms
                             .Where(t => !t.name.EndsWith("_collider"))
-                            .Where(t => t.TryGetComponent<MeshFilter>(out _));
+                            .Where(t => t.TryGetComponent<MeshFilter>(out _)||t.TryGetComponent<SkinnedMeshRenderer>(out _));
 
 
                         foreach (var child in visibleChildren)
                         {
-                            var colliderGameObject = Instantiate(new GameObject("Collider"), o.transform);
+                            var colliderGameObject = new GameObject("Collider");
+                            colliderGameObject.transform.SetParent(loadedObject.transform);
                             colliderGameObject.transform.position = child.position;
                             colliderGameObject.transform.rotation = child.rotation;
                             colliderGameObject.transform.localScale = child.localScale;
 
                             colliderGameObject.layer = LayerMask.NameToLayer("Entity");
                             var newCollider = colliderGameObject.AddComponent<MeshCollider>();
-                            newCollider.sharedMesh = child.GetComponent<MeshFilter>().sharedMesh;
+                            
+                            if(child.TryGetComponent(out MeshFilter meshFilter))
+                                newCollider.sharedMesh = meshFilter.sharedMesh;
+                            else if (child.TryGetComponent(out SkinnedMeshRenderer skinnedMeshRenderer))
+                                newCollider.sharedMesh = skinnedMeshRenderer.sharedMesh;
+                            else
+                                throw new Exception("Could not find mesh filter or skinned mesh renderer");
+                            
                             child.gameObject.AddComponent<Hilightable>();
                         }
 
