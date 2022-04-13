@@ -1,7 +1,15 @@
 # dcl-edit
 
-A scene editor for Decentraland SDK
+dcl-edit is a scene editor, that is used with the Decentraland SDK
 
+## Getting Started
 
-https://user-images.githubusercontent.com/11379989/137882101-4d139b95-ecb3-4932-9167-2510e6e22ec4.mp4
+To get started, follow this guide:
 
+https://dcl-edit.com/install-guide/
+
+## Support
+
+If you have questions or need help, just hop on to our Discord server:
+
+https://discord.gg/rDUvhbRqvq
