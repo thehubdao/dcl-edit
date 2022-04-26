@@ -26,7 +26,7 @@ namespace Assets.Scripts.Tests.PlayModeTests.CommandTests
         {
             SceneManager.LoadScene(0);
             yield return null;
-            _scene = SceneManager.GetActiveScene().GetRootGameObjects().First(o => o.TryGetComponent(out DclScene _)).GetComponent<DclScene>();
+            _scene = new DclScene();
             yield return null;
         }
 
@@ -43,12 +43,12 @@ namespace Assets.Scripts.Tests.PlayModeTests.CommandTests
             yield return SetupScene();
 
             Command.Command.ExecuteCommand(new AddEntity(_scene, "cool name", null));
-            Assert.AreEqual(1, _scene.AllEntities.Length);
+            Assert.AreEqual(1, _scene.AllEntities.Count);
 
-            var entity = _scene.AllEntities.First(e => e.ShownName == "cool name");
-            Assert.AreEqual("cool name", entity.ShownName);
+            var entity = _scene.AllEntities.First(e => e.Value.ShownName == "cool name");
+            Assert.AreEqual("cool name", entity.Value.ShownName);
 
-            Assert.AreEqual(_scene,entity.Scene);
+            Assert.AreEqual(_scene,entity.Value.Scene);
         }
 
         [UnityTest]
@@ -57,15 +57,15 @@ namespace Assets.Scripts.Tests.PlayModeTests.CommandTests
             yield return SetupScene();
 
             Command.Command.ExecuteCommand(new AddEntity(_scene, "parent", null));
-            var parent = _scene.AllEntities.First(e => e.ShownName == "parent");
-            Command.Command.ExecuteCommand(new AddEntity(_scene, "child", parent));
-            var child = _scene.AllEntities.First(e => e.ShownName == "child");
+            var parent = _scene.AllEntities.First(e => e.Value.ShownName == "parent");
+            Command.Command.ExecuteCommand(new AddEntity(_scene, "child", parent.Value));
+            var child = _scene.AllEntities.First(e => e.Value.ShownName == "child");
 
-            Assert.AreEqual(2, _scene.AllEntities.Length);
-            Assert.AreEqual(parent, child.Parent);
+            Assert.AreEqual(2, _scene.AllEntities.Count);
+            Assert.AreEqual(parent.Value, child.Value.Parent);
 
-            Assert.AreEqual(_scene, parent.Scene);
-            Assert.AreEqual(_scene, child.Scene);
+            Assert.AreEqual(_scene, parent.Value.Scene);
+            Assert.AreEqual(_scene, child.Value.Scene);
         }
 
         [UnityTest]
@@ -76,7 +76,7 @@ namespace Assets.Scripts.Tests.PlayModeTests.CommandTests
             Command.Command.ExecuteCommand(new AddEntity(_scene, "entity 1", null));
             Command.Command.ExecuteCommand(new AddEntity(_scene, "entity 2", null));
 
-            var entityNames = _scene.AllEntities.Select(e => e.ShownName).ToArray();
+            var entityNames = _scene.AllEntities.Select(e => e.Value.ShownName).ToArray();
             Assert.AreEqual(2,entityNames.Length);
             Assert.AreEqual("entity 1", entityNames[0]);
             Assert.AreEqual("entity 2", entityNames[1]);
@@ -85,13 +85,13 @@ namespace Assets.Scripts.Tests.PlayModeTests.CommandTests
             
             yield return null;
 
-            entityNames = _scene.AllEntities.Select(e => e.ShownName).ToArray();
+            entityNames = _scene.AllEntities.Select(e => e.Value.ShownName).ToArray();
             Assert.AreEqual(1, entityNames.Length);
             Assert.AreEqual("entity 1", entityNames[0]);
 
             Command.Command.RedoCommand();
 
-            entityNames = _scene.AllEntities.Select(e => e.ShownName).ToArray();
+            entityNames = _scene.AllEntities.Select(e => e.Value.ShownName).ToArray();
             Assert.AreEqual(2, entityNames.Length);
             Assert.AreEqual("entity 1", entityNames[0]);
             Assert.AreEqual("entity 2", entityNames[1]);
@@ -100,7 +100,7 @@ namespace Assets.Scripts.Tests.PlayModeTests.CommandTests
 
             yield return null;
 
-            Command.Command.ExecuteCommand(new AddEntity(_scene, "child", _scene.AllEntities.First(e => e.ShownName == "entity 1")));
+            Command.Command.ExecuteCommand(new AddEntity(_scene, "child", _scene.AllEntities.First(e => e.Value.ShownName == "entity 1").Value));
 
             Command.Command.UndoCommand();
 
@@ -108,11 +108,11 @@ namespace Assets.Scripts.Tests.PlayModeTests.CommandTests
 
             Command.Command.RedoCommand();
             
-            var child = _scene.AllEntities.First(e => e.ShownName == "child");
+            var child = _scene.AllEntities.First(e => e.Value.ShownName == "child");
 
-            Assert.NotNull(child.Parent);
-            Assert.AreEqual("entity 1", child.Parent.ShownName);
-            Assert.AreEqual("child", child.ShownName);
+            Assert.NotNull(child.Value.Parent);
+            Assert.AreEqual("entity 1", child.Value.Parent.ShownName);
+            Assert.AreEqual("child", child.Value.ShownName);
         }
     }
 }

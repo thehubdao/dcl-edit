@@ -1,10 +1,8 @@
-using ICSharpCode.NRefactory.Ast;
-using JetBrains.Annotations;
 using UnityEngine;
 
 namespace Assets.Scripts.State
 {
-    public class DclComponent : MonoBehaviour
+    public class DclComponent
     {
         #region Property
         public abstract class DclComponentProperty
@@ -109,6 +107,7 @@ namespace Assets.Scripts.State
 
         private DclComponentProperty[] _properties;
 
+        
         
     }
 }

@@ -2,7 +2,8 @@
     "name": "EditorState",
     "rootNamespace": "",
     "references": [
-        "GUID:d59dd11f4f3ab1b4291fbf9a2d7f964c"
+        "GUID:d59dd11f4f3ab1b4291fbf9a2d7f964c",
+        "GUID:ba5f34704421b214d809dfc96dc77b31"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

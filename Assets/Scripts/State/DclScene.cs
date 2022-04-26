@@ -1,32 +1,21 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
-using Exception = System.Exception;
 
 namespace Assets.Scripts.State
 {
-    public class DclScene : MonoBehaviour
+    public class DclScene
     {
-        [SerializeField]
-        private GameObject _entityRootObject;
+        public Dictionary<Guid, DclEntity> AllEntities = new Dictionary<Guid, DclEntity>();
 
-        public GameObject EntityRootObject => _entityRootObject;
-
-        public DclEntity[] AllEntities => _entityRootObject.GetComponentsInChildren<DclEntity>();
-
-        public IEnumerable<DclEntity> EntitiesInSceneRoot => AllEntities.Where(e => e.Parent == null);
+        public IEnumerable<DclEntity> EntitiesInSceneRoot => 
+            AllEntities
+                .Where(e => e.Value.Parent == null)
+                .Select(e => e.Value);
 
         public DclEntity GetEntityFormId(Guid id)
         {
-            try
-            {
-                return AllEntities.First(e => e.Id == id);
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            return AllEntities.TryGetValue(id, out var entity) ? entity : null;
         }
     }
 }
