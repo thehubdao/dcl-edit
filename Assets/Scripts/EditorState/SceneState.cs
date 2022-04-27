@@ -12,7 +12,7 @@ namespace Assets.Scripts.EditorState
          * If empty string, no scene is opened
          * </summary>
          */
-        [SerializeField]
+        [NonSerialized]
         private string _openedScenePath;
         public string OpenedScenePath => _openedScenePath;
 
@@ -36,8 +36,9 @@ namespace Assets.Scripts.EditorState
          * The currently opened scene object
          * </summary>
          */
-        [NonSerialized] 
+        [NonSerialized]
         public DclScene CurrentScene;
+
 
     }
 }

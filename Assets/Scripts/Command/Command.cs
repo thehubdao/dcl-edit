@@ -1,11 +1,12 @@
 using System.Collections.Generic;
+using Assets.Scripts.EditorState;
 
 namespace Assets.Scripts.Command
 {
     public abstract class Command
     {
-        internal abstract void Do();
-        internal abstract void Undo();
+        internal abstract void Do(SceneState sceneState);
+        internal abstract void Undo(SceneState sceneState);
         
         private static List<Command> _commandHistory = new List<Command>();
         private static int _currentCommandIndex = -1;
@@ -15,14 +16,14 @@ namespace Assets.Scripts.Command
             _commandHistory.Add(command);
             _currentCommandIndex = _commandHistory.Count - 1;
             
-            command.Do();
+            command.Do(EditorStates.CurrentSceneState);
         }
 
         public static void UndoCommand()
         {
             if (_currentCommandIndex >= 0)
             {
-                _commandHistory[_currentCommandIndex].Undo();
+                _commandHistory[_currentCommandIndex].Undo(EditorStates.CurrentSceneState);
                 _currentCommandIndex--;
             }
         }
@@ -32,7 +33,7 @@ namespace Assets.Scripts.Command
             if (_currentCommandIndex < _commandHistory.Count - 1)
             {
                 _currentCommandIndex++;
-                _commandHistory[_currentCommandIndex].Do();
+                _commandHistory[_currentCommandIndex].Do(EditorStates.CurrentSceneState);
             }
         }
     }

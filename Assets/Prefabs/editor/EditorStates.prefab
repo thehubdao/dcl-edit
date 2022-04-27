@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 4344694708095808541}
   - component: {fileID: 4344694708095808542}
   - component: {fileID: 4344694708095808531}
+  - component: {fileID: 6729607787626427031}
   m_Layer: 0
   m_Name: EditorStates
   m_TagString: Untagged
@@ -47,6 +48,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CameraState: {fileID: 4344694708095808542}
   InputState: {fileID: 4344694708095808531}
+  SceneState: {fileID: 6729607787626427031}
 --- !u!114 &4344694708095808542
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -74,3 +76,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74ebcf1efecce4648a1e79cd56cee239, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  InState: 0
+--- !u!114 &6729607787626427031
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4344694708095808543}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b7fd255f1fdb8e409e01c7a019e0519, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _openedScenePath: 

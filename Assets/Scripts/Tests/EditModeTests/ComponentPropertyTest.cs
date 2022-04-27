@@ -9,7 +9,7 @@ namespace Assets.Scripts.Tests.EditModeTests
         [Test]
         public void TestFloatingValues()
         {
-            var stringProperty = new DclComponent.DclComponentProperty<string>("default string");
+            var stringProperty = new DclComponent.DclComponentProperty<string>("Test String", "default string");
             Assert.AreEqual("default string", stringProperty.Value);
             Assert.AreEqual("default string",stringProperty.FixedValue);
             Assert.False(stringProperty.IsFloating);
@@ -38,23 +38,23 @@ namespace Assets.Scripts.Tests.EditModeTests
         [Test]
         public void TestPropertyTypes()
         {
-            DclComponent.DclComponentProperty stringProperty = new DclComponent.DclComponentProperty<string>("default string");
+            DclComponent.DclComponentProperty stringProperty = new DclComponent.DclComponentProperty<string>("string prop", "default string");
             Assert.AreEqual(DclComponent.DclComponentProperty.PropertyType.String, stringProperty.Type);
 
-            DclComponent.DclComponentProperty intProperty = new DclComponent.DclComponentProperty<int>(0);
+            DclComponent.DclComponentProperty intProperty = new DclComponent.DclComponentProperty<int>("int prop", 0);
             Assert.AreEqual(DclComponent.DclComponentProperty.PropertyType.Int, intProperty.Type);
 
-            DclComponent.DclComponentProperty floatProperty = new DclComponent.DclComponentProperty<float>(0.0f);
+            DclComponent.DclComponentProperty floatProperty = new DclComponent.DclComponentProperty<float>("float prop", 0.0f);
             Assert.AreEqual(DclComponent.DclComponentProperty.PropertyType.Float, floatProperty.Type);
 
-            DclComponent.DclComponentProperty vector3Property = new DclComponent.DclComponentProperty<Vector3>(Vector3.zero);
+            DclComponent.DclComponentProperty vector3Property = new DclComponent.DclComponentProperty<Vector3>("Vector3 prop", Vector3.zero);
             Assert.AreEqual(DclComponent.DclComponentProperty.PropertyType.Vector3, vector3Property.Type);
         }
 
         [Test]
         public void TestGetConcrete()
         {
-            DclComponent.DclComponentProperty stringProperty = new DclComponent.DclComponentProperty<string>("default string");
+            DclComponent.DclComponentProperty stringProperty = new DclComponent.DclComponentProperty<string>("string prop", "default string");
             DclComponent.DclComponentProperty<string> concreteStringProperty = stringProperty.GetConcrete<string>();
             Assert.AreEqual(stringProperty, concreteStringProperty);
             Assert.AreEqual("default string", concreteStringProperty.Value);

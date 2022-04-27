@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Assets.Scripts.State
@@ -7,6 +9,8 @@ namespace Assets.Scripts.State
         #region Property
         public abstract class DclComponentProperty
         {
+            public string PropertyName;
+
             public enum PropertyType
             {
                 None,
@@ -45,10 +49,12 @@ namespace Assets.Scripts.State
 
             /**
              * <summary>Constructor with an initial value</summary>
+             * <param name="name"></param>
              * <param name="initialValue">The initial fixed value</param>
              */
-            public DclComponentProperty(T initialValue)
+            public DclComponentProperty(string name, T initialValue)
             {
+                PropertyName = name;
                 _fixedValue = initialValue;
                 _floatingValue = initialValue;
                 _isFloating = false;
@@ -101,14 +107,51 @@ namespace Assets.Scripts.State
             }
         }
         #endregion
-        
-        
-        private string _name;
 
-        private DclComponentProperty[] _properties;
 
-        
-        
+        public string NameInCode { get; }
+
+        public string NameOfSlot { get; }
+
+        public List<DclComponentProperty> Properties = new List<DclComponentProperty>();
+
+
+        public DclComponent(string name, string slotName, Dictionary<Type, string> properties)
+        {
+            NameInCode = name;
+            NameOfSlot = slotName;
+
+            foreach (var property in properties)
+            {
+                DclComponentProperty p;
+
+                // switch doesn't work with the Type type
+                if (property.Key == typeof(string))
+                {
+                    p = new DclComponentProperty<string>(property.Value, "");
+                }
+                else if (property.Key == typeof(int))
+                {
+                    p = new DclComponentProperty<int>(property.Value, 0);
+                }
+                else if (property.Key == typeof(float))
+                {
+                    p = new DclComponentProperty<float>(property.Value, 0.0f);
+                }
+                else if (property.Key == typeof(Vector3))
+                {
+                    p = new DclComponentProperty<Vector3>(property.Value, Vector3.zero);
+                }
+                else
+                {
+                    throw new ArgumentOutOfRangeException();
+                }
+
+                Properties.Add(p);
+            }
+        }
+
+
     }
 }
 

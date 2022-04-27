@@ -9,17 +9,23 @@ namespace Assets.Scripts.EditorState
 
 
         // States
+        // Camera State
         [SerializeField]
         public CameraState CameraState;
         
+        // Input State
         [SerializeField]
         public InputState InputState;
 
+        // Scene State
+        [SerializeField]
+        public SceneState SceneState;
 
-
+        
         // Static references to the current states
         public static CameraState CurrentCameraState => Instance.CameraState;
         public static InputState CurrentInputState => Instance.InputState;
+        public static SceneState CurrentSceneState => Instance.SceneState;
 
     }
 }
