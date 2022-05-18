@@ -61,7 +61,7 @@ namespace Assets.Scripts.State
         public DclScene Scene { get; }
 
         public List<DclComponent> Components { get; } = new List<DclComponent>();
-
+        
 
         public DclEntity(DclScene scene, Guid id, string name = "", DclEntity parent = null)
         {
@@ -69,6 +69,8 @@ namespace Assets.Scripts.State
             Id = id;
             _customName = name;
             Parent = parent;
+
+            scene.AllEntities.Add(id,this);
         }
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using Assets.Scripts.State;
+using JetBrains.Annotations;
 using UnityEngine;
 
 namespace Assets.Scripts.EditorState
@@ -37,6 +38,7 @@ namespace Assets.Scripts.EditorState
          * </summary>
          */
         [NonSerialized]
+        [CanBeNull]
         public DclScene CurrentScene;
 
 

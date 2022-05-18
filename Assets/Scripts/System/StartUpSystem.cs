@@ -6,16 +6,21 @@ namespace Assets.Scripts.System
     public class StartUpSystem : MonoBehaviour
     {
         [SerializeField]
-        EditorStates _editorStates;
+        private EditorStates _editorStates;
 
         [SerializeField]
-        CameraSystem _cameraSystem;
+        private CameraSystem _cameraSystem;
+
+        [SerializeField] 
+        private LoadFromVersion1System _loadFromVersion1System;
 
         void Awake()
         {
             EditorStates.Instance = _editorStates;
 
             _cameraSystem.CameraStartup();
+
+            _loadFromVersion1System.Load();
         }
     }
 }
