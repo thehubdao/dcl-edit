@@ -18,6 +18,7 @@ namespace Assets.Scripts.State
                 Int,
                 Float,
                 Vector3,
+                Quaternion
             }
 
             public PropertyType Type =>
@@ -27,6 +28,7 @@ namespace Assets.Scripts.State
                     DclComponentProperty<int> _ => PropertyType.Int,
                     DclComponentProperty<float> _ => PropertyType.Float,
                     DclComponentProperty<Vector3> _ => PropertyType.Vector3,
+                    DclComponentProperty<Quaternion> _ => PropertyType.Quaternion,
                     _ => PropertyType.None
                 };
 
@@ -116,42 +118,46 @@ namespace Assets.Scripts.State
         public List<DclComponentProperty> Properties = new List<DclComponentProperty>();
 
 
-        public DclComponent(string name, string slotName, Dictionary<Type, string> properties)
+        public DclComponent(string name, string slotName)
         {
             NameInCode = name;
             NameOfSlot = slotName;
 
-            foreach (var property in properties)
-            {
-                DclComponentProperty p;
-
-                // switch doesn't work with the Type type
-                if (property.Key == typeof(string))
-                {
-                    p = new DclComponentProperty<string>(property.Value, "");
-                }
-                else if (property.Key == typeof(int))
-                {
-                    p = new DclComponentProperty<int>(property.Value, 0);
-                }
-                else if (property.Key == typeof(float))
-                {
-                    p = new DclComponentProperty<float>(property.Value, 0.0f);
-                }
-                else if (property.Key == typeof(Vector3))
-                {
-                    p = new DclComponentProperty<Vector3>(property.Value, Vector3.zero);
-                }
-                else
-                {
-                    throw new ArgumentOutOfRangeException();
-                }
-
-                Properties.Add(p);
-            }
+            //foreach (var property in properties)
+            //{
+            //    DclComponentProperty p;
+            //
+            //    // switch doesn't work with the Type type
+            //    if (property.Key == typeof(string))
+            //    {
+            //        p = new DclComponentProperty<string>(property.Value, "");
+            //    }
+            //    else if (property.Key == typeof(int))
+            //    {
+            //        p = new DclComponentProperty<int>(property.Value, 0);
+            //    }
+            //    else if (property.Key == typeof(float))
+            //    {
+            //        p = new DclComponentProperty<float>(property.Value, 0.0f);
+            //    }
+            //    else if (property.Key == typeof(Vector3))
+            //    {
+            //        p = new DclComponentProperty<Vector3>(property.Value, Vector3.zero);
+            //    }
+            //    else if (property.Key == typeof(Quaternion))
+            //    {
+            //        p = new DclComponentProperty<Quaternion>(property.Value, Quaternion.identity);
+            //    }
+            //    else
+            //    {
+            //        throw new ArgumentOutOfRangeException();
+            //    }
+            //
+            //    Properties.Add(p);
+            //}
         }
-
-
     }
 }
+
+
 
