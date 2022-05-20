@@ -471,6 +471,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1448200389}
   - component: {fileID: 1448200390}
+  - component: {fileID: 1448200391}
   m_Layer: 0
   m_Name: SceneVisuals
   m_TagString: Untagged
@@ -504,6 +505,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 332677fa2035cb944a5e2b272a023d5c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1448200391
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1448200388}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6dba15e0d7a2a54409300a74dbc9ec7d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _entityVisualsPrefab: {fileID: 6372860658045843851, guid: 3bcc8b42bfda9e7458172cccfdc26c96, type: 3}
 --- !u!1 &2140157806
 GameObject:
   m_ObjectHideFlags: 0
