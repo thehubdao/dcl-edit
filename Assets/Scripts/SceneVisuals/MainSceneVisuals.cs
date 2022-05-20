@@ -50,7 +50,7 @@ public class MainSceneVisuals : MonoBehaviour, ISetupSceneEventListeners
 
             if (parent != null)
                 // set the transforms parent to the transform of the parent visual
-                visual.transform.parent = visuals.Find(v => v.Id == parent.Id).transform;
+                visual.transform.SetParent(visuals.Find(v => v.Id == parent.Id).transform,true);
         }
         
     }
