@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine.Events;
 
 namespace Assets.Scripts.State
 {
@@ -17,5 +18,7 @@ namespace Assets.Scripts.State
         {
             return AllEntities.TryGetValue(id, out var entity) ? entity : null;
         }
+
+        public UnityEvent HierarchyChangedEvent = new UnityEvent();
     }
 }

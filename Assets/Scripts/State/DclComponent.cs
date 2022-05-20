@@ -117,6 +117,13 @@ namespace Assets.Scripts.State
 
         public List<DclComponentProperty> Properties = new List<DclComponentProperty>();
 
+        public DclComponentProperty GetPropertyByName(string name)
+        {
+            return Properties.Exists(p => p.PropertyName == name) ?
+                Properties.Find(p => p.PropertyName == name) :
+                null;
+        }
+
 
         public DclComponent(string name, string slotName)
         {

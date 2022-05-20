@@ -61,7 +61,13 @@ namespace Assets.Scripts.State
         public DclScene Scene { get; }
 
         public List<DclComponent> Components { get; } = new List<DclComponent>();
-        
+
+        public DclComponent GetComponentByName(string name)
+        {
+            return Components.Exists(c => c.NameInCode == name) ? // if component exists
+                Components.Find(c => c.NameInCode == name) : // then return component
+                null; // else return null
+        }
 
         public DclEntity(DclScene scene, Guid id, string name = "", DclEntity parent = null)
         {
@@ -70,7 +76,7 @@ namespace Assets.Scripts.State
             _customName = name;
             Parent = parent;
 
-            scene.AllEntities.Add(id,this);
+            scene.AllEntities.Add(id, this);
         }
     }
 }

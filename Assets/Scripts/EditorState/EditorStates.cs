@@ -25,12 +25,16 @@ namespace Assets.Scripts.EditorState
         [SerializeField] 
         public PathState PathState;
 
+        // Unity State
+        [SerializeField] 
+        public UnityState UnityState;
+
         
         // Static references to the current states
         public static CameraState CurrentCameraState => Instance.CameraState;
         public static InputState CurrentInputState => Instance.InputState;
         public static SceneState CurrentSceneState => Instance.SceneState;
         public static PathState CurrentPathState => Instance.PathState;
-
+        public static UnityState CurrentUnityState => Instance.UnityState;
     }
 }

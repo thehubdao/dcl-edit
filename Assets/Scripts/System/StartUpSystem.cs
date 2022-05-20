@@ -11,8 +11,11 @@ namespace Assets.Scripts.System
         [SerializeField]
         private CameraSystem _cameraSystem;
 
-        [SerializeField] 
+        [SerializeField]
         private LoadFromVersion1System _loadFromVersion1System;
+
+        [SerializeField]
+        private SetupSceneEventListenersSystem _setupSceneEventListenersSystem;
 
         void Awake()
         {
@@ -21,6 +24,10 @@ namespace Assets.Scripts.System
             _cameraSystem.CameraStartup();
 
             _loadFromVersion1System.Load();
+
+            _setupSceneEventListenersSystem.SetupSceneEventListeners();
+
+
         }
     }
 }
