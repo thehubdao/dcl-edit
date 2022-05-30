@@ -18,7 +18,8 @@ namespace Assets.Scripts.State
                 Int,
                 Float,
                 Vector3,
-                Quaternion
+                Quaternion,
+                Asset
             }
 
             public PropertyType Type =>
@@ -29,6 +30,7 @@ namespace Assets.Scripts.State
                     DclComponentProperty<float> _ => PropertyType.Float,
                     DclComponentProperty<Vector3> _ => PropertyType.Vector3,
                     DclComponentProperty<Quaternion> _ => PropertyType.Quaternion,
+                    DclComponentProperty<Guid> _ => PropertyType.Asset,
                     _ => PropertyType.None
                 };
 

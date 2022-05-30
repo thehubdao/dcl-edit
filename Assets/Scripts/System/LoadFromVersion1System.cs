@@ -77,6 +77,14 @@ namespace Assets.Scripts.System
                         case "transform":
                             newEntity.Components.Add(MakeTransformComponentFromJson(component));
                             break;
+
+                        case "GLTFShape":
+                            newEntity.Components.Add(MakeGLTFShapeComponentFromJson(component));
+                            break;
+
+                        default:
+                            Debug.Log($"Component {component.name} not supported yet");
+                            break;
                     }
 
 
@@ -127,6 +135,24 @@ namespace Assets.Scripts.System
             newTransformComponent.Properties.Add(new DclComponent.DclComponentProperty<Vector3>("scale", specificTransformJson.scale));
 
             return newTransformComponent;
+        }
+
+        private struct SpecificGLTFShapeJson
+        {
+            public string assetID;
+        }
+
+        private static DclComponent MakeGLTFShapeComponentFromJson(EntityComponentJson componentJson)
+        {
+            var specificTransformJson = JsonUtility.FromJson<SpecificGLTFShapeJson>(componentJson.specifics);
+
+            var newGltfShapeComponent = new DclComponent("GLTFShape", "Shape");
+            newGltfShapeComponent.Properties.Add(new DclComponent.DclComponentProperty<Guid>("asset",Guid.Parse(specificTransformJson.assetID)));
+            newGltfShapeComponent.Properties.Add(new DclComponent.DclComponentProperty<bool>("visible",true));
+            newGltfShapeComponent.Properties.Add(new DclComponent.DclComponentProperty<bool>("withCollisions", true));
+            newGltfShapeComponent.Properties.Add(new DclComponent.DclComponentProperty<bool>("isPointerBlocker", true));
+
+            return newGltfShapeComponent;
         }
     }
 
