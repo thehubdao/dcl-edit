@@ -1,4 +1,4 @@
-using Assets.Scripts.State;
+using Assets.Scripts.SceneState;
 using NUnit.Framework;
 using UnityEngine;
 

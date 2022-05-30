@@ -21,6 +21,10 @@ namespace Assets.Scripts.EditorState
         [SerializeField]
         public SceneState SceneState;
 
+        // Project State
+        [SerializeField]
+        public ProjectState ProjectState;
+
         // Path State
         [SerializeField] 
         public PathState PathState;
@@ -34,6 +38,7 @@ namespace Assets.Scripts.EditorState
         public static CameraState CurrentCameraState => Instance.CameraState;
         public static InputState CurrentInputState => Instance.InputState;
         public static SceneState CurrentSceneState => Instance.SceneState;
+        public static ProjectState CurrentProjectState => Instance.ProjectState;
         public static PathState CurrentPathState => Instance.PathState;
         public static UnityState CurrentUnityState => Instance.UnityState;
     }

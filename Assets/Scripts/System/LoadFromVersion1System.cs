@@ -1,8 +1,8 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using Assets.Scripts.EditorState;
+using Assets.Scripts.ProjectState;
 using Assets.Scripts.SceneState;
 using UnityEngine;
 
@@ -14,14 +14,17 @@ namespace Assets.Scripts.System
         {
             var sceneSaveFilePath = "";
             var projectSaveFilePath = "";
+            var assetSaveFilePath = "";
             if (File.Exists(EditorStates.CurrentPathState.ProjectPath + "/dcl-edit/saves/save.json"))
             {
                 sceneSaveFilePath = EditorStates.CurrentPathState.ProjectPath + "/dcl-edit/saves/save.json";
                 projectSaveFilePath = EditorStates.CurrentPathState.ProjectPath + "/dcl-edit/saves/project.json";
+                assetSaveFilePath = EditorStates.CurrentPathState.ProjectPath + "/dcl-edit/saves/assets.json";
             }
             else if (File.Exists(EditorStates.CurrentPathState.ProjectPath + "/scene/scene.json"))
             {
-                sceneSaveFilePath = EditorStates.CurrentPathState.ProjectPath + "/scene/scene.json";
+                return; // To old version. No support for this version
+                //sceneSaveFilePath = EditorStates.CurrentPathState.ProjectPath + "/scene/scene.json";
             }
 
             if (projectSaveFilePath != "")
@@ -36,6 +39,9 @@ namespace Assets.Scripts.System
                     // ignored
                 }
             }
+
+            // load assets
+            var assetsJson = LoadAssets(assetSaveFilePath);
 
             // TODO: Check if there is all ready a scene loaded
 
@@ -79,7 +85,7 @@ namespace Assets.Scripts.System
                             break;
 
                         case "GLTFShape":
-                            newEntity.Components.Add(MakeGLTFShapeComponentFromJson(component));
+                            newEntity.Components.Add(MakeGLTFShapeComponentFromJson(component, assetsJson));
                             break;
 
                         case "boxShape":
@@ -138,6 +144,43 @@ namespace Assets.Scripts.System
             EditorStates.CurrentSceneState.CurrentScene = newScene;
         }
 
+        private AssetsJsonWrapper LoadAssets(string path)
+        {
+            if (File.Exists(path))
+            {
+                var fileContent = File.ReadAllText(path);
+                var assetsJson = JsonUtility.FromJson<AssetsJsonWrapper>(fileContent);
+
+                var usedAssets = new Dictionary<Guid, DclAsset>();
+
+                foreach (var assetJson in assetsJson.gltfAssets)
+                {
+                    usedAssets.Add(Guid.Parse(assetJson.id), new DclGltfAsset(assetJson.name, assetJson.gltfPath));
+                }
+
+                EditorStates.CurrentProjectState.Assets.UsedAssets = usedAssets;
+
+                return assetsJson;
+            }
+
+            throw new IOException($"File {path} not found");
+        }
+
+        [Serializable]
+        private class AssetsJsonWrapper
+        {
+            [Serializable]
+            public struct GltfAssetWrapper
+            {
+
+                public string name;
+                public string id;
+                public string gltfPath;
+            }
+
+            public List<GltfAssetWrapper> gltfAssets;
+        }
+
         private struct SpecificTransformJson
         {
             public Vector3 pos;
@@ -162,9 +205,11 @@ namespace Assets.Scripts.System
             public string assetID;
         }
 
-        private static DclComponent MakeGLTFShapeComponentFromJson(EntityComponentJson componentJson)
+        private static DclComponent MakeGLTFShapeComponentFromJson(EntityComponentJson componentJson, AssetsJsonWrapper assetsJson)
         {
             var specificTransformJson = JsonUtility.FromJson<SpecificGLTFShapeJson>(componentJson.specifics);
+
+            var assetJson = assetsJson.gltfAssets.Find(a => a.id == specificTransformJson.assetID);
 
             var newGltfShapeComponent = new DclComponent("GLTFShape", "Shape");
             newGltfShapeComponent.Properties.Add(new DclComponent.DclComponentProperty<Guid>("asset", Guid.Parse(specificTransformJson.assetID)));
