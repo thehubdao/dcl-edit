@@ -82,6 +82,26 @@ namespace Assets.Scripts.System
                             newEntity.Components.Add(MakeGLTFShapeComponentFromJson(component));
                             break;
 
+                        case "boxShape":
+                            newEntity.Components.Add(MakeBoxShapeComponentFromJson(component));
+                            break;
+
+                        case "coneShape":
+                            newEntity.Components.Add(MakeConeShapeComponentFromJson(component));
+                            break;
+
+                        case "cylinderShape":
+                            newEntity.Components.Add(MakeCylinderShapeComponentFromJson(component));
+                            break;
+
+                        case "sphereShape":
+                            newEntity.Components.Add(MakeSphereShapeComponentFromJson(component));
+                            break;
+
+                        case "planeShape":
+                            newEntity.Components.Add(MakePlaneShapeComponentFromJson(component));
+                            break;
+
                         default:
                             Debug.Log($"Component {component.name} not supported yet");
                             break;
@@ -117,14 +137,14 @@ namespace Assets.Scripts.System
 
             EditorStates.CurrentSceneState.CurrentScene = newScene;
         }
-        
+
         private struct SpecificTransformJson
         {
             public Vector3 pos;
             public Quaternion rot;
             public Vector3 scale;
         }
-        
+
         private static DclComponent MakeTransformComponentFromJson(EntityComponentJson componentJson)
         {
             var specificTransformJson = JsonUtility.FromJson<SpecificTransformJson>(componentJson.specifics);
@@ -147,12 +167,38 @@ namespace Assets.Scripts.System
             var specificTransformJson = JsonUtility.FromJson<SpecificGLTFShapeJson>(componentJson.specifics);
 
             var newGltfShapeComponent = new DclComponent("GLTFShape", "Shape");
-            newGltfShapeComponent.Properties.Add(new DclComponent.DclComponentProperty<Guid>("asset",Guid.Parse(specificTransformJson.assetID)));
-            newGltfShapeComponent.Properties.Add(new DclComponent.DclComponentProperty<bool>("visible",true));
+            newGltfShapeComponent.Properties.Add(new DclComponent.DclComponentProperty<Guid>("asset", Guid.Parse(specificTransformJson.assetID)));
+            newGltfShapeComponent.Properties.Add(new DclComponent.DclComponentProperty<bool>("visible", true));
             newGltfShapeComponent.Properties.Add(new DclComponent.DclComponentProperty<bool>("withCollisions", true));
             newGltfShapeComponent.Properties.Add(new DclComponent.DclComponentProperty<bool>("isPointerBlocker", true));
 
             return newGltfShapeComponent;
+        }
+
+
+        private static DclComponent MakeBoxShapeComponentFromJson(EntityComponentJson _)
+        {
+            return new DclComponent("BoxShape", "Shape"); ;
+        }
+
+        private static DclComponent MakeSphereShapeComponentFromJson(EntityComponentJson _)
+        {
+            return new DclComponent("SphereShape", "Shape");
+        }
+
+        private static DclComponent MakeCylinderShapeComponentFromJson(EntityComponentJson _)
+        {
+            return new DclComponent("CylinderShape", "Shape");
+        }
+
+        private static DclComponent MakePlaneShapeComponentFromJson(EntityComponentJson _)
+        {
+            return new DclComponent("PlaneShape", "Shape");
+        }
+
+        private static DclComponent MakeConeShapeComponentFromJson(EntityComponentJson _)
+        {
+            return new DclComponent("ConeShape", "Shape");
         }
     }
 
