@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>
+        dcl-edit scene converter
+    </title>
+    <style>
+        body {
+            font-size: 30px;
+        }
+
+        button {
+            font-size: 30px;
+        }
+
+        code {
+            font-size: 30px;
+            font-family: 'Courier New', Courier, monospace;
+            background-color: lightgray;
+            border-radius: 5px;
+        }
+
+        h2{
+            margin-left: 30px;
+        }
+
+        h3{
+            margin-left: 60px;
+        }
+
+        h4{
+            margin-left: 90px;
+        }
+        
+        h5{
+            margin-left: 120px;
+        }
+
+        .error{
+            color: red;
+        }
+    </style>
+    <script>
+        function setServerConnection(isServerConnected) {
+            if (isServerConnected) {
+                document.getElementById("serverconnection").innerHTML = "Connected";
+                document.getElementById("serverconnection").style.color = "green";
+            }
+            else {
+                document.getElementById("serverconnection").innerHTML = "Not connected";
+                document.getElementById("serverconnection").style.color = "red";
+            }
+        }
+
+        function setSceneConnection(isSceneConnected) {
+            if (isSceneConnected) {
+                document.getElementById("sceneconnection").innerHTML = "Connected";
+                document.getElementById("sceneconnection").style.color = "green";
+            }
+            else {
+                document.getElementById("sceneconnection").innerHTML = "Not connected";
+                document.getElementById("sceneconnection").style.color = "red";
+            }
+        }
+
+        function downloadURI(uri, name) {
+            var link = document.createElement("a");
+            link.download = name;
+            link.href = uri;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            delete link;
+        }
+
+        function connectToServer() {
+            serverConnection = new WebSocket("ws://localhost:8888");
+            serverConnection.onopen = () => {
+                console.log("Connected to server");
+                serverConnection.send(JSON.stringify({ client: "control" }))
+                setServerConnection(true);
+            };
+            serverConnection.onclose = () => {
+                console.log("Connection to server closed");
+                setServerConnection(false);
+                setSceneConnection(false);
+                document.getElementById("message").innerHTML = "you need to reload to connect to the server again";
+            };
+            serverConnection.onmessage = (event) => {
+                try {
+                    var json = JSON.parse(event.data);
+                    console.log("Message: ", json);
+
+                    if (json.scene_connected !== undefined) {
+                        console.log("Scene" + (json.scene_connected ? "" : " not") + " connected")
+                        setSceneConnection(json.scene_connected);
+                    }
+
+                    if (json.action === "send_zip") {
+                        downloadURI("data:application/octet-stream;base64," + json.zip, "scene.zip");
+                    }
+
+                    if(json.action === "send_report") {
+                        document.getElementById("report").innerHTML = json.report;
+                    }
+                } catch (e) { console.log(e) }
+            };
+
+        }
+
+        window.onload = () => {
+            // setup connections
+            setServerConnection(false);
+            setSceneConnection(false);
+            connectToServer();
+            document.getElementById("convertbtn").onclick = convertButtonPressed
+        };
+
+        /**
+         * Called when the convert button is pressed
+         * @param ev{MouseEvent}
+         */
+        function convertButtonPressed(ev) {
+            // send the message to the server
+            if (connectToServer)
+                serverConnection.send(JSON.stringify({ action: "convert" }));
+        }
+
+    </script>
+</head>
+
+<body>
+    <p>
+        Paste the following code into your game.ts file:
+    </p>
+
+    <code><pre>
+;(async function(){
+    let script = await (await fetch("http://localhost:8887/client.js")).text()
+    eval(script)
+})();</pre></code>
+
+    <p id="message"></p>
+
+    <p>
+        Connected to Server: <span id="serverconnection"></span>
+    </p>
+    <p>
+        Connected to Scene: <span id="sceneconnection"></span>
+    </p>
+
+    <div id="controlls">
+        <button id="convertbtn">
+            Convert Scene
+        </button>
+    </div>
+
+    <div id="report">
+
+    </div>
+</body>
+
+</html>
