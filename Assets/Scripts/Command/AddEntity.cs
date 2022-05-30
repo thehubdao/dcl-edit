@@ -1,7 +1,7 @@
 using System;
 using Assets.Scripts.Command.Utility;
 using Assets.Scripts.EditorState;
-using Assets.Scripts.State;
+using Assets.Scripts.SceneState;
 using JetBrains.Annotations;
 
 namespace Assets.Scripts.Command
@@ -19,12 +19,12 @@ namespace Assets.Scripts.Command
             _id = Guid.NewGuid();
         }
 
-        internal override void Do(SceneState sceneState)
+        internal override void Do(EditorState.SceneState sceneState)
         {
             EntityUtility.AddEntity(sceneState.CurrentScene, _id, _name, _parent);
         }
 
-        internal override void Undo(SceneState sceneState)
+        internal override void Undo(EditorState.SceneState sceneState)
         {
             EntityUtility.DeleteEntity(sceneState.CurrentScene, _id);
         }

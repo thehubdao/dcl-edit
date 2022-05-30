@@ -2,7 +2,7 @@ using System.Collections;
 using System.Linq;
 using Assets.Scripts.Command;
 using Assets.Scripts.EditorState;
-using Assets.Scripts.State;
+using Assets.Scripts.SceneState;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;

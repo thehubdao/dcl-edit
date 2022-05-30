@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Assets.Scripts.Command;
 using Assets.Scripts.EditorState;
-using Assets.Scripts.State;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.SceneManagement;

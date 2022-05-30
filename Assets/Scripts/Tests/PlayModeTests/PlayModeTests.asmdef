@@ -5,9 +5,9 @@
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
         "Command",
-        "State",
         "EditorState",
-        "Utility"
+        "Utility",
+        "SceneState"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

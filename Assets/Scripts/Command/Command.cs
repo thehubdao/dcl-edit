@@ -5,8 +5,8 @@ namespace Assets.Scripts.Command
 {
     public abstract class Command
     {
-        internal abstract void Do(SceneState sceneState);
-        internal abstract void Undo(SceneState sceneState);
+        internal abstract void Do(EditorState.SceneState sceneState);
+        internal abstract void Undo(EditorState.SceneState sceneState);
         
         private static List<Command> _commandHistory = new List<Command>();
         private static int _currentCommandIndex = -1;

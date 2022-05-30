@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Assets.Scripts.State
+namespace Assets.Scripts.SceneState
 {
     public class DclComponent
     {

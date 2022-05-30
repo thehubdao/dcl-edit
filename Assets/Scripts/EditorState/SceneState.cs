@@ -1,5 +1,5 @@
 using System;
-using Assets.Scripts.State;
+using Assets.Scripts.SceneState;
 using JetBrains.Annotations;
 using UnityEngine;
 
