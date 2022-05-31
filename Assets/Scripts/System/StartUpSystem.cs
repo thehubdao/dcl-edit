@@ -26,8 +26,6 @@ namespace Assets.Scripts.System
             _loadFromVersion1System.Load();
 
             _setupSceneEventListenersSystem.SetupSceneEventListeners();
-
-
-        }
+        }   
     }
 }

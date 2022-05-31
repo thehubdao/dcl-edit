@@ -33,6 +33,10 @@ namespace Assets.Scripts.EditorState
         [SerializeField] 
         public UnityState UnityState;
 
+        // Model Cache State
+        [SerializeField]
+        public ModelCacheState ModelCacheState;
+
         
         // Static references to the current states
         public static CameraState CurrentCameraState => Instance.CameraState;
@@ -41,5 +45,6 @@ namespace Assets.Scripts.EditorState
         public static ProjectState CurrentProjectState => Instance.ProjectState;
         public static PathState CurrentPathState => Instance.PathState;
         public static UnityState CurrentUnityState => Instance.UnityState;
+        public static ModelCacheState CurrentModelCacheState => Instance.ModelCacheState;
     }
 }

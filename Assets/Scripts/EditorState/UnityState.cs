@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityGLTF;
 
 namespace Assets.Scripts.EditorState
 {
@@ -6,5 +7,8 @@ namespace Assets.Scripts.EditorState
     {
         [SerializeField]
         public GameObject SceneVisuals;
+
+        [SerializeField] 
+        public AsyncCoroutineHelper AsyncCoroutineHelper;
     }
 } 

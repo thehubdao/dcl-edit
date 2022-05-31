@@ -16,6 +16,8 @@ GameObject:
   - component: {fileID: 7732126362854482267}
   - component: {fileID: 542692702519556135}
   - component: {fileID: 5317590454083341830}
+  - component: {fileID: 7953543301535803489}
+  - component: {fileID: 3038435570432155737}
   m_Layer: 0
   m_Name: EditorStates
   m_TagString: Untagged
@@ -55,6 +57,7 @@ MonoBehaviour:
   ProjectState: {fileID: 7732126362854482267}
   PathState: {fileID: 542692702519556135}
   UnityState: {fileID: 5317590454083341830}
+  ModelCacheState: {fileID: 7953543301535803489}
 --- !u!114 &4344694708095808542
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -132,3 +135,29 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SceneVisuals: {fileID: 0}
+  AsyncCoroutineHelper: {fileID: 3038435570432155737}
+--- !u!114 &7953543301535803489
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4344694708095808543}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d372ef3fa2aab1438d363398fd183f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &3038435570432155737
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4344694708095808543}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f51ceb82926c0a44394654b191b00336, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  BudgetPerFrameInSeconds: 0.01
