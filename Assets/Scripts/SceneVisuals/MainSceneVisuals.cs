@@ -1,57 +1,59 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Assets.Scripts.EditorState;
 using Assets.Scripts.Utility;
 using UnityEngine;
 
-public class MainSceneVisuals : MonoBehaviour, ISetupSceneEventListeners
+namespace Assets.Scripts.SceneVisuals
 {
-    [SerializeField]
-    private GameObject _entityVisualsPrefab;
-
-    public void SetupSceneEventListeners()
+    public class MainSceneVisuals : MonoBehaviour, ISetupSceneEventListeners
     {
-        // when there is a scene loaded, add the visuals updater
-        EditorStates.CurrentSceneState.CurrentScene?
-            .HierarchyChangedEvent.AddListener(UpdateVisuals);
+        [SerializeField]
+        private GameObject _entityVisualsPrefab;
 
-        UpdateVisuals();
-    }
-
-    private void UpdateVisuals()
-    {
-        var scene = EditorStates.CurrentSceneState.CurrentScene;
-        if (scene == null)
-            return;
-
-        // TODO: be smarter about caching and stuff
-        foreach (var child in transform.GetChildren())
+        public void SetupSceneEventListeners()
         {
-            Destroy(child.gameObject);
+            // when there is a scene loaded, add the visuals updater
+            EditorStates.CurrentSceneState.CurrentScene?
+                .HierarchyChangedEvent.AddListener(UpdateVisuals);
+
+            UpdateVisuals();
         }
 
-        List<EntityVisuals> visuals = new List<EntityVisuals>();
-
-        foreach (var entity in scene.AllEntities.Select(e => e.Value))
+        private void UpdateVisuals()
         {
-            var newEntityVisualsGameObject = Instantiate(_entityVisualsPrefab, transform);
-            var newEntityVisuals = newEntityVisualsGameObject.GetComponent<EntityVisuals>();
-            newEntityVisuals.Id = entity.Id;
+            var scene = EditorStates.CurrentSceneState.CurrentScene;
+            if (scene == null)
+                return;
 
-            visuals.Add(newEntityVisuals);
+            // TODO: be smarter about caching and stuff
+            foreach (var child in transform.GetChildren())
+            {
+                Destroy(child.gameObject);
+            }
 
-            newEntityVisuals.UpdateVisuals();
-        }
+            List<EntityVisuals> visuals = new List<EntityVisuals>();
 
-        foreach (var visual in visuals)
-        {
-            var parent = scene.GetEntityFormId(visual.Id).Parent; // look, if the actual entity of the visual has a parent
+            foreach (var entity in scene.AllEntities.Select(e => e.Value))
+            {
+                var newEntityVisualsGameObject = Instantiate(_entityVisualsPrefab, transform);
+                var newEntityVisuals = newEntityVisualsGameObject.GetComponent<EntityVisuals>();
+                newEntityVisuals.Id = entity.Id;
 
-            if (parent != null)
-                // set the transforms parent to the transform of the parent visual
-                visual.transform.SetParent(visuals.Find(v => v.Id == parent.Id).transform,true);
-        }
+                visuals.Add(newEntityVisuals);
+
+                newEntityVisuals.UpdateVisuals();
+            }
+
+            foreach (var visual in visuals)
+            {
+                var parent = scene.GetEntityFormId(visual.Id).Parent; // look, if the actual entity of the visual has a parent
+
+                if (parent != null)
+                    // set the transforms parent to the transform of the parent visual
+                    visual.transform.SetParent(visuals.Find(v => v.Id == parent.Id).transform,true);
+            }
         
+        }
     }
 }

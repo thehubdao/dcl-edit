@@ -136,6 +136,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SceneVisuals: {fileID: 0}
   AsyncCoroutineHelper: {fileID: 3038435570432155737}
+  BoxMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  SphereMesh: {fileID: 4711208715938537054, guid: 7c360f97f1032b64ca984a274cb4114e, type: 3}
+  CylinderMesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
+  PlaneMesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
+  ConeMesh: {fileID: 3613567641014311022, guid: e140720f2ef3dc5459b3d88eacb859c8, type: 3}
+  DefaultMat: {fileID: 2100000, guid: c1295392ace60d94da19d7a387884d71, type: 2}
 --- !u!114 &7953543301535803489
 MonoBehaviour:
   m_ObjectHideFlags: 0

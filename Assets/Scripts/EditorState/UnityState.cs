@@ -8,7 +8,25 @@ namespace Assets.Scripts.EditorState
         [SerializeField]
         public GameObject SceneVisuals;
 
-        [SerializeField] 
+        [SerializeField]
         public AsyncCoroutineHelper AsyncCoroutineHelper;
+
+        [SerializeField]
+        public Mesh BoxMesh;
+
+        [SerializeField]
+        public Mesh SphereMesh;
+
+        [SerializeField]
+        public Mesh CylinderMesh;
+
+        [SerializeField]
+        public Mesh PlaneMesh;
+
+        [SerializeField]
+        public Mesh ConeMesh;
+
+        [SerializeField]
+        public Material DefaultMat;
     }
-} 
+}

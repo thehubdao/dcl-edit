@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Assets.Scripts.Utility;
 using JetBrains.Annotations;
 using UnityEngine;
 
@@ -67,6 +69,19 @@ namespace Assets.Scripts.SceneState
             return Components.Exists(c => c.NameInCode == name) ? // if component exists
                 Components.Find(c => c.NameInCode == name) : // then return component
                 null; // else return null
+        }
+
+        public DclComponent GetFirstComponentByName(params string[] names)
+        {
+            return Components.FirstOrNull(c => names.Contains(c.NameInCode));
+        }
+
+        /**
+         * Checks if at least one of the specified component names exists in this entity
+         */
+        public bool HasComponent(params string[] names)
+        {
+            return names.Any(name => Components.Exists(c => c.NameInCode == name));
         }
 
         public DclEntity(DclScene scene, Guid id, string name = "", DclEntity parent = null)

@@ -1,41 +1,58 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using Assets.Scripts.EditorState;
 using UnityEngine;
 
-public class EntityVisuals : MonoBehaviour
+namespace Assets.Scripts.SceneVisuals
 {
-    public Guid Id;
-
-    public void UpdateVisuals()
+    public class EntityVisuals : MonoBehaviour
     {
-        var entity = EditorStates.CurrentSceneState.CurrentScene?.GetEntityFormId(Id);
-        if (entity == null)
-            return;
+        public Guid Id;
 
-        // Transform
-        var transformComponent = entity.GetComponentByName("transform");
-        if (transformComponent != null)
+        public void UpdateVisuals()
         {
-            transform.position = transformComponent.GetPropertyByName("position").GetConcrete<Vector3>().Value;
-            transform.rotation = transformComponent.GetPropertyByName("rotation").GetConcrete<Quaternion>().Value;
-            transform.localScale = transformComponent.GetPropertyByName("scale").GetConcrete<Vector3>().Value;
-        }
+            var entity = EditorStates.CurrentSceneState.CurrentScene?.GetEntityFormId(Id);
+            if (entity == null)
+                return;
 
-        // GLTF Shape
-        var gltfShapeComponent = entity.GetComponentByName("GLTFShape");
-        var gltfShapeVisualization = GetComponent<GltfShapeVisualization>(); // returns null if component isn't found
-        if (gltfShapeComponent != null)
-        {
-            if (gltfShapeVisualization == null)
-                gltfShapeVisualization = gameObject.AddComponent<GltfShapeVisualization>();
+            // Transform
+            var transformComponent = entity.GetComponentByName("transform");
+            if (transformComponent != null)
+            {
+                transform.position = transformComponent.GetPropertyByName("position").GetConcrete<Vector3>().Value;
+                transform.rotation = transformComponent.GetPropertyByName("rotation").GetConcrete<Quaternion>().Value;
+                transform.localScale = transformComponent.GetPropertyByName("scale").GetConcrete<Vector3>().Value;
+            }
 
-            gltfShapeVisualization.UpdateVisuals(entity);
-        }
-        else if (gltfShapeVisualization != null)
-        {
-            gltfShapeVisualization.Deactivate();
+            // GLTF Shape
+            var gltfShapeComponent = entity.GetComponentByName("GLTFShape");
+            var gltfShapeVisualization = GetComponent<GltfShapeVisuals>(); // returns null if component isn't found
+            if (gltfShapeComponent != null)
+            {
+                if (gltfShapeVisualization == null)
+                    gltfShapeVisualization = gameObject.AddComponent<GltfShapeVisuals>();
+
+                gltfShapeVisualization.UpdateVisuals(entity);
+            }
+            else if (gltfShapeVisualization != null)
+            {
+                gltfShapeVisualization.Deactivate();
+            }
+
+            // Primitive Shape
+            var primitiveShapeComponent =
+                entity.GetFirstComponentByName("BoxShape", "SphereShape", "CylinderShape", "PlaneShape", "ConeShape");
+            var primitiveShapeVisualization = GetComponent<PrimitiveShapeVisuals>(); // returns null if component isn't found
+            if (primitiveShapeComponent != null)
+            {
+                if (primitiveShapeVisualization == null)
+                    primitiveShapeVisualization = gameObject.AddComponent<PrimitiveShapeVisuals>();
+
+                primitiveShapeVisualization.UpdateVisuals(entity);
+            }
+            else if (primitiveShapeVisualization != null)
+            {
+                primitiveShapeVisualization.Deactivate();
+            }
         }
     }
 }

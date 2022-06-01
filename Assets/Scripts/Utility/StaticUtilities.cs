@@ -12,12 +12,23 @@ namespace Assets.Scripts.Utility
             return parent.Cast<Transform>();
         }
 
-        public static void ForAll<T>(this IEnumerable<T> ts,Action<T> action)
+        public static void ForAll<T>(this IEnumerable<T> ts, Action<T> action)
         {
             foreach (var t in ts)
             {
                 action(t);
             }
+        }
+
+        public static T FirstOrNull<T>(this IEnumerable<T> ts, Func<T, bool> predicate) where T : class
+        {
+            foreach (var t in ts)
+            {
+                if (predicate.Invoke(t))
+                    return t;
+            }
+
+            return null;
         }
     }
 }
