@@ -5,6 +5,7 @@ using Assets.Scripts.Utility;
 using JetBrains.Annotations;
 using UnityEngine;
 
+
 namespace Assets.Scripts.SceneState
 {
     public class DclEntity
@@ -59,6 +60,11 @@ namespace Assets.Scripts.SceneState
 
         [CanBeNull]
         public DclEntity Parent { get; set; }
+
+        public IEnumerable<DclEntity> Children =>
+            Scene.AllEntities
+                .Select(pair => pair.Value)
+                .Where(e => e.Parent == this);
 
         public DclScene Scene { get; }
 

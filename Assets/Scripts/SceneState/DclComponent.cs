@@ -17,6 +17,7 @@ namespace Assets.Scripts.SceneState
                 String,
                 Int,
                 Float,
+                Boolean,
                 Vector3,
                 Quaternion,
                 Asset
@@ -28,6 +29,7 @@ namespace Assets.Scripts.SceneState
                     DclComponentProperty<string> _ => PropertyType.String,
                     DclComponentProperty<int> _ => PropertyType.Int,
                     DclComponentProperty<float> _ => PropertyType.Float,
+                    DclComponentProperty<bool> _ => PropertyType.Boolean,
                     DclComponentProperty<Vector3> _ => PropertyType.Vector3,
                     DclComponentProperty<Quaternion> _ => PropertyType.Quaternion,
                     DclComponentProperty<Guid> _ => PropertyType.Asset,

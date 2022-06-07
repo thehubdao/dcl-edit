@@ -9,6 +9,9 @@ namespace Assets.Scripts.ProjectState
     {
         public Dictionary<Guid, DclAsset> UsedAssets = new Dictionary<Guid, DclAsset>();
 
-        
+        public DclAsset GetAssetById(Guid id)
+        {
+            return UsedAssets.ContainsKey(id) ? UsedAssets[id] : null;
+        }
     }
 }

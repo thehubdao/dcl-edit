@@ -30,5 +30,11 @@ namespace Assets.Scripts.Utility
 
             return null;
         }
+
+        public static string Shortened(this Guid guid)
+        {
+            var guidString = guid.ToString();
+            return guidString.Substring(0,4) + " ... " + guidString.Substring(guidString.Length-4, 4);
+        }
     }
 }
