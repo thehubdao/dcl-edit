@@ -7,7 +7,8 @@
         "Command",
         "EditorState",
         "Utility",
-        "SceneState"
+        "SceneState",
+        "Systems"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

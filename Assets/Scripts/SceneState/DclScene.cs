@@ -16,9 +16,18 @@ namespace Assets.Scripts.SceneState
 
         public DclEntity GetEntityFormId(Guid id)
         {
+            if (id == Guid.Empty)
+                return null;
+
             return AllEntities.TryGetValue(id, out var entity) ? entity : null;
         }
 
         public UnityEvent HierarchyChangedEvent = new UnityEvent();
+
+        // Other States
+
+        public SelectionState SelectionState = new SelectionState();
+
+        public CommandHistoryState CommandHistoryState = new CommandHistoryState();
     }
 }

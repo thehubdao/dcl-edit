@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Assets.Scripts.EditorState;
+using Assets.Scripts.SceneInteraction;
 using Assets.Scripts.Utility;
 using UnityEngine;
 
@@ -39,6 +40,9 @@ namespace Assets.Scripts.SceneVisuals
                 var newEntityVisualsGameObject = Instantiate(_entityVisualsPrefab, transform);
                 var newEntityVisuals = newEntityVisualsGameObject.GetComponent<EntityVisuals>();
                 newEntityVisuals.Id = entity.Id;
+
+                var newEntityInteraction = newEntityVisualsGameObject.GetComponent<EntitySelectInteraction>();
+                newEntityInteraction.Id = entity.Id;
 
                 visuals.Add(newEntityVisuals);
 

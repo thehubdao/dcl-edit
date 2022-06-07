@@ -223,7 +223,7 @@ namespace Assets.Scripts.System
 
         private static DclComponent MakeBoxShapeComponentFromJson(EntityComponentJson _)
         {
-            return new DclComponent("BoxShape", "Shape"); ;
+            return new DclComponent("BoxShape", "Shape");
         }
 
         private static DclComponent MakeSphereShapeComponentFromJson(EntityComponentJson _)
@@ -245,6 +245,7 @@ namespace Assets.Scripts.System
         {
             return new DclComponent("ConeShape", "Shape");
         }
+        
     }
 
     [Serializable]

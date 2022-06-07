@@ -6,7 +6,7 @@ using JetBrains.Annotations;
 
 namespace Assets.Scripts.Command
 {
-    public class AddEntity : Command
+    public class AddEntity : SceneState.Command
     {
         private string _name;
         [CanBeNull] private DclEntity _parent;
@@ -18,15 +18,15 @@ namespace Assets.Scripts.Command
             _parent = parent;
             _id = Guid.NewGuid();
         }
-
-        internal override void Do(EditorState.SceneState sceneState)
+        
+        public override void Do(DclScene sceneState)
         {
-            EntityUtility.AddEntity(sceneState.CurrentScene, _id, _name, _parent);
+            EntityUtility.AddEntity(sceneState, _id, _name, _parent);
         }
 
-        internal override void Undo(EditorState.SceneState sceneState)
+        public override void Undo(DclScene sceneState)
         {
-            EntityUtility.DeleteEntity(sceneState.CurrentScene, _id);
+            EntityUtility.DeleteEntity(sceneState, _id);
         }
     }
 }
