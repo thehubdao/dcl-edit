@@ -77,17 +77,26 @@ namespace Assets.Scripts.UiInteraction
             // Do the following block only, if the mouse is over the 3D view
             if (isMouseIn3DView)
             {
-                // First check, if mouse is hovering over Gizmo
+                // First check, if mouse is hovering over a Gizmo
                 if (Physics.Raycast(mouseRay, out RaycastHit hitInfoGizmos, 10000, LayerMask.GetMask("Gizmos")))
                 {
                     mousePositionIn3DView = hitInfoGizmos.point;
+                    EditorStates.CurrentInterface3DState.CurrentlyHoveredObject = hitInfoGizmos.transform.gameObject;
                 }
-                // Secondly check, if mouse is hovering over Entity
+                // Secondly check, if mouse is hovering over a Entity
                 else if (Physics.Raycast(mouseRay, out RaycastHit hitInfoEntity, 10000, LayerMask.GetMask("Entity")))
                 {
                     mousePositionIn3DView = hitInfoEntity.point;
+                    EditorStates.CurrentInterface3DState.CurrentlyHoveredObject = hitInfoGizmos.transform.gameObject;
                 }
-
+                else
+                {
+                    EditorStates.CurrentInterface3DState.CurrentlyHoveredObject = null;
+                }
+            }
+            else
+            {
+                EditorStates.CurrentInterface3DState.CurrentlyHoveredObject = null;
             }
 
             // If the mouse is not over any Gizmo or Entity, then get the mouse position on the Ground plane
@@ -244,7 +253,7 @@ namespace Assets.Scripts.UiInteraction
 
             public static Vector2 GetMouseMovement()
             {
-                return Mouse.current.delta.ReadValue()/20;
+                return Mouse.current.delta.ReadValue() / 20;
             }
 
             public static Vector2 GetMousePosition()

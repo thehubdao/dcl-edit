@@ -5,7 +5,7 @@ using UnityEngine;
 using System.Linq;
 using JetBrains.Annotations;
 
-
+/*
 public class Highlighter : Interface3DHover
 {
     //Settings
@@ -107,3 +107,4 @@ public class Highlighter : Interface3DHover
     }
 
 }
+*/

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
 public class HoverEntity : Interface3DHover
 {
     public Material material;
@@ -33,3 +34,4 @@ public class HoverEntity : Interface3DHover
         _isHovering = false;
     }
 }
+*/

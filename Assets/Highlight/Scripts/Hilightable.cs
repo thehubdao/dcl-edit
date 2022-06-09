@@ -26,7 +26,7 @@ public class Hilightable : MonoBehaviour
             highlightableMeshes.Add(mesh);
 
             List<Vector3> smoothNormals = SmoothNormals(mesh);
-            mesh.SetUVs(Highlighter.UVChannel, smoothNormals);
+            //mesh.SetUVs(Highlighter.UVChannel, smoothNormals);
         }
     }
 

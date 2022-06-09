@@ -1,4 +1,4 @@
-using System;
+/*using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security;
@@ -593,10 +593,10 @@ static class Util
         // Draw Vertical lines
         for (int i = 0; i < lines; i++)
         {
-            var rayStartPoint = horizontalRay.GetPoint(/*(-(lines-1) * (-spacing/4))+*/i * spacing);
+            var rayStartPoint = horizontalRay.GetPoint(/*(-(lines-1) * (-spacing/4))+#1#i * spacing);
             Debug.DrawRay(rayStartPoint, verticalRay.direction.normalized * (lines - 1) * spacing);
         }
 
         //Debug.DrawRay(p.normal*-p.distance,Vector3.Cross(p.normal,Util.randomVector3()),Color.green,10);
     }
-}
+}*/
