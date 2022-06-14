@@ -22,12 +22,12 @@ namespace Assets.Scripts.SceneVisuals
                 return;
 
             // Transform
-            var transformComponent = entity.GetComponentByName("transform");
+            var transformComponent = entity.GetTransformComponent();
             if (transformComponent != null)
             {
-                transform.position = transformComponent.GetPropertyByName("position").GetConcrete<Vector3>().Value;
-                transform.rotation = transformComponent.GetPropertyByName("rotation").GetConcrete<Quaternion>().Value;
-                transform.localScale = transformComponent.GetPropertyByName("scale").GetConcrete<Vector3>().Value;
+                transform.localPosition = transformComponent.Position.Value;
+                transform.localRotation = transformComponent.Rotation.Value;
+                transform.localScale = transformComponent.Scale.Value;
             }
 
             // GLTF Shape

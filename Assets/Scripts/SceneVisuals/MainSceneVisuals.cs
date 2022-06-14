@@ -35,6 +35,7 @@ namespace Assets.Scripts.SceneVisuals
 
             List<EntityVisuals> visuals = new List<EntityVisuals>();
 
+            // Generate entity visuals
             foreach (var entity in scene.AllEntities.Select(e => e.Value))
             {
                 var newEntityVisualsGameObject = Instantiate(_entityVisualsPrefab, transform);
@@ -45,10 +46,9 @@ namespace Assets.Scripts.SceneVisuals
                 newEntityInteraction.Id = entity.Id;
 
                 visuals.Add(newEntityVisuals);
-
-                newEntityVisuals.UpdateVisuals();
             }
 
+            // set entity visual's parents
             foreach (var visual in visuals)
             {
                 var parent = scene.GetEntityFormId(visual.Id).Parent; // look, if the actual entity of the visual has a parent
@@ -57,7 +57,12 @@ namespace Assets.Scripts.SceneVisuals
                     // set the transforms parent to the transform of the parent visual
                     visual.transform.SetParent(visuals.Find(v => v.Id == parent.Id).transform,true);
             }
-        
+
+            // update entity visuals
+            foreach (var visual in visuals)
+            {
+                visual.UpdateVisuals();
+            }
         }
     }
 }

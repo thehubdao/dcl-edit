@@ -34,6 +34,7 @@ namespace Assets.Scripts.Command
             {
                 sceneState.SelectionState.SecondarySelectedEntities.Add(sceneState.GetEntityFormId(secondary));
             }
+            sceneState.SelectionState.SelectionChangedEvent.Invoke();
         }
 
         public override void Undo(DclScene sceneState)
@@ -44,6 +45,7 @@ namespace Assets.Scripts.Command
             {
                 sceneState.SelectionState.SecondarySelectedEntities.Add(sceneState.GetEntityFormId(secondary));
             }
+            sceneState.SelectionState.SelectionChangedEvent.Invoke();
         }
 
         public static Guid GetPrimarySelectionFromScene(DclScene sceneState)

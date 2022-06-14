@@ -82,6 +82,19 @@ namespace Assets.Scripts.SceneState
             return Components.FirstOrNull(c => names.Contains(c.NameInCode));
         }
 
+        // Specific Components
+        // Transform
+        public DclTransformComponent GetTransformComponent()
+        {
+            var component = GetComponentByName("transform");
+
+            if (component == null)
+                return null;
+            
+            var dclTransformComponent = new DclTransformComponent(component);
+            return dclTransformComponent.Validate() ? dclTransformComponent : null;
+        }
+
         /**
          * Checks if at least one of the specified component names exists in this entity
          */

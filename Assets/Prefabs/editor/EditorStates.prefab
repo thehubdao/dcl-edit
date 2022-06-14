@@ -144,6 +144,9 @@ MonoBehaviour:
   PlaneMesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
   ConeMesh: {fileID: 3613567641014311022, guid: e140720f2ef3dc5459b3d88eacb859c8, type: 3}
   DefaultMat: {fileID: 2100000, guid: c1295392ace60d94da19d7a387884d71, type: 2}
+  TranslateGizmoPrefab: {fileID: 4030547528416928526, guid: 5902694aa7e366a498edb54f63dfe949, type: 3}
+  RotateGizmoPrefab: {fileID: 7576839295262608665, guid: bd121112ea8e3144ca5e8e5af300829c, type: 3}
+  ScaleGizmoPrefab: {fileID: 6226587272053408715, guid: 08b0965eef8544b43a35a9a4be5dab6a, type: 3}
 --- !u!114 &7953543301535803489
 MonoBehaviour:
   m_ObjectHideFlags: 0

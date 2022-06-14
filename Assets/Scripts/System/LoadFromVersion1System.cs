@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Assets.Scripts.EditorState;
 using Assets.Scripts.ProjectState;
 using Assets.Scripts.SceneState;
@@ -112,26 +113,12 @@ namespace Assets.Scripts.System
                             Debug.Log($"Component {component.name} not supported yet");
                             break;
                     }
-
-
-
-                    //var newComponent =
-                    //    newEntityGameObject
-                    //            .AddComponent(ComponentRepresentationList.GetComponentByName(component.name))
-                    //        as EntityComponent;
-                    //
-                    //newComponent?.ApplySpecificJson(component.specifics);
                 }
-
-
             }
 
+            // set all the parents
             foreach (var entity in parentNumbers)
             {
-                //entity.SetParentKeepLocalScale(uniqueNumbers.TryGetValue(parentNumbers[entity], out var e)
-                //    ? (SceneTreeObject)e
-                //    : (SceneTreeObject)DclSceneManager.SceneRoot);
-
                 // every entity with a parent
                 if (entity.Value >= 0)
                 {
@@ -140,8 +127,52 @@ namespace Assets.Scripts.System
                 }
             }
 
+            // change entity position and rotation from global to local
+            foreach (
+                var entity in parentNumbers
+                    .Where(p => p.Value < 0)
+                    .Select(p => p.Key))
+            {
+                ChangeToLocal(entity, null);
+            }
+
 
             EditorStates.CurrentSceneState.CurrentScene = newScene;
+        }
+
+        private void ChangeToLocal(DclEntity entity, DclTransformComponent dclParentTransform)
+        {
+            // can be null
+            var dclTransform = entity.GetTransformComponent();
+
+            foreach (var child in entity.Children)
+            {
+                ChangeToLocal(child, dclTransform);
+            }
+
+            if (dclTransform == null || dclParentTransform == null)
+                return;
+
+            // generate two game object to simplify the transformation maths
+            var parentTransform = new GameObject().transform;
+            var childTransform = new GameObject().transform;
+
+            childTransform.SetParent(parentTransform);
+
+            parentTransform.position = dclParentTransform.Position.Value;
+            parentTransform.rotation = dclParentTransform.Rotation.Value;
+            parentTransform.localScale = dclParentTransform.Scale.Value;
+
+            childTransform.position = dclTransform.Position.Value;
+            childTransform.rotation = dclTransform.Rotation.Value;
+            childTransform.localScale = dclTransform.Scale.Value;
+
+            dclTransform.Position.SetFixedValue(childTransform.localPosition);
+            dclTransform.Rotation.SetFixedValue(childTransform.localRotation);
+
+            // cleanup
+            Destroy(parentTransform.gameObject);
+            Destroy(childTransform.gameObject);
         }
 
         private AssetsJsonWrapper LoadAssets(string path)
@@ -193,9 +224,9 @@ namespace Assets.Scripts.System
             var specificTransformJson = JsonUtility.FromJson<SpecificTransformJson>(componentJson.specifics);
 
             var newTransformComponent = new DclComponent("transform", "transform");
-            newTransformComponent.Properties.Add(new DclComponent.DclComponentProperty<Vector3>("position", specificTransformJson.pos));
-            newTransformComponent.Properties.Add(new DclComponent.DclComponentProperty<Quaternion>("rotation", specificTransformJson.rot));
-            newTransformComponent.Properties.Add(new DclComponent.DclComponentProperty<Vector3>("scale", specificTransformJson.scale));
+            newTransformComponent.Properties.Add(new DclComponent.DclComponentProperty<Vector3>("position", specificTransformJson.pos)); // This will save the global position
+            newTransformComponent.Properties.Add(new DclComponent.DclComponentProperty<Quaternion>("rotation", specificTransformJson.rot)); // This will save the global rotation
+            newTransformComponent.Properties.Add(new DclComponent.DclComponentProperty<Vector3>("scale", specificTransformJson.scale)); // This will save the local scale
 
             return newTransformComponent;
         }
@@ -245,7 +276,7 @@ namespace Assets.Scripts.System
         {
             return new DclComponent("ConeShape", "Shape");
         }
-        
+
     }
 
     [Serializable]
