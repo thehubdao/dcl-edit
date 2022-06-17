@@ -8,8 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: combineOutlineMat
-  m_Shader: {fileID: -6465566751694194690, guid: 98d2c19e701793746a58e1d473320e76,
-    type: 3}
+  m_Shader: {fileID: -6465566751694194690, guid: 98d2c19e701793746a58e1d473320e76, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -37,5 +36,6 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats: []
-    m_Colors: []
+    m_Colors:
+    - Color_480b9d35325d4a769c21477f331d59f1: {r: 0.6320754, g: 0.5098344, b: 0.5098344, a: 0}
   m_BuildTextureStacks: []

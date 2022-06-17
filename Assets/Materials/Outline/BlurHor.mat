@@ -8,8 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: BlurHor
-  m_Shader: {fileID: -6465566751694194690, guid: 34faf4ecead1f9441aceaa842512a344,
-    type: 3}
+  m_Shader: {fileID: -6465566751694194690, guid: 34faf4ecead1f9441aceaa842512a344, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -43,7 +42,7 @@ Material:
     m_Floats:
     - Boolean_1: 0
     - Boolean_4a8593dfe7bd48f0b8532a6b47607f23: 1
-    - Vector1_3da90d8b307d44ea865ad4955da85b72: 11.4
-    - Vector1_ca5f2e78fcc248459c37f790cd1e51f2: 10
+    - Vector1_3da90d8b307d44ea865ad4955da85b72: 22.58
+    - Vector1_ca5f2e78fcc248459c37f790cd1e51f2: 18.4
     m_Colors: []
   m_BuildTextureStacks: []

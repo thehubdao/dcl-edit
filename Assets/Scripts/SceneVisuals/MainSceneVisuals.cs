@@ -18,6 +18,9 @@ namespace Assets.Scripts.SceneVisuals
             EditorStates.CurrentSceneState.CurrentScene?
                 .HierarchyChangedEvent.AddListener(UpdateVisuals);
 
+            EditorStates.CurrentSceneState.CurrentScene?
+                .SelectionState.SelectionChangedEvent.AddListener(UpdateVisuals);
+
             UpdateVisuals();
         }
 

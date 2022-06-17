@@ -14,7 +14,7 @@ public class OutlineCombineRenderPass : ScriptableRenderPass
     RenderTargetHandle tempTexture;
     RenderTargetHandle originalTexture;
     Texture overlayTexture;
-    Camera overlayCamera;
+    OutlineCamera overlayCamera;
 
     private int rtWidth = -1;
     private int rtHeight = -1;
@@ -27,7 +27,7 @@ public class OutlineCombineRenderPass : ScriptableRenderPass
         this.renderPassEvent = renderPassEvent;
         this.combineMat = combineMat;
 
-        this.overlayCamera = GameObject.Find("OutlineCamera").GetComponent<Camera>();
+        this.overlayCamera = OutlineCamera.Instance;
 
     }
 
@@ -68,8 +68,15 @@ public class OutlineCombineRenderPass : ScriptableRenderPass
 
         cmd.Blit(cameraColorTargetIdent, tempTexture.Identifier());
 
-
-        cmd.SetGlobalTexture("_overlay", overlayCamera.targetTexture);
+        if (overlayCamera != null)
+        {
+            cmd.SetGlobalTexture("_overlay", overlayCamera.Camera.targetTexture);
+            cmd.SetGlobalInt("_wiggle", overlayCamera.Wiggle ? 1 : 0);
+        }
+        else
+        {
+            cmd.SetGlobalInt("_wiggle", 0);
+        }
 
         cmd.Blit(tempTexture.Identifier(), cameraColorTargetIdent, combineMat, 0);
 

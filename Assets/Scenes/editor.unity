@@ -215,6 +215,7 @@ GameObject:
   - component: {fileID: 848302475}
   - component: {fileID: 848302473}
   - component: {fileID: 848302472}
+  - component: {fileID: 848302474}
   m_Layer: 0
   m_Name: OutlineCamera
   m_TagString: Untagged
@@ -280,6 +281,18 @@ MonoBehaviour:
   m_RequiresDepthTexture: 0
   m_RequiresColorTexture: 0
   m_Version: 2
+--- !u!114 &848302474
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 848302470}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e007a67f750ee8947bfee9c54114b295, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!20 &848302475
 Camera:
   m_ObjectHideFlags: 0
