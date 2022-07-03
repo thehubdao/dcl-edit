@@ -15,9 +15,9 @@ namespace Assets.Scripts.System
         /// <summary>
         /// Gets the cached model for the specified path
         /// </summary>
-        /// <param name="path">the path of the model </param>
-        /// <param name="versionInfo"></param>
-        /// <param name="then"></param>
+        /// <param name="path">the path of the model</param>
+        /// <param name="versionInfo">a specifier for the version of the object. Can be any string. E.g.: version counter, timestamp, hash, ...</param>
+        /// <param name="then">An action that is called with the Specified Model as a GameObject. This might get called to a later point, if the Model needs to be loaded first.</param>
         public static void GetModel(string path, string versionInfo, Action<GameObject> then)
         {
             if (EditorStates.CurrentModelCacheState.ModelCache.TryGetValue(path, out var value)) // TODO: check version
@@ -103,7 +103,7 @@ namespace Assets.Scripts.System
                             // find all transforms of visible GameObjects
                             var visibleChildren = allTransforms
                                 .Where(t => !t.name.EndsWith("_collider"))
-                                .Where(t => t.TryGetComponent<MeshFilter>(out _));
+                                .Where(t => t.TryGetComponent<MeshFilter>(out _)||t.TryGetComponent<SkinnedMeshRenderer>(out _));
 
 
                             // add click collider to all visible GameObjects
@@ -116,7 +116,12 @@ namespace Assets.Scripts.System
 
                                 colliderGameObject.layer = 10; // Entity Click Layer
                                 var newCollider = colliderGameObject.AddComponent<MeshCollider>();
-                                newCollider.sharedMesh = child.GetComponent<MeshFilter>().sharedMesh;
+
+                                if(child.TryGetComponent<MeshFilter>(out var meshFilter))
+                                    newCollider.sharedMesh = meshFilter.sharedMesh;
+
+                                if(child.TryGetComponent<SkinnedMeshRenderer>(out var skinnedMeshRenderer))
+                                    newCollider.sharedMesh = skinnedMeshRenderer.sharedMesh;
                             }
 
                             if (EditorStates.CurrentModelCacheState.ModelCache.ContainsKey(path))
