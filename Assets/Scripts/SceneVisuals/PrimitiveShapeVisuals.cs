@@ -6,11 +6,12 @@ namespace Assets.Scripts.SceneVisuals
 {
     [RequireComponent(typeof(MeshRenderer))]
     [RequireComponent(typeof(MeshFilter))]
-    public class PrimitiveShapeVisuals : MonoBehaviour
+    public class PrimitiveShapeVisuals : ShapeVisuals
     {
 
+        private GameObject _colliderObject = null;
 
-        public void UpdateVisuals(DclEntity entity)
+        public override void UpdateVisuals(DclEntity entity)
         {
             var meshRenderer = GetComponent<MeshRenderer>();
             var meshFilter = GetComponent<MeshFilter>();
@@ -20,7 +21,10 @@ namespace Assets.Scripts.SceneVisuals
                 entity.GetFirstComponentByName("BoxShape", "SphereShape", "CylinderShape", "PlaneShape", "ConeShape");
 
             if (primitiveShapeComponent == null)
+            {
+                meshRenderer.enabled = false;
                 return;
+            }
 
             meshRenderer.enabled = true;
 
@@ -38,40 +42,59 @@ namespace Assets.Scripts.SceneVisuals
 
             meshRenderer.material = EditorStates.CurrentUnityState.DefaultMat;
 
+            // check if collider exists
+
+            UpdateCollider(entity, meshFilter.mesh);
+            
             UpdateSelection(entity);
         }
 
-        private void UpdateSelection(DclEntity entity)
+        private void UpdateCollider(DclEntity entity, Mesh mesh)
         {
-            
-            var selectionState = EditorStates.CurrentSceneState?.CurrentScene?.SelectionState;
-            if (selectionState != null)
+            if (mesh == null)
             {
-                if (selectionState.PrimarySelectedEntity == entity)
+                if (_colliderObject != null)
                 {
-                    SetLayer(gameObject, LayerMask.NameToLayer("Outline2"));
+                    _colliderObject.SetActive(false);
                 }
-                else if (selectionState.SecondarySelectedEntities.Contains(entity))
+
+                return;
+            }
+
+
+            if (_colliderObject == null)
+            {
+                // add click Collider
+                _colliderObject = new GameObject($"{entity.CustomName}_collider")
                 {
-                    SetLayer(gameObject, LayerMask.NameToLayer("Outline3"));
-                }
-                else
-                {
-                    SetLayer(gameObject, LayerMask.NameToLayer("Default"));
-                }
+                    transform =
+                    {
+                        // set parent
+                        parent = transform,
+
+                        // reset transform
+                        localPosition = Vector3.zero,
+                        localRotation = Quaternion.identity,
+                        localScale = Vector3.one
+                    },
+
+                    // set layer
+                    layer = EntityClickLayer
+                };
+
+                // add mesh collider
+                var newClickCollider = _colliderObject.AddComponent<MeshCollider>();
+
+                newClickCollider.sharedMesh = mesh;
+            }
+            else
+            {
+                _colliderObject.SetActive(true);
+                _colliderObject.GetComponent<MeshCollider>().sharedMesh = mesh;
             }
         }
 
-        private void SetLayer(GameObject gameObject, int layer)
-        {
-            gameObject.layer = layer;
-            foreach(Transform child in gameObject.transform)
-            {
-                SetLayer(child.gameObject,layer);
-            }
-        }
-
-        public void Deactivate()
+        public override void Deactivate()
         {
             var meshRenderer = GetComponent<MeshRenderer>();
             meshRenderer.enabled = false;

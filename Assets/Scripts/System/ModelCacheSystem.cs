@@ -12,6 +12,12 @@ namespace Assets.Scripts.System
 {
     public class ModelCacheSystem : MonoBehaviour
     {
+        /// <summary>
+        /// Gets the cached model for the specified path
+        /// </summary>
+        /// <param name="path">the path of the model </param>
+        /// <param name="versionInfo"></param>
+        /// <param name="then"></param>
         public static void GetModel(string path, string versionInfo, Action<GameObject> then)
         {
             if (EditorStates.CurrentModelCacheState.ModelCache.TryGetValue(path, out var value)) // TODO: check version
@@ -24,70 +30,15 @@ namespace Assets.Scripts.System
             {
                 Action<GameObject> onLoadedAction = o =>
                 {
-
-                    o.transform.localPosition = Vector3.zero;
-                    o.transform.localScale = Vector3.one;
-                    o.transform.localRotation = Quaternion.identity;
-
-
-                    var allTransforms =
-                        new List<Transform>(); // all loaded transforms including all children of any level
-
-                    var stack = new Stack<Transform>();
-                    stack.Push(o.transform);
-                    while (stack.Any())
-                    {
-                        var next = stack.Pop();
-                        allTransforms.Add(next);
-
-                        foreach (var child in next.GetChildren())
-                            stack.Push(child);
-                    }
-
-
-                    allTransforms
-                        .Where(t => t.name.EndsWith("_collider"))
-                        .Where(t => t.TryGetComponent<MeshFilter>(out _))
-                        .ForAll(t => t.gameObject.SetActive(false));
-
-                    var visibleChildren = allTransforms
-                        .Where(t => !t.name.EndsWith("_collider"))
-                        .Where(t => t.TryGetComponent<MeshFilter>(out _));
-
-
-                    // TODO: make Objects click able
-
-                    //foreach (var child in visibleChildren)
-                    //{
-                    //    var colliderGameObject = Instantiate(new GameObject("Collider"), o.transform);
-                    //    colliderGameObject.transform.position = child.position;
-                    //    colliderGameObject.transform.rotation = child.rotation;
-                    //    colliderGameObject.transform.localScale = child.localScale;
-                    //
-                    //    colliderGameObject.layer = LayerMask.NameToLayer("Entity");
-                    //    var newCollider = colliderGameObject.AddComponent<MeshCollider>();
-                    //    newCollider.sharedMesh = child.GetComponent<MeshFilter>().sharedMesh;
-                    //    child.gameObject.AddComponent<Hilightable>();
-                    //}
-                    //
-                    //DclSceneManager.OnUpdateHierarchy.Invoke();
-
-                    if (EditorStates.CurrentModelCacheState.ModelCache.ContainsKey(path))
-                        EditorStates.CurrentModelCacheState.ModelCache[path] = o;
-                    else
-                        EditorStates.CurrentModelCacheState.ModelCache.Add(path, o);
-
-                    o.SetActive(false);
-
                     var instance = Instantiate(o);
                     instance.SetActive(true);
                     then(instance);
                 };
 
-                // Check if the model is all ready loading
+                // Check if the model is already loading
                 if (EditorStates.CurrentModelCacheState.CurrentlyLoading.TryGetValue(path, out var actions)) 
                 {
-                    // if all ready loading, just add the onLoadedAction to the list of actions to be fired
+                    // if already loading, just add the onLoadedAction to the list of actions to be fired
                     actions.Add(onLoadedAction);
                 }
                 else
@@ -120,9 +71,65 @@ namespace Assets.Scripts.System
                                 return;
                             }
 
-                            foreach (var loadingAction in EditorStates.CurrentModelCacheState.CurrentlyLoading[path])
+                            // prepare loaded model
+
+                            // reset transform
+                            o.transform.localPosition = Vector3.zero;
+                            o.transform.localScale = Vector3.one;
+                            o.transform.localRotation = Quaternion.identity;
+
+
+                            var allTransforms =
+                                new List<Transform>(); // all loaded transforms including all children of any level
+
+                            // fill the allTransforms List
+                            var stack = new Stack<Transform>();
+                            stack.Push(o.transform);
+                            while (stack.Any())
                             {
-                                loadingAction(o);
+                                var next = stack.Pop();
+                                allTransforms.Add(next);
+
+                                foreach (var child in next.GetChildren())
+                                    stack.Push(child);
+                            }
+
+                            // make all decentraland collider invisible
+                            allTransforms
+                                .Where(t => t.name.EndsWith("_collider"))
+                                .Where(t => t.TryGetComponent<MeshFilter>(out _))
+                                .ForAll(t => t.gameObject.SetActive(false));
+
+                            // find all transforms of visible GameObjects
+                            var visibleChildren = allTransforms
+                                .Where(t => !t.name.EndsWith("_collider"))
+                                .Where(t => t.TryGetComponent<MeshFilter>(out _));
+
+
+                            // add click collider to all visible GameObjects
+                            foreach (var child in visibleChildren)
+                            {
+                                var colliderGameObject = Instantiate(new GameObject("Collider"), o.transform);
+                                colliderGameObject.transform.position = child.position;
+                                colliderGameObject.transform.rotation = child.rotation;
+                                colliderGameObject.transform.localScale = child.localScale;
+
+                                colliderGameObject.layer = 10; // Entity Click Layer
+                                var newCollider = colliderGameObject.AddComponent<MeshCollider>();
+                                newCollider.sharedMesh = child.GetComponent<MeshFilter>().sharedMesh;
+                            }
+
+                            if (EditorStates.CurrentModelCacheState.ModelCache.ContainsKey(path))
+                                EditorStates.CurrentModelCacheState.ModelCache[path] = o;
+                            else
+                                EditorStates.CurrentModelCacheState.ModelCache.Add(path, o);
+
+                            o.SetActive(false);
+
+                            // dispatch all actions for the loading complete event
+                            foreach (var loadingCompleteAction in EditorStates.CurrentModelCacheState.CurrentlyLoading[path])
+                            {
+                                loadingCompleteAction(o);
                             }
                         }));
                 }
