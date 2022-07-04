@@ -1,14 +1,11 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using Assets.Scripts.EditorState;
 using Assets.Scripts.ProjectState;
 using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
-using Assets.Scripts.Utility;
 using UnityEngine;
 
-namespace Assets.Scripts.SceneVisuals
+namespace Assets.Scripts.Visuals
 {
     public class GltfShapeVisuals : ShapeVisuals
     {

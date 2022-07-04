@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using Assets.Scripts.EditorState;
-using Assets.Scripts.SceneInteraction;
+using Assets.Scripts.Interaction;
 using Assets.Scripts.Utility;
 using UnityEngine;
 
-namespace Assets.Scripts.SceneVisuals
+namespace Assets.Scripts.Visuals
 {
     public class MainSceneVisuals : MonoBehaviour, ISetupSceneEventListeners
     {

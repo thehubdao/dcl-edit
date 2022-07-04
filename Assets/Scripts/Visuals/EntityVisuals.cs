@@ -1,15 +1,11 @@
 using System;
-using System.Linq;
 using Assets.Scripts.EditorState;
-using Assets.Scripts.SceneState;
-using UnityEngine;
-
-
-#if UNITY_EDITOR
 using UnityEditor;
+using UnityEngine;
+#if UNITY_EDITOR
 #endif
 
-namespace Assets.Scripts.SceneVisuals
+namespace Assets.Scripts.Visuals
 {
     public class EntityVisuals : MonoBehaviour
     {

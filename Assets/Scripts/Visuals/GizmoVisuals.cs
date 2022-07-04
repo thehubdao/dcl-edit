@@ -2,9 +2,8 @@ using System.Collections.Generic;
 using Assets.Scripts.EditorState;
 using Assets.Scripts.SceneState;
 using UnityEngine;
-using NotImplementedException = System.NotImplementedException;
 
-namespace Assets.Scripts.SceneVisuals
+namespace Assets.Scripts.Visuals
 {
     public class GizmoVisuals : MonoBehaviour, ISetupSceneEventListeners
     {

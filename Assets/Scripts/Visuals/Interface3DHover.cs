@@ -1,8 +1,7 @@
 using Assets.Scripts.EditorState;
 using UnityEngine;
-using NotImplementedException = System.NotImplementedException;
 
-namespace Assets.Scripts.SceneVisuals
+namespace Assets.Scripts.Visuals
 {
     public abstract class Interface3DHover : MonoBehaviour, ISetupSceneEventListeners
     {
@@ -13,7 +12,7 @@ namespace Assets.Scripts.SceneVisuals
         {
             SetupSceneEventListeners();
         }
-        
+         
 
         public void SetupSceneEventListeners()
         {

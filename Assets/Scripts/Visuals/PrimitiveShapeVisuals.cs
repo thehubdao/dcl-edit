@@ -2,7 +2,7 @@ using Assets.Scripts.EditorState;
 using Assets.Scripts.SceneState;
 using UnityEngine;
 
-namespace Assets.Scripts.SceneVisuals
+namespace Assets.Scripts.Visuals
 {
     [RequireComponent(typeof(MeshRenderer))]
     [RequireComponent(typeof(MeshFilter))]

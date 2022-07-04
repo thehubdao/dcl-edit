@@ -1,18 +1,15 @@
-using System;
-using System.Diagnostics;
-using Assets.Scripts.Command;
 using Assets.Scripts.EditorState;
-using Assets.Scripts.System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Cursor = UnityEngine.Cursor;
-using Debug = UnityEngine.Debug;
 
-namespace Assets.Scripts.UiInteraction
+namespace Assets.Scripts.Interaction
 {
     public class GeneralInputInteraction : MonoBehaviour
     {
         private InputSystemAsset _inputSystemAsset;
+
+        
 
 
         void Awake()

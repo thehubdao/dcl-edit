@@ -1,7 +1,7 @@
 using Assets.Scripts.EditorState;
 using UnityEngine;
 
-namespace Assets.Scripts.SceneVisuals
+namespace Assets.Scripts.Visuals
 {
 
     public class CameraVisuals : MonoBehaviour

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Assets.Scripts.SceneVisuals
+namespace Assets.Scripts.Visuals
 {
     public class Interface3DHoverSetMaterial : Interface3DHover
     {
