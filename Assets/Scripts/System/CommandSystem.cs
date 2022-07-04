@@ -1,59 +1,61 @@
-using System.Collections;
-using System.Collections.Generic;
-using Assets.Scripts.Command;
 using Assets.Scripts.EditorState;
-using Assets.Scripts.SceneState;
 using UnityEngine;
 
-public class CommandSystem : MonoBehaviour
+namespace Assets.Scripts.System
 {
-    public static void ExecuteCommand<T>(T command) where T : Command
+    public class CommandSystem : MonoBehaviour
     {
-        var commandState = EditorStates.CurrentSceneState.CurrentScene?.CommandHistoryState;
-
-        if (commandState == null)
+        public static void ExecuteCommand<T>(T command) where T : SceneState.Command
         {
-            Debug.LogError("No Scene State found");
-            return;
+            if (command == null)
+                return;
+
+            var commandState = EditorStates.CurrentSceneState.CurrentScene?.CommandHistoryState;
+
+            if (commandState == null)
+            {
+                Debug.LogError("No Scene State found");
+                return;
+            }
+
+            commandState.CommandHistory.Add(command);
+            commandState.CurrentCommandIndex = commandState.CommandHistory.Count - 1;
+
+            command.Do(EditorStates.CurrentSceneState.CurrentScene);
         }
 
-        commandState.CommandHistory.Add(command);
-        commandState.CurrentCommandIndex = commandState.CommandHistory.Count - 1;
-
-        command.Do(EditorStates.CurrentSceneState.CurrentScene);
-    }
-
-    public static void UndoCommand()
-    {
-        var commandState = EditorStates.CurrentSceneState.CurrentScene?.CommandHistoryState;
-
-        if (commandState == null)
+        public static void UndoCommand()
         {
-            Debug.LogError("No Scene State found");
-            return;
+            var commandState = EditorStates.CurrentSceneState.CurrentScene?.CommandHistoryState;
+
+            if (commandState == null)
+            {
+                Debug.LogError("No Scene State found");
+                return;
+            }
+
+            if (commandState.CurrentCommandIndex >= 0)
+            {
+                commandState.CommandHistory[commandState.CurrentCommandIndex].Undo(EditorStates.CurrentSceneState.CurrentScene);
+                commandState.CurrentCommandIndex--;
+            }
         }
 
-        if (commandState.CurrentCommandIndex >= 0)
+        public static void RedoCommand()
         {
-            commandState.CommandHistory[commandState.CurrentCommandIndex].Undo(EditorStates.CurrentSceneState.CurrentScene);
-            commandState.CurrentCommandIndex--;
-        }
-    }
+            var commandState = EditorStates.CurrentSceneState.CurrentScene?.CommandHistoryState;
 
-    public static void RedoCommand()
-    {
-        var commandState = EditorStates.CurrentSceneState.CurrentScene?.CommandHistoryState;
+            if (commandState == null)
+            {
+                Debug.LogError("No Scene State found");
+                return;
+            }
 
-        if (commandState == null)
-        {
-            Debug.LogError("No Scene State found");
-            return;
-        }
-
-        if (commandState.CurrentCommandIndex < commandState.CommandHistory.Count - 1)
-        {
-            commandState.CurrentCommandIndex++;
-            commandState.CommandHistory[commandState.CurrentCommandIndex].Do(EditorStates.CurrentSceneState.CurrentScene);
+            if (commandState.CurrentCommandIndex < commandState.CommandHistory.Count - 1)
+            {
+                commandState.CurrentCommandIndex++;
+                commandState.CommandHistory[commandState.CurrentCommandIndex].Do(EditorStates.CurrentSceneState.CurrentScene);
+            }
         }
     }
 }

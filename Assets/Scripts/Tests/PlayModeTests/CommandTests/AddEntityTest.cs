@@ -3,6 +3,7 @@ using System.Linq;
 using Assets.Scripts.Command;
 using Assets.Scripts.EditorState;
 using Assets.Scripts.SceneState;
+using Assets.Scripts.System;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;

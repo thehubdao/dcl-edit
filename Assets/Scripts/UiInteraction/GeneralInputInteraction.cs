@@ -1,6 +1,8 @@
 using System;
 using System.Diagnostics;
+using Assets.Scripts.Command;
 using Assets.Scripts.EditorState;
+using Assets.Scripts.System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Cursor = UnityEngine.Cursor;
@@ -23,6 +25,8 @@ namespace Assets.Scripts.UiInteraction
         // Update is called once per frame
         void Update()
         {
+            InputHelper.UpdateMouseDowns();
+
             switch (EditorStates.CurrentInputState.InState)
             {
                 case InputState.InStateType.NoInput:
@@ -84,10 +88,10 @@ namespace Assets.Scripts.UiInteraction
                     EditorStates.CurrentInterface3DState.CurrentlyHoveredObject = hitInfoGizmos.transform.gameObject;
                 }
                 // Secondly check, if mouse is hovering over a Entity
-                else if (Physics.Raycast(mouseRay, out RaycastHit hitInfoEntity, 10000, LayerMask.GetMask("Entity")))
+                else if (Physics.Raycast(mouseRay, out RaycastHit hitInfoEntity, 10000, LayerMask.GetMask("Entity Click"))) // mouse click layer
                 {
                     mousePositionIn3DView = hitInfoEntity.point;
-                    EditorStates.CurrentInterface3DState.CurrentlyHoveredObject = hitInfoGizmos.transform.gameObject;
+                    EditorStates.CurrentInterface3DState.CurrentlyHoveredObject = hitInfoEntity.transform.gameObject;
                 }
                 else
                 {
@@ -98,6 +102,7 @@ namespace Assets.Scripts.UiInteraction
             {
                 EditorStates.CurrentInterface3DState.CurrentlyHoveredObject = null;
             }
+            
 
             // If the mouse is not over any Gizmo or Entity, then get the mouse position on the Ground plane
             if (mousePositionIn3DView == null)
@@ -114,6 +119,30 @@ namespace Assets.Scripts.UiInteraction
                 }
             }
 
+            //// When pressing(down) Left mouse button, select the hovered entity
+            //if (InputHelper.IsLeftMouseButtonDown() && !pressingAlt && !pressingControl && isMouseIn3DView)
+            //{
+            //    EditorStates.CurrentInterface3DState.CurrentlyHoveredObject.GetComponentInParent<Entity>()
+            //    if (EditorStates.CurrentInterface3DState.IsCurrentlyHoveringEntity())
+            //    {
+            //        CommandSystem.ExecuteCommand(
+            //            ChangeSelection.MakeSingleSelectCommand(
+            //                EditorStates.CurrentSceneState?.CurrentScene,
+            //                EditorStates.CurrentInterface3DState.CurrentlyHoveredEntity.Id));
+            //    }
+            //}
+            //
+            //// When pressing(down) Left mouse button and Control, add the hovered entity to the selection
+            //if (InputHelper.IsLeftMouseButtonDown() && !pressingAlt && pressingControl && isMouseIn3DView)
+            //{
+            //    if (EditorStates.CurrentInterface3DState.IsCurrentlyHoveringEntity())
+            //    {
+            //        CommandSystem.ExecuteCommand(
+            //            ChangeSelection.MakeSingleSelectCommand(
+            //                EditorStates.CurrentSceneState?.CurrentScene,
+            //                EditorStates.CurrentInterface3DState.CurrentlyHoveredEntity.Id));
+            //    }
+            //}
 
             // When pressing Right mouse button (without alt), switch to Camera WASD moving state
             if (InputHelper.IsRightMouseButtonPressed() && !pressingAlt && isMouseIn3DView)
@@ -235,6 +264,29 @@ namespace Assets.Scripts.UiInteraction
         {
             private static Vector2 _mousePositionWhenHiding;
 
+            private static bool _wasLeftPressed;
+            private static bool _wasMiddlePressed;
+            private static bool _wasRightPressed;
+
+            private static bool _isLeftDown;
+            private static bool _isMiddleDown;
+            private static bool _isRightDown;
+
+            public static void UpdateMouseDowns()
+            {
+                var leftPressed = IsLeftMouseButtonPressed();
+                _isLeftDown = leftPressed && !_wasLeftPressed; // left down when left is pressed but was not pressed in the last frame
+                _wasLeftPressed = leftPressed;
+
+                var middlePressed = IsMiddleMouseButtonPressed();
+                _isMiddleDown = middlePressed && !_wasMiddlePressed;
+                _wasMiddlePressed = middlePressed;
+
+                var rightPressed = IsRightMouseButtonPressed();
+                _isRightDown = rightPressed && !_wasRightPressed;
+                _wasRightPressed = rightPressed;
+            }
+
             public static void HideMouse()
             {
                 _mousePositionWhenHiding = Mouse.current.position.ReadValue();
@@ -253,7 +305,7 @@ namespace Assets.Scripts.UiInteraction
 
             public static Vector2 GetMouseMovement()
             {
-                return Mouse.current.delta.ReadValue() / 20;
+                return Mouse.current.delta.ReadValue() / 20; // divide by 20 to get a similar value to the GetAxis of the old input system
             }
 
             public static Vector2 GetMousePosition()
@@ -275,6 +327,21 @@ namespace Assets.Scripts.UiInteraction
             public static bool IsMiddleMouseButtonPressed()
             {
                 return Mouse.current.middleButton.isPressed;
+            }
+
+            public static bool IsLeftMouseButtonDown()
+            {
+                return _isLeftDown;
+            }
+
+            public static bool IsMiddleMouseButtonDown()
+            {
+                return _isMiddleDown;
+            }
+
+            public static bool IsRightMouseButtonDown()
+            {
+                return _isRightDown;
             }
         }
     }
