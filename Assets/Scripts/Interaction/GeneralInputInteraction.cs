@@ -116,31 +116,26 @@ namespace Assets.Scripts.Interaction
                 }
             }
 
-            //// When pressing(down) Left mouse button, select the hovered entity
-            //if (InputHelper.IsLeftMouseButtonDown() && !pressingAlt && !pressingControl && isMouseIn3DView)
-            //{
-            //    EditorStates.CurrentInterface3DState.CurrentlyHoveredObject.GetComponentInParent<Entity>()
-            //    if (EditorStates.CurrentInterface3DState.IsCurrentlyHoveringEntity())
-            //    {
-            //        CommandSystem.ExecuteCommand(
-            //            ChangeSelection.MakeSingleSelectCommand(
-            //                EditorStates.CurrentSceneState?.CurrentScene,
-            //                EditorStates.CurrentInterface3DState.CurrentlyHoveredEntity.Id));
-            //    }
-            //}
-            //
-            //// When pressing(down) Left mouse button and Control, add the hovered entity to the selection
-            //if (InputHelper.IsLeftMouseButtonDown() && !pressingAlt && pressingControl && isMouseIn3DView)
-            //{
-            //    if (EditorStates.CurrentInterface3DState.IsCurrentlyHoveringEntity())
-            //    {
-            //        CommandSystem.ExecuteCommand(
-            //            ChangeSelection.MakeSingleSelectCommand(
-            //                EditorStates.CurrentSceneState?.CurrentScene,
-            //                EditorStates.CurrentInterface3DState.CurrentlyHoveredEntity.Id));
-            //    }
-            //}
+            // When pressing(down) Left mouse button, select the hovered entity
+            if (InputHelper.IsLeftMouseButtonDown() && !pressingAlt && isMouseIn3DView)
+            {
+                // select entity
+                var selectInteraction = EditorStates.CurrentInterface3DState.CurrentlyHoveredObject?
+                    .GetComponentInParent<EntitySelectInteraction>();
 
+                if (selectInteraction != null)
+                {
+                    if (pressingControl)
+                    {
+                        selectInteraction.SelectAdditional(); // When pressing control, add entity to selection
+                    }
+                    else
+                    {
+                        selectInteraction.SelectSingle(); // When not pressing control, set entity as single selection
+                    }
+                }
+            }
+            
             // When pressing Right mouse button (without alt), switch to Camera WASD moving state
             if (InputHelper.IsRightMouseButtonPressed() && !pressingAlt && isMouseIn3DView)
             {
