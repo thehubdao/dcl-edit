@@ -19,6 +19,15 @@ namespace Assets.Scripts.EditorState
             }
         }
 
+        public enum HoveredObjectType
+        {
+            None,
+            Gizmo,
+            Entity
+        }
+
+        public HoveredObjectType CurrentlyHoveredObjectType = HoveredObjectType.None;
+
 
         public readonly UnityEvent HoverChangeEvent = new UnityEvent();
     }

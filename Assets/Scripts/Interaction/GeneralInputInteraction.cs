@@ -1,4 +1,7 @@
+using System;
+using Assets.Scripts.Command;
 using Assets.Scripts.EditorState;
+using Assets.Scripts.System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Cursor = UnityEngine.Cursor;
@@ -9,7 +12,7 @@ namespace Assets.Scripts.Interaction
     {
         private InputSystemAsset _inputSystemAsset;
 
-        
+
 
 
         void Awake()
@@ -83,23 +86,31 @@ namespace Assets.Scripts.Interaction
                 {
                     mousePositionIn3DView = hitInfoGizmos.point;
                     EditorStates.CurrentInterface3DState.CurrentlyHoveredObject = hitInfoGizmos.transform.gameObject;
+                    EditorStates.CurrentInterface3DState.CurrentlyHoveredObjectType =
+                        Interface3DState.HoveredObjectType.Gizmo;
                 }
                 // Secondly check, if mouse is hovering over a Entity
                 else if (Physics.Raycast(mouseRay, out RaycastHit hitInfoEntity, 10000, LayerMask.GetMask("Entity Click"))) // mouse click layer
                 {
                     mousePositionIn3DView = hitInfoEntity.point;
                     EditorStates.CurrentInterface3DState.CurrentlyHoveredObject = hitInfoEntity.transform.gameObject;
+                    EditorStates.CurrentInterface3DState.CurrentlyHoveredObjectType =
+                        Interface3DState.HoveredObjectType.Entity;
                 }
                 else
                 {
                     EditorStates.CurrentInterface3DState.CurrentlyHoveredObject = null;
+                    EditorStates.CurrentInterface3DState.CurrentlyHoveredObjectType =
+                        Interface3DState.HoveredObjectType.None;
                 }
             }
             else
             {
                 EditorStates.CurrentInterface3DState.CurrentlyHoveredObject = null;
+                EditorStates.CurrentInterface3DState.CurrentlyHoveredObjectType =
+                    Interface3DState.HoveredObjectType.None;
             }
-            
+
 
             // If the mouse is not over any Gizmo or Entity, then get the mouse position on the Ground plane
             if (mousePositionIn3DView == null)
@@ -119,23 +130,50 @@ namespace Assets.Scripts.Interaction
             // When pressing(down) Left mouse button, select the hovered entity
             if (InputHelper.IsLeftMouseButtonDown() && !pressingAlt && isMouseIn3DView)
             {
-                // select entity
-                var selectInteraction = EditorStates.CurrentInterface3DState.CurrentlyHoveredObject?
-                    .GetComponentInParent<EntitySelectInteraction>();
-
-                if (selectInteraction != null)
+                switch (EditorStates.CurrentInterface3DState.CurrentlyHoveredObjectType)
                 {
-                    if (pressingControl)
+                    case Interface3DState.HoveredObjectType.Gizmo:
                     {
-                        selectInteraction.SelectAdditional(); // When pressing control, add entity to selection
+                        // TODO: Gizmo Grabbing
+                        break;
                     }
-                    else
+                    case Interface3DState.HoveredObjectType.Entity:
                     {
-                        selectInteraction.SelectSingle(); // When not pressing control, set entity as single selection
+                        // select entity
+                        var selectInteraction = EditorStates.CurrentInterface3DState.CurrentlyHoveredObject?
+                            .GetComponentInParent<EntitySelectInteraction>();
+
+                        if (selectInteraction != null)
+                        {
+                            if (pressingControl)
+                            {
+                                selectInteraction.SelectAdditional(); // When pressing control, add entity to selection
+                            }
+                            else
+                            {
+                                selectInteraction.SelectSingle(); // When not pressing control, set entity as single selection
+                            }
+                        }
+
+                        break;
                     }
+                    case Interface3DState.HoveredObjectType.None:
+                    {
+                        var scene = EditorStates.CurrentSceneState.CurrentScene;
+                        var selectionCommand = new ChangeSelection(
+                            ChangeSelection.GetPrimarySelectionFromScene(scene),
+                            ChangeSelection.GetSecondarySelectionFromScene(scene),
+                            Guid.Empty,
+                            Array.Empty<Guid>());
+
+                        CommandSystem.ExecuteCommand(selectionCommand);
+                        break;
+                    }
+                    default: // ignore
+                        break;
                 }
             }
-            
+
             // When pressing Right mouse button (without alt), switch to Camera WASD moving state
             if (InputHelper.IsRightMouseButtonPressed() && !pressingAlt && isMouseIn3DView)
             {
