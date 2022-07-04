@@ -60,7 +60,16 @@ namespace Assets.Scripts.Visuals
 
             _buttonsScrollPosition = GUILayout.BeginScrollView(_buttonsScrollPosition);
 
-            GUILayout.Button("hi");
+            //GUILayout.Button("hi");
+
+            GUILayout.Label("Command History");
+            GUILayout.Space(20);
+
+            foreach (var command in EditorStates.CurrentSceneState.CurrentScene.CommandHistoryState.CommandHistory)
+            {
+                GUILayout.Label(command.Name);
+                GUILayout.Label("    " + command.Description);
+            }
 
             GUILayout.EndScrollView();
 

@@ -1,7 +1,7 @@
 using System;
 using Assets.Scripts.Command.Utility;
-using Assets.Scripts.EditorState;
 using Assets.Scripts.SceneState;
+using Assets.Scripts.Utility;
 using JetBrains.Annotations;
 
 namespace Assets.Scripts.Command
@@ -18,7 +18,10 @@ namespace Assets.Scripts.Command
             _parent = parent;
             _id = Guid.NewGuid();
         }
-        
+
+        public override string Name => "Add Entity";
+        public override string Description => $"Adding Entity \"{_name}\" with id \"{_id.Shortened()}\"" + (_parent!=null?$" as Child to {_parent.CustomName}":"");
+
         public override void Do(DclScene sceneState)
         {
             EntityUtility.AddEntity(sceneState, _id, _name, _parent);

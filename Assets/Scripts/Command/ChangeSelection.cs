@@ -2,8 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Assets.Scripts.SceneState;
-using UnityEditor;
-using UnityEngine;
+using Assets.Scripts.Utility;
 
 namespace Assets.Scripts.Command
 {
@@ -24,6 +23,39 @@ namespace Assets.Scripts.Command
             _oldSelection.Secondary = oldSecondary.ToList();
             _newSelection.Primary = newPrimary;
             _newSelection.Secondary = newSecondary.ToList();
+        }
+
+        public override string Name => "Change Selection";
+        public override string Description
+        {
+            get
+            {
+                if(_newSelection.Primary == Guid.Empty)
+                    return "Deselecting all Entities";
+
+                var retVal = $"Selecting as primary selection: {GetNameFromGuid(_newSelection.Primary)}";
+
+                if (_newSelection.Secondary.Count > 0)
+                {
+                    retVal += " and as secondary selection: ";
+                    for (var i = 0; i < _newSelection.Secondary.Count; i++)
+                    {
+                        if (i != 0)
+                            retVal += " ,";
+
+                        var guid = _newSelection.Secondary[i];
+
+                        retVal += GetNameFromGuid(guid);
+                    }
+                }
+
+                return retVal;
+            }
+        }
+
+        private string GetNameFromGuid(Guid id)
+        {
+            return id.Shortened();
         }
 
         public override void Do(DclScene sceneState)
