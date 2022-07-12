@@ -1,4 +1,5 @@
 using Assets.Scripts.EditorState;
+using UnityEditor;
 using UnityEngine;
 
 namespace Assets.Scripts.System
@@ -16,6 +17,12 @@ namespace Assets.Scripts.System
             {
                 Debug.LogError("No Scene State found");
                 return;
+            }
+
+            if (commandState.CommandHistory.Count > commandState.CurrentCommandIndex + 1)
+            {
+                var firstDeprecatedCommandIndex = commandState.CurrentCommandIndex + 1;
+                commandState.CommandHistory.RemoveRange(firstDeprecatedCommandIndex, commandState.CommandHistory.Count - firstDeprecatedCommandIndex);
             }
 
             commandState.CommandHistory.Add(command);

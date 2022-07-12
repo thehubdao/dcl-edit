@@ -1,4 +1,4 @@
-// GENERATED AUTOMATICALLY FROM 'Assets/Scripts/UiInteraction/InputSystem/InputSystemAsset.inputactions'
+// GENERATED AUTOMATICALLY FROM 'Assets/Scripts/Interaction/InputSystem/InputSystemAsset.inputactions'
 
 using System;
 using System.Collections;
@@ -266,8 +266,92 @@ public class @InputSystemAsset : IInputActionCollection, IDisposable
         {
             ""name"": ""Hotkeys"",
             ""id"": ""8f93eafc-8791-488e-9f5a-ace7e41aa109"",
-            ""actions"": [],
-            ""bindings"": []
+            ""actions"": [
+                {
+                    ""name"": ""Undo"",
+                    ""type"": ""Button"",
+                    ""id"": ""09891e6f-29c4-4c3d-a79b-7c3f2231788e"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""Redo"",
+                    ""type"": ""Button"",
+                    ""id"": ""88a78b3a-dfb4-4fdf-a322-8301ba9f34ee"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": ""Button With One Modifier"",
+                    ""id"": ""70fc897c-4a81-42b7-a3b7-dba44a1789fc"",
+                    ""path"": ""ButtonWithOneModifier"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Undo"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""Modifier"",
+                    ""id"": ""b28e1e33-7ec3-4373-b02e-13cc7dcb7348"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Undo"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Button"",
+                    ""id"": ""c33e4664-b0b8-4a11-a2f0-879b647cd735"",
+                    ""path"": ""<Keyboard>/#(z)"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Undo"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Button With One Modifier"",
+                    ""id"": ""2e13c153-9bff-4303-a9d6-6f5f571f126f"",
+                    ""path"": ""ButtonWithOneModifier"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Redo"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier"",
+                    ""id"": ""bd677f15-68c5-42e1-a2e2-fb56f45ffe2f"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Redo"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""button"",
+                    ""id"": ""40a517f0-5658-40e7-aa7a-c10a3dc2ffbb"",
+                    ""path"": ""<Keyboard>/#(y)"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Redo"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                }
+            ]
         },
         {
             ""name"": ""Modifier"",
@@ -345,6 +429,8 @@ public class @InputSystemAsset : IInputActionCollection, IDisposable
         m_CameraMovement_Fast = m_CameraMovement.FindAction("Fast", throwIfNotFound: true);
         // Hotkeys
         m_Hotkeys = asset.FindActionMap("Hotkeys", throwIfNotFound: true);
+        m_Hotkeys_Undo = m_Hotkeys.FindAction("Undo", throwIfNotFound: true);
+        m_Hotkeys_Redo = m_Hotkeys.FindAction("Redo", throwIfNotFound: true);
         // Modifier
         m_Modifier = asset.FindActionMap("Modifier", throwIfNotFound: true);
         m_Modifier_Shift = m_Modifier.FindAction("Shift", throwIfNotFound: true);
@@ -456,10 +542,14 @@ public class @InputSystemAsset : IInputActionCollection, IDisposable
     // Hotkeys
     private readonly InputActionMap m_Hotkeys;
     private IHotkeysActions m_HotkeysActionsCallbackInterface;
+    private readonly InputAction m_Hotkeys_Undo;
+    private readonly InputAction m_Hotkeys_Redo;
     public struct HotkeysActions
     {
         private @InputSystemAsset m_Wrapper;
         public HotkeysActions(@InputSystemAsset wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Undo => m_Wrapper.m_Hotkeys_Undo;
+        public InputAction @Redo => m_Wrapper.m_Hotkeys_Redo;
         public InputActionMap Get() { return m_Wrapper.m_Hotkeys; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -469,10 +559,22 @@ public class @InputSystemAsset : IInputActionCollection, IDisposable
         {
             if (m_Wrapper.m_HotkeysActionsCallbackInterface != null)
             {
+                @Undo.started -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnUndo;
+                @Undo.performed -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnUndo;
+                @Undo.canceled -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnUndo;
+                @Redo.started -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnRedo;
+                @Redo.performed -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnRedo;
+                @Redo.canceled -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnRedo;
             }
             m_Wrapper.m_HotkeysActionsCallbackInterface = instance;
             if (instance != null)
             {
+                @Undo.started += instance.OnUndo;
+                @Undo.performed += instance.OnUndo;
+                @Undo.canceled += instance.OnUndo;
+                @Redo.started += instance.OnRedo;
+                @Redo.performed += instance.OnRedo;
+                @Redo.canceled += instance.OnRedo;
             }
         }
     }
@@ -535,6 +637,8 @@ public class @InputSystemAsset : IInputActionCollection, IDisposable
     }
     public interface IHotkeysActions
     {
+        void OnUndo(InputAction.CallbackContext context);
+        void OnRedo(InputAction.CallbackContext context);
     }
     public interface IModifierActions
     {

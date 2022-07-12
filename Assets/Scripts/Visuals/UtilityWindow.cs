@@ -65,10 +65,18 @@ namespace Assets.Scripts.Visuals
             GUILayout.Label("Command History");
             GUILayout.Space(20);
 
-            foreach (var command in EditorStates.CurrentSceneState.CurrentScene.CommandHistoryState.CommandHistory)
+            for (var i = 0; i < EditorStates.CurrentSceneState.CurrentScene.CommandHistoryState.CommandHistory.Count; i++)
             {
+                var command = EditorStates.CurrentSceneState.CurrentScene.CommandHistoryState.CommandHistory[i];
+
+                if (i == EditorStates.CurrentSceneState.CurrentScene.CommandHistoryState.CurrentCommandIndex)
+                    GUILayout.Label("Current: vvvvv");
+
                 GUILayout.Label(command.Name);
                 GUILayout.Label("    " + command.Description);
+
+                if (i == EditorStates.CurrentSceneState.CurrentScene.CommandHistoryState.CurrentCommandIndex)
+                    GUILayout.Label("         ^^^^^");
             }
 
             GUILayout.EndScrollView();

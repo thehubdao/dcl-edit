@@ -253,8 +253,92 @@
         {
             "name": "Hotkeys",
             "id": "8f93eafc-8791-488e-9f5a-ace7e41aa109",
-            "actions": [],
-            "bindings": []
+            "actions": [
+                {
+                    "name": "Undo",
+                    "type": "Button",
+                    "id": "09891e6f-29c4-4c3d-a79b-7c3f2231788e",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "Redo",
+                    "type": "Button",
+                    "id": "88a78b3a-dfb4-4fdf-a322-8301ba9f34ee",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "Button With One Modifier",
+                    "id": "70fc897c-4a81-42b7-a3b7-dba44a1789fc",
+                    "path": "ButtonWithOneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Undo",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "Modifier",
+                    "id": "b28e1e33-7ec3-4373-b02e-13cc7dcb7348",
+                    "path": "<Keyboard>/ctrl",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Undo",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "Button",
+                    "id": "c33e4664-b0b8-4a11-a2f0-879b647cd735",
+                    "path": "<Keyboard>/#(z)",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Undo",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "Button With One Modifier",
+                    "id": "2e13c153-9bff-4303-a9d6-6f5f571f126f",
+                    "path": "ButtonWithOneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Redo",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier",
+                    "id": "bd677f15-68c5-42e1-a2e2-fb56f45ffe2f",
+                    "path": "<Keyboard>/ctrl",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Redo",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "button",
+                    "id": "40a517f0-5658-40e7-aa7a-c10a3dc2ffbb",
+                    "path": "<Keyboard>/#(y)",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Redo",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                }
+            ]
         },
         {
             "name": "Modifier",

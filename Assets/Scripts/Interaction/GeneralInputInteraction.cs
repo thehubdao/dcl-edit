@@ -20,12 +20,15 @@ namespace Assets.Scripts.Interaction
             _inputSystemAsset = new InputSystemAsset();
             _inputSystemAsset.CameraMovement.Enable();
             _inputSystemAsset.Modifier.Enable();
+            _inputSystemAsset.Hotkeys.Enable();
         }
 
         // Update is called once per frame
         void Update()
         {
             InputHelper.UpdateMouseDowns();
+
+            ProcessHotKeys();
 
             switch (EditorStates.CurrentInputState.InState)
             {
@@ -284,6 +287,19 @@ namespace Assets.Scripts.Interaction
             {
                 EditorStates.CurrentInputState.InState = InputState.InStateType.NoInput;
                 InputHelper.ShowMouse();
+            }
+        }
+
+        private void ProcessHotKeys()
+        {
+            if (_inputSystemAsset.Hotkeys.Undo.triggered)
+            {
+                CommandSystem.UndoCommand();
+            }
+
+            if (_inputSystemAsset.Hotkeys.Redo.triggered)
+            {
+                CommandSystem.RedoCommand();
             }
         }
 
