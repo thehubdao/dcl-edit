@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using Assets.Scripts.SceneState;
 using UnityEngine;
 
 namespace Assets.Scripts.EditorState
@@ -10,16 +13,26 @@ namespace Assets.Scripts.EditorState
 
         // States
         // Camera State
-        [SerializeField]
-        public CameraState CameraState;
+        //[SerializeField]
+        //public CameraState CameraState;
 
         // Input State
         [SerializeField]
         public InputState InputState;
 
         // Scene State
-        [SerializeField]
-        public SceneState SceneState;
+        //[SerializeField]
+        //public SceneState SceneState;
+
+        private SceneState _sceneState;
+
+        public void NewSceneState(DclScene scene)
+        {
+            _sceneState = new SceneState
+            {
+                CurrentScene = scene
+            };
+        }
 
         // Project State
         [SerializeField]
@@ -42,13 +55,42 @@ namespace Assets.Scripts.EditorState
         public Interface3DState Interface3DState;
 
 
+        // Scene dependent editor states
+        [Serializable]
+        private struct SceneDependentState
+        {
+            [SerializeField]
+            public CameraState CameraState;
+        }
+
+        private Dictionary<SceneState, SceneDependentState> _sceneDependentStates = new Dictionary<SceneState, SceneDependentState>();
+
+        private static SceneDependentState? currentSceneDependentState
+        {
+            get
+            {
+                if (CurrentSceneState == null)
+                    return null;
+
+                if (!Instance._sceneDependentStates.ContainsKey(CurrentSceneState))
+                {
+                    var sceneDependentState = new SceneDependentState { CameraState = new CameraState() };
+                    Instance._sceneDependentStates.Add(CurrentSceneState, sceneDependentState);
+                    return sceneDependentState;
+                }
+
+                return Instance._sceneDependentStates[CurrentSceneState];
+            }
+        }
+
         // Static references to the current states
-        public static CameraState CurrentCameraState => Instance.CameraState;
+        public static CameraState CurrentCameraState => currentSceneDependentState?.CameraState;
+        
         public static InputState CurrentInputState => Instance.InputState;
-        public static SceneState CurrentSceneState => Instance.SceneState;
+        public static SceneState CurrentSceneState => Instance._sceneState;
         public static ProjectState CurrentProjectState => Instance.ProjectState;
         public static PathState CurrentPathState => Instance.PathState;
-        public static UnityState CurrentUnityState => Instance.UnityState;
+        public static UnityState CurrentUnityState => Instance?.UnityState;
         public static ModelCacheState CurrentModelCacheState => Instance.ModelCacheState;
         public static Interface3DState CurrentInterface3DState => Instance.Interface3DState;
     }

@@ -20,12 +20,10 @@ namespace Assets.Scripts.System
         void Awake()
         {
             EditorStates.Instance = _editorStates;
+            
+            var scene = _loadFromVersion1System.Load();
 
-            _cameraSystem.CameraStartup();
-
-            _loadFromVersion1System.Load();
-
-            _setupSceneEventListenersSystem.SetupSceneEventListeners();
-        }   
+            SetupSceneSystem.SetupScene(scene);
+        }
     }
 }

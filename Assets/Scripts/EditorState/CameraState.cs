@@ -6,7 +6,7 @@ using UnityEngine.Events;
 
 namespace Assets.Scripts.EditorState
 {
-    public class CameraState : MonoBehaviour
+    public class CameraState
     {
         private float CameraNormalFlySpeed => PersistentData.CameraSpeed;
         private float CameraFastFlySpeed => CameraNormalFlySpeed * 3;
@@ -108,7 +108,7 @@ namespace Assets.Scripts.EditorState
         public UnityEvent OnCameraStateChanged = new UnityEvent();
 
         // The main camera, through with the user sees the scene
-        [NonSerialized]
-        public Camera MainCamera;
+        //[NonSerialized]
+        //public Camera MainCamera;
     }
 }

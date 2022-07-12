@@ -12,6 +12,7 @@
     "com.unity.textmeshpro": "3.0.6",
     "com.unity.timeline": "1.4.8",
     "com.unity.ugui": "1.0.0",
+    "com.yasirkula.dynamicpanels": "https://github.com/yasirkula/UnityDynamicPanels.git",
     "judah4.hsvcolorpickerunity": "https://github.com/judah4/HSV-Color-Picker-Unity.git#upm",
     "org.khronos.unitygltf": "https://github.com/prefrontalcortex/UnityGLTF.git?path=/UnityGLTF/Assets/UnityGLTF",
     "com.unity.modules.ai": "1.0.0",

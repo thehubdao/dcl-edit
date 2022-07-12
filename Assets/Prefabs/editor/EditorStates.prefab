@@ -10,9 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4344694708095808540}
   - component: {fileID: 4344694708095808541}
-  - component: {fileID: 4344694708095808542}
   - component: {fileID: 4344694708095808531}
-  - component: {fileID: 6729607787626427031}
   - component: {fileID: 7732126362854482267}
   - component: {fileID: 542692702519556135}
   - component: {fileID: 5317590454083341830}
@@ -52,29 +50,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d07476fa5a041814faa5a22d0eac9e85, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CameraState: {fileID: 4344694708095808542}
   InputState: {fileID: 4344694708095808531}
-  SceneState: {fileID: 6729607787626427031}
   ProjectState: {fileID: 7732126362854482267}
   PathState: {fileID: 542692702519556135}
   UnityState: {fileID: 5317590454083341830}
   ModelCacheState: {fileID: 7953543301535803489}
   Interface3DState: {fileID: 2087205621567096369}
---- !u!114 &4344694708095808542
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4344694708095808543}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dc2d59a2e76ae9843a3a04032f031466, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  OnCameraStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!114 &4344694708095808531
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -88,18 +69,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   InState: 0
---- !u!114 &6729607787626427031
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4344694708095808543}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8b7fd255f1fdb8e409e01c7a019e0519, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &7732126362854482267
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -137,6 +106,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SceneVisuals: {fileID: 0}
+  MainCamera: {fileID: 0}
+  SceneImage: {fileID: 0}
   AsyncCoroutineHelper: {fileID: 3038435570432155737}
   BoxMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
   SphereMesh: {fileID: 4711208715938537054, guid: 7c360f97f1032b64ca984a274cb4114e, type: 3}
@@ -184,3 +155,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c37cfb7d2871f8419a397943abd0e49, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  CurrentlyHoveredObjectType: 0

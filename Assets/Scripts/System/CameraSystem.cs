@@ -1,17 +1,16 @@
 using Assets.Scripts.EditorState;
 using UnityEngine;
+using NotImplementedException = System.NotImplementedException;
 
 namespace Assets.Scripts.System
 {
     public class CameraSystem : MonoBehaviour
     {
-        public void CameraStartup()
+        public static void CameraStartup()
         {
-            EditorStates.CurrentCameraState.MainCamera = Camera.main;
-
             ChooseReasonableStartPosition();
         }
-
+        
         public static void ChooseReasonableStartPosition()
         {
             // Calculate average parcel center

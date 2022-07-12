@@ -1,16 +1,25 @@
 using UnityEngine;
+using UnityEngine.UI;
 using UnityGLTF;
 
 namespace Assets.Scripts.EditorState
 {
     public class UnityState : MonoBehaviour
     {
+        [Header("Scene References")]
         [SerializeField]
         public GameObject SceneVisuals;
 
         [SerializeField]
+        public Camera MainCamera;
+
+        [SerializeField]
+        public RawImage SceneImage;
+
+        [SerializeField]
         public AsyncCoroutineHelper AsyncCoroutineHelper;
 
+        [Header("Assets")]
         [SerializeField]
         public Mesh BoxMesh;
 
@@ -26,11 +35,12 @@ namespace Assets.Scripts.EditorState
         [SerializeField]
         public Mesh ConeMesh;
 
+        [Space]
         [SerializeField]
         public Material DefaultMat;
 
         [Header("Gizmo Prefabs")]
-        [SerializeField] 
+        [SerializeField]
         public GameObject TranslateGizmoPrefab;
 
         [SerializeField]
@@ -38,5 +48,6 @@ namespace Assets.Scripts.EditorState
 
         [SerializeField]
         public GameObject ScaleGizmoPrefab;
+
     }
 }

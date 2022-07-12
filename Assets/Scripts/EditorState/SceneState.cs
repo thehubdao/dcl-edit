@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Assets.Scripts.EditorState
 {
-    public class SceneState : MonoBehaviour
+    public class SceneState
     {
         /**
          * <summary>
@@ -13,9 +13,9 @@ namespace Assets.Scripts.EditorState
          * If empty string, no scene is opened
          * </summary>
          */
-        [NonSerialized]
-        private string _openedScenePath;
-        public string OpenedScenePath => _openedScenePath;
+        //[NonSerialized]
+        //private string _openedScenePath;
+        //public string OpenedScenePath => _openedScenePath;
 
         
         /**
@@ -27,10 +27,10 @@ namespace Assets.Scripts.EditorState
          * True, if any scene is currently opened
          * </returns>
          */
-        public bool IsSceneOpened()
-        {
-            return !string.IsNullOrEmpty(_openedScenePath);
-        }
+        //public bool IsSceneOpened()
+        //{
+        //    return !string.IsNullOrEmpty(_openedScenePath);
+        //}
 
         /**
          * <summary>

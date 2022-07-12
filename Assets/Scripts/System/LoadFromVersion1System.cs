@@ -11,7 +11,7 @@ namespace Assets.Scripts.System
 {
     public class LoadFromVersion1System : MonoBehaviour
     {
-        public void Load()
+        public DclScene Load()
         {
             var sceneSaveFilePath = "";
             var projectSaveFilePath = "";
@@ -24,7 +24,7 @@ namespace Assets.Scripts.System
             }
             else if (File.Exists(EditorStates.CurrentPathState.ProjectPath + "/scene/scene.json"))
             {
-                return; // To old version. No support for this version
+                return null; // To old version. No support for this version
                 //sceneSaveFilePath = EditorStates.CurrentPathState.ProjectPath + "/scene/scene.json";
             }
 
@@ -135,9 +135,8 @@ namespace Assets.Scripts.System
             {
                 ChangeToLocal(entity, null);
             }
-
-
-            EditorStates.CurrentSceneState.CurrentScene = newScene;
+            
+            return newScene;
         }
 
         private void ChangeToLocal(DclEntity entity, DclTransformComponent dclParentTransform)

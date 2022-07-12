@@ -64,16 +64,33 @@ namespace Assets.Scripts.Interaction
 
             var isSprinting = _inputSystemAsset.CameraMovement.Fast.IsPressed();
 
-            // Get the ray from the camera, where the mouse currently is
-            var mouseRay = EditorStates.CurrentCameraState.MainCamera.ViewportPointToRay(EditorStates.CurrentCameraState.MainCamera.ScreenToViewportPoint(InputHelper.GetMousePosition()));
+            // Figure out where the mouse points at
+            Ray mouseRay;
+            bool isMouseOverGameWindow;
+            {
+                // get the mouse position
+                var mousePosition = InputHelper.GetMousePosition();
+                // get the rectTransform from the Panel, the scene is currently visible in
+                var sceneImageRectTransform = EditorStates.CurrentUnityState.SceneImage.rectTransform;
+                // Get the position of the panel. This will give us the center of the panel, because the anchor is in the Center
+                var panelPosCenter = new Vector2(sceneImageRectTransform.position.x, sceneImageRectTransform.position.y);
+                // Calculate the bottom left corner position
+                var panelPos = panelPosCenter - (sceneImageRectTransform.rect.size / 2);
+                // Calculate the mouse position inside the panel
+                var mousePosInPanel = mousePosition - panelPos;
+                // convert the mouse position in panel into Viewport space
+                var mousePosViewport = EditorStates.CurrentUnityState.MainCamera.ScreenToViewportPoint(mousePosInPanel);
+                // Get the ray from the Camera, that corresponds to the mouse position in the panel
+                mouseRay = EditorStates.CurrentUnityState.MainCamera.ViewportPointToRay(mousePosViewport);
+                // Figure out, if the mouse is over the Game window
+                isMouseOverGameWindow = mousePosViewport.x >= 0 &&
+                                        mousePosViewport.x < 1 &&
+                                        mousePosViewport.y >= 0 &&
+                                        mousePosViewport.y < 1;
+            }
 
-            // Figure out, if the mouse is over the Game window
-            var mousePosition = InputHelper.GetMousePosition();
-            var isMouseOverGameWindow =
-                !(0 > mousePosition.x ||
-                  0 > mousePosition.y ||
-                  Screen.width < mousePosition.x ||
-                  Screen.height < mousePosition.y);
+
+
 
             // Figure out, if the mouse is over the 3D viewport (not hovering over any UI)
             var isMouseIn3DView = /*!EventSystem.current.IsPointerOverGameObject() &&*/ isMouseOverGameWindow;
@@ -136,42 +153,42 @@ namespace Assets.Scripts.Interaction
                 switch (EditorStates.CurrentInterface3DState.CurrentlyHoveredObjectType)
                 {
                     case Interface3DState.HoveredObjectType.Gizmo:
-                    {
-                        // TODO: Gizmo Grabbing
-                        break;
-                    }
-                    case Interface3DState.HoveredObjectType.Entity:
-                    {
-                        // select entity
-                        var selectInteraction = EditorStates.CurrentInterface3DState.CurrentlyHoveredObject?
-                            .GetComponentInParent<EntitySelectInteraction>();
-
-                        if (selectInteraction != null)
                         {
-                            if (pressingControl)
-                            {
-                                selectInteraction.SelectAdditional(); // When pressing control, add entity to selection
-                            }
-                            else
-                            {
-                                selectInteraction.SelectSingle(); // When not pressing control, set entity as single selection
-                            }
+                            // TODO: Gizmo Grabbing
+                            break;
                         }
+                    case Interface3DState.HoveredObjectType.Entity:
+                        {
+                            // select entity
+                            var selectInteraction = EditorStates.CurrentInterface3DState.CurrentlyHoveredObject?
+                                .GetComponentInParent<EntitySelectInteraction>();
 
-                        break;
-                    }
+                            if (selectInteraction != null)
+                            {
+                                if (pressingControl)
+                                {
+                                    selectInteraction.SelectAdditional(); // When pressing control, add entity to selection
+                                }
+                                else
+                                {
+                                    selectInteraction.SelectSingle(); // When not pressing control, set entity as single selection
+                                }
+                            }
+
+                            break;
+                        }
                     case Interface3DState.HoveredObjectType.None:
-                    {
-                        var scene = EditorStates.CurrentSceneState.CurrentScene;
-                        var selectionCommand = new ChangeSelection(
-                            ChangeSelection.GetPrimarySelectionFromScene(scene),
-                            ChangeSelection.GetSecondarySelectionFromScene(scene),
-                            Guid.Empty,
-                            Array.Empty<Guid>());
+                        {
+                            var scene = EditorStates.CurrentSceneState.CurrentScene;
+                            var selectionCommand = new ChangeSelection(
+                                ChangeSelection.GetPrimarySelectionFromScene(scene),
+                                ChangeSelection.GetSecondarySelectionFromScene(scene),
+                                Guid.Empty,
+                                Array.Empty<Guid>());
 
-                        CommandSystem.ExecuteCommand(selectionCommand);
-                        break;
-                    }
+                            CommandSystem.ExecuteCommand(selectionCommand);
+                            break;
+                        }
                     default: // ignore
                         break;
                 }

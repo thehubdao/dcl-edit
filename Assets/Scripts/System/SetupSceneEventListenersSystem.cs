@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class SetupSceneEventListenersSystem : MonoBehaviour
 {
-    public void SetupSceneEventListeners()
+    public static void SetupSceneEventListeners()
     {
         var scene = EditorStates.CurrentSceneState.CurrentScene;
 

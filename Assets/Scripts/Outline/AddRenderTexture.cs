@@ -1,37 +1,44 @@
 using System.Collections;
 using System.Collections.Generic;
+using Assets.Scripts.EditorState;
 using UnityEngine;
+using UnityEngine.Android;
 using UnityEngine.Experimental.Rendering;
 
 public class AddRenderTexture : MonoBehaviour
 {
     private Camera cam;
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         cam = GetComponent<Camera>();
 
-        UpdateRenderTexture();
     }
 
-    private int lastWidth = -1;
-    private int lastHeight = -1;
+
+    private Vector2 lastSize = Vector2.zero;
 
     void Update()
     {
-        if (Screen.width != lastWidth || Screen.height != lastHeight)
+        if (lastSize != ViewPortSize)
         {
             UpdateRenderTexture();
         }
     }
 
+    private Vector2 ViewPortSize => EditorStates.CurrentUnityState?.SceneImage.rectTransform.rect.size ?? Vector2.one;
+
 
     private void UpdateRenderTexture()
     {
-        cam.targetTexture = new RenderTexture(Screen.width, Screen.height, 1, DefaultFormat.LDR);
-        cam.forceIntoRenderTexture = true;
+        Debug.Log("Updating RT to " + ViewPortSize);
 
-        lastWidth = Screen.width;
-        lastHeight = Screen.height;
+        cam.targetTexture = new RenderTexture((int)ViewPortSize.x, (int)ViewPortSize.y, 1, DefaultFormat.LDR);
+        cam.forceIntoRenderTexture = true;
+        
+        lastSize = ViewPortSize;
+
+        if (gameObject.name == "Main Camera") // TODO: Make a more robust solution for that
+            EditorStates.CurrentUnityState.SceneImage.texture = cam.targetTexture;
     }
 }

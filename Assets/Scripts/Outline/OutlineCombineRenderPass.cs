@@ -16,9 +16,6 @@ public class OutlineCombineRenderPass : ScriptableRenderPass
     Texture overlayTexture;
     OutlineCamera overlayCamera;
 
-    private int rtWidth = -1;
-    private int rtHeight = -1;
-
 
     public OutlineCombineRenderPass(string profilerTag,
       RenderPassEvent renderPassEvent, Material combineMat)
