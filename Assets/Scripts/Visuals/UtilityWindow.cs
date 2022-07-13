@@ -1,6 +1,10 @@
 #if UNITY_EDITOR
 
+using System.Collections;
 using Assets.Scripts.EditorState;
+using Assets.Scripts.Interaction;
+using Assets.Scripts.SceneState;
+using Assets.Scripts.Utility;
 using UnityEditor;
 using UnityEngine;
 
@@ -21,6 +25,9 @@ namespace Assets.Scripts.Visuals
         private Vector2 _selectionScrollPosition = Vector2.zero;
         private Vector2 _buttonsScrollPosition = Vector2.zero;
 
+        private bool _showSelectionState = true;
+        private bool _showCommandHistory = true;
+
         void OnGUI()
         {
             if (!Application.isPlaying)
@@ -29,6 +36,23 @@ namespace Assets.Scripts.Visuals
                 return;
             }
 
+            _showSelectionState = GUILayout.Toggle(_showSelectionState, "Show Selection State");
+            _showCommandHistory = GUILayout.Toggle(_showCommandHistory, "Show Command History");
+
+            GUILayout.BeginHorizontal();
+
+            if (_showSelectionState)
+                DrawSelectionSection();
+
+            if (_showCommandHistory)
+                DrawCommandHistory();
+
+
+            GUILayout.EndHorizontal();
+        }
+
+        private void DrawSelectionSection()
+        {
             var selectionState = EditorStates.CurrentSceneState?.CurrentScene?.SelectionState;
 
             if (selectionState == null)
@@ -36,10 +60,36 @@ namespace Assets.Scripts.Visuals
                 GUILayout.Label("No Scene currently loaded");
                 return;
             }
-            GUILayout.BeginHorizontal();
+
+            var selectedEntityVisual = Selection.activeGameObject?.GetComponentInParent<EntityVisuals>();
+
 
             _selectionScrollPosition = GUILayout.BeginScrollView(_selectionScrollPosition);
 
+            if (GUILayout.Button("dcl-edit -> Unity (Visual Representation)") && selectionState.PrimarySelectedEntity != null)
+            {
+                Selection.activeGameObject =
+                    EditorStates.CurrentUnityState.SceneVisuals
+                        .GetComponentsInChildren<EntityVisuals>()
+                        .FirstOrNull(visuals => visuals.Id == selectionState.PrimarySelectedEntity.Id)
+                        .gameObject;
+            }
+            
+            if (GUILayout.Button("Unity -> dcl-edit") && selectedEntityVisual != null)
+            {
+                selectedEntityVisual.GetComponent<EntitySelectInteraction>().SelectSingle();
+                selectedEntityVisual.GetComponentInParent<MainSceneVisuals>().StartCoroutine(ReselectUnity(selectionState));
+
+            }
+            
+            if (selectedEntityVisual != null)
+            {
+                GUILayout.Label("Unity Selection:");
+                CustomEditorUtils.DrawEntityToGui(
+                    EditorStates.CurrentSceneState.CurrentScene
+                        .GetEntityFormId(selectedEntityVisual.Id), 1, true);
+            }
+            
             GUILayout.Label("Primary Selection:");
             if (selectionState.PrimarySelectedEntity == null)
             {
@@ -47,20 +97,23 @@ namespace Assets.Scripts.Visuals
             }
             else
             {
-                CustomEditorUtils.DrawEntityToGui(selectionState.PrimarySelectedEntity, 1);
+                CustomEditorUtils.DrawEntityToGui(selectionState.PrimarySelectedEntity, 1, true);
             }
 
             GUILayout.Label($"Secondary Selection: ({selectionState.SecondarySelectedEntities.Count})");
             foreach (var entity in selectionState.SecondarySelectedEntities)
             {
-                CustomEditorUtils.DrawEntityToGui(entity, 1);
+                CustomEditorUtils.DrawEntityToGui(entity, 1, true);
             }
-
+            
             GUILayout.EndScrollView();
+        }
 
+
+        private void DrawCommandHistory()
+        {
             _buttonsScrollPosition = GUILayout.BeginScrollView(_buttonsScrollPosition);
 
-            //GUILayout.Button("hi");
 
             GUILayout.Label("Command History");
             GUILayout.Space(20);
@@ -80,8 +133,15 @@ namespace Assets.Scripts.Visuals
             }
 
             GUILayout.EndScrollView();
-
-            GUILayout.EndHorizontal();
+        }
+        private IEnumerator ReselectUnity(SelectionState selectionState)
+        {
+            yield return null;
+            Selection.activeGameObject =
+                EditorStates.CurrentUnityState.SceneVisuals
+                    .GetComponentsInChildren<EntityVisuals>()
+                    .FirstOrNull(visuals => visuals.Id == selectionState.PrimarySelectedEntity.Id)
+                    .gameObject;
         }
     }
 }

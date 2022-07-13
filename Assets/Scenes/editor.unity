@@ -1555,7 +1555,7 @@ MonoBehaviour:
       tabs:
       - content: {fileID: 728950131}
         id: 67051df2-c095-4442-82e1-a9056fc897f3
-        minimumSize: {x: 250, y: 300}
+        minimumSize: {x: 100, y: 100}
         tabLabel: Scene
         tabIcon: {fileID: 0}
     anchorDirection: 0
@@ -1566,12 +1566,12 @@ MonoBehaviour:
       tabs:
       - content: {fileID: 842709643}
         id: ee629a54-00fa-47ca-948d-65d883eef3e3
-        minimumSize: {x: 250, y: 300}
+        minimumSize: {x: 100, y: 100}
         tabLabel: Inspector
         tabIcon: {fileID: 0}
       - content: {fileID: 1696477855}
         id: 891efbb2-e039-405f-8c79-4088d58ac5cc
-        minimumSize: {x: 250, y: 300}
+        minimumSize: {x: 100, y: 100}
         tabLabel: Hierarchy
         tabIcon: {fileID: 0}
     anchorDirection: 0
@@ -1582,7 +1582,7 @@ MonoBehaviour:
       tabs:
       - content: {fileID: 943950908}
         id: 37661ee0-424a-4f64-8308-23e260a6966d
-        minimumSize: {x: 250, y: 300}
+        minimumSize: {x: 100, y: 100}
         tabLabel: Console
         tabIcon: {fileID: 0}
     anchorDirection: 3
