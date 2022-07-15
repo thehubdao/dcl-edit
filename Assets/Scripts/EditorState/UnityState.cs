@@ -11,6 +11,9 @@ namespace Assets.Scripts.EditorState
         public GameObject SceneVisuals;
 
         [SerializeField]
+        public GameObject Ui;
+
+        [SerializeField]
         public Camera MainCamera;
 
         [SerializeField]
@@ -48,6 +51,10 @@ namespace Assets.Scripts.EditorState
 
         [SerializeField]
         public GameObject ScaleGizmoPrefab;
+
+        [Header("Ui Atoms")] 
+        [SerializeField]
+        public GameObject TitleAtom;
 
     }
 }
