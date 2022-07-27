@@ -39,6 +39,7 @@ namespace Assets.Scripts.Visuals
 
             var activeGizmo = _translateGizmoObject;
 
+            activeGizmo.SetActive(true);
 
             // Move the Active Gizmo to the correct global position
             activeGizmo.transform.position = Vector3.zero;
