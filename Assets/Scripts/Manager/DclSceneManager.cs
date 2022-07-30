@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -31,6 +30,20 @@ public class DclSceneManager : Manager, ISerializedFieldToStatic
         _entityGameObject = entityGameObject;
         _entityTemplate = entityTemplate;
         GizmoCamera = _gizmoCamera;
+    }
+
+    public void PrintDclProjectPath()
+    {
+        Debug.Log("Path: " + DclProjectPath);
+
+        var argsString = "";
+
+        foreach (var arg in System.Environment.GetCommandLineArgs())
+        {
+            argsString += arg;
+            argsString += ", ";
+        }
+        Debug.Log("Args: " + argsString);
     }
 
 
@@ -183,11 +196,11 @@ public class DclSceneManager : Manager, ISerializedFieldToStatic
 
         DclSceneManager._secondarySelectedEntity.Add(DclSceneManager.PrimarySelectedEntity);
 
-        if(DclSceneManager._secondarySelectedEntity.Contains(entity))
+        if (DclSceneManager._secondarySelectedEntity.Contains(entity))
             DclSceneManager._secondarySelectedEntity.Remove(entity);
 
         DclSceneManager.PrimarySelectedEntity = entity;
-        
+
         var afterSecondarySelection = SecondarySelectedEntity.ToList();
         var afterPrimarySelection = PrimarySelectedEntity;
 
@@ -203,7 +216,7 @@ public class DclSceneManager : Manager, ISerializedFieldToStatic
                 _secondarySelectedEntity = afterSecondarySelection;
                 PrimarySelectedEntity = afterPrimarySelection;
             });
-        
+
     }
 
     public static void AddSelectedRaw(Entity entity)
@@ -213,14 +226,14 @@ public class DclSceneManager : Manager, ISerializedFieldToStatic
 
         DclSceneManager._secondarySelectedEntity.Add(DclSceneManager.PrimarySelectedEntity);
 
-        if(DclSceneManager._secondarySelectedEntity.Contains(entity))
+        if (DclSceneManager._secondarySelectedEntity.Contains(entity))
             DclSceneManager._secondarySelectedEntity.Remove(entity);
 
         DclSceneManager.PrimarySelectedEntity = entity;
 
     }
 
-    public static IEnumerable<Entity> AllSelectedEntities => _secondarySelectedEntity.Append(PrimarySelectedEntity).Where(entity => entity!=null);
+    public static IEnumerable<Entity> AllSelectedEntities => _secondarySelectedEntity.Append(PrimarySelectedEntity).Where(entity => entity != null);
 
     public static IEnumerable<Entity> AllSelectedEntitiesWithoutChildren
     {
@@ -251,10 +264,10 @@ public class DclSceneManager : Manager, ISerializedFieldToStatic
             return selectedWithoutChildren.AsEnumerable();
         }
     }
-    
+
 
     public static UnityEvent OnSelectedEntityTransformChange = new UnityEvent();
-    
+
     public static RootSceneObject SceneRoot => EntityParent.GetComponent<RootSceneObject>();
 }
 

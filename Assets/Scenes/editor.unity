@@ -2037,7 +2037,35 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3803484954343711875, guid: 122f75d0a167fbe409f90c4dfbca6d9c, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3803484954343711875, guid: 122f75d0a167fbe409f90c4dfbca6d9c, type: 3}
+      propertyPath: OnClose.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3803484954343711875, guid: 122f75d0a167fbe409f90c4dfbca6d9c, type: 3}
+      propertyPath: OnClose.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3803484954343711875, guid: 122f75d0a167fbe409f90c4dfbca6d9c, type: 3}
+      propertyPath: OnClose.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 358762086}
+    - target: {fileID: 3803484954343711875, guid: 122f75d0a167fbe409f90c4dfbca6d9c, type: 3}
+      propertyPath: OnClose.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3803484954343711875, guid: 122f75d0a167fbe409f90c4dfbca6d9c, type: 3}
+      propertyPath: OnClose.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: PrintDclProjectPath
+      objectReference: {fileID: 0}
+    - target: {fileID: 3803484954343711875, guid: 122f75d0a167fbe409f90c4dfbca6d9c, type: 3}
+      propertyPath: OnClose.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: DclSceneManager, Manager
+      objectReference: {fileID: 0}
+    - target: {fileID: 3803484954343711875, guid: 122f75d0a167fbe409f90c4dfbca6d9c, type: 3}
+      propertyPath: OnClose.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 122f75d0a167fbe409f90c4dfbca6d9c, type: 3}
@@ -10839,7 +10867,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1455804126}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c822b3f0fd08a8e41bdfa7237cf5ce32, type: 3}
   m_Name: 

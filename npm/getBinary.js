@@ -1,4 +1,4 @@
-const { Binary } = require('binary-install');
+const { Binary } = require('binary-install-with-args');
 const os = require('os');
  
 function getBinary() {
@@ -20,7 +20,7 @@ function getBinary() {
         binaryName = "dcl-edit"
     } else if (type == "Darwin") {
         platformName = "macos"
-        binaryName = "dcl-edit"
+        binaryName = "Contents/MacOS/dcl-edit"
     } else {
         console.error("dcl-edit is not available for your platform (" + type + ")")
  
