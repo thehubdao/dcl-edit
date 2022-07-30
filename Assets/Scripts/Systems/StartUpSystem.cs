@@ -12,8 +12,14 @@ public class StartUpSystem : MonoBehaviour
 
     
 
-    private static void SetProjectPath()
+    private static void SetProjectPath(string customProjectPath)
     {
+        if (customProjectPath != "")
+        {
+            DclSceneManager.DclProjectPath = customProjectPath;
+            return;
+        }
+
 #if UNITY_EDITOR
         
         var devProjectPathFilePath = Application.dataPath+"/dev_project_path.txt";
@@ -27,7 +33,6 @@ public class StartUpSystem : MonoBehaviour
             DclSceneManager.DclProjectPath = EditorUtility.OpenFolderPanel("Select DCL project folder","","");
             File.WriteAllText(devProjectPathFilePath,DclSceneManager.DclProjectPath);
         }
-
 #else
         DclSceneManager.DclProjectPath = Path.GetFullPath(".");
 #endif
@@ -35,7 +40,18 @@ public class StartUpSystem : MonoBehaviour
 
     void Start()
     {
-        SetProjectPath();
+        string[] args = System.Environment.GetCommandLineArgs();
+        string projectPath = "";
+        for (int i = 0; i < args.Length; i++)
+        {
+            Debug.Log("ARG " + i + ": " + args[i]);
+            if (args[i] == "--projectPath")
+            {
+                projectPath = args[i + 1];
+            }
+        }
+
+        SetProjectPath(projectPath);
 
         if (!File.Exists(DclSceneManager.DclProjectPath + "/scene.json"))
         {

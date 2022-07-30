@@ -2039,6 +2039,34 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3803484954343711875, guid: 122f75d0a167fbe409f90c4dfbca6d9c, type: 3}
+      propertyPath: OnClose.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3803484954343711875, guid: 122f75d0a167fbe409f90c4dfbca6d9c, type: 3}
+      propertyPath: OnClose.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3803484954343711875, guid: 122f75d0a167fbe409f90c4dfbca6d9c, type: 3}
+      propertyPath: OnClose.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 358762086}
+    - target: {fileID: 3803484954343711875, guid: 122f75d0a167fbe409f90c4dfbca6d9c, type: 3}
+      propertyPath: OnClose.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3803484954343711875, guid: 122f75d0a167fbe409f90c4dfbca6d9c, type: 3}
+      propertyPath: OnClose.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: PrintDclProjectPath
+      objectReference: {fileID: 0}
+    - target: {fileID: 3803484954343711875, guid: 122f75d0a167fbe409f90c4dfbca6d9c, type: 3}
+      propertyPath: OnClose.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: DclSceneManager, Manager
+      objectReference: {fileID: 0}
+    - target: {fileID: 3803484954343711875, guid: 122f75d0a167fbe409f90c4dfbca6d9c, type: 3}
+      propertyPath: OnClose.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 122f75d0a167fbe409f90c4dfbca6d9c, type: 3}
 --- !u!224 &330807781 stripped

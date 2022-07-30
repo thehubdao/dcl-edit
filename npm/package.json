@@ -1,6 +1,6 @@
 {
   "name": "dcl-edit",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "description": "A scene editor for the Decentraland SDK",
   "main": "./index.js",
   "scripts": {
@@ -14,7 +14,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "binary-install": "^0.1.1",
+    "binary-install-with-args": "^1.0.7",
     "yargs": "^17.5.1"
   }
 }
