@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Assets.Scripts.EditorState;
+using Assets.Scripts.Visuals.PropertyHandler;
 using TMPro;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -13,7 +14,9 @@ namespace Assets.Scripts.Visuals
         private enum AtomType
         {
             Title,
-            Text
+            Text,
+            Spacer,
+            StringInput,
         }
 
         private struct UiAtom
@@ -67,6 +70,46 @@ namespace Assets.Scripts.Visuals
             return this;
         }
 
+        public UiBuilder Spacer(int height)
+        {
+            _atoms.Add(new UiAtom
+            {
+                Type = AtomType.Spacer,
+                Height = height,
+                MakeGameObject = () =>
+                {
+                    var gameObject = new GameObject("Spacer");
+                    gameObject.AddComponent<RectTransform>();
+                    return gameObject;
+                }
+            });
+
+            return this;
+        }
+
+        public UiBuilder StringInput(string name, string placeholder, string currentContents)
+        {
+            _atoms.Add(new UiAtom
+            {
+                Type = AtomType.StringInput,
+                Height = 50,
+                MakeGameObject = () =>
+                {
+                    var go = GetAtomObjectFromPool(AtomType.StringInput);
+
+                    var stringProperty = go.GetComponent<StringPropertyHandler>();
+
+                    stringProperty.propertyNameText.text = name;
+                    stringProperty.stingInput.SetCurrentText(currentContents);
+                    stringProperty.stingInput.SetPlaceHolder(placeholder);
+                        
+                    return go;
+                }
+            });
+
+            return this;
+        }
+
         public void ClearAndMake(GameObject parent)
         {
             Clear(parent);
@@ -94,8 +137,11 @@ namespace Assets.Scripts.Visuals
 
                 tf.SetParent(parent.transform);
 
-                heightCounter += atom.Height;
+                heightCounter -= atom.Height;
             }
+
+            var parentRectTransform = parent.GetComponent<RectTransform>();
+            parentRectTransform.sizeDelta = new Vector2(parentRectTransform.sizeDelta.x, -heightCounter);
         }
 
 
@@ -109,6 +155,7 @@ namespace Assets.Scripts.Visuals
             {
                 AtomType.Title => Object.Instantiate(unityState.TitleAtom),
                 AtomType.Text => Object.Instantiate(unityState.TextAtom),
+                AtomType.StringInput => Object.Instantiate(unityState.StringInputAtom),
                 _ => null
             };
         }
