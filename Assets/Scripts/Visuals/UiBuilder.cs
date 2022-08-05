@@ -12,7 +12,8 @@ namespace Assets.Scripts.Visuals
 
         private enum AtomType
         {
-            Title
+            Title,
+            Text
         }
 
         private struct UiAtom
@@ -37,6 +38,27 @@ namespace Assets.Scripts.Visuals
                     var text = go.GetComponent<TextMeshProUGUI>();
 
                     text.text = title;
+
+                    return go;
+                }
+            });
+
+            return this;
+        }
+
+        public UiBuilder Text(string text)
+        {
+            _atoms.Add(new UiAtom
+            {
+                Type = AtomType.Title,
+                Height = 50,
+                MakeGameObject = () =>
+                {
+                    var go = GetAtomObjectFromPool(AtomType.Text);
+
+                    var tmpText = go.GetComponent<TextMeshProUGUI>();
+
+                    tmpText.text = text;
 
                     return go;
                 }
@@ -86,6 +108,7 @@ namespace Assets.Scripts.Visuals
             return type switch
             {
                 AtomType.Title => Object.Instantiate(unityState.TitleAtom),
+                AtomType.Text => Object.Instantiate(unityState.TextAtom),
                 _ => null
             };
         }

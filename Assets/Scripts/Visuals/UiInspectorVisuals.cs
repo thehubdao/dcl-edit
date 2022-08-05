@@ -22,20 +22,7 @@ public class UiInspectorVisuals : MonoBehaviour, ISetupSceneEventListeners
         new UiBuilder()
             .Title("Inspect me,")
             .Title("Daddy")
-            .Title("Test")
-            .Title("Test")
-            .Title("Test")
-            .Title("Test")
-            .Title("Test")
-            .Title("Test")
-            .Title("Test")
-            .Title("Test")
-            .Title("Test")
-            .Title("Test")
-            .Title("Test")
-            .Title("Test")
-            .Title("Test")
-            .Title("Test")
+            .Text("This is some text")
             .ClearAndMake(_content);
     }
 }
