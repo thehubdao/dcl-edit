@@ -16,9 +16,10 @@ namespace Assets.Scripts.Visuals
             Title,
             Text,
             Spacer,
-            StringInput,
+            StringPropertyInput,
+            NumberPropertyInput
         }
-
+        
         private struct UiAtom
         {
             public AtomType Type;
@@ -87,15 +88,15 @@ namespace Assets.Scripts.Visuals
             return this;
         }
 
-        public UiBuilder StringInput(string name, string placeholder, string currentContents)
+        public UiBuilder StringPropertyInput(string name, string placeholder, string currentContents)
         {
             _atoms.Add(new UiAtom
             {
-                Type = AtomType.StringInput,
+                Type = AtomType.StringPropertyInput,
                 Height = 50,
                 MakeGameObject = () =>
                 {
-                    var go = GetAtomObjectFromPool(AtomType.StringInput);
+                    var go = GetAtomObjectFromPool(AtomType.StringPropertyInput);
 
                     var stringProperty = go.GetComponent<StringPropertyHandler>();
 
@@ -103,6 +104,29 @@ namespace Assets.Scripts.Visuals
                     stringProperty.stingInput.SetCurrentText(currentContents);
                     stringProperty.stingInput.SetPlaceHolder(placeholder);
                         
+                    return go;
+                }
+            });
+
+            return this;
+        }
+
+        public UiBuilder NumberPropertyInput(string name, string placeholder, float currentContents)
+        {
+            _atoms.Add(new UiAtom
+            {
+                Type = AtomType.NumberPropertyInput,
+                Height = 50,
+                MakeGameObject = () =>
+                {
+                    var go = GetAtomObjectFromPool(AtomType.NumberPropertyInput);
+
+                    var numberProprerty = go.GetComponent<NumberPropertyHandler>();
+
+                    numberProprerty.propertyNameText.text = name;
+                    numberProprerty.numberInput.SetCurrentNumber(currentContents);
+                    numberProprerty.numberInput.TextInputHandler.SetPlaceHolder(placeholder);
+
                     return go;
                 }
             });
@@ -161,7 +185,8 @@ namespace Assets.Scripts.Visuals
             {
                 AtomType.Title => Object.Instantiate(unityState.TitleAtom),
                 AtomType.Text => Object.Instantiate(unityState.TextAtom),
-                AtomType.StringInput => Object.Instantiate(unityState.StringInputAtom),
+                AtomType.StringPropertyInput => Object.Instantiate(unityState.StringInputAtom),
+                AtomType.NumberPropertyInput => Object.Instantiate(unityState.NumberInputAtom),
                 _ => null
             };
         }

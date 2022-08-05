@@ -61,5 +61,8 @@ namespace Assets.Scripts.EditorState
 
         [SerializeField]
         public GameObject StringInputAtom;
+
+        [SerializeField]
+        public GameObject NumberInputAtom;
     }
 }
