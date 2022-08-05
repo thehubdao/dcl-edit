@@ -133,9 +133,15 @@ namespace Assets.Scripts.Visuals
 
                 var tf = go.GetComponent<RectTransform>();
 
-                tf.localPosition = new Vector3(tf.localPosition.x, heightCounter, tf.localPosition.z);
-
                 tf.SetParent(parent.transform);
+
+                tf.offsetMin = Vector2.zero;
+                tf.offsetMax = Vector2.zero;
+
+                tf.anchoredPosition = new Vector3(0, heightCounter, 0);
+
+                tf.sizeDelta = new Vector2(tf.sizeDelta.x, atom.Height);
+
 
                 heightCounter -= atom.Height;
             }

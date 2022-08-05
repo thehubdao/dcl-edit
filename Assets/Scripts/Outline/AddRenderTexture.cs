@@ -31,7 +31,7 @@ public class AddRenderTexture : MonoBehaviour
 
     private void UpdateRenderTexture()
     {
-        Debug.Log("Updating RT to " + ViewPortSize);
+        //Debug.Log("Updating RT to " + ViewPortSize);
 
         cam.targetTexture = new RenderTexture((int)ViewPortSize.x, (int)ViewPortSize.y, 1, DefaultFormat.LDR);
         cam.forceIntoRenderTexture = true;

@@ -41,7 +41,7 @@ public class DisableEditorShortcutsOnGameFocus : MonoBehaviour
 
     private static void SetActiveProfile(string profileId)
     {
-        Debug.Log($"Activating Shortcut profile '{profileId}'");
+        //Debug.Log($"Activating Shortcut profile '{profileId}'");
         
         ShortcutManager.instance.activeProfileId = profileId;
 
