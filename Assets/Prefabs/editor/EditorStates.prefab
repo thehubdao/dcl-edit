@@ -123,6 +123,7 @@ MonoBehaviour:
   TextAtom: {fileID: 8024071907148859791, guid: 940a8e80e3325354b9baed45c93a96f0, type: 3}
   StringInputAtom: {fileID: 5233136792266491960, guid: 92d0ff83c1f6d274cbb15847895e5a23, type: 3}
   NumberInputAtom: {fileID: 5812454901384158741, guid: 643cb13cbab094b42887dae813c93af2, type: 3}
+  Vector3InputAtom: {fileID: 5341960638517146307, guid: 45f07c32725cf3c419e1758b1f6b2ab0, type: 3}
 --- !u!114 &7953543301535803489
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -19,6 +19,8 @@ public class UiInspectorVisuals : MonoBehaviour, ISetupSceneEventListeners
     {
         Debug.Log("Update ui vis");
 
+        string[] rgbNames = { "r", "g", "b" };
+
         new UiBuilder()
             .Title("Inspect me,")
             .Title("Daddy")
@@ -31,6 +33,7 @@ public class UiInspectorVisuals : MonoBehaviour, ISetupSceneEventListeners
             .StringPropertyInput("This is also some input", "Some input", "This is the")
             .StringPropertyInput("And this is empty", "Some input", "")
             .NumberPropertyInput("Here you can type in numbers", "number", 10)
+            .Vector3PropertyInput("and here you can put a vec3", rgbNames, new Vector3(4, 7, 25))
             .Text("More text but after a space")
             .Text("More text but after a space")
             .Text("More text but after a space")

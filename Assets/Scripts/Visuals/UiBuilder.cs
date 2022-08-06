@@ -17,9 +17,10 @@ namespace Assets.Scripts.Visuals
             Text,
             Spacer,
             StringPropertyInput,
-            NumberPropertyInput
+            NumberPropertyInput,
+            Vector3PropertyInput
         }
-        
+
         private struct UiAtom
         {
             public AtomType Type;
@@ -103,7 +104,7 @@ namespace Assets.Scripts.Visuals
                     stringProperty.propertyNameText.text = name;
                     stringProperty.stingInput.SetCurrentText(currentContents);
                     stringProperty.stingInput.SetPlaceHolder(placeholder);
-                        
+
                     return go;
                 }
             });
@@ -126,6 +127,36 @@ namespace Assets.Scripts.Visuals
                     numberProprerty.propertyNameText.text = name;
                     numberProprerty.numberInput.SetCurrentNumber(currentContents);
                     numberProprerty.numberInput.TextInputHandler.SetPlaceHolder(placeholder);
+
+                    return go;
+                }
+            });
+
+            return this;
+        }
+
+        public UiBuilder Vector3PropertyInput(string name, string[] placeholders, Vector3 currentContents)
+        {
+            _atoms.Add(new UiAtom
+            {
+                Type = AtomType.Vector3PropertyInput,
+                Height = 50,
+                MakeGameObject = () =>
+                {
+                    var go = GetAtomObjectFromPool(AtomType.Vector3PropertyInput);
+
+                    var vector3PropertyHandler = go.GetComponent<Vector3PropertyHandler>();
+
+                    vector3PropertyHandler.propertyNameText.text = name;
+
+                    vector3PropertyHandler.numberInputX.SetCurrentNumber(currentContents.x);
+                    vector3PropertyHandler.numberInputX.TextInputHandler.SetPlaceHolder(placeholders[0]);
+
+                    vector3PropertyHandler.numberInputY.SetCurrentNumber(currentContents.y);
+                    vector3PropertyHandler.numberInputY.TextInputHandler.SetPlaceHolder(placeholders[1]);
+
+                    vector3PropertyHandler.numberInputZ.SetCurrentNumber(currentContents.z);
+                    vector3PropertyHandler.numberInputZ.TextInputHandler.SetPlaceHolder(placeholders[2]);
 
                     return go;
                 }
@@ -187,6 +218,7 @@ namespace Assets.Scripts.Visuals
                 AtomType.Text => Object.Instantiate(unityState.TextAtom),
                 AtomType.StringPropertyInput => Object.Instantiate(unityState.StringInputAtom),
                 AtomType.NumberPropertyInput => Object.Instantiate(unityState.NumberInputAtom),
+                AtomType.Vector3PropertyInput => Object.Instantiate(unityState.Vector3InputAtom),
                 _ => null
             };
         }
