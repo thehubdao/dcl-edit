@@ -23,17 +23,23 @@ public class AssetAutoDetectionSystem : MonoBehaviour
 
         foreach (var path in paths)
         {
-            var relativePath = path.Replace(DclSceneManager.DclProjectPath+"\\", "").Replace("\\","/");
+            var relativePath = path.Replace(DclSceneManager.DclProjectPath, "").Replace("\\","/");
 
             if(relativePath.StartsWith("node_modules"))
                 continue;
             
+            if(relativePath[0]=='/'){
+                relativePath = relativePath.Substring(1);
+            }
+
+            //Debug.Log("Asset path: "+relativePath);
+
             var pathParts = relativePath.Split('/');
             var fileName = pathParts[pathParts.Length - 1].Replace(".glb","");
 
             if(!AssetManager.AllGltfAssets.Select(asset => asset.gltfPath).Contains(relativePath))
             {
-                Debug.Log("Added new asset " + fileName.ToHumanName());
+                //Debug.Log("Added new asset " + fileName.ToHumanName());
                 
 
                 AssetManager.allAssets.Add(new AssetManager.GLTFAsset(fileName.ToHumanName(), System.Guid.NewGuid(), relativePath));
