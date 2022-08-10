@@ -6,7 +6,7 @@ function getBinary() {
     const type = os.type();
     const arch = os.arch();
  
-    const version = "0.4.3"
+    const version = "0.4.4"
     let platformName = ""
     let binaryName = ""
  
@@ -17,7 +17,7 @@ function getBinary() {
         binaryName = "dcl-edit.exe"
     } else if (type == "Linux") {
         platformName = "linux"
-        binaryName = "dcl-edit"
+        binaryName = "dcl-edit.x86_64"
     } else if (type == "Darwin") {
         platformName = "macos"
         binaryName = "Contents/MacOS/dcl-edit"
