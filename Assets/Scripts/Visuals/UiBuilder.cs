@@ -16,6 +16,7 @@ namespace Assets.Scripts.Visuals
             Title,
             Text,
             Spacer,
+            Panel,
             StringPropertyInput,
             NumberPropertyInput,
             Vector3PropertyInput
@@ -24,8 +25,13 @@ namespace Assets.Scripts.Visuals
         private struct UiAtom
         {
             public AtomType Type;
-            public int Height;
-            public Func<GameObject> MakeGameObject;
+            public Func<MakeGmReturn> MakeGameObject;
+        }
+
+        private struct MakeGmReturn
+        {
+            public GameObject go;
+            public int height;
         }
 
         private readonly List<UiAtom> _atoms = new List<UiAtom>();
@@ -35,7 +41,6 @@ namespace Assets.Scripts.Visuals
             _atoms.Add(new UiAtom
             {
                 Type = AtomType.Title,
-                Height = 130,
                 MakeGameObject = () =>
                 {
                     var go = GetAtomObjectFromPool(AtomType.Title);
@@ -44,7 +49,7 @@ namespace Assets.Scripts.Visuals
 
                     text.text = title;
 
-                    return go;
+                    return new MakeGmReturn { go = go, height = 130 };
                 }
             });
 
@@ -56,7 +61,6 @@ namespace Assets.Scripts.Visuals
             _atoms.Add(new UiAtom
             {
                 Type = AtomType.Title,
-                Height = 50,
                 MakeGameObject = () =>
                 {
                     var go = GetAtomObjectFromPool(AtomType.Text);
@@ -65,7 +69,7 @@ namespace Assets.Scripts.Visuals
 
                     tmpText.text = text;
 
-                    return go;
+                    return new MakeGmReturn { go = go, height = 50 };
                 }
             });
 
@@ -77,12 +81,31 @@ namespace Assets.Scripts.Visuals
             _atoms.Add(new UiAtom
             {
                 Type = AtomType.Spacer,
-                Height = height,
                 MakeGameObject = () =>
                 {
                     var gameObject = new GameObject("Spacer");
                     gameObject.AddComponent<RectTransform>();
-                    return gameObject;
+                    return new MakeGmReturn { go = gameObject, height = height };
+                }
+            });
+
+            return this;
+        }
+
+        public UiBuilder Panel(UiBuilder content)
+        {
+            _atoms.Add(new UiAtom
+            {
+                Type = AtomType.Panel,
+                MakeGameObject = () =>
+                {
+                    var go = GetAtomObjectFromPool(AtomType.Panel);
+
+                    var handler = go.GetComponent<PanelHandler>();
+
+                    content.ClearAndMakePanel(handler.Content);
+
+                    return new MakeGmReturn { go = go, height = content.CurrentHeight + 40 };
                 }
             });
 
@@ -94,7 +117,6 @@ namespace Assets.Scripts.Visuals
             _atoms.Add(new UiAtom
             {
                 Type = AtomType.StringPropertyInput,
-                Height = 50,
                 MakeGameObject = () =>
                 {
                     var go = GetAtomObjectFromPool(AtomType.StringPropertyInput);
@@ -105,7 +127,7 @@ namespace Assets.Scripts.Visuals
                     stringProperty.stingInput.SetCurrentText(currentContents);
                     stringProperty.stingInput.SetPlaceHolder(placeholder);
 
-                    return go;
+                    return new MakeGmReturn { go = go, height = 50 };
                 }
             });
 
@@ -117,18 +139,17 @@ namespace Assets.Scripts.Visuals
             _atoms.Add(new UiAtom
             {
                 Type = AtomType.NumberPropertyInput,
-                Height = 50,
                 MakeGameObject = () =>
                 {
                     var go = GetAtomObjectFromPool(AtomType.NumberPropertyInput);
 
-                    var numberProprerty = go.GetComponent<NumberPropertyHandler>();
+                    var numberProperty = go.GetComponent<NumberPropertyHandler>();
 
-                    numberProprerty.propertyNameText.text = name;
-                    numberProprerty.numberInput.SetCurrentNumber(currentContents);
-                    numberProprerty.numberInput.TextInputHandler.SetPlaceHolder(placeholder);
+                    numberProperty.propertyNameText.text = name;
+                    numberProperty.numberInput.SetCurrentNumber(currentContents);
+                    numberProperty.numberInput.TextInputHandler.SetPlaceHolder(placeholder);
 
-                    return go;
+                    return new MakeGmReturn { go = go, height = 50 };
                 }
             });
 
@@ -140,7 +161,6 @@ namespace Assets.Scripts.Visuals
             _atoms.Add(new UiAtom
             {
                 Type = AtomType.Vector3PropertyInput,
-                Height = 50,
                 MakeGameObject = () =>
                 {
                     var go = GetAtomObjectFromPool(AtomType.Vector3PropertyInput);
@@ -158,7 +178,7 @@ namespace Assets.Scripts.Visuals
                     vector3PropertyHandler.numberInputZ.SetCurrentNumber(currentContents.z);
                     vector3PropertyHandler.numberInputZ.TextInputHandler.SetPlaceHolder(placeholders[2]);
 
-                    return go;
+                    return new MakeGmReturn { go = go, height = 50 };
                 }
             });
 
@@ -171,6 +191,12 @@ namespace Assets.Scripts.Visuals
             Make(parent);
         }
 
+        private void ClearAndMakePanel(GameObject parent)
+        {
+            Clear(parent);
+            Make(parent, true);
+        }
+
         private void Clear(GameObject parent)
         {
             foreach (Transform child in parent.transform)
@@ -179,14 +205,16 @@ namespace Assets.Scripts.Visuals
             }
         }
 
-        private void Make(GameObject parent)
+        public int CurrentHeight { get; private set; }
+
+        private void Make(GameObject parent, bool isInPanel = false)
         {
             var heightCounter = 0;
             foreach (var atom in _atoms)
             {
-                var go = atom.MakeGameObject();
+                var madeGameObject = atom.MakeGameObject();
 
-                var tf = go.GetComponent<RectTransform>();
+                var tf = madeGameObject.go.GetComponent<RectTransform>();
 
                 tf.SetParent(parent.transform);
 
@@ -195,14 +223,20 @@ namespace Assets.Scripts.Visuals
 
                 tf.anchoredPosition = new Vector3(0, heightCounter, 0);
 
-                tf.sizeDelta = new Vector2(tf.sizeDelta.x, atom.Height);
+                tf.sizeDelta = new Vector2(tf.sizeDelta.x, madeGameObject.height);
 
 
-                heightCounter -= atom.Height;
+                heightCounter -= madeGameObject.height;
             }
 
-            var parentRectTransform = parent.GetComponent<RectTransform>();
-            parentRectTransform.sizeDelta = new Vector2(parentRectTransform.sizeDelta.x, -heightCounter);
+            var parentRectTransform =
+                isInPanel ?
+                    parent.GetComponentInParent<PanelHandler>().GetComponent<RectTransform>() :
+                    parent.GetComponent<RectTransform>();
+
+            CurrentHeight = -heightCounter;
+
+            parentRectTransform.sizeDelta = new Vector2(parentRectTransform.sizeDelta.x, CurrentHeight + (isInPanel ? 40 : 0));
         }
 
 
@@ -216,6 +250,7 @@ namespace Assets.Scripts.Visuals
             {
                 AtomType.Title => Object.Instantiate(unityState.TitleAtom),
                 AtomType.Text => Object.Instantiate(unityState.TextAtom),
+                AtomType.Panel => Object.Instantiate(unityState.PanelAtom),
                 AtomType.StringPropertyInput => Object.Instantiate(unityState.StringInputAtom),
                 AtomType.NumberPropertyInput => Object.Instantiate(unityState.NumberInputAtom),
                 AtomType.Vector3PropertyInput => Object.Instantiate(unityState.Vector3InputAtom),
