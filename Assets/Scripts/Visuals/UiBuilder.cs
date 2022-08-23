@@ -2,8 +2,11 @@ using System;
 using System.Collections.Generic;
 using Assets.Scripts.EditorState;
 using Assets.Scripts.Visuals.PropertyHandler;
+using ICSharpCode.NRefactory.Ast;
+using JetBrains.Annotations;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using Object = UnityEngine.Object;
 
 namespace Assets.Scripts.Visuals
@@ -17,6 +20,7 @@ namespace Assets.Scripts.Visuals
             Text,
             Spacer,
             Panel,
+            PanelHeader,
             StringPropertyInput,
             NumberPropertyInput,
             Vector3PropertyInput
@@ -108,6 +112,39 @@ namespace Assets.Scripts.Visuals
                     return new MakeGmReturn { go = go, height = content.CurrentHeight + 40 };
                 }
             });
+
+            return this;
+        }
+
+        /**
+         * Creates a panel header with a title and a optional close button.
+         * @param title The title of the panel.
+         * @param onClose The function to be called, when the close button is pressed. When this is null, the close button will be hidden
+         */
+        public UiBuilder PanelHeader(string title, [CanBeNull] UnityAction onClose = null)
+        {
+            _atoms.Add(new UiAtom
+            {
+                Type = AtomType.PanelHeader,
+                MakeGameObject = () =>
+                {
+                    var go = GetAtomObjectFromPool(AtomType.PanelHeader);
+
+                    var handler = go.GetComponent<PanelHeaderHandler>();
+                    handler.Title.text = title;
+
+                    if(onClose != null)
+                    {
+                        handler.CloseButton.onClick.AddListener(onClose);
+                    }
+                    else
+                    {
+                        handler.CloseButton.gameObject.SetActive(false);
+                    }
+                    
+                    return new MakeGmReturn { go = go, height = 60 };
+                }
+            }); 
 
             return this;
         }
@@ -251,6 +288,7 @@ namespace Assets.Scripts.Visuals
                 AtomType.Title => Object.Instantiate(unityState.TitleAtom),
                 AtomType.Text => Object.Instantiate(unityState.TextAtom),
                 AtomType.Panel => Object.Instantiate(unityState.PanelAtom),
+                AtomType.PanelHeader => Object.Instantiate(unityState.PanelHeaderAtom),
                 AtomType.StringPropertyInput => Object.Instantiate(unityState.StringInputAtom),
                 AtomType.NumberPropertyInput => Object.Instantiate(unityState.NumberInputAtom),
                 AtomType.Vector3PropertyInput => Object.Instantiate(unityState.Vector3InputAtom),

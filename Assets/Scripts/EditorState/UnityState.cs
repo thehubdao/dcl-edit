@@ -61,6 +61,9 @@ namespace Assets.Scripts.EditorState
 
         [SerializeField]
         public GameObject PanelAtom;
+        
+        [SerializeField]
+        public GameObject PanelHeaderAtom;
 
         [SerializeField]
         public GameObject StringInputAtom;
