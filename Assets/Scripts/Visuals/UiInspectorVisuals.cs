@@ -26,13 +26,13 @@ public class UiInspectorVisuals : MonoBehaviour, ISetupSceneEventListeners
             inspectorBuilder
                 .Title("No Entity selected")
                 .ClearAndMake(_content);
-            
             return;
         }
 
         var entityHeadBuilder = new UiBuilder()
             .StringPropertyInput("Name", "Name",
-                EditorStates.CurrentSceneState.CurrentScene?.SelectionState.PrimarySelectedEntity?.CustomName ?? "");
+                EditorStates.CurrentSceneState.CurrentScene?.SelectionState.PrimarySelectedEntity?.CustomName ?? "")
+            .BooleanPropertyInput("Is Exposed", true);
 
         inspectorBuilder.Panel(entityHeadBuilder);
 

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Assets.Scripts.EditorState;
 using Assets.Scripts.Visuals.PropertyHandler;
-using ICSharpCode.NRefactory.Ast;
+using Assets.Scripts.Visuals.UiHandler;
 using JetBrains.Annotations;
 using TMPro;
 using UnityEngine;
@@ -23,6 +23,7 @@ namespace Assets.Scripts.Visuals
             PanelHeader,
             StringPropertyInput,
             NumberPropertyInput,
+            BooleanPropertyInput,
             Vector3PropertyInput
         }
 
@@ -193,6 +194,26 @@ namespace Assets.Scripts.Visuals
             return this;
         }
 
+        public UiBuilder BooleanPropertyInput(string name, bool currentContents)
+        {
+            _atoms.Add(new UiAtom
+            {
+                Type = AtomType.BooleanPropertyInput,
+                MakeGameObject = () =>
+                {
+                    var go = GetAtomObjectFromPool(AtomType.BooleanPropertyInput);
+
+                    var booleanProperty = go.GetComponent<BooleanPropertyHandler>();
+
+                    booleanProperty.PropertyNameText.text = name;
+                    booleanProperty.CheckBoxInput.isOn = currentContents;
+                    return new MakeGmReturn { go = go, height = 50 };
+                }
+            });
+
+            return this;
+        }
+
         public UiBuilder Vector3PropertyInput(string name, string[] placeholders, Vector3 currentContents)
         {
             _atoms.Add(new UiAtom
@@ -291,6 +312,7 @@ namespace Assets.Scripts.Visuals
                 AtomType.PanelHeader => Object.Instantiate(unityState.PanelHeaderAtom),
                 AtomType.StringPropertyInput => Object.Instantiate(unityState.StringInputAtom),
                 AtomType.NumberPropertyInput => Object.Instantiate(unityState.NumberInputAtom),
+                AtomType.BooleanPropertyInput => Object.Instantiate(unityState.BooleanInputAtom),
                 AtomType.Vector3PropertyInput => Object.Instantiate(unityState.Vector3InputAtom),
                 _ => null
             };

@@ -72,6 +72,9 @@ namespace Assets.Scripts.EditorState
         public GameObject NumberInputAtom;
 
         [SerializeField]
+        public GameObject BooleanInputAtom;
+
+        [SerializeField]
         public GameObject Vector3InputAtom;
     }
 }

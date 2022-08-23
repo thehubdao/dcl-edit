@@ -1,11 +1,12 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PanelHeaderHandler : MonoBehaviour
+namespace Assets.Scripts.Visuals.UiHandler
 {
-    public TextMeshProUGUI Title;
-    public Button CloseButton;
+    public class PanelHeaderHandler : MonoBehaviour
+    {
+        public TextMeshProUGUI Title;
+        public Button CloseButton;
+    }
 }
