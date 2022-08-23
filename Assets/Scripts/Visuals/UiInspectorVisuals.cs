@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Assets.Scripts.EditorState;
+using Assets.Scripts.SceneState;
 using Assets.Scripts.Visuals;
 using UnityEngine;
 
@@ -17,50 +19,71 @@ public class UiInspectorVisuals : MonoBehaviour, ISetupSceneEventListeners
 
     private void UpdateVisuals()
     {
-        Debug.Log("Update ui vis");
+        var inspectorBuilder = new UiBuilder();
 
-        string[] rgbNames = { "r", "g", "b" };
+        if (EditorStates.CurrentSceneState.CurrentScene?.SelectionState.PrimarySelectedEntity == null)
+        {
+            inspectorBuilder
+                .Title("No Entity selected")
+                .ClearAndMake(_content);
+            
+            return;
+        }
 
-        new UiBuilder()
-            .Title("Inspect me,")
-            .Title("Daddy")
-            .Text("This is some text")
-            .Text("Some other text")
-            .Spacer(30)
-            .Text("More text but after a space")
-            .StringPropertyInput("Some input", "Some input", "This is the default stuff")
-            .StringPropertyInput("Some other input", "Some input", "This is the default")
-            .StringPropertyInput("This is also some input", "Some input", "This is the")
-            .Panel(new UiBuilder()
-                .PanelHeader("This is a panel with a close button", () =>
+        var entityHeadBuilder = new UiBuilder()
+            .StringPropertyInput("Name", "Name",
+                EditorStates.CurrentSceneState.CurrentScene?.SelectionState.PrimarySelectedEntity?.CustomName ?? "");
+
+        inspectorBuilder.Panel(entityHeadBuilder);
+
+        foreach (var component in EditorStates.CurrentSceneState.CurrentScene?.SelectionState.PrimarySelectedEntity?.Components ?? new List<DclComponent>())
+        {
+            var componentBuilder = new UiBuilder()
+                .PanelHeader(component.NameInCode, null);
+
+            foreach (var property in component.Properties)
+            {
+                switch (property.Type)
                 {
-                    Debug.Log("Close button clicked");
-                })
-                .StringPropertyInput("And this is empty", "Some input", "")
-                .NumberPropertyInput("Here you can type in numbers", "number", 10)
-                .Vector3PropertyInput("and here you can put a vec3", rgbNames, new Vector3(4, 7, 25))
-                .Text("More text but after a space")
-                .Panel(new UiBuilder()
-                    .PanelHeader("This is an inner Panel")
-                    .Text("More text but after a space")
-                    .Text("More text but after a space")
-                    .Text("More text but after a space")
-                    .Text("More text but after a space")
-                )
-                .Text("More text but after a space")
-            )
-            .StringPropertyInput("And this is empty", "Some input", "")
-            .NumberPropertyInput("Here you can type in numbers", "number", 10)
-            .Vector3PropertyInput("and here you can put a vec3", rgbNames, new Vector3(4, 7, 25))
-            .Text("More text but after a space")
-            .Text("More text but after a space")
-            .Text("More text but after a space")
-            .Text("More text but after a space")
-            .Text("More text but after a space")
-            .Text("More text but after a space")
-            .Text("More text but after a space")
-            .Text("More text but after a space")
-            .Text("More text but after a space")
-            .ClearAndMake(_content);
+                    case DclComponent.DclComponentProperty.PropertyType.None: // not supported
+                        componentBuilder.Text("None property not supported");
+                        break;
+                    case DclComponent.DclComponentProperty.PropertyType.String:
+                        componentBuilder.StringPropertyInput(property.PropertyName, property.PropertyName,
+                            property.GetConcrete<string>().Value);
+                        break;
+                    case DclComponent.DclComponentProperty.PropertyType.Int:
+                        componentBuilder.NumberPropertyInput(property.PropertyName, property.PropertyName,
+                            property.GetConcrete<int>().Value);
+                        break;
+                    case DclComponent.DclComponentProperty.PropertyType.Float:
+                        componentBuilder.NumberPropertyInput(property.PropertyName, property.PropertyName,
+                            property.GetConcrete<float>().Value);
+                        break;
+                    case DclComponent.DclComponentProperty.PropertyType.Boolean: // not supported yet
+                        componentBuilder.Text("Boolean property not supported yet");
+                        break;
+                    case DclComponent.DclComponentProperty.PropertyType.Vector3:
+                        {
+                            string[] xyzString = { "x", "y", "z" };
+                            componentBuilder.Vector3PropertyInput(property.PropertyName, xyzString,
+                                property.GetConcrete<Vector3>().Value);
+                            break;
+                        }
+                    case DclComponent.DclComponentProperty.PropertyType.Quaternion: // not supported yet
+                        componentBuilder.Text("Quaternion property not supported yet");
+                        break;
+                    case DclComponent.DclComponentProperty.PropertyType.Asset: // not supported yet
+                        componentBuilder.Text("Asset property not supported yet");
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+
+            inspectorBuilder.Panel(componentBuilder);
+        }
+
+        inspectorBuilder.ClearAndMake(_content);
     }
 }
