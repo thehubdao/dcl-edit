@@ -49,6 +49,14 @@ public class @InputSystemAsset : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""Focus"",
+                    ""type"": ""Button"",
+                    ""id"": ""2a63dfac-bca3-4b2a-94a0-116b4d50d553"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -260,6 +268,17 @@ public class @InputSystemAsset : IInputActionCollection, IDisposable
                     ""action"": ""Fast"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""74576c47-1b8a-4b60-9c3d-197114866c9c"",
+                    ""path"": ""<Keyboard>/f"",
+                    ""interactions"": ""Press(behavior=1)"",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Focus"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -427,6 +446,7 @@ public class @InputSystemAsset : IInputActionCollection, IDisposable
         m_CameraMovement_LeftRight = m_CameraMovement.FindAction("Left/Right", throwIfNotFound: true);
         m_CameraMovement_UpDown = m_CameraMovement.FindAction("Up/Down", throwIfNotFound: true);
         m_CameraMovement_Fast = m_CameraMovement.FindAction("Fast", throwIfNotFound: true);
+        m_CameraMovement_Focus = m_CameraMovement.FindAction("Focus", throwIfNotFound: true);
         // Hotkeys
         m_Hotkeys = asset.FindActionMap("Hotkeys", throwIfNotFound: true);
         m_Hotkeys_Undo = m_Hotkeys.FindAction("Undo", throwIfNotFound: true);
@@ -489,6 +509,7 @@ public class @InputSystemAsset : IInputActionCollection, IDisposable
     private readonly InputAction m_CameraMovement_LeftRight;
     private readonly InputAction m_CameraMovement_UpDown;
     private readonly InputAction m_CameraMovement_Fast;
+    private readonly InputAction m_CameraMovement_Focus;
     public struct CameraMovementActions
     {
         private @InputSystemAsset m_Wrapper;
@@ -497,6 +518,7 @@ public class @InputSystemAsset : IInputActionCollection, IDisposable
         public InputAction @LeftRight => m_Wrapper.m_CameraMovement_LeftRight;
         public InputAction @UpDown => m_Wrapper.m_CameraMovement_UpDown;
         public InputAction @Fast => m_Wrapper.m_CameraMovement_Fast;
+        public InputAction @Focus => m_Wrapper.m_CameraMovement_Focus;
         public InputActionMap Get() { return m_Wrapper.m_CameraMovement; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -518,6 +540,9 @@ public class @InputSystemAsset : IInputActionCollection, IDisposable
                 @Fast.started -= m_Wrapper.m_CameraMovementActionsCallbackInterface.OnFast;
                 @Fast.performed -= m_Wrapper.m_CameraMovementActionsCallbackInterface.OnFast;
                 @Fast.canceled -= m_Wrapper.m_CameraMovementActionsCallbackInterface.OnFast;
+                @Focus.started -= m_Wrapper.m_CameraMovementActionsCallbackInterface.OnFocus;
+                @Focus.performed -= m_Wrapper.m_CameraMovementActionsCallbackInterface.OnFocus;
+                @Focus.canceled -= m_Wrapper.m_CameraMovementActionsCallbackInterface.OnFocus;
             }
             m_Wrapper.m_CameraMovementActionsCallbackInterface = instance;
             if (instance != null)
@@ -534,6 +559,9 @@ public class @InputSystemAsset : IInputActionCollection, IDisposable
                 @Fast.started += instance.OnFast;
                 @Fast.performed += instance.OnFast;
                 @Fast.canceled += instance.OnFast;
+                @Focus.started += instance.OnFocus;
+                @Focus.performed += instance.OnFocus;
+                @Focus.canceled += instance.OnFocus;
             }
         }
     }
@@ -634,6 +662,7 @@ public class @InputSystemAsset : IInputActionCollection, IDisposable
         void OnLeftRight(InputAction.CallbackContext context);
         void OnUpDown(InputAction.CallbackContext context);
         void OnFast(InputAction.CallbackContext context);
+        void OnFocus(InputAction.CallbackContext context);
     }
     public interface IHotkeysActions
     {
