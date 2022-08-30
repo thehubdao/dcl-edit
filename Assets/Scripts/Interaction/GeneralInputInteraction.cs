@@ -242,7 +242,7 @@ namespace Assets.Scripts.Interaction
             {
                 // Fetch position of selected object
                 var selectedEntity = EditorStates.CurrentSceneState.CurrentScene?.SelectionState.PrimarySelectedEntity;
-                var entityPos = selectedEntity.GetTransformComponent().Position.Value;
+                var entityPos = selectedEntity.GetTransformComponent().GlobalPosition;
 
                 // Calculate an offset position so that the camera keeps its rotation and looks at the selected entity
                 Vector3 cameraForward = EditorStates.CurrentCameraState.Forward;
