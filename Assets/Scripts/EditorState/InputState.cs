@@ -11,7 +11,8 @@ public class InputState : MonoBehaviour
         MouseZoom,
         RotateAroundPoint,
         SlideSideways,
-        HoldingGizmoTool
+        HoldingGizmoTool,
+        FocusTransition
     }
 
     public InStateType InState = InStateType.NoInput;
@@ -19,6 +20,6 @@ public class InputState : MonoBehaviour
     // When Rotating camera around point, this variable keeps track of the point, that is being rotated around
     public Vector3? RotateCameraAroundPoint = null;
 
-    
-
+    // When the focus button was pressed, this variable keeps track of the position the camera transitions to
+    public Vector3? FocusTransitionDestination = null;
 }

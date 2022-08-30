@@ -86,6 +86,24 @@ namespace Assets.Scripts.EditorState
         {
             Position += Rotation * localDirection;
         }
+        /// <summary>
+        /// Moves the camera towards the given destination. Returns true if the destination was reached.
+        /// </summary>
+        public bool MoveTowards(Vector3 globalDestination, bool isFast)
+        {
+            Vector3 dirToDest = globalDestination - Position;
+            Vector3 move = dirToDest.normalized * Time.deltaTime * (isFast ? CameraFastFlySpeed : CameraNormalFlySpeed);
+
+            // Check if destination was reached
+            if(dirToDest.magnitude < move.magnitude)
+            {
+                Position += dirToDest;
+                return true;
+            }
+
+            MoveContinuously(Quaternion.Inverse(Rotation) * dirToDest.normalized, isFast);
+            return false;
+        }
 
         public void RotateAroundPointStep(Vector3 point, Vector2 direction)
         {

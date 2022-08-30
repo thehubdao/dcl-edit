@@ -41,28 +41,9 @@ namespace Assets.Scripts.Visuals
 
             activeGizmo.SetActive(true);
 
-            // Move the Active Gizmo to the correct global position
-            activeGizmo.transform.position = Vector3.zero;
-            activeGizmo.transform.rotation = Quaternion.identity;
-
-            var parentList = new Stack<DclEntity>();
-            parentList.Push(selectedEntity);
-
-            while (parentList.Peek().Parent != null)
-            {
-                parentList.Push(parentList.Peek().Parent);
-            }
-
-            while (parentList.Count > 0)
-            {
-                var e = parentList.Pop();
-                var t = e.GetTransformComponent();
-                if (t == null)
-                    continue;
-                
-                activeGizmo.transform.Translate(t.Position.Value);
-                activeGizmo.transform.localRotation *= t.Rotation.Value;
-            }
+            var selectedTransform = selectedEntity.GetTransformComponent();
+            activeGizmo.transform.position = selectedTransform.GlobalPosition;
+            activeGizmo.transform.rotation = selectedTransform.GlobalRotation;
         }
 
         private void HideGizmo()

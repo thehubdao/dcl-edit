@@ -82,31 +82,31 @@ namespace Assets.Scripts.System
                     switch (component.name)
                     {
                         case "transform":
-                            newEntity.Components.Add(MakeTransformComponentFromJson(component));
+                            newEntity.AddComponent(MakeTransformComponentFromJson(component));
                             break;
 
                         case "GLTFShape":
-                            newEntity.Components.Add(MakeGLTFShapeComponentFromJson(component, assetsJson));
+                            newEntity.AddComponent(MakeGLTFShapeComponentFromJson(component, assetsJson));
                             break;
 
                         case "boxShape":
-                            newEntity.Components.Add(MakeBoxShapeComponentFromJson(component));
+                            newEntity.AddComponent(MakeBoxShapeComponentFromJson(component));
                             break;
 
                         case "coneShape":
-                            newEntity.Components.Add(MakeConeShapeComponentFromJson(component));
+                            newEntity.AddComponent(MakeConeShapeComponentFromJson(component));
                             break;
 
                         case "cylinderShape":
-                            newEntity.Components.Add(MakeCylinderShapeComponentFromJson(component));
+                            newEntity.AddComponent(MakeCylinderShapeComponentFromJson(component));
                             break;
 
                         case "sphereShape":
-                            newEntity.Components.Add(MakeSphereShapeComponentFromJson(component));
+                            newEntity.AddComponent(MakeSphereShapeComponentFromJson(component));
                             break;
 
                         case "planeShape":
-                            newEntity.Components.Add(MakePlaneShapeComponentFromJson(component));
+                            newEntity.AddComponent(MakePlaneShapeComponentFromJson(component));
                             break;
 
                         default:

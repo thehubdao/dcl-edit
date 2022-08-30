@@ -47,6 +47,9 @@ namespace Assets.Scripts.Interaction
                 case InputState.InStateType.SlideSideways:
                     UpdateSlideSideways();
                     break;
+                case InputState.InStateType.FocusTransition:
+                    UpdateFocusTransition();
+                    break;
 
                 case InputState.InStateType.HoldingGizmoTool:
                 default:
@@ -233,6 +236,21 @@ namespace Assets.Scripts.Interaction
                     EditorStates.CurrentCameraState.MoveStep(new Vector3(0, 0, mouseScroll), isSprinting);
                 }
             }
+
+            // When pressing the focus hotkey and having a selected primary entity, switch to Focus Transition state
+            if(_inputSystemAsset.CameraMovement.Focus.triggered && EditorStates.CurrentSceneState.CurrentScene?.SelectionState.PrimarySelectedEntity != null)
+            {
+                // Fetch position of selected object
+                var selectedEntity = EditorStates.CurrentSceneState.CurrentScene?.SelectionState.PrimarySelectedEntity;
+                var entityPos = selectedEntity.GetTransformComponent().GlobalPosition;
+
+                // Calculate an offset position so that the camera keeps its rotation and looks at the selected entity
+                Vector3 cameraForward = EditorStates.CurrentCameraState.Forward;
+                Vector3 destination = entityPos - cameraForward * 10;
+                EditorStates.CurrentInputState.FocusTransitionDestination = destination;
+
+                EditorStates.CurrentInputState.InState = InputState.InStateType.FocusTransition;
+            }
         }
 
         private void UpdateWasdMovement()
@@ -304,6 +322,21 @@ namespace Assets.Scripts.Interaction
             {
                 EditorStates.CurrentInputState.InState = InputState.InStateType.NoInput;
                 InputHelper.ShowMouse();
+            }
+        }
+
+        private void UpdateFocusTransition()
+        {
+            // Control inputs are prioritized over the focus transition.
+            UpdateNoInput();
+
+            // Check if the state changed because of a user interaction.
+            if(EditorStates.CurrentInputState.InState != InputState.InStateType.FocusTransition) { return; }
+
+            
+            if (EditorStates.CurrentCameraState.MoveTowards((Vector3)EditorStates.CurrentInputState.FocusTransitionDestination, true))
+            {
+                EditorStates.CurrentInputState.InState = InputState.InStateType.NoInput;
             }
         }
 

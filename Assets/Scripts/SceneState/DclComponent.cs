@@ -114,6 +114,7 @@ namespace Assets.Scripts.SceneState
         }
         #endregion
 
+        public DclEntity Entity = null;
 
         public string NameInCode { get; }
 
