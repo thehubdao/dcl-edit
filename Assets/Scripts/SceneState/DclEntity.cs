@@ -70,6 +70,12 @@ namespace Assets.Scripts.SceneState
 
         public List<DclComponent> Components { get; } = new List<DclComponent>();
 
+        public void AddComponent(DclComponent component)
+        {
+            component.Entity = this;
+            Components.Add(component);
+        }
+
         public DclComponent GetComponentByName(string name)
         {
             return Components.Exists(c => c.NameInCode == name) ? // if component exists
