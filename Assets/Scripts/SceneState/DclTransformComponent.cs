@@ -20,6 +20,7 @@ namespace Assets.Scripts.SceneState
 
         public DclComponentProperty<Vector3> Scale => GetPropertyByName("scale")?.GetConcrete<Vector3>();
 
+        // gives the global fixed position
         public Vector3 GlobalFixedPosition
         {
             get
