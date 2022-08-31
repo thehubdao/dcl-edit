@@ -61,8 +61,10 @@ sysinfo.txt
 # Crashlytics generated file
 crashlytics-build.properties
 
-
+# Configs
 Assets/dev_project_path.txt
 Assets/dev_project_path.txt.meta
+Assets/panel_layout.txt
+Assets/panel_layout.txt.meta
 
 CodeCoverage/

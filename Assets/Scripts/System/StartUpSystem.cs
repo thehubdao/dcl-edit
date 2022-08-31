@@ -28,7 +28,7 @@ namespace Assets.Scripts.System
 
         private void Start()
         {
-            
+            WorkspaceSaveSystem.Load(_editorStates.UnityState.dynamicPanelsCanvas);
         }
     }
 }

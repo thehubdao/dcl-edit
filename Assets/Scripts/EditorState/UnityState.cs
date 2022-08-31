@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityGLTF;
+using DynamicPanels;
 
 namespace Assets.Scripts.EditorState
 {
@@ -21,6 +22,9 @@ namespace Assets.Scripts.EditorState
 
         [SerializeField]
         public AsyncCoroutineHelper AsyncCoroutineHelper;
+
+        [SerializeField]
+        public DynamicPanelsCanvas dynamicPanelsCanvas;
 
         [Header("Assets")]
         [SerializeField]

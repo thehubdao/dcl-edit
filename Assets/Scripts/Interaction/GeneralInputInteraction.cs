@@ -251,6 +251,12 @@ namespace Assets.Scripts.Interaction
 
                 EditorStates.CurrentInputState.InState = InputState.InStateType.FocusTransition;
             }
+
+            // When pressing the save hotkey, store the workspace layout
+            if (_inputSystemAsset.Hotkeys.Save.triggered)
+            {
+                WorkspaceSaveSystem.Save(EditorStates.CurrentUnityState.dynamicPanelsCanvas);
+            }
         }
 
         private void UpdateWasdMovement()
