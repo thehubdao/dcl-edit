@@ -25,5 +25,10 @@ namespace Assets.Scripts.System
 
             SetupSceneSystem.SetupScene(scene);
         }
+
+        private void Start()
+        {
+            
+        }
     }
 }
