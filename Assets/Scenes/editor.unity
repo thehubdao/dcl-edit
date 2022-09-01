@@ -2318,6 +2318,10 @@ PrefabInstance:
       propertyPath: SceneVisuals
       value: 
       objectReference: {fileID: 1448200388}
+    - target: {fileID: 5317590454083341830, guid: 02d6df25912515e4191fd550bb2dffec, type: 3}
+      propertyPath: dynamicPanelsCanvas
+      value: 
+      objectReference: {fileID: 1333863585}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 02d6df25912515e4191fd550bb2dffec, type: 3}
 --- !u!1001 &9146473881354413128

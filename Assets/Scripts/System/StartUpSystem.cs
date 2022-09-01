@@ -25,5 +25,10 @@ namespace Assets.Scripts.System
 
             SetupSceneSystem.SetupScene(scene);
         }
+
+        void Start()
+        {
+            WorkspaceSaveSystem.Load(_editorStates.UnityState.dynamicPanelsCanvas);
+        }
     }
 }
