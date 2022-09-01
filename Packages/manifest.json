@@ -1,5 +1,13 @@
 {
-  "scopedRegistries": [],
+  "scopedRegistries": [
+    {
+      "name": "Packages from jillejr (NewtonsoftJson Unity Converters)",
+      "url": "https://npm.cloudsmith.io/jillejr/newtonsoft-json-for-unity",
+      "scopes": [
+        "jillejr"
+      ]
+    }
+  ],
   "dependencies": {
     "com.unity.2d.sprite": "1.0.0",
     "com.unity.ide.rider": "2.0.7",
@@ -13,6 +21,7 @@
     "com.unity.timeline": "1.4.8",
     "com.unity.ugui": "1.0.0",
     "com.yasirkula.dynamicpanels": "https://github.com/yasirkula/UnityDynamicPanels.git",
+    "jillejr.newtonsoft.json-for-unity.converters": "1.5.0",
     "judah4.hsvcolorpickerunity": "https://github.com/judah4/HSV-Color-Picker-Unity.git#upm",
     "org.khronos.unitygltf": "https://github.com/prefrontalcortex/UnityGLTF.git?path=/UnityGLTF/Assets/UnityGLTF",
     "com.unity.modules.ai": "1.0.0",
