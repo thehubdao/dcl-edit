@@ -47,7 +47,7 @@ namespace Assets.Scripts.System
             if (oldValue.Equals(value))
             {
                 dclProperty.ResetFloating();
-                Debug.Log("Value hasn't changed");
+                //Debug.Log("Value hasn't changed");
                 return;
             }
 

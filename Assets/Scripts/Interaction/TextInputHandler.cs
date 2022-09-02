@@ -42,12 +42,12 @@ public class TextInputHandler : MonoBehaviour
             EditorStates.CurrentInputState.InState = InputState.InStateType.NoInput;
             if(inputField.wasCanceled)
             {
-                Debug.Log("Aborting input");
+                //Debug.Log("Aborting input");
                 onAbort(value);
             }
             else
             {
-                Debug.Log("Submitting input");
+                //Debug.Log("Submitting input");
                 onSubmit(value);
             }
         });
