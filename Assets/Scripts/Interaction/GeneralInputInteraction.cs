@@ -50,6 +50,9 @@ namespace Assets.Scripts.Interaction
                 case InputState.InStateType.FocusTransition:
                     UpdateFocusTransition();
                     break;
+                case InputState.InStateType.UiInput:
+                    UpdateUiInput();
+                    break;
 
                 case InputState.InStateType.HoldingGizmoTool:
                 default:
@@ -345,6 +348,11 @@ namespace Assets.Scripts.Interaction
             {
                 EditorStates.CurrentInputState.InState = InputState.InStateType.NoInput;
             }
+        }
+
+        private void UpdateUiInput()
+        {
+            // Prevent Inputs if currently typing in a text field
         }
 
         private void ProcessHotKeys()

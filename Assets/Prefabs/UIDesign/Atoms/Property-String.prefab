@@ -171,7 +171,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   propertyNameText: {fileID: 2865675628713399044}
-  stingInput: {fileID: 3411827136587501723}
+  stringInput: {fileID: 3411827136587501723}
 --- !u!1001 &1298251241553722905
 PrefabInstance:
   m_ObjectHideFlags: 0

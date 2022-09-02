@@ -44,14 +44,31 @@ namespace Assets.Scripts.SceneState
                 }
                 return dclComponentProperty;
             }
+
+
+
+            protected bool _isFloating;
+
+
+            /**
+             * <summary>Is the value currently floating</summary>>
+             */
+            public bool IsFloating => _isFloating;
+
+            /**
+             * <summary>Reset the floating value</summary>
+             */
+            public void ResetFloating()
+            {
+                _isFloating = false;
+            }
+
         }
 
         public class DclComponentProperty<T> : DclComponentProperty
         {
             private T _fixedValue;
             private T _floatingValue;
-
-            private bool _isFloating;
 
             /**
              * <summary>Constructor with an initial value</summary>
@@ -68,10 +85,6 @@ namespace Assets.Scripts.SceneState
 
             // Value stuff
 
-            /**
-             * <summary>Is the value currently floating</summary>>
-             */
-            public bool IsFloating => _isFloating;
 
             /**
              * <summary>The current value. When value is floating, returns the floating value</summary>
@@ -91,14 +104,6 @@ namespace Assets.Scripts.SceneState
             {
                 _floatingValue = value;
                 _isFloating = true;
-            }
-
-            /**
-             * <summary>Reset the floating value</summary>
-             */
-            public void ResetFloating()
-            {
-                _isFloating = false;
             }
 
             /**

@@ -39,6 +39,13 @@ namespace Assets.Scripts.Visuals
             public int height;
         }
 
+        public struct UiPropertyActions<T>
+        {
+            public Action<T> OnChange;
+            public Action<T> OnSubmit;
+            public Action<T> OnAbort;
+        }
+
         private readonly List<UiAtom> _atoms = new List<UiAtom>();
 
         public UiBuilder Title(string title)
@@ -150,7 +157,7 @@ namespace Assets.Scripts.Visuals
             return this;
         }
 
-        public UiBuilder StringPropertyInput(string name, string placeholder, string currentContents)
+        public UiBuilder StringPropertyInput(string name, string placeholder, string currentContents, UiPropertyActions<string> actions)
         {
             _atoms.Add(new UiAtom
             {
@@ -162,8 +169,11 @@ namespace Assets.Scripts.Visuals
                     var stringProperty = go.GetComponent<StringPropertyHandler>();
 
                     stringProperty.propertyNameText.text = name;
-                    stringProperty.stingInput.SetCurrentText(currentContents);
-                    stringProperty.stingInput.SetPlaceHolder(placeholder);
+                    stringProperty.stringInput.SetCurrentText(currentContents);
+                    stringProperty.stringInput.SetPlaceHolder(placeholder);
+
+                    // setup actions
+                    stringProperty.SetActions(actions);
 
                     return new MakeGmReturn { go = go, height = 50 };
                 }
@@ -171,8 +181,8 @@ namespace Assets.Scripts.Visuals
 
             return this;
         }
-
-        public UiBuilder NumberPropertyInput(string name, string placeholder, float currentContents)
+        
+        public UiBuilder NumberPropertyInput(string name, string placeholder, float currentContents, UiPropertyActions<float> actions)
         {
             _atoms.Add(new UiAtom
             {
@@ -214,7 +224,7 @@ namespace Assets.Scripts.Visuals
             return this;
         }
 
-        public UiBuilder Vector3PropertyInput(string name, string[] placeholders, Vector3 currentContents)
+        public UiBuilder Vector3PropertyInput(string name, string[] placeholders, Vector3 currentContents, UiPropertyActions<Vector3> actions)
         {
             _atoms.Add(new UiAtom
             {
@@ -235,6 +245,8 @@ namespace Assets.Scripts.Visuals
 
                     vector3PropertyHandler.numberInputZ.SetCurrentNumber(currentContents.z);
                     vector3PropertyHandler.numberInputZ.TextInputHandler.SetPlaceHolder(placeholders[2]);
+
+                    vector3PropertyHandler.SetActions(actions);
 
                     return new MakeGmReturn { go = go, height = 50 };
                 }
@@ -300,6 +312,7 @@ namespace Assets.Scripts.Visuals
 
         // Util
         // TODO: Implement pool
+        // TODO: make static
         private GameObject GetAtomObjectFromPool(AtomType type)
         {
             var unityState = EditorStates.CurrentUnityState;
