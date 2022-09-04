@@ -8,6 +8,7 @@ using UnityEditor;
 #endif
 using System;
 using Newtonsoft.Json;
+using Assets.Scripts.EditorState;
 
 namespace Assets.Scripts.System {
     public class SceneSaveSystem
@@ -17,7 +18,7 @@ namespace Assets.Scripts.System {
             DclSceneData sceneData = new DclSceneData(scene);
 
             // Create scene directory (if not exists)
-            string sceneDirPath = $"{Application.dataPath}/dclscenes/{sceneData.name}.dclscene";
+            string sceneDirPath = $"{EditorStates.CurrentPathState.ProjectPath}/dcl-edit/saves/v2/{sceneData.name}.dclscene";
             DirectoryInfo sceneDir = Directory.CreateDirectory(sceneDirPath);
 
             // Clear scene directory
