@@ -100,41 +100,40 @@ namespace Assets.Scripts.System {
         {
             public string name;
             public string type;
-            public string fixedValue;
+            public JToken fixedValue;
 
             public DclComponentPropertyData(DclComponent.DclComponentProperty property)
             {
                 this.name = property.PropertyName;
                 this.type = property.Type.ToString();
-                object value = null;
+                this.fixedValue = null;
                 switch (property.Type)
                 {
                     case DclComponent.DclComponentProperty.PropertyType.None:
                         break;
                     case DclComponent.DclComponentProperty.PropertyType.String:
-                        value = property.GetConcrete<string>().FixedValue;
+                        this.fixedValue = JToken.FromObject(property.GetConcrete<string>().FixedValue);
                         break;
                     case DclComponent.DclComponentProperty.PropertyType.Int:
-                        value = property.GetConcrete<int>().FixedValue;
+                        this.fixedValue = JToken.FromObject(property.GetConcrete<int>().FixedValue);
                         break;
                     case DclComponent.DclComponentProperty.PropertyType.Float:
-                        value = property.GetConcrete<float>().FixedValue;
+                        this.fixedValue = JToken.FromObject(property.GetConcrete<float>().FixedValue);
                         break;
                     case DclComponent.DclComponentProperty.PropertyType.Boolean:
-                        value = property.GetConcrete<bool>().FixedValue;
+                        this.fixedValue = JToken.FromObject(property.GetConcrete<bool>().FixedValue);
                         break;
                     case DclComponent.DclComponentProperty.PropertyType.Vector3:
-                        value = property.GetConcrete<Vector3>().FixedValue;
+                        this.fixedValue = JToken.FromObject(property.GetConcrete<Vector3>().FixedValue);
                         break;
                     case DclComponent.DclComponentProperty.PropertyType.Quaternion:
-                        value = property.GetConcrete<Quaternion>().FixedValue;
+                        this.fixedValue = JToken.FromObject(property.GetConcrete<Quaternion>().FixedValue);
                         break;
                     case DclComponent.DclComponentProperty.PropertyType.Asset:
                         break;
                     default:
                         break;
                 }
-                this.fixedValue = JsonConvert.SerializeObject(value);
             }
         }
     }
