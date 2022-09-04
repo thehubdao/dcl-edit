@@ -161,6 +161,13 @@
       "dependencies": {},
       "hash": "0d0a19d913191a33bff19e95d2794a4451f4d832"
     },
+    "jillejr.newtonsoft.json-for-unity.converters": {
+      "version": "1.5.0",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://npm.cloudsmith.io/jillejr/newtonsoft-json-for-unity"
+    },
     "judah4.hsvcolorpickerunity": {
       "version": "https://github.com/judah4/HSV-Color-Picker-Unity.git#upm",
       "depth": 0,

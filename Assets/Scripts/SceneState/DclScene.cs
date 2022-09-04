@@ -7,6 +7,8 @@ namespace Assets.Scripts.SceneState
 {
     public class DclScene
     {
+        public string name = "New Scene";
+
         public Dictionary<Guid, DclEntity> AllEntities = new Dictionary<Guid, DclEntity>();
 
         public IEnumerable<DclEntity> EntitiesInSceneRoot => 
