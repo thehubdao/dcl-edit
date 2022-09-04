@@ -9,6 +9,7 @@ using UnityEditor;
 using System;
 using Newtonsoft.Json;
 using Assets.Scripts.EditorState;
+using Newtonsoft.Json.Linq;
 
 namespace Assets.Scripts.System {
     public class SceneSaveSystem
@@ -33,10 +34,6 @@ namespace Assets.Scripts.System {
             {
                 CreateEntityFile(entity, sceneDirPath);
             }
-
-#if UNITY_EDITOR
-            AssetDatabase.Refresh();
-#endif
         }
 
 
