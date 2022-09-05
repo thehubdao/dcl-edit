@@ -1,11 +1,17 @@
 using Assets.Scripts.Command;
 using Assets.Scripts.EditorState;
+using Assets.Scripts.SceneState;
 using UnityEngine;
 
 namespace Assets.Scripts.System
 {
     public class UpdatePropertiesFromUiSystem : MonoBehaviour
     {
+        public static void SetNewName(DclEntity entity, string newName)
+        {
+            CommandSystem.ExecuteCommand(new ChangeEntityName(entity.Id, newName, entity.CustomName));
+        }
+
         public static void UpdateFloatingProperty<T>(DclPropertyIdentifier property, T value)
         {
             var scene = EditorStates.CurrentSceneState.CurrentScene;
@@ -19,7 +25,7 @@ namespace Assets.Scripts.System
 
             scene.SelectionState.SelectionChangedEvent.Invoke();
         }
-        
+
         public static void RevertFloatingProperty(DclPropertyIdentifier property)
         {
             var scene = EditorStates.CurrentSceneState.CurrentScene;
@@ -53,6 +59,5 @@ namespace Assets.Scripts.System
 
             CommandSystem.ExecuteCommand(new ChangeProperty<T>(property, oldValue, value));
         }
-
     }
 }

@@ -20,7 +20,7 @@ public class UiInspectorVisuals : MonoBehaviour, ISetupSceneEventListeners
 
     private void UpdateVisuals()
     {
-        if(EditorStates.CurrentInputState.InState == InputState.InStateType.UiInput)
+        if (EditorStates.CurrentInputState.InState == InputState.InStateType.UiInput)
         {
             return;
         }
@@ -36,19 +36,18 @@ public class UiInspectorVisuals : MonoBehaviour, ISetupSceneEventListeners
                 .ClearAndMake(_content);
             return;
         }
-
-        // TODO: change this to actually change the entity
-        var actions = new UiBuilder.UiPropertyActions<string>
+        
+        var nameInputActions = new UiBuilder.UiPropertyActions<string>
         {
-            OnChange = Debug.Log,
-            OnSubmit = Debug.Log,
-            OnAbort = Debug.Log
+            OnChange = _ => { },
+            OnSubmit = value => UpdatePropertiesFromUiSystem.SetNewName(selectedEntity, value),
+            OnAbort = _ => { }
         };
 
 
         var entityHeadBuilder = new UiBuilder()
             .StringPropertyInput("Name", "Name",
-                selectedEntity.CustomName ?? "", actions)
+                selectedEntity.CustomName ?? "", nameInputActions)
             .BooleanPropertyInput("Is Exposed", true);
 
         inspectorBuilder.Panel(entityHeadBuilder);
@@ -76,7 +75,7 @@ public class UiInspectorVisuals : MonoBehaviour, ISetupSceneEventListeners
                             };
 
                             componentBuilder.StringPropertyInput(
-                                property.PropertyName, 
+                                property.PropertyName,
                                 property.PropertyName,
                                 property.GetConcrete<string>().Value,
                                 stringActions);
@@ -104,13 +103,13 @@ public class UiInspectorVisuals : MonoBehaviour, ISetupSceneEventListeners
                         {
                             var floatActions = new UiBuilder.UiPropertyActions<float>
                             {
-                                OnChange = (value)=> UpdatePropertiesFromUiSystem.UpdateFloatingProperty(propertyIdentifier, value),
-                                OnSubmit = (value)=> UpdatePropertiesFromUiSystem.UpdateFixedProperty(propertyIdentifier, value),
+                                OnChange = (value) => UpdatePropertiesFromUiSystem.UpdateFloatingProperty(propertyIdentifier, value),
+                                OnSubmit = (value) => UpdatePropertiesFromUiSystem.UpdateFixedProperty(propertyIdentifier, value),
                                 OnAbort = (value) => UpdatePropertiesFromUiSystem.RevertFloatingProperty(propertyIdentifier)
                             };
-                        
+
                             componentBuilder.NumberPropertyInput(
-                                property.PropertyName, 
+                                property.PropertyName,
                                 property.PropertyName,
                                 property.GetConcrete<float>().Value,
                                 floatActions);
@@ -133,7 +132,7 @@ public class UiInspectorVisuals : MonoBehaviour, ISetupSceneEventListeners
 
                             string[] xyzString = { "x", "y", "z" };
                             componentBuilder.Vector3PropertyInput(
-                                property.PropertyName, 
+                                property.PropertyName,
                                 xyzString,
                                 property.GetConcrete<Vector3>().Value,
                                 vec3Actions);
