@@ -1,8 +1,8 @@
 using System;
 using Assets.Scripts.EditorState;
-using UnityEditor;
 using UnityEngine;
 #if UNITY_EDITOR
+using UnityEditor;
 #endif
 
 namespace Assets.Scripts.Visuals
@@ -59,6 +59,7 @@ namespace Assets.Scripts.Visuals
         }
     }
 
+#if UNITY_EDITOR
     [CustomEditor(typeof(EntityVisuals))]
     [CanEditMultipleObjects]
     public class LookAtPointEditor : Editor
@@ -86,4 +87,5 @@ namespace Assets.Scripts.Visuals
             CustomEditorUtils.DrawEntityToGui(entity);
         }
     }
+#endif
 }
