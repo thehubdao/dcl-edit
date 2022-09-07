@@ -55,6 +55,7 @@ namespace Assets.Scripts.SceneState
         /// Is always "Entity"
         private const string DefaultName = "Entity";
 
+        public bool IsExposed { get; set; }
 
         public Guid Id { get; set; }
 
@@ -96,7 +97,7 @@ namespace Assets.Scripts.SceneState
 
             if (component == null)
                 return null;
-            
+
             var dclTransformComponent = new DclTransformComponent(component);
             return dclTransformComponent.Validate() ? dclTransformComponent : null;
         }

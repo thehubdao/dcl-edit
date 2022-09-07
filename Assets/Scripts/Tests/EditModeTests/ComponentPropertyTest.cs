@@ -1,3 +1,4 @@
+using System;
 using Assets.Scripts.SceneState;
 using NUnit.Framework;
 using UnityEngine;
@@ -59,7 +60,7 @@ namespace Assets.Scripts.Tests.EditModeTests
             Assert.AreEqual(stringProperty, concreteStringProperty);
             Assert.AreEqual("default string", concreteStringProperty.Value);
 
-            Assert.Throws<System.Exception>(() => stringProperty.GetConcrete<int>());
+            Assert.Throws<Exception>(() => stringProperty.GetConcrete<int>());
         }
 
     }

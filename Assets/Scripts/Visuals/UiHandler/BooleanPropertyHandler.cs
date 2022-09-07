@@ -8,8 +8,15 @@ namespace Assets.Scripts.Visuals.UiHandler
     {
         [SerializeField]
         public TextMeshProUGUI PropertyNameText;
-        
+
         [SerializeField]
         public Toggle CheckBoxInput;
+
+        public void SetActions(UiBuilder.UiPropertyActions<bool> actions)
+        {
+            CheckBoxInput.onValueChanged.RemoveAllListeners();
+
+            CheckBoxInput.onValueChanged.AddListener(value => actions.OnSubmit(value));
+        }
     }
 }
