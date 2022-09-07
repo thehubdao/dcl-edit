@@ -12,6 +12,29 @@ namespace Assets.Scripts.System
             CommandSystem.ExecuteCommand(new ChangeEntityName(entity.Id, newName, entity.CustomName));
         }
 
+        public static void SetIsExposed(DclEntity entity, bool isExposed)
+        {
+            if(isExposed == entity.IsExposed)
+                return;
+
+            if (isExposed)
+            {
+                if (ExposeEntitySystem.IsEntityExposable(entity))
+                {
+                    CommandSystem.ExecuteCommand(new ChangeIsExposed(entity.Id,true, entity.IsExposed));
+                }
+                else
+                {
+                    // TODO: show expose failed message
+                    EditorStates.CurrentSceneState.CurrentScene?.SelectionState.SelectionChangedEvent.Invoke();
+                }
+            }
+            else
+            {
+                CommandSystem.ExecuteCommand(new ChangeIsExposed(entity.Id, false, entity.IsExposed));
+            }
+        }
+
         public static void UpdateFloatingProperty<T>(DclPropertyIdentifier property, T value)
         {
             var scene = EditorStates.CurrentSceneState.CurrentScene;

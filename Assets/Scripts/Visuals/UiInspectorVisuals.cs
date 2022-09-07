@@ -36,7 +36,7 @@ public class UiInspectorVisuals : MonoBehaviour, ISetupSceneEventListeners
                 .ClearAndMake(_content);
             return;
         }
-        
+
         var nameInputActions = new UiBuilder.UiPropertyActions<string>
         {
             OnChange = _ => { },
@@ -44,11 +44,17 @@ public class UiInspectorVisuals : MonoBehaviour, ISetupSceneEventListeners
             OnAbort = _ => { }
         };
 
+        var exposedInputActions = new UiBuilder.UiPropertyActions<bool>
+        {
+            OnChange = _ => { },
+            OnSubmit = value => UpdatePropertiesFromUiSystem.SetIsExposed(selectedEntity, value),
+            OnAbort = _ => { }
+        };
+
 
         var entityHeadBuilder = new UiBuilder()
-            .StringPropertyInput("Name", "Name",
-                selectedEntity.CustomName ?? "", nameInputActions)
-            .BooleanPropertyInput("Is Exposed", true);
+            .StringPropertyInput("Name", "Name", selectedEntity.CustomName ?? "", nameInputActions)
+            .BooleanPropertyInput("Is Exposed", selectedEntity.IsExposed, exposedInputActions);
 
         inspectorBuilder.Panel(entityHeadBuilder);
 

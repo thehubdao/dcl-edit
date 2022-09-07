@@ -204,7 +204,7 @@ namespace Assets.Scripts.Visuals
             return this;
         }
 
-        public UiBuilder BooleanPropertyInput(string name, bool currentContents)
+        public UiBuilder BooleanPropertyInput(string name, bool currentContents, UiPropertyActions<bool> actions)
         {
             _atoms.Add(new UiAtom
             {
@@ -217,6 +217,9 @@ namespace Assets.Scripts.Visuals
 
                     booleanProperty.PropertyNameText.text = name;
                     booleanProperty.CheckBoxInput.isOn = currentContents;
+
+                    booleanProperty.SetActions(actions);
+
                     return new MakeGmReturn { go = go, height = 50 };
                 }
             });
