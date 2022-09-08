@@ -9,9 +9,9 @@ using UnityEngine;
 
 namespace Assets.Scripts.System
 {
-    public class LoadFromVersion1System : MonoBehaviour
+    public class LoadFromVersion1System
     {
-        public DclScene Load()
+        public static DclScene Load()
         {
             var sceneSaveFilePath = "";
             var projectSaveFilePath = "";
@@ -135,11 +135,11 @@ namespace Assets.Scripts.System
             {
                 ChangeToLocal(entity, null);
             }
-            
+
             return newScene;
         }
 
-        private void ChangeToLocal(DclEntity entity, DclTransformComponent dclParentTransform)
+        private static void ChangeToLocal(DclEntity entity, DclTransformComponent dclParentTransform)
         {
             // can be null
             var dclTransform = entity.GetTransformComponent();
@@ -170,11 +170,11 @@ namespace Assets.Scripts.System
             dclTransform.Rotation.SetFixedValue(childTransform.localRotation);
 
             // cleanup
-            Destroy(parentTransform.gameObject);
-            Destroy(childTransform.gameObject);
+            UnityEngine.Object.Destroy(parentTransform.gameObject);
+            UnityEngine.Object.Destroy(childTransform.gameObject);
         }
 
-        private AssetsJsonWrapper LoadAssets(string path)
+        private static AssetsJsonWrapper LoadAssets(string path)
         {
             if (File.Exists(path))
             {
@@ -202,7 +202,6 @@ namespace Assets.Scripts.System
             [Serializable]
             public struct GltfAssetWrapper
             {
-
                 public string name;
                 public string id;
                 public string gltfPath;
@@ -275,7 +274,6 @@ namespace Assets.Scripts.System
         {
             return new DclComponent("ConeShape", "Shape");
         }
-
     }
 
     [Serializable]
@@ -325,7 +323,7 @@ namespace Assets.Scripts.System
         public class EntityList
         {
             public int entityNumberCounter;
-            public List<EntityJson> entities;// = new List<Entity.Json>();
+            public List<EntityJson> entities; // = new List<Entity.Json>();
         };
 
         public static EntityList FromJson(this string jsonString)

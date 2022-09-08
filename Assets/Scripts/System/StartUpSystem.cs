@@ -12,16 +12,13 @@ namespace Assets.Scripts.System
         private CameraSystem _cameraSystem;
 
         [SerializeField]
-        private LoadFromVersion1System _loadFromVersion1System;
-
-        [SerializeField]
         private SetupSceneEventListenersSystem _setupSceneEventListenersSystem;
 
         void Awake()
         {
             EditorStates.Instance = _editorStates;
-            
-            var scene = _loadFromVersion1System.Load();
+
+            var scene = LoadFromVersion1System.Load();
 
             SetupSceneSystem.SetupScene(scene);
         }
