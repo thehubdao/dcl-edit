@@ -1,7 +1,9 @@
 using System;
 using Assets.Scripts.Command;
 using Assets.Scripts.EditorState;
+using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Cursor = UnityEngine.Cursor;
@@ -50,8 +52,9 @@ namespace Assets.Scripts.Interaction
                 case InputState.InStateType.FocusTransition:
                     UpdateFocusTransition();
                     break;
-
                 case InputState.InStateType.HoldingGizmoTool:
+                    UpdateHoldingGizmoTool();
+                    break;
                 default:
                     EditorStates.CurrentInputState.InState = InputState.InStateType.NoInput;
                     break;
@@ -158,6 +161,17 @@ namespace Assets.Scripts.Interaction
                     case Interface3DState.HoveredObjectType.Gizmo:
                         {
                             // TODO: Gizmo Grabbing
+                            EditorStates.CurrentInputState.InState = InputState.InStateType.HoldingGizmoTool;
+                            
+                            GameObject gizmo = EditorStates.CurrentInterface3DState.CurrentlyHoveredObject;
+                            if(gizmo.TryGetComponent(out GizmoDirection gizmoDir))
+                            {
+                                Vector3 gizmoAxis = gizmo.transform.TransformDirection(Vector3.Scale(gizmoDir.direction, gizmo.transform.parent.localScale));
+                                EditorStates.CurrentInputState.GizmoDragAxis = gizmoAxis;
+                                EditorStates.CurrentInputState.GizmoDragStartMousePos = Input.mousePosition;
+                                InputHelper.HideMouse();
+                                Debug.Log($"Now dragging: {gizmoDir.direction}, {gizmoAxis}");
+                            }
                             break;
                         }
                     case Interface3DState.HoveredObjectType.Entity:
@@ -345,6 +359,51 @@ namespace Assets.Scripts.Interaction
             {
                 EditorStates.CurrentInputState.InState = InputState.InStateType.NoInput;
             }
+        }
+
+        private void UpdateHoldingGizmoTool()
+        {
+            // When holding a gizmo and releasing LMB, stop dragging
+            if (!InputHelper.IsLeftMouseButtonPressed())
+            {
+                EditorStates.CurrentInputState.InState = InputState.InStateType.NoInput;
+                InputHelper.ShowMouse();
+                // TODO: Set final position via command
+                return;
+            }
+
+            DclEntity selectedEntity = EditorStates.CurrentSceneState.CurrentScene?.SelectionState.PrimarySelectedEntity;
+            DclTransformComponent entityTransform = selectedEntity.GetTransformComponent();
+
+            // Method 1: screen space vector calculations
+            
+            Vector3 gizmoAxis = (Vector3)EditorStates.CurrentInputState.GizmoDragAxis;
+            Debug.DrawRay(selectedEntity.GetTransformComponent().Position.FixedValue, gizmoAxis, Color.red);
+
+            Vector3 entityPos = selectedEntity.GetTransformComponent().Position.FixedValue;
+            Vector2 entityPosScreenSpace = Camera.main.WorldToScreenPoint(entityPos);
+            Vector2 gizmoAxisScreenSpace = entityPosScreenSpace - (Vector2)Camera.main.WorldToScreenPoint(entityPos + gizmoAxis);
+
+            Vector2 mouseDragDirection = InputHelper.GetMouseMovement();// (Vector2)Input.mousePosition - (Vector2)EditorStates.CurrentInputState.GizmoDragStartMousePos;
+            float relativeInputAmount = -Vector2.Dot(gizmoAxisScreenSpace, mouseDragDirection.normalized);
+
+            float distanceToCamera = Vector3.Distance(entityPos, Camera.main.transform.position);
+            Debug.Log("GizmoAxisScreenSpace: " + gizmoAxisScreenSpace + ", " + gizmoAxisScreenSpace.magnitude);
+
+            selectedEntity.GetTransformComponent().Position.SetFloatingValue(entityTransform.Position.Value + gizmoAxis * (1/gizmoAxisScreenSpace.magnitude) * relativeInputAmount * mouseDragDirection.magnitude * 0.2f);// * distanceToCamera * 0.001f);
+            EditorStates.CurrentSceneState.CurrentScene.SelectionState.SelectionChangedEvent.Invoke();
+            Debug.DrawRay(Input.mousePosition, gizmoAxisScreenSpace, Color.cyan);
+            
+
+            /*
+            Plane plane = new Plane(Vector3.down, entityTransform.GlobalFixedPosition.y);
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if(plane.Raycast(ray, out float enter))
+            {
+                Vector3 hitPoint = ray.GetPoint(enter);
+                Debug.DrawLine(Vector3.zero, hitPoint,Color.cyan);
+            }
+            */
         }
 
         private void ProcessHotKeys()
