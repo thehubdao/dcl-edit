@@ -23,8 +23,10 @@ public class InputState : MonoBehaviour
     // When the focus button was pressed, this variable keeps track of the position the camera transitions to
     public Vector3? FocusTransitionDestination = null;
 
-    // When dragging a move-gizmo, these variables keep track of the direction of the dragged gizmo
-    // and the mouse position at the start of the drag.
+    // When dragging a translation-gizmo, this variable keeps track of the direction of the dragged gizmo.
     public Vector3? GizmoDragAxis = null;
-    public Vector2? GizmoDragStartMousePos = null;
+    // When dragging a translation-gizmo, this variable stores the plane on which the mouse position is determined via raycasts.
+    public Plane? GizmoDragMouseCollisionPlane = null;
+    // When dragging a translation-gizmo, this variable keeps track of the initial mouse offset to the selected entity.
+    public Vector3 GizmoDragMouseOffset = Vector3.zero;
 }
