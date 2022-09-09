@@ -74,18 +74,7 @@ namespace Assets.Scripts.Interaction
             Ray mouseRay;
             bool isMouseOverGameWindow;
             {
-                // get the mouse position
-                var mousePosition = InputHelper.GetMousePosition();
-                // get the rectTransform from the Panel, the scene is currently visible in
-                var sceneImageRectTransform = EditorStates.CurrentUnityState.SceneImage.rectTransform;
-                // Get the position of the panel. This will give us the center of the panel, because the anchor is in the Center
-                var panelPosCenter = new Vector2(sceneImageRectTransform.position.x, sceneImageRectTransform.position.y);
-                // Calculate the bottom left corner position
-                var panelPos = panelPosCenter - (sceneImageRectTransform.rect.size / 2);
-                // Calculate the mouse position inside the panel
-                var mousePosInPanel = mousePosition - panelPos;
-                // convert the mouse position in panel into Viewport space
-                var mousePosViewport = EditorStates.CurrentUnityState.MainCamera.ScreenToViewportPoint(mousePosInPanel);
+                var mousePosViewport = InputHelper.GetMousePositionInScenePanel();
                 // Get the ray from the Camera, that corresponds to the mouse position in the panel
                 mouseRay = EditorStates.CurrentUnityState.MainCamera.ViewportPointToRay(mousePosViewport);
                 // Figure out, if the mouse is over the Game window
@@ -169,7 +158,7 @@ namespace Assets.Scripts.Interaction
                                 var selectedEntityTrans = EditorStates.CurrentSceneState.CurrentScene?.SelectionState.PrimarySelectedEntity.GetTransformComponent();
                                 Vector3 floatingPos = selectedEntityTrans.Position.Value;
                                 var camState = EditorStates.CurrentCameraState;
-
+                                
                                 // Determine the axis in which the translation happens.
                                 Vector3 gizmoAxis = gizmo.transform.TransformDirection(Vector3.Scale(gizmoDir.direction, gizmo.transform.parent.localScale));
                                 EditorStates.CurrentInputState.GizmoDragAxis = gizmoAxis;
@@ -186,8 +175,9 @@ namespace Assets.Scripts.Interaction
                                 EditorStates.CurrentInputState.GizmoDragMouseCollisionPlane = plane;
 
                                 // Calculate initial mouse offset to selected object
-                                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                                if(plane.Raycast(ray, out float enter)){
+                                Ray ray = EditorStates.CurrentUnityState.MainCamera.ViewportPointToRay(InputHelper.GetMousePositionInScenePanel());
+
+                                if (plane.Raycast(ray, out float enter)){
                                     Vector3 hitPoint = ray.GetPoint(enter);
                                     Vector3 dirToHitPoint = hitPoint - floatingPos;
                                     EditorStates.CurrentInputState.GizmoDragMouseOffset = dirToHitPoint;
@@ -407,7 +397,7 @@ namespace Assets.Scripts.Interaction
                 Debug.DrawRay(floatingPos, gizmoAxis * 100, Color.cyan);
                 Debug.DrawRay(floatingPos, gizmoAxis * -100, Color.cyan);
 
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                Ray ray = EditorStates.CurrentUnityState.MainCamera.ViewportPointToRay(InputHelper.GetMousePositionInScenePanel());
                 if (plane.Raycast(ray, out float enter))
                 {
                     Vector3 hitPoint = ray.GetPoint(enter);
@@ -491,6 +481,27 @@ namespace Assets.Scripts.Interaction
             public static Vector2 GetMousePosition()
             {
                 return Mouse.current.position.ReadValue();
+            }
+
+            /// <summary>
+            /// Returns the mouse position in viewport space of the camera in the scene panel.
+            /// </summary>
+            /// <returns></returns>
+            public static Vector2 GetMousePositionInScenePanel()
+            {
+                // get the mouse position
+                var mousePosition = GetMousePosition();
+                // get the rectTransform from the Panel, the scene is currently visible in
+                var sceneImageRectTransform = EditorStates.CurrentUnityState.SceneImage.rectTransform;
+                // Get the position of the panel. This will give us the center of the panel, because the anchor is in the Center
+                var panelPosCenter = new Vector2(sceneImageRectTransform.position.x, sceneImageRectTransform.position.y);
+                // Calculate the bottom left corner position
+                var panelPos = panelPosCenter - (sceneImageRectTransform.rect.size / 2);
+                // Calculate the mouse position inside the panel
+                var mousePosInPanel = mousePosition - panelPos;
+                // convert the mouse position in panel into Viewport space
+                var mousePosViewport = EditorStates.CurrentUnityState.MainCamera.ScreenToViewportPoint(mousePosInPanel);
+                return mousePosViewport;
             }
 
             // check for mouse buttons
