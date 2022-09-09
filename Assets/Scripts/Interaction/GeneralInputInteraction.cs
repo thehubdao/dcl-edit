@@ -199,7 +199,7 @@ namespace Assets.Scripts.Interaction
                                     Vector3 dirToHitPoint = hitPoint - floatingPos;
                                     // Project the dirToHitPoint onto gizmoAxis (this kind of results in a "shadow" of the dirToHitPoint which lies
                                     // on the gizmoAxis. The gizmoAxis is added to get the full "shadow" vector. 
-                                    Vector3 mouseOffset = gizmoAxis + Vector3.Project(dirToHitPoint, gizmoAxis);
+                                    Vector3 mouseOffset = Vector3.Project(dirToHitPoint, gizmoAxis);
                                     //Vector3 mouseOffset = dirToHitPoint;
 
                                     EditorStates.CurrentInputState.GizmoDragMouseOffset = mouseOffset;
@@ -445,14 +445,15 @@ namespace Assets.Scripts.Interaction
                     Debug.DrawLine(floatingPos, hitPoint, Color.white);
 
                     Vector3 dirToHitPoint = hitPoint - floatingPos;
-                    // Project the dirToHitPoint onto gizmoAxis (this kind of results in a "shadow" of the dirToHitPoint which lies
-                    // on the gizmoAxis. The gizmoAxis is added to get the full "shadow" vector. 
-                    Vector3 lastMove = gizmoAxis + Vector3.Project(dirToHitPoint, gizmoAxis);
+                    // Project the dirToHitPoint onto gizmoAxis. This results in a "shadow" of the dirToHitPoint which lies
+                    // on the gizmoAxis. 
+                    Vector3 hitPointOnAxis = Vector3.Project(dirToHitPoint, gizmoAxis);
 
                     Debug.Log("Dir to hit point: " + dirToHitPoint + ", " + dirToHitPoint.magnitude);
                     Debug.Log("Initial Mouse Offset " + initialMouseOffset + ", " + initialMouseOffset.magnitude);
 
-                    entityTransform.Position.SetFloatingValue(floatingPos + lastMove);
+                    //entityTransform.Position.SetFloatingValue(floatingPos + lastMove);
+                    entityTransform.Position.SetFloatingValue(floatingPos - initialMouseOffset + hitPointOnAxis);
                     EditorStates.CurrentSceneState.CurrentScene.SelectionState.SelectionChangedEvent.Invoke();
                 }
             }
