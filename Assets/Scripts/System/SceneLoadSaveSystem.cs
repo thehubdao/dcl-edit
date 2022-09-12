@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using System;
+using System.Linq;
 using Newtonsoft.Json;
 using Assets.Scripts.EditorState;
 using Newtonsoft.Json.Linq;
+using Debug = UnityEngine.Debug;
 
-namespace Assets.Scripts.System {
-    public class SceneSaveSystem
+namespace Assets.Scripts.System
+{
+    public class SceneLoadSaveSystem
     {
         public static void Save(DclScene scene)
         {
@@ -32,6 +35,38 @@ namespace Assets.Scripts.System {
             }
         }
 
+        public static DclScene Load(string absolutePath)
+        {
+            // return if path isn't directory
+            if (!Directory.Exists(absolutePath))
+            {
+                Debug.LogError("trying to load non existing scene");
+                return null;
+            }
+
+            // path should end with ".dclscene"
+            if (!absolutePath.EndsWith(".dclscene") && !absolutePath.EndsWith(".dclscene/"))
+            {
+                Debug.LogWarning("scene folders should end with \".dclscene\"");
+            }
+
+            var scene = new DclScene();
+
+            var directoryInfo = new DirectoryInfo(absolutePath);
+            foreach (var fileName in directoryInfo.GetFiles().Select(fi => fi.Name))
+            {
+                if (fileName == "scene.json" || !fileName.EndsWith(".json"))
+                {
+                    continue;
+                }
+
+                LoadEntityFile(scene, directoryInfo.FullName + "/" + fileName);
+            }
+
+
+            return scene;
+        }
+
 
         public static void CreateEntityFile(KeyValuePair<Guid, DclEntity> entity, string sceneDirectoryPath)
         {
@@ -41,6 +76,14 @@ namespace Assets.Scripts.System {
             string filename = data.customName.Replace(' ', '_') + "-" + data.guid.ToString() + ".json";
 
             File.WriteAllText($"{sceneDirectoryPath}/{filename}", dataJson);
+        }
+
+        public static void LoadEntityFile(DclScene scene, string absolutePath)
+        {
+            var json = File.ReadAllText(absolutePath);
+            var entityData = JsonConvert.DeserializeObject<DclEntityData>(json);
+
+            entityData.MakeEntity(scene);
         }
 
 
@@ -74,6 +117,21 @@ namespace Assets.Scripts.System {
                     this.components.Add(new DclComponentData(component));
                 }
             }
+
+            public void MakeEntity(DclScene scene)
+            {
+                var dclEntity = new DclEntity(scene, guid, customName, parentGuid ?? default);
+
+                // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator 
+                foreach (var component in components)
+                {
+                    var dclComponent = component.GetComponent();
+                    if (dclComponent != null)
+                    {
+                        dclEntity.AddComponent(dclComponent);
+                    }
+                }
+            }
         }
         public struct DclComponentData
         {
@@ -90,6 +148,31 @@ namespace Assets.Scripts.System {
                 {
                     this.properties.Add(new DclComponentPropertyData(property));
                 }
+            }
+
+            public DclComponent GetComponent()
+            {
+                var component = new DclComponent(nameInCode, nameOfSlot);
+                try
+                {
+                    foreach (var property in properties)
+                    {
+                        var dclComponentProperty = property.GetProperty();
+
+                        if (dclComponentProperty == null)
+                        {
+                            return null;
+                        }
+
+                        component.Properties.Add(dclComponentProperty);
+                    }
+                }
+                catch (Exception)
+                {
+                    return null;
+                }
+
+                return component;
             }
         }
         public struct DclComponentPropertyData
@@ -126,9 +209,41 @@ namespace Assets.Scripts.System {
                         this.fixedValue = JToken.FromObject(property.GetConcrete<Quaternion>().FixedValue);
                         break;
                     case DclComponent.DclComponentProperty.PropertyType.Asset:
+                        this.fixedValue = JToken.FromObject(property.GetConcrete<Guid>().FixedValue);
                         break;
                     default:
                         break;
+                }
+            }
+
+            public DclComponent.DclComponentProperty GetProperty()
+            {
+                if (!Enum.TryParse(type, true, out DclComponent.DclComponentProperty.PropertyType typeEnum))
+                {
+                    Debug.LogError($"Type {type} does not exist");
+                    return null;
+                }
+
+                switch (typeEnum)
+                {
+                    case DclComponent.DclComponentProperty.PropertyType.None:
+                        return null;
+                    case DclComponent.DclComponentProperty.PropertyType.String:
+                        return new DclComponent.DclComponentProperty<string>(name, fixedValue.ToObject<string>());
+                    case DclComponent.DclComponentProperty.PropertyType.Int:
+                        return new DclComponent.DclComponentProperty<int>(name, fixedValue.ToObject<int>());
+                    case DclComponent.DclComponentProperty.PropertyType.Float:
+                        return new DclComponent.DclComponentProperty<float>(name, fixedValue.ToObject<float>());
+                    case DclComponent.DclComponentProperty.PropertyType.Boolean:
+                        return new DclComponent.DclComponentProperty<bool>(name, fixedValue.ToObject<bool>());
+                    case DclComponent.DclComponentProperty.PropertyType.Vector3:
+                        return new DclComponent.DclComponentProperty<Vector3>(name, fixedValue.ToObject<Vector3>());
+                    case DclComponent.DclComponentProperty.PropertyType.Quaternion:
+                        return new DclComponent.DclComponentProperty<Quaternion>(name, fixedValue.ToObject<Quaternion>());
+                    case DclComponent.DclComponentProperty.PropertyType.Asset:
+                        return new DclComponent.DclComponentProperty<Guid>(name, fixedValue.ToObject<Guid>());
+                    default:
+                        return null;
                 }
             }
         }
