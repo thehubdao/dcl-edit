@@ -51,7 +51,7 @@ namespace Assets.Scripts.System
                 Debug.LogWarning("scene folders should end with \".dclscene\"");
             }
 
-            DclScene scene = new DclScene();
+            var scene = new DclScene();
 
             var directoryInfo = new DirectoryInfo(absolutePath);
             foreach (var fileName in directoryInfo.GetFiles().Select(fi => fi.Name))
@@ -63,6 +63,7 @@ namespace Assets.Scripts.System
 
                 LoadEntityFile(scene, directoryInfo.FullName + "/" + fileName);
             }
+
 
             return scene;
         }
@@ -120,8 +121,9 @@ namespace Assets.Scripts.System
 
             public void MakeEntity(DclScene scene)
             {
-                var dclEntity = new DclEntity(scene, guid, customName);
+                var dclEntity = new DclEntity(scene, guid, customName, parentGuid ?? default);
 
+                // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator 
                 foreach (var component in components)
                 {
                     var dclComponent = component.GetComponent();

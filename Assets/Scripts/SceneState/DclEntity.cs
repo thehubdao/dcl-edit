@@ -60,7 +60,15 @@ namespace Assets.Scripts.SceneState
         public Guid Id { get; set; }
 
         [CanBeNull]
-        public DclEntity Parent { get; set; }
+        public DclEntity Parent
+        {
+            get => Scene.GetEntityFormId(_parentId);
+            set => _parentId = value?.Id ?? Guid.Empty;
+        }
+
+        public Guid ParentId => _parentId;
+
+        private Guid _parentId = Guid.Empty;
 
         public IEnumerable<DclEntity> Children =>
             Scene.AllEntities
@@ -110,12 +118,12 @@ namespace Assets.Scripts.SceneState
             return names.Any(name => Components.Exists(c => c.NameInCode == name));
         }
 
-        public DclEntity(DclScene scene, Guid id, string name = "", DclEntity parent = null)
+        public DclEntity(DclScene scene, Guid id, string name = "", Guid parentId = default)
         {
             Scene = scene;
             Id = id;
             _customName = name;
-            Parent = parent;
+            _parentId = parentId;
 
             scene.AllEntities.Add(id, this);
         }
