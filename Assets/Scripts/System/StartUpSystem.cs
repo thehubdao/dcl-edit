@@ -1,6 +1,5 @@
 using System.IO;
 using Assets.Scripts.EditorState;
-using Assets.Scripts.SceneState;
 using UnityEngine;
 
 namespace Assets.Scripts.System
