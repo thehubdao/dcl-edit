@@ -18,7 +18,9 @@ namespace Assets.Scripts.System
         {
             EditorStates.Instance = _editorStates;
 
-            var scene = LoadFromVersion1System.Load();
+            var scene = //LoadFromVersion1System.Load();
+                SceneLoadSaveSystem.Load(
+                    EditorStates.CurrentPathState.ProjectPath + "/dcl-edit/saves/v2/New Scene.dclscene");
 
             SetupSceneSystem.SetupScene(scene);
         }
