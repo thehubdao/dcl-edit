@@ -1,4 +1,6 @@
+using System.IO;
 using Assets.Scripts.EditorState;
+using Assets.Scripts.SceneState;
 using UnityEngine;
 
 namespace Assets.Scripts.System
@@ -18,9 +20,12 @@ namespace Assets.Scripts.System
         {
             EditorStates.Instance = _editorStates;
 
-            var scene = //LoadFromVersion1System.Load();
-                SceneLoadSaveSystem.Load(
-                    EditorStates.CurrentPathState.ProjectPath + "/dcl-edit/saves/v2/New Scene.dclscene");
+            // Load scene
+            var v2Path = EditorStates.CurrentPathState.ProjectPath + "/dcl-edit/saves/v2/New Scene.dclscene";
+
+            var scene = Directory.Exists(v2Path) ?
+                SceneLoadSaveSystem.Load(v2Path) :
+                LoadFromVersion1System.Load();
 
             SetupSceneSystem.SetupScene(scene);
         }
