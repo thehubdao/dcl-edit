@@ -476,8 +476,6 @@ namespace Assets.Scripts.Interaction
                     {
                         case SelectionState.GizmoMode.Translate:
                             entityTransform.Position.SetFloatingValue(floatingPos + hitPointOnAxis);
-                            Debug.DrawRay(floatingPos, gizmoAxis * 100, Color.cyan);
-                            Debug.DrawRay(floatingPos, gizmoAxis * -100, Color.cyan);
                             break;
                         case SelectionState.GizmoMode.Rotate:
                             float distanceEntityToPlane = initialMouseOffset.magnitude;
@@ -502,11 +500,8 @@ namespace Assets.Scripts.Interaction
                             Vector3 localHitPointOnAxis = Quaternion.Inverse(entityTransform.Rotation.FixedValue) * hitPointOnAxis;
                             Vector3 newScale = currentScale + Vector3.Scale(currentScale,localHitPointOnAxis);
                             entityTransform.Scale.SetFloatingValue(newScale);
-                            Debug.DrawRay(floatingPos, gizmoAxis * 100, Color.cyan);
-                            Debug.DrawRay(floatingPos, gizmoAxis * -100, Color.cyan);
                             break;
                     }
-                    //Debug.DrawLine(Vector3.zero, floatingPos + hitPointOnAxis);
                     EditorStates.CurrentSceneState.CurrentScene.SelectionState.SelectionChangedEvent.Invoke();
                 }
             }
