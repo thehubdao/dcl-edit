@@ -446,9 +446,13 @@ namespace Assets.Scripts.Interaction
             {
                 InputState.GizmoData gizmoData = (InputState.GizmoData)EditorStates.CurrentInputState.CurrentGizmoData;
 
+                // Find mouse position in world on previously calculated plane
                 Ray ray = EditorStates.CurrentUnityState.MainCamera.ViewportPointToRay(InputHelper.GetMousePositionInScenePanel());
                 if (gizmoData.plane.Raycast(ray, out float enter))
                 {
+                    // Ignore mouse positions that are too far away
+                    if(enter >= EditorStates.CurrentUnityState.MainCamera.farClipPlane) return;
+
                     Vector3 hitPoint = ray.GetPoint(enter);
                     Vector3 dirToHitPoint = hitPoint - floatingPos;
 
