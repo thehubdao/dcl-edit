@@ -29,4 +29,7 @@ public class InputState : MonoBehaviour
     public Plane? GizmoDragMouseCollisionPlane = null;
     // When dragging a translation-gizmo, this variable keeps track of the initial mouse offset to the selected entity.
     public Vector3 GizmoDragMouseOffset = Vector3.zero;
+    public Vector3 LocalGizmoAxis;
+    // Mouse position at the start of the drag
+    public Vector3 GizmoDragStartPos = Vector3.zero;
 }

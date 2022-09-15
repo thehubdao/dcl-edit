@@ -112,5 +112,19 @@ namespace Assets.Scripts.SceneState
 
             return true;
         }
+    
+        /// <summary>
+        /// Transforms position from world space to local space.
+        /// </summary>
+        /// <param name="position"></param>
+        /// <returns></returns>
+        public Vector3 InverseTransformPoint(Vector3 position) => Quaternion.Inverse(Rotation.FixedValue) * (position - Position.FixedValue);
+
+        /// <summary>
+        /// Transforms position from local space to world space.
+        /// </summary>
+        /// <param name="position"></param>
+        /// <returns></returns>
+        public Vector3 TransformPoint(Vector3 position) => Position.FixedValue + Rotation.FixedValue * position;
     }
 }
