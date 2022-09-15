@@ -170,9 +170,6 @@ namespace Assets.Scripts.Interaction
 
                                     EditorStates.CurrentInputState.LocalGizmoAxis = gizmoDir.direction;
 
-                                    // For testing
-                                    var cleanMousePos = Vector3.zero;
-
                                     SelectionState.GizmoMode currentMode = EditorStates.CurrentSceneState.CurrentScene.SelectionState.CurrentGizmoMode;
                                     if (currentMode == SelectionState.GizmoMode.Rotate)
                                     {
@@ -184,7 +181,7 @@ namespace Assets.Scripts.Interaction
                                         // probably be a bit offset from the actual gizmo position.
                                         Vector3 invertedGizmoDir = Vector3.one - gizmoDir.direction;        // Remove the rotation axis by setting it to 0
                                         localMousePos = Vector3.Scale(localMousePos, invertedGizmoDir);
-                                        cleanMousePos = selectedEntityTrans.TransformPoint(localMousePos);
+                                        
                                         // Calculate the gizmo axis
                                         // Gizmo axis must be perpendicular to both the direction to local mouse position and the gizmo direction.
                                         // That way the gizmo axis matches the slope of the rotation gizmo at the clicked position. 
@@ -211,14 +208,14 @@ namespace Assets.Scripts.Interaction
                                     // Create a plane on which the mouse position is determined
                                     if (currentMode == SelectionState.GizmoMode.Rotate)
                                     {
-                                        plane = new Plane(normal, cleanMousePos);
+                                        plane = new Plane(normal, mousePosWrldSpc);
                                     }
                                     else
                                     {
                                         plane = new Plane(normal, floatingPos);
                                     }
                                     EditorStates.CurrentInputState.GizmoDragMouseCollisionPlane = plane;
-                                    EditorStates.CurrentInputState.GizmoDragStartPos = cleanMousePos;
+                                    EditorStates.CurrentInputState.GizmoDragStartPos = mousePosWrldSpc;
 
                                     // Calculate initial mouse offset to selected object
                                     Ray ray = EditorStates.CurrentUnityState.MainCamera.ViewportPointToRay(InputHelper.GetMousePositionInScenePanel());
@@ -478,19 +475,27 @@ namespace Assets.Scripts.Interaction
                             entityTransform.Position.SetFloatingValue(floatingPos + hitPointOnAxis);
                             break;
                         case SelectionState.GizmoMode.Rotate:
-                            float distanceEntityToPlane = initialMouseOffset.magnitude;
-
-                            // Multiply this by the gizmo axis to get the hit point.
+                            // The distance along the gizmo axis at which the hit point lies.
                             // If the hit point on axis lies in the positive direction, the dot product returns 1. If it lies
                             // in the negative direction, the dot product returns -1. Therefore we can determine how far we pointed
                             // along the gizmo axis and in which direction.
                             float signedHitDistance = Vector3.Dot(hitPointOnAxis.normalized, gizmoAxis) * hitPointOnAxis.magnitude;
 
-                            float rotateAmount = signedHitDistance * -1;                // Flip to rotate into correct direction                            
-                            rotateAmount = rotateAmount / distanceEntityToPlane;        // Constant sensitivity by factoring in zoom level
-                            rotateAmount *= 25;                                         // Scaling factor
+                            // Measure the radius of the rotation gizmo circle. As the initial mouse position is pretty close
+                            // to the circle we can take that as a radius.
+                            float radius = initialMouseOffset.magnitude;
 
-                            Quaternion newRotation = entityTransform.Rotation.FixedValue * Quaternion.Euler(localGizmoDir * rotateAmount);
+                            // The distance moved by the mouse is the length of the arc. 
+                            float arcLength = signedHitDistance;
+
+                            // Calculate the angle of the arc. This is the amount that the object will be rotated by.
+                            float angle = (arcLength * 360) / (2 * Mathf.PI * radius);
+
+                            // Invert to rotate in the correct direction
+                            angle *= -1;            
+
+                            Quaternion newRotation = entityTransform.Rotation.FixedValue * Quaternion.Euler(localGizmoDir * angle);
+
                             entityTransform.Rotation.SetFloatingValue(newRotation);
                             break;
                         case SelectionState.GizmoMode.Scale:
