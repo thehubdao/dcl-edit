@@ -185,7 +185,7 @@ namespace Assets.Scripts.Interaction
                                     }
                                     else
                                     {
-                                        gizmoAxis = gizmo.transform.TransformDirection(Vector3.Scale(gizmoDir.direction, gizmo.transform.parent.localScale));
+                                        gizmoAxis = (entity.TransformPoint(gizmoDir.direction) - entity.Position.FixedValue).normalized;
                                     }
 
                                     // Define two vectors: gizmoAxis and dirToCamera
