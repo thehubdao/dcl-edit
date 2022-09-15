@@ -445,9 +445,6 @@ namespace Assets.Scripts.Interaction
             if (EditorStates.CurrentInputState.CurrentGizmoData != null)
             {
                 InputState.GizmoData gizmoData = (InputState.GizmoData)EditorStates.CurrentInputState.CurrentGizmoData;
-                //Plane plane = (Plane)EditorStates.CurrentInputState.GizmoDragMouseCollisionPlane;
-                //Vector3 gizmoAxis = EditorStates.CurrentInputState.GizmoDragAxis ?? Vector3.zero;
-                //Vector3 initialMouseOffset = EditorStates.CurrentInputState.GizmoDragMouseOffset;
 
                 Ray ray = EditorStates.CurrentUnityState.MainCamera.ViewportPointToRay(InputHelper.GetMousePositionInScenePanel());
                 if (gizmoData.plane.Raycast(ray, out float enter))
