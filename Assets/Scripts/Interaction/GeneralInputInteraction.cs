@@ -153,27 +153,20 @@ namespace Assets.Scripts.Interaction
                             EditorStates.CurrentInputState.InState = InputState.InStateType.HoldingGizmoTool;
 
                             if (mousePositionIn3DView != null) {
-                                Vector3 mousePosWrldSpc = (Vector3)mousePositionIn3DView;
                                 GameObject gizmo = EditorStates.CurrentInterface3DState.CurrentlyHoveredObject;
                                 if (gizmo.TryGetComponent(out GizmoDirection gizmoDir))
                                 {
-                                    var selectedEntityTrans = EditorStates.CurrentSceneState.CurrentScene?.SelectionState.PrimarySelectedEntity.GetTransformComponent();
-                                    Vector3 floatingPos = selectedEntityTrans.Position.Value;
-                                    var camState = EditorStates.CurrentCameraState;
+                                    var entity = EditorStates.CurrentSceneState.CurrentScene?.SelectionState.PrimarySelectedEntity.GetTransformComponent();
+                                    Vector3 floatingPos = entity.Position.Value;
 
                                     // Along this axis the displacement of the mouse position is measured. It is also used to create a plane which handles
                                     // the collision detection for the mouse position in 3d space while using gizmos.
                                     Vector3 gizmoAxis;
 
-                                    // Used to determine the mouse position. Lies along gizmo axis.
-                                    Plane plane;
-
-                                    EditorStates.CurrentInputState.LocalGizmoAxis = gizmoDir.direction;
-
                                     SelectionState.GizmoMode currentMode = EditorStates.CurrentSceneState.CurrentScene.SelectionState.CurrentGizmoMode;
                                     if (currentMode == SelectionState.GizmoMode.Rotate)
                                     {
-                                        Vector3 localMousePos = selectedEntityTrans.InverseTransformPoint(mousePosWrldSpc);
+                                        Vector3 localMousePos = entity.InverseTransformPoint((Vector3)mousePositionIn3DView);
 
                                         // Clean up the local space mouse position
                                         // Example: if we rotate the object around the x-axis we want a local space mouse position where
@@ -188,34 +181,30 @@ namespace Assets.Scripts.Interaction
                                         Vector3 localGizmoAxis = Vector3.Cross(localMousePos, gizmoDir.direction);
 
                                         // Transform gizmo axis to world space
-                                        gizmoAxis = selectedEntityTrans.TransformPoint(localGizmoAxis) - selectedEntityTrans.Position.FixedValue;
-
+                                        gizmoAxis = entity.TransformPoint(localGizmoAxis) - entity.Position.FixedValue;
                                     }
                                     else
                                     {
                                         gizmoAxis = gizmo.transform.TransformDirection(Vector3.Scale(gizmoDir.direction, gizmo.transform.parent.localScale));
                                     }
 
-                                    EditorStates.CurrentInputState.GizmoDragAxis = gizmoAxis.normalized;
-
                                     // Define two vectors: gizmoAxis and dirToCamera
                                     // Then make sure that dirToCamera is orthogonal to gizmoAxis. This orthogonal dirToCamera vector
                                     // now becomes the normal of the plane which does the mouse collision.
-                                    Vector3 dirToCamera = camState.Position - selectedEntityTrans.Position.FixedValue;
+                                    Vector3 dirToCamera = EditorStates.CurrentCameraState.Position - entity.Position.FixedValue;
                                     Vector3.OrthoNormalize(ref gizmoAxis, ref dirToCamera);
                                     Vector3 normal = dirToCamera;
 
-                                    // Create a plane on which the mouse position is determined
+                                    // Create a plane on which the mouse position is determined via raycasts. Lies along gizmo axis.
+                                    Plane plane;
                                     if (currentMode == SelectionState.GizmoMode.Rotate)
                                     {
-                                        plane = new Plane(normal, mousePosWrldSpc);
+                                        plane = new Plane(normal, (Vector3)mousePositionIn3DView);
                                     }
                                     else
                                     {
                                         plane = new Plane(normal, floatingPos);
                                     }
-                                    EditorStates.CurrentInputState.GizmoDragMouseCollisionPlane = plane;
-                                    EditorStates.CurrentInputState.GizmoDragStartPos = mousePosWrldSpc;
 
                                     // Calculate initial mouse offset to selected object
                                     Ray ray = EditorStates.CurrentUnityState.MainCamera.ViewportPointToRay(InputHelper.GetMousePositionInScenePanel());
@@ -224,7 +213,9 @@ namespace Assets.Scripts.Interaction
                                     {
                                         Vector3 hitPoint = ray.GetPoint(enter);
                                         Vector3 dirToHitPoint = hitPoint - floatingPos;
-                                        EditorStates.CurrentInputState.GizmoDragMouseOffset = dirToHitPoint;
+
+                                        // Pass data about the current gizmo operation to the update method.
+                                        EditorStates.CurrentInputState.CurrentGizmoData = new InputState.GizmoData(gizmoAxis.normalized, plane, dirToHitPoint, gizmoDir.direction);
                                     }
                                 }
                             }
@@ -441,8 +432,8 @@ namespace Assets.Scripts.Interaction
             if (!InputHelper.IsLeftMouseButtonPressed())
             {
                 EditorStates.CurrentInputState.InState = InputState.InStateType.NoInput;
-                EditorStates.CurrentInputState.GizmoDragAxis = null;
-                EditorStates.CurrentInputState.GizmoDragMouseCollisionPlane = null;
+                EditorStates.CurrentInputState.CurrentGizmoData = null;
+                
                 // TODO: Set final position via command
                 return;
             }
@@ -451,15 +442,15 @@ namespace Assets.Scripts.Interaction
             DclTransformComponent entityTransform = selectedEntity.GetTransformComponent();
             Vector3 floatingPos = entityTransform.Position.Value;
 
-            if (EditorStates.CurrentInputState.GizmoDragMouseCollisionPlane != null)
+            if (EditorStates.CurrentInputState.CurrentGizmoData != null)
             {
-                Plane plane = (Plane)EditorStates.CurrentInputState.GizmoDragMouseCollisionPlane;
-                Vector3 gizmoAxis = EditorStates.CurrentInputState.GizmoDragAxis ?? Vector3.zero;
-                Vector3 initialMouseOffset = EditorStates.CurrentInputState.GizmoDragMouseOffset;
-                Vector3 localGizmoDir = EditorStates.CurrentInputState.LocalGizmoAxis;
+                InputState.GizmoData gizmoData = (InputState.GizmoData)EditorStates.CurrentInputState.CurrentGizmoData;
+                //Plane plane = (Plane)EditorStates.CurrentInputState.GizmoDragMouseCollisionPlane;
+                //Vector3 gizmoAxis = EditorStates.CurrentInputState.GizmoDragAxis ?? Vector3.zero;
+                //Vector3 initialMouseOffset = EditorStates.CurrentInputState.GizmoDragMouseOffset;
 
                 Ray ray = EditorStates.CurrentUnityState.MainCamera.ViewportPointToRay(InputHelper.GetMousePositionInScenePanel());
-                if (plane.Raycast(ray, out float enter))
+                if (gizmoData.plane.Raycast(ray, out float enter))
                 {
                     Vector3 hitPoint = ray.GetPoint(enter);
                     Vector3 dirToHitPoint = hitPoint - floatingPos;
@@ -467,7 +458,7 @@ namespace Assets.Scripts.Interaction
                     // Project the dirToHitPoint onto gizmoAxis. This results in a "shadow" of the dirToHitPoint which lies
                     // on the gizmoAxis. Also factor in the mouse offset from the start of the drag to keep the object at the
                     // same position relative to the mouse cursor. This point is relative to the selected object.
-                    Vector3 hitPointOnAxis = Vector3.Project(dirToHitPoint - initialMouseOffset, gizmoAxis);
+                    Vector3 hitPointOnAxis = Vector3.Project(dirToHitPoint - gizmoData.initialMouseOffset, gizmoData.dragAxis);
 
                     switch (EditorStates.CurrentSceneState.CurrentScene.SelectionState.CurrentGizmoMode)
                     {
@@ -479,11 +470,11 @@ namespace Assets.Scripts.Interaction
                             // If the hit point on axis lies in the positive direction, the dot product returns 1. If it lies
                             // in the negative direction, the dot product returns -1. Therefore we can determine how far we pointed
                             // along the gizmo axis and in which direction.
-                            float signedHitDistance = Vector3.Dot(hitPointOnAxis.normalized, gizmoAxis) * hitPointOnAxis.magnitude;
+                            float signedHitDistance = Vector3.Dot(hitPointOnAxis.normalized, gizmoData.dragAxis) * hitPointOnAxis.magnitude;
 
                             // Measure the radius of the rotation gizmo circle. As the initial mouse position is pretty close
                             // to the circle we can take that as a radius.
-                            float radius = initialMouseOffset.magnitude;
+                            float radius = gizmoData.initialMouseOffset.magnitude;
 
                             // The distance moved by the mouse is the length of the arc. 
                             float arcLength = signedHitDistance;
@@ -494,7 +485,7 @@ namespace Assets.Scripts.Interaction
                             // Invert to rotate in the correct direction
                             angle *= -1;            
 
-                            Quaternion newRotation = entityTransform.Rotation.FixedValue * Quaternion.Euler(localGizmoDir * angle);
+                            Quaternion newRotation = entityTransform.Rotation.FixedValue * Quaternion.Euler(gizmoData.rotationAxis * angle);
 
                             entityTransform.Rotation.SetFloatingValue(newRotation);
                             break;
