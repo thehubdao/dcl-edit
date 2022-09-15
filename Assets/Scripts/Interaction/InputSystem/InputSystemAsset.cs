@@ -309,6 +309,30 @@ public class @InputSystemAsset : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": ""Press(behavior=1)""
+                },
+                {
+                    ""name"": ""Translate"",
+                    ""type"": ""Button"",
+                    ""id"": ""ae1e3c65-3c80-4b5d-ae3a-fce036399c9c"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": ""Press(behavior=1)""
+                },
+                {
+                    ""name"": ""Rotate"",
+                    ""type"": ""Button"",
+                    ""id"": ""2513e2b5-bea4-466b-8c6c-7d406d9a27c2"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": ""Press(behavior=1)""
+                },
+                {
+                    ""name"": ""Scale"",
+                    ""type"": ""Button"",
+                    ""id"": ""2dea60ed-d46e-4c2c-96fb-7b684bf4c9a8"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": ""Press(behavior=1)""
                 }
             ],
             ""bindings"": [
@@ -410,6 +434,39 @@ public class @InputSystemAsset : IInputActionCollection, IDisposable
                     ""action"": ""Save"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e4459842-4141-4879-a535-1607ea9671dc"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Translate"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5f326d66-ecf7-467c-843e-bdd09802b5da"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Rotate"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""33c09bd5-d79a-48c1-8e3e-69df4a84f102"",
+                    ""path"": ""<Keyboard>/t"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Scale"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -493,6 +550,9 @@ public class @InputSystemAsset : IInputActionCollection, IDisposable
         m_Hotkeys_Undo = m_Hotkeys.FindAction("Undo", throwIfNotFound: true);
         m_Hotkeys_Redo = m_Hotkeys.FindAction("Redo", throwIfNotFound: true);
         m_Hotkeys_Save = m_Hotkeys.FindAction("Save", throwIfNotFound: true);
+        m_Hotkeys_Translate = m_Hotkeys.FindAction("Translate", throwIfNotFound: true);
+        m_Hotkeys_Rotate = m_Hotkeys.FindAction("Rotate", throwIfNotFound: true);
+        m_Hotkeys_Scale = m_Hotkeys.FindAction("Scale", throwIfNotFound: true);
         // Modifier
         m_Modifier = asset.FindActionMap("Modifier", throwIfNotFound: true);
         m_Modifier_Shift = m_Modifier.FindAction("Shift", throwIfNotFound: true);
@@ -615,6 +675,9 @@ public class @InputSystemAsset : IInputActionCollection, IDisposable
     private readonly InputAction m_Hotkeys_Undo;
     private readonly InputAction m_Hotkeys_Redo;
     private readonly InputAction m_Hotkeys_Save;
+    private readonly InputAction m_Hotkeys_Translate;
+    private readonly InputAction m_Hotkeys_Rotate;
+    private readonly InputAction m_Hotkeys_Scale;
     public struct HotkeysActions
     {
         private @InputSystemAsset m_Wrapper;
@@ -622,6 +685,9 @@ public class @InputSystemAsset : IInputActionCollection, IDisposable
         public InputAction @Undo => m_Wrapper.m_Hotkeys_Undo;
         public InputAction @Redo => m_Wrapper.m_Hotkeys_Redo;
         public InputAction @Save => m_Wrapper.m_Hotkeys_Save;
+        public InputAction @Translate => m_Wrapper.m_Hotkeys_Translate;
+        public InputAction @Rotate => m_Wrapper.m_Hotkeys_Rotate;
+        public InputAction @Scale => m_Wrapper.m_Hotkeys_Scale;
         public InputActionMap Get() { return m_Wrapper.m_Hotkeys; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -640,6 +706,15 @@ public class @InputSystemAsset : IInputActionCollection, IDisposable
                 @Save.started -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnSave;
                 @Save.performed -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnSave;
                 @Save.canceled -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnSave;
+                @Translate.started -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnTranslate;
+                @Translate.performed -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnTranslate;
+                @Translate.canceled -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnTranslate;
+                @Rotate.started -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnRotate;
+                @Rotate.performed -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnRotate;
+                @Rotate.canceled -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnRotate;
+                @Scale.started -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnScale;
+                @Scale.performed -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnScale;
+                @Scale.canceled -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnScale;
             }
             m_Wrapper.m_HotkeysActionsCallbackInterface = instance;
             if (instance != null)
@@ -653,6 +728,15 @@ public class @InputSystemAsset : IInputActionCollection, IDisposable
                 @Save.started += instance.OnSave;
                 @Save.performed += instance.OnSave;
                 @Save.canceled += instance.OnSave;
+                @Translate.started += instance.OnTranslate;
+                @Translate.performed += instance.OnTranslate;
+                @Translate.canceled += instance.OnTranslate;
+                @Rotate.started += instance.OnRotate;
+                @Rotate.performed += instance.OnRotate;
+                @Rotate.canceled += instance.OnRotate;
+                @Scale.started += instance.OnScale;
+                @Scale.performed += instance.OnScale;
+                @Scale.canceled += instance.OnScale;
             }
         }
     }
@@ -719,6 +803,9 @@ public class @InputSystemAsset : IInputActionCollection, IDisposable
         void OnUndo(InputAction.CallbackContext context);
         void OnRedo(InputAction.CallbackContext context);
         void OnSave(InputAction.CallbackContext context);
+        void OnTranslate(InputAction.CallbackContext context);
+        void OnRotate(InputAction.CallbackContext context);
+        void OnScale(InputAction.CallbackContext context);
     }
     public interface IModifierActions
     {

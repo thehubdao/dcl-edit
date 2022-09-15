@@ -161,7 +161,7 @@ namespace Assets.Scripts.Interaction
                                 
                                 // Determine the axis in which the translation happens.
                                 Vector3 gizmoAxis = gizmo.transform.TransformDirection(Vector3.Scale(gizmoDir.direction, gizmo.transform.parent.localScale));
-                                EditorStates.CurrentInputState.GizmoDragAxis = gizmoAxis;
+                                EditorStates.CurrentInputState.GizmoDragAxis = gizmoAxis.normalized;
 
                                 // Define two vectors: gizmoAxis and dirToCamera
                                 // Then make sure that dirToCamera is orthogonal to gizmoAxis. This orthogonal dirToCamera vector
@@ -283,6 +283,24 @@ namespace Assets.Scripts.Interaction
                 SceneSaveSystem.Save(EditorStates.CurrentSceneState.CurrentScene);
                 WorkspaceSaveSystem.Save(EditorStates.CurrentUnityState.dynamicPanelsCanvas);
             }
+
+            // When pressing Translate hotkey, enter translation gizmo mode
+            if (_inputSystemAsset.Hotkeys.Translate.triggered)
+            {
+                EditorStates.CurrentSceneState.CurrentScene.SelectionState.CurrentGizmoMode = SelectionState.GizmoMode.Translate;
+            }
+
+            // When pressing Rotate hotkey, enter rotation gizmo mode
+            if (_inputSystemAsset.Hotkeys.Rotate.triggered)
+            {
+                EditorStates.CurrentSceneState.CurrentScene.SelectionState.CurrentGizmoMode = SelectionState.GizmoMode.Rotate;
+            }
+
+            // When pressing Scale hotkey, enter rotation gizmo mode
+            if (_inputSystemAsset.Hotkeys.Scale.triggered)
+            {
+                EditorStates.CurrentSceneState.CurrentScene.SelectionState.CurrentGizmoMode = SelectionState.GizmoMode.Scale;
+            }
         }
 
         private void UpdateWasdMovement()
@@ -374,7 +392,7 @@ namespace Assets.Scripts.Interaction
 
         private void UpdateHoldingGizmoTool()
         {
-            // When holding a gizmo and releasing LMB, stop dragging
+            // When releasing LMB, stop holding gizmo
             if (!InputHelper.IsLeftMouseButtonPressed())
             {
                 EditorStates.CurrentInputState.InState = InputState.InStateType.NoInput;
@@ -408,7 +426,22 @@ namespace Assets.Scripts.Interaction
                     // same position relative to the mouse cursor.
                     Vector3 hitPointOnAxis = Vector3.Project(dirToHitPoint - initialMouseOffset, gizmoAxis);
 
-                    entityTransform.Position.SetFloatingValue(floatingPos + hitPointOnAxis);
+                    switch (EditorStates.CurrentSceneState.CurrentScene.SelectionState.CurrentGizmoMode)
+                    {
+                        case SelectionState.GizmoMode.Translate:
+                            entityTransform.Position.SetFloatingValue(floatingPos + hitPointOnAxis);
+                            break;
+                        case SelectionState.GizmoMode.Rotate:
+                            break;
+                        case SelectionState.GizmoMode.Scale:
+                            // The point on the gizmo axis that is closest to the current mouse position. Transformed into local space.
+                            Vector3 localHitPointOnAxis = Quaternion.Inverse(entityTransform.Rotation.FixedValue) * hitPointOnAxis;
+                            Vector3 currentScale = entityTransform.Scale.FixedValue;
+                            Vector3 newScale = currentScale + Vector3.Scale(currentScale,localHitPointOnAxis);
+                            entityTransform.Scale.SetFloatingValue(newScale);
+                            break;
+                    }
+                    Debug.DrawLine(Vector3.zero, floatingPos + hitPointOnAxis);
                     EditorStates.CurrentSceneState.CurrentScene.SelectionState.SelectionChangedEvent.Invoke();
                 }
             }
