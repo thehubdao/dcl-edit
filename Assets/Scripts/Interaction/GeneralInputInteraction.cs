@@ -480,25 +480,18 @@ namespace Assets.Scripts.Interaction
                             Debug.DrawRay(floatingPos, gizmoAxis * -100, Color.cyan);
                             break;
                         case SelectionState.GizmoMode.Rotate:
+                            float distanceEntityToPlane = initialMouseOffset.magnitude;
+
                             // Multiply this by the gizmo axis to get the hit point.
                             // If the hit point on axis lies in the positive direction, the dot product returns 1. If it lies
                             // in the negative direction, the dot product returns -1. Therefore we can determine how far we pointed
                             // along the gizmo axis and in which direction.
                             float signedHitDistance = Vector3.Dot(hitPointOnAxis.normalized, gizmoAxis) * hitPointOnAxis.magnitude;
 
-                            Debug.DrawRay(Vector3.zero, gizmoAxis * signedHitDistance, Color.red);
+                            float rotateAmount = signedHitDistance * -1;                // Flip to rotate into correct direction                            
+                            rotateAmount = rotateAmount / distanceEntityToPlane;        // Constant sensitivity by factoring in zoom level
+                            rotateAmount *= 25;                                         // Scaling factor
 
-                            // If the hit point on axis lies in the positive direction, the dot product returns 1. If it lies
-                            // in the negative direction, the dot product returns -1. Therefore we can determine how far we pointed
-                            // along the gizmo axis and in which direction.
-                            float rotateAmount = Vector3.Dot(hitPointOnAxis, gizmoAxis) * hitPointOnAxis.magnitude * -1;
-                            
-                            // TODO: make rotation sensitivity dependent on distance to camera or gizmo scale
-                            float distanceEntityToPlane = initialMouseOffset.magnitude;
-                            rotateAmount = rotateAmount / distanceEntityToPlane * 2;
-
-
-                            Debug.Log($"Rotate Amount: {rotateAmount}, hit distance: {hitPointOnAxis.magnitude}");
                             Quaternion newRotation = entityTransform.Rotation.FixedValue * Quaternion.Euler(localGizmoDir * rotateAmount);
                             entityTransform.Rotation.SetFloatingValue(newRotation);
                             break;
