@@ -12,7 +12,8 @@ public class InputState : MonoBehaviour
         RotateAroundPoint,
         SlideSideways,
         HoldingGizmoTool,
-        FocusTransition
+        FocusTransition,
+        UiInput
     }
 
     public InStateType InState = InStateType.NoInput;

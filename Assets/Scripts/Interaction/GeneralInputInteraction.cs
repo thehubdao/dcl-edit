@@ -53,6 +53,10 @@ namespace Assets.Scripts.Interaction
                 case InputState.InStateType.FocusTransition:
                     UpdateFocusTransition();
                     break;
+                case InputState.InStateType.UiInput:
+                    UpdateUiInput();
+                    break;
+
                 case InputState.InStateType.HoldingGizmoTool:
                     UpdateHoldingGizmoTool();
                     break;
@@ -361,7 +365,7 @@ namespace Assets.Scripts.Interaction
             // When pressing the save hotkey, save the scene and workspace layout
             if (_inputSystemAsset.Hotkeys.Save.triggered)
             {
-                SceneSaveSystem.Save(EditorStates.CurrentSceneState.CurrentScene);
+                SceneLoadSaveSystem.Save(EditorStates.CurrentSceneState.CurrentScene);
                 WorkspaceSaveSystem.Save(EditorStates.CurrentUnityState.dynamicPanelsCanvas);
             }
 
@@ -469,6 +473,11 @@ namespace Assets.Scripts.Interaction
             {
                 EditorStates.CurrentInputState.InState = InputState.InStateType.NoInput;
             }
+        }
+
+        private void UpdateUiInput()
+        {
+            // Prevent Inputs if currently typing in a text field
         }
 
         private void UpdateHoldingGizmoTool()

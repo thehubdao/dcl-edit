@@ -1,5 +1,6 @@
 using Assets.Scripts.EditorState;
 using Assets.Scripts.SceneState;
+using Assets.Scripts.Utility;
 using UnityEngine;
 
 namespace Assets.Scripts.Visuals
@@ -13,7 +14,6 @@ namespace Assets.Scripts.Visuals
 
         }
 
-        
 
         protected void UpdateSelection(DclEntity entity)
         {
@@ -39,17 +39,25 @@ namespace Assets.Scripts.Visuals
         protected void SetRenderingLayerRecursive(GameObject o, int layer)
         {
             if (HasRenderer(o))
-                o.layer = layer;
-
-            foreach (Transform child in o.transform)
             {
-                SetRenderingLayerRecursive(child.gameObject, layer);
+                o.layer = layer;
+            }
+
+            foreach (var child in o.transform.GetChildren())
+            {
+                // don't apply the outline to objects that are ShapeVisuals
+                // They represent different entities and have to manage their outline them self
+                if (!child.TryGetComponent(out ShapeVisuals _))
+                {
+                    SetRenderingLayerRecursive(child.gameObject, layer);
+                }
             }
         }
 
         protected bool HasRenderer(GameObject o)
         {
-            return o.TryGetComponent(out MeshRenderer _);
+            return o.TryGetComponent(out MeshRenderer _) ||
+                   o.TryGetComponent(out SkinnedMeshRenderer _);
         }
 
         public virtual void Deactivate()

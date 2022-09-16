@@ -36,6 +36,8 @@ namespace Assets.Scripts.Visuals
                 return;
             }
 
+            GUILayout.Label("InState: " + EditorStates.CurrentInputState.InState);
+
             _showSelectionState = GUILayout.Toggle(_showSelectionState, "Show Selection State");
             _showCommandHistory = GUILayout.Toggle(_showCommandHistory, "Show Command History");
 

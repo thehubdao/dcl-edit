@@ -7,7 +7,7 @@ namespace Assets.Scripts.Command.Utility
     {
         public static void AddEntity(DclScene scene, Guid id, string name, DclEntity parent)
         {
-            var entity = new DclEntity(scene, id, name, parent);
+            var entity = new DclEntity(scene, id, name, parent.Id);
             scene.AllEntities.Add(id, entity);
         }
 
