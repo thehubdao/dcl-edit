@@ -34,7 +34,7 @@ namespace Assets.Scripts.SceneState
                 var scaledLocalPosition = Position.FixedValue;
                 scaledLocalPosition.Scale(parentTransform.Scale.FixedValue);
                 var globalPosition = (parentTransform.GlobalFixedPosition + (parentTransform.GlobalFixedRotation * scaledLocalPosition));
-                
+
                 return globalPosition;
             }
         }
@@ -51,7 +51,7 @@ namespace Assets.Scripts.SceneState
                 var scaledLocalPosition = Position.Value;
                 scaledLocalPosition.Scale(parentTransform.Scale.Value);
                 var globalPosition = (parentTransform.GlobalPosition + (parentTransform.GlobalRotation * scaledLocalPosition));
-                
+
                 return globalPosition;
             }
         }
@@ -112,19 +112,29 @@ namespace Assets.Scripts.SceneState
 
             return true;
         }
-    
+
         /// <summary>
         /// Transforms position from world space to local space.
         /// </summary>
         /// <param name="position"></param>
         /// <returns></returns>
-        public Vector3 InverseTransformPoint(Vector3 position) => Quaternion.Inverse(GlobalRotation) * (position - GlobalPosition);
+        public Vector3 InverseTransformPoint(Vector3 position) // => Quaternion.Inverse(GlobalRotation) * (position - GlobalPosition);
+        {
+            var localPos = Quaternion.Inverse(GlobalRotation) * (position - GlobalPosition);
 
+            var invertedScale = Vector3.zero;
+            invertedScale.x = 1 / Scale.Value.x;
+            invertedScale.y = 1 / Scale.Value.y;
+            invertedScale.z = 1 / Scale.Value.z;
+
+            localPos = Vector3.Scale(localPos, invertedScale);
+            return localPos;
+        }
         /// <summary>
         /// Transforms position from local space to world space.
         /// </summary>
         /// <param name="position"></param>
         /// <returns></returns>
-        public Vector3 TransformPoint(Vector3 position) => GlobalPosition + GlobalRotation * position;
+        public Vector3 TransformPoint(Vector3 position) => GlobalPosition + GlobalRotation * Vector3.Scale(position, Scale.Value);
     }
 }
