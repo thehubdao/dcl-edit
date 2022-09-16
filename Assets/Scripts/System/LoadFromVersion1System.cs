@@ -9,9 +9,9 @@ using UnityEngine;
 
 namespace Assets.Scripts.System
 {
-    public class LoadFromVersion1System
+    public class LoadFromVersion1System : ISceneLoadSystem
     {
-        public static DclScene Load()
+        public DclScene Load(string _)
         {
             var sceneSaveFilePath = "";
             var projectSaveFilePath = "";

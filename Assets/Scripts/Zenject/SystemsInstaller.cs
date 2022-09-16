@@ -6,6 +6,7 @@ public class SystemsInstaller : MonoInstaller
 {
     public override void InstallBindings()
     {
-        Container.Bind(typeof(ISceneLoadSystem), typeof(ISceneSaveSystem)).To<SceneLoadSaveSystem>().AsSingle();
+        Container.Bind(typeof(ISceneSaveSystem), typeof(ISceneLoadSystem)).To<SceneLoadSaveSystem>().AsSingle();
+        //Container.Bind().To<LoadFromVersion1System>().AsSingle();
     }
 }

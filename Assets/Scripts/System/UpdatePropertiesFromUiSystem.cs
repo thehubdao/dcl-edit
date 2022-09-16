@@ -81,6 +81,12 @@ namespace Assets.Scripts.System
             }
 
             CommandSystem.ExecuteCommand(new ChangeProperty<T>(property, oldValue, value));
+
+
+            // TODO remove comments before merging
+            //_commandSystem.ExecuteCommand(_commandFactory.MakeChangeProperty<T>(property, oldValue, value));
+            //_commandSystem.ExecuteCommand(_commandSystem.Factory.CreateChangeProperty<T>(property, oldValue, value));
+            //_commandSystem.ExecuteChangePropertyCommand<T>(property, oldValue, value);
         }
     }
 }

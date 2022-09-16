@@ -32,9 +32,9 @@ namespace Assets.Scripts.System
             // Load scene
             var v2Path = EditorStates.CurrentPathState.ProjectPath + "/dcl-edit/saves/v2/New Scene.dclscene";
 
-            var scene = Directory.Exists(v2Path) ?
-                _sceneLoadSystem.Load(v2Path) :
-                LoadFromVersion1System.Load();
+            var scene = //Directory.Exists(v2Path) ?
+                _sceneLoadSystem.Load(v2Path); // :
+            //LoadFromVersion1System.Load();
 
             SetupSceneSystem.SetupScene(scene);
         }
