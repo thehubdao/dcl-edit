@@ -118,13 +118,14 @@ namespace Assets.Scripts.SceneState
         /// </summary>
         /// <param name="position"></param>
         /// <returns></returns>
-        public Vector3 InverseTransformPoint(Vector3 position) => Quaternion.Inverse(Rotation.FixedValue) * (position - Position.FixedValue);
+        public Vector3 InverseTransformPoint(Vector3 position) => Quaternion.Inverse(GlobalRotation) * (position - GlobalPosition);
 
         /// <summary>
         /// Transforms position from local space to world space.
         /// </summary>
         /// <param name="position"></param>
         /// <returns></returns>
-        public Vector3 TransformPoint(Vector3 position) => Position.FixedValue + Rotation.FixedValue * position;
+        public Vector3 TransformPoint(Vector3 position) => GlobalPosition + GlobalRotation * position;
+        
     }
 }

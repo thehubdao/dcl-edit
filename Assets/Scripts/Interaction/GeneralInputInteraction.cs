@@ -494,7 +494,8 @@ namespace Assets.Scripts.Interaction
             if (EditorStates.CurrentInputState.CurrentGizmoData != null)
             {
                 InputState.GizmoData gizmoData = (InputState.GizmoData)EditorStates.CurrentInputState.CurrentGizmoData;
-
+                Debug.Log($"Local position: {trans.InverseTransformPoint(Vector3.zero)}, Global Position: {Vector3.zero}");
+                
                 // Find mouse position in world on previously calculated plane
                 Ray ray = EditorStates.CurrentUnityState.MainCamera.ViewportPointToRay(InputHelper.GetMousePositionInScenePanel());
                 if (gizmoData.plane.Raycast(ray, out float enter))
@@ -525,6 +526,9 @@ namespace Assets.Scripts.Interaction
                             trans.Position.SetFloatingValue(trans.Position.Value + hitPointOnAxis);
                             break;
                         case SelectionState.GizmoMode.Rotate:
+                            //Debug.DrawRay(trans.Position.FixedValue + gizmoData.initialMouseOffset, (Vector3)gizmoData.dragAxis * 10, Color.red);
+                            //Debug.Log("Rotation: " + trans.Rotation.Value.eulerAngles);
+
                             // The distance along the gizmo axis at which the hit point lies.
                             // If the hit point on axis lies in the positive direction, the dot product returns 1. If it lies
                             // in the negative direction, the dot product returns -1. Therefore we can determine how far we pointed
