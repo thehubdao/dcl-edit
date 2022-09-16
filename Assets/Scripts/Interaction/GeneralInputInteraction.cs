@@ -487,7 +487,7 @@ namespace Assets.Scripts.Interaction
                 {
                     case SelectionState.GizmoMode.Translate:
                         CommandSystem.ExecuteCommand(
-                            new MoveTransform(selectedEntity.Id, trans.Position.FixedValue, trans.Position.Value)
+                            new TranslateTransform(selectedEntity.Id, trans.Position.FixedValue, trans.Position.Value)
                         );
                         break;
                     case SelectionState.GizmoMode.Rotate:

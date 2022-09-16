@@ -4,7 +4,7 @@ using Assets.Scripts.SceneState;
 
 namespace Assets.Scripts.Command
 {
-    public class MoveTransform : SceneState.Command
+    public class TranslateTransform : SceneState.Command
     {
         public override string Name => "Move Transform";
         public override string Description => "Moving transform to new position.";
@@ -12,7 +12,7 @@ namespace Assets.Scripts.Command
         Vector3 oldFixedPosition;
         Vector3 newFixedPosition;
 
-        public MoveTransform(Guid selectedEntity, Vector3 oldFixedPosition, Vector3 newFixedPosition)
+        public TranslateTransform(Guid selectedEntity, Vector3 oldFixedPosition, Vector3 newFixedPosition)
         {
             this.selectedEntityGuid = selectedEntity;
             this.oldFixedPosition = oldFixedPosition;
