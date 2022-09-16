@@ -540,23 +540,6 @@ namespace Assets.Scripts.Interaction
                         case SelectionState.GizmoMode.Translate:
                             Vector3 globalPosition = trans.GlobalPosition + hitPointOnAxis;
                             Vector3? localPosition = selectedEntity.Parent?.GetTransformComponent().InverseTransformPoint(globalPosition);
-
-                            /*
-                            if (parentTransform != null)
-                            {
-                                Vector3 invertedParentScale = new Vector3();
-                                invertedParentScale.x = 1 / parentTransform.Scale.Value.x;
-                                invertedParentScale.y = 1 / parentTransform.Scale.Value.y;
-                                invertedParentScale.z = 1 / parentTransform.Scale.Value.z;
-                                localPosition = Vector3.Scale((Vector3)localPosition, invertedParentScale);
-                            }*/
-                            Debug.DrawLine(Vector3.zero, trans.GlobalPosition + hitPointOnAxis, Color.yellow);
-                            Debug.DrawLine(trans.GlobalPosition, trans.TransformPoint(Vector3.forward * 10), Color.cyan);
-
-                            if (localPosition != null)
-                            {
-                                Debug.Log($"Pos: {localPosition}");
-                            }
                             trans.Position.SetFloatingValue(localPosition ?? globalPosition);
                             break;
                         case SelectionState.GizmoMode.Rotate:
