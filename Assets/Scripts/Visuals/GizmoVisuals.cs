@@ -10,7 +10,7 @@ namespace Assets.Scripts.Visuals
         private GameObject _translateGizmoObject = null;
         private GameObject _rotateGizmoObject = null;
         private GameObject _scaleGizmoObject = null;
-
+        private GameObject activeGizmo = null;
 
         public void SetupSceneEventListeners()
         {
@@ -30,15 +30,25 @@ namespace Assets.Scripts.Visuals
                 return;
             }
 
-
-
-            // TODO: switch between the different Gizmos
-
-            if (_translateGizmoObject == null)
-                _translateGizmoObject = Instantiate(EditorStates.CurrentUnityState.TranslateGizmoPrefab);
-
-            var activeGizmo = _translateGizmoObject;
-
+            activeGizmo?.SetActive(false);
+            switch (EditorStates.CurrentGizmoState.CurrentMode)
+            {
+                case GizmoState.Mode.Translate:
+                    if (_translateGizmoObject == null)
+                        _translateGizmoObject = Instantiate(EditorStates.CurrentUnityState.TranslateGizmoPrefab);
+                    activeGizmo = _translateGizmoObject;
+                    break;
+                case GizmoState.Mode.Rotate:
+                    if (_rotateGizmoObject == null)
+                        _rotateGizmoObject = Instantiate(EditorStates.CurrentUnityState.RotateGizmoPrefab);
+                    activeGizmo = _rotateGizmoObject;
+                    break;
+                case GizmoState.Mode.Scale:
+                    if (_scaleGizmoObject == null)
+                        _scaleGizmoObject = Instantiate(EditorStates.CurrentUnityState.ScaleGizmoPrefab);
+                    activeGizmo = _scaleGizmoObject;
+                    break;
+            }
             activeGizmo.SetActive(true);
 
             var selectedTransform = selectedEntity.GetTransformComponent();

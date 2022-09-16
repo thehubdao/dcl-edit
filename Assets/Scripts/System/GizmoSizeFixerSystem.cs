@@ -1,32 +1,31 @@
-using System.Collections;
-using System.Collections.Generic;
 using Assets.Scripts.EditorState;
 using UnityEngine;
 
-public class GizmoSizeFixerSystem : MonoBehaviour
+namespace Assets.Scripts.System
 {
-    
-    // Update is called once per frame
-    void Update()
+    public class GizmoSizeFixerSystem : MonoBehaviour
     {
-        // vector from camera to gizmo
-        var diffVector = transform.position - EditorStates.CurrentCameraState.Position;
+        void LateUpdate()
+        {
+            // vector from camera to gizmo
+            var diffVector = transform.position - EditorStates.CurrentCameraState.Position;
 
-        // camera forward vector
-        var camForward = EditorStates.CurrentCameraState.Forward;
+            // camera forward vector
+            var camForward = EditorStates.CurrentCameraState.Forward;
 
-        // project diffVector onto forward vector
-        var proj = Vector3.Project(diffVector, camForward);
+            // project diffVector onto forward vector
+            var proj = Vector3.Project(diffVector, camForward);
 
-        // the length of the projected vector is the perceived distance to the gizmo
-        var dist = proj.magnitude;
+            // the length of the projected vector is the perceived distance to the gizmo
+            var dist = proj.magnitude;
 
-        // some artificial multiplier to give the gizmo a nice size
-        var multiplier = 0.2f; // TODO: gizmo size settings
+            // some artificial multiplier to give the gizmo a nice size
+            var multiplier = 0.2f; // TODO: gizmo size settings
 
-        dist *= multiplier;
+            dist *= multiplier;
 
-        // set the scale of the gizmo
-        transform.localScale = new Vector3(dist,dist,dist);
+            // set the scale of the gizmo
+            transform.localScale = new Vector3(dist, dist, dist);
+        }
     }
 }
