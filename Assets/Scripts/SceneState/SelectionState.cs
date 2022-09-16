@@ -19,23 +19,5 @@ namespace Assets.Scripts.SceneState
 
         // Change Event
         public UnityEvent SelectionChangedEvent = new UnityEvent();
-
-
-        public enum GizmoMode
-        {
-            Translate,
-            Rotate,
-            Scale
-        }
-        private GizmoMode _gizmoMode;
-        public GizmoMode CurrentGizmoMode
-        {
-            get => _gizmoMode;
-            set
-            {
-                _gizmoMode = value;
-                SelectionChangedEvent.Invoke();
-            }
-        }
     }
 }

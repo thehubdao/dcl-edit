@@ -31,19 +31,19 @@ namespace Assets.Scripts.Visuals
             }
 
             activeGizmo?.SetActive(false);
-            switch (EditorStates.CurrentSceneState.CurrentScene.SelectionState.CurrentGizmoMode)
+            switch (EditorStates.CurrentGizmoState.CurrentMode)
             {
-                case SelectionState.GizmoMode.Translate:
+                case GizmoState.Mode.Translate:
                     if (_translateGizmoObject == null)
                         _translateGizmoObject = Instantiate(EditorStates.CurrentUnityState.TranslateGizmoPrefab);
                     activeGizmo = _translateGizmoObject;
                     break;
-                case SelectionState.GizmoMode.Rotate:
+                case GizmoState.Mode.Rotate:
                     if (_rotateGizmoObject == null)
                         _rotateGizmoObject = Instantiate(EditorStates.CurrentUnityState.RotateGizmoPrefab);
                     activeGizmo = _rotateGizmoObject;
                     break;
-                case SelectionState.GizmoMode.Scale:
+                case GizmoState.Mode.Scale:
                     if (_scaleGizmoObject == null)
                         _scaleGizmoObject = Instantiate(EditorStates.CurrentUnityState.ScaleGizmoPrefab);
                     activeGizmo = _scaleGizmoObject;

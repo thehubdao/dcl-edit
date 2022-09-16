@@ -160,11 +160,11 @@ namespace Assets.Scripts.Interaction
 
                                 var entity = EditorStates.CurrentSceneState.CurrentScene?.SelectionState.PrimarySelectedEntity.GetTransformComponent();
 
-                                SelectionState.GizmoMode gizmoMode = EditorStates.CurrentSceneState.CurrentScene.SelectionState.CurrentGizmoMode;
+                                GizmoState.Mode gizmoMode = EditorStates.CurrentGizmoState.CurrentMode;
 
                                 // Two special cases when in translation mode:
                                 // Dragging on planes is handled differently from the rest of the gizmo operations.
-                                if (gizmoMode == SelectionState.GizmoMode.Translate)
+                                if (gizmoMode == GizmoState.Mode.Translate)
                                 {
                                     // Dragging the center block of the translation gizmo (all three axis active in GizmoDirection component)
                                     if (localGizmoDir == Vector3.one)
@@ -211,7 +211,7 @@ namespace Assets.Scripts.Interaction
                                 // the collision detection for the mouse position in 3d space while using gizmos.
                                 Vector3 gizmoAxis;
 
-                                if (gizmoMode == SelectionState.GizmoMode.Rotate)
+                                if (gizmoMode == GizmoState.Mode.Rotate)
                                 {
                                     Vector3 localMousePos = entity.InverseTransformPoint((Vector3)mousePositionIn3DView);
 
@@ -243,7 +243,7 @@ namespace Assets.Scripts.Interaction
 
                                 // Create a plane on which the mouse position is determined via raycasts. Lies along gizmo axis.
                                 Plane plane;
-                                if (gizmoMode == SelectionState.GizmoMode.Rotate)
+                                if (gizmoMode == GizmoState.Mode.Rotate)
                                 {
                                     plane = new Plane(normal, (Vector3)mousePositionIn3DView);
                                 }
@@ -368,19 +368,19 @@ namespace Assets.Scripts.Interaction
             // When pressing Translate hotkey, enter translation gizmo mode
             if (_inputSystemAsset.Hotkeys.Translate.triggered)
             {
-                EditorStates.CurrentSceneState.CurrentScene.SelectionState.CurrentGizmoMode = SelectionState.GizmoMode.Translate;
+                EditorStates.CurrentGizmoState.CurrentMode = GizmoState.Mode.Translate;
             }
 
             // When pressing Rotate hotkey, enter rotation gizmo mode
             if (_inputSystemAsset.Hotkeys.Rotate.triggered)
             {
-                EditorStates.CurrentSceneState.CurrentScene.SelectionState.CurrentGizmoMode = SelectionState.GizmoMode.Rotate;
+                EditorStates.CurrentGizmoState.CurrentMode = GizmoState.Mode.Rotate;
             }
 
             // When pressing Scale hotkey, enter rotation gizmo mode
             if (_inputSystemAsset.Hotkeys.Scale.triggered)
             {
-                EditorStates.CurrentSceneState.CurrentScene.SelectionState.CurrentGizmoMode = SelectionState.GizmoMode.Scale;
+                EditorStates.CurrentGizmoState.CurrentMode = GizmoState.Mode.Scale;
             }
         }
 
@@ -473,7 +473,7 @@ namespace Assets.Scripts.Interaction
 
         private void UpdateHoldingGizmoTool()
         {
-            SelectionState.GizmoMode mode = EditorStates.CurrentSceneState.CurrentScene.SelectionState.CurrentGizmoMode;
+            GizmoState.Mode mode = EditorStates.CurrentGizmoState.CurrentMode;
             DclEntity selectedEntity = EditorStates.CurrentSceneState.CurrentScene?.SelectionState.PrimarySelectedEntity;
             DclTransformComponent trans = selectedEntity.GetTransformComponent();
 
@@ -485,17 +485,17 @@ namespace Assets.Scripts.Interaction
 
                 switch (mode)
                 {
-                    case SelectionState.GizmoMode.Translate:
+                    case GizmoState.Mode.Translate:
                         CommandSystem.ExecuteCommand(
                             new TranslateTransform(selectedEntity.Id, trans.Position.FixedValue, trans.Position.Value)
                         );
                         break;
-                    case SelectionState.GizmoMode.Rotate:
+                    case GizmoState.Mode.Rotate:
                         CommandSystem.ExecuteCommand(
                             new RotateTransform(selectedEntity.Id, trans.Rotation.FixedValue, trans.Rotation.Value)
                         );
                         break;
-                    case SelectionState.GizmoMode.Scale:
+                    case GizmoState.Mode.Scale:
                         CommandSystem.ExecuteCommand(
                             new ScaleTransform(selectedEntity.Id, trans.Scale.FixedValue, trans.Scale.Value)
                         );
@@ -519,7 +519,7 @@ namespace Assets.Scripts.Interaction
                     Vector3 dirToHitPoint = hitPoint - trans.GlobalPosition;
 
                     // Handle movement on planes separately:
-                    if (gizmoData.movingOnPlane && EditorStates.CurrentSceneState.CurrentScene.SelectionState.CurrentGizmoMode == SelectionState.GizmoMode.Translate)
+                    if (gizmoData.movingOnPlane && EditorStates.CurrentGizmoState.CurrentMode == GizmoState.Mode.Translate)
                     {
                         Vector3 globalPosition = gizmoData.plane.ClosestPointOnPlane(hitPoint - gizmoData.initialMouseOffset);
                         Vector3? localPosition = selectedEntity.Parent?.GetTransformComponent().InverseTransformPoint(globalPosition);
@@ -535,14 +535,14 @@ namespace Assets.Scripts.Interaction
 
                     
 
-                    switch (EditorStates.CurrentSceneState.CurrentScene.SelectionState.CurrentGizmoMode)
+                    switch (EditorStates.CurrentGizmoState.CurrentMode)
                     {
-                        case SelectionState.GizmoMode.Translate:
+                        case GizmoState.Mode.Translate:
                             Vector3 globalPosition = trans.GlobalPosition + hitPointOnAxis;
                             Vector3? localPosition = selectedEntity.Parent?.GetTransformComponent().InverseTransformPoint(globalPosition);
                             trans.Position.SetFloatingValue(localPosition ?? globalPosition);
                             break;
-                        case SelectionState.GizmoMode.Rotate:
+                        case GizmoState.Mode.Rotate:
                             // The distance along the gizmo axis at which the hit point lies.
                             // If the hit point on axis lies in the positive direction, the dot product returns 1. If it lies
                             // in the negative direction, the dot product returns -1. Therefore we can determine how far we pointed
@@ -566,7 +566,7 @@ namespace Assets.Scripts.Interaction
 
                             trans.Rotation.SetFloatingValue(newRotation);
                             break;
-                        case SelectionState.GizmoMode.Scale:
+                        case GizmoState.Mode.Scale:
                             Vector3 currentScale = trans.Scale.FixedValue;
 
                             // The point on the gizmo axis that is closest to the current mouse position. Transformed into local space.
