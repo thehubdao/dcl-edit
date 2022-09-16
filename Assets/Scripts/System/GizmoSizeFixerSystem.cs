@@ -1,20 +1,19 @@
-using System.Collections;
-using System.Collections.Generic;
 using Assets.Scripts.EditorState;
 using UnityEngine;
 
-public class GizmoSizeFixerSystem : MonoBehaviour
+namespace Assets.Scripts.System
 {
-    
-    // Update is called once per frame
-    void Update()
+    public class GizmoSizeFixerSystem : MonoBehaviour
     {
-        var dist = Vector3.Distance(transform.position, EditorStates.CurrentCameraState.Position);
+        void LateUpdate()
+        {
+            var dist = Vector3.Distance(transform.position, EditorStates.CurrentCameraState.Position);
 
-        var multiplier = 0.2f; // TODO: gizmo size settings
+            var multiplier = 0.2f; // TODO: gizmo size settings
 
-        dist *= multiplier;
+            dist *= multiplier;
 
-        transform.localScale = new Vector3(dist,dist,dist);
+            transform.localScale = new Vector3(dist, dist, dist);
+        }
     }
 }
