@@ -563,7 +563,7 @@ namespace Assets.Scripts.Interaction
                             Vector3 currentScale = trans.Scale.FixedValue;
                             
                             // The point on the gizmo axis that is closest to the current mouse position. Transformed into local space.
-                            Vector3 localHitPointOnAxis = Quaternion.Inverse(trans.Rotation.FixedValue) * hitPointOnAxis;
+                            Vector3 localHitPointOnAxis = Quaternion.Inverse(trans.GlobalRotation) * hitPointOnAxis;
                             Vector3 newScale = currentScale + Vector3.Scale(currentScale,localHitPointOnAxis);
                             trans.Scale.SetFloatingValue(newScale);
                             break;
