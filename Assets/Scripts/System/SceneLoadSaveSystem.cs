@@ -11,9 +11,19 @@ using Debug = UnityEngine.Debug;
 
 namespace Assets.Scripts.System
 {
-    public class SceneLoadSaveSystem
+    public interface ISceneLoadSystem
     {
-        public static void Save(DclScene scene)
+        DclScene Load(string absolutePath);
+    }
+
+    public interface ISceneSaveSystem
+    {
+        void Save(DclScene scene);
+    }
+
+    public class SceneLoadSaveSystem : ISceneLoadSystem, ISceneSaveSystem
+    {
+        public void Save(DclScene scene)
         {
             DclSceneData sceneData = new DclSceneData(scene);
 
@@ -35,7 +45,7 @@ namespace Assets.Scripts.System
             }
         }
 
-        public static DclScene Load(string absolutePath)
+        public DclScene Load(string absolutePath)
         {
             // return if path isn't directory
             if (!Directory.Exists(absolutePath))

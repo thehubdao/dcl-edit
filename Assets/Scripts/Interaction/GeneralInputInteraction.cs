@@ -7,6 +7,7 @@ using ICSharpCode.NRefactory.Visitors;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Zenject;
 using Cursor = UnityEngine.Cursor;
 
 namespace Assets.Scripts.Interaction
@@ -15,7 +16,13 @@ namespace Assets.Scripts.Interaction
     {
         private InputSystemAsset _inputSystemAsset;
 
+        private ISceneSaveSystem _sceneSaveSystem;
 
+        [Inject]
+        private void Construct(ISceneSaveSystem sceneSaveSystem)
+        {
+            _sceneSaveSystem = sceneSaveSystem;
+        }
 
 
         void Awake()
@@ -365,7 +372,7 @@ namespace Assets.Scripts.Interaction
             // When pressing the save hotkey, save the scene and workspace layout
             if (_inputSystemAsset.Hotkeys.Save.triggered)
             {
-                SceneLoadSaveSystem.Save(EditorStates.CurrentSceneState.CurrentScene);
+                _sceneSaveSystem.Save(EditorStates.CurrentSceneState.CurrentScene);
                 WorkspaceSaveSystem.Save(EditorStates.CurrentUnityState.dynamicPanelsCanvas);
             }
 

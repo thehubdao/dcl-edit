@@ -1,6 +1,7 @@
 using System.IO;
 using Assets.Scripts.EditorState;
 using UnityEngine;
+using Zenject;
 
 namespace Assets.Scripts.System
 {
@@ -15,6 +16,15 @@ namespace Assets.Scripts.System
         [SerializeField]
         private SetupSceneEventListenersSystem _setupSceneEventListenersSystem;
 
+        // dependencies
+        private ISceneLoadSystem _sceneLoadSystem;
+
+        [Inject]
+        private void Construct(ISceneLoadSystem sceneSave)
+        {
+            _sceneLoadSystem = sceneSave;
+        }
+
         void Awake()
         {
             EditorStates.Instance = _editorStates;
@@ -23,7 +33,7 @@ namespace Assets.Scripts.System
             var v2Path = EditorStates.CurrentPathState.ProjectPath + "/dcl-edit/saves/v2/New Scene.dclscene";
 
             var scene = Directory.Exists(v2Path) ?
-                SceneLoadSaveSystem.Load(v2Path) :
+                _sceneLoadSystem.Load(v2Path) :
                 LoadFromVersion1System.Load();
 
             SetupSceneSystem.SetupScene(scene);
