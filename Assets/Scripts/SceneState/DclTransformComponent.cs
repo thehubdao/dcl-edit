@@ -126,6 +126,5 @@ namespace Assets.Scripts.SceneState
         /// <param name="position"></param>
         /// <returns></returns>
         public Vector3 TransformPoint(Vector3 position) => GlobalPosition + GlobalRotation * position;
-        
     }
 }
