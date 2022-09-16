@@ -458,18 +458,38 @@ namespace Assets.Scripts.Interaction
 
         private void UpdateHoldingGizmoTool()
         {
+            SelectionState.GizmoMode mode = EditorStates.CurrentSceneState.CurrentScene.SelectionState.CurrentGizmoMode;
+            DclEntity selectedEntity = EditorStates.CurrentSceneState.CurrentScene?.SelectionState.PrimarySelectedEntity;
+            DclTransformComponent trans = selectedEntity.GetTransformComponent();
+
+
             // When releasing LMB, stop holding gizmo
             if (!InputHelper.IsLeftMouseButtonPressed())
             {
                 EditorStates.CurrentInputState.InState = InputState.InStateType.NoInput;
                 EditorStates.CurrentInputState.CurrentGizmoData = null;
-                
-                // TODO: Set final position via command
-                return;
-            }
 
-            DclEntity selectedEntity = EditorStates.CurrentSceneState.CurrentScene?.SelectionState.PrimarySelectedEntity;
-            DclTransformComponent entity = selectedEntity.GetTransformComponent();
+                // TODO: Set final position via command
+                switch (mode)
+                {
+                    case SelectionState.GizmoMode.Translate:
+                        CommandSystem.ExecuteCommand(
+                            new MoveTransform(selectedEntity.Id, trans.Position.FixedValue, trans.Position.Value)
+                        );
+                        break;
+                    case SelectionState.GizmoMode.Rotate:
+                        CommandSystem.ExecuteCommand(
+                            new RotateTransform(selectedEntity.Id, trans.Rotation.FixedValue, trans.Rotation.Value)
+                        );
+                        break;
+                    case SelectionState.GizmoMode.Scale:
+                        CommandSystem.ExecuteCommand(
+                            new ScaleTransform(selectedEntity.Id, trans.Scale.FixedValue, trans.Scale.Value)
+                        );
+                        break;
+                }
+                return;
+            }                       
 
             if (EditorStates.CurrentInputState.CurrentGizmoData != null)
             {
@@ -483,13 +503,13 @@ namespace Assets.Scripts.Interaction
                     if(enter >= EditorStates.CurrentUnityState.MainCamera.farClipPlane) return;
 
                     Vector3 hitPoint = ray.GetPoint(enter);
-                    Vector3 dirToHitPoint = hitPoint - entity.Position.Value;
+                    Vector3 dirToHitPoint = hitPoint - trans.Position.Value;
 
                     // Moving on a plane?
                     if (gizmoData.movingOnPlane && EditorStates.CurrentSceneState.CurrentScene.SelectionState.CurrentGizmoMode == SelectionState.GizmoMode.Translate)
                     {
                         Vector3 mousePos = gizmoData.plane.ClosestPointOnPlane(hitPoint - gizmoData.initialMouseOffset);
-                        entity.Position.SetFloatingValue(mousePos);
+                        trans.Position.SetFloatingValue(mousePos);
                         EditorStates.CurrentSceneState.CurrentScene.SelectionState.SelectionChangedEvent.Invoke();
                         return;
                     }
@@ -502,7 +522,7 @@ namespace Assets.Scripts.Interaction
                     switch (EditorStates.CurrentSceneState.CurrentScene.SelectionState.CurrentGizmoMode)
                     {
                         case SelectionState.GizmoMode.Translate:
-                            entity.Position.SetFloatingValue(entity.Position.Value + hitPointOnAxis);
+                            trans.Position.SetFloatingValue(trans.Position.Value + hitPointOnAxis);
                             break;
                         case SelectionState.GizmoMode.Rotate:
                             // The distance along the gizmo axis at which the hit point lies.
@@ -524,17 +544,17 @@ namespace Assets.Scripts.Interaction
                             // Invert to rotate in the correct direction
                             angle *= -1;            
 
-                            Quaternion newRotation = entity.Rotation.FixedValue * Quaternion.Euler((Vector3)gizmoData.rotationAxis * angle);
+                            Quaternion newRotation = trans.Rotation.FixedValue * Quaternion.Euler((Vector3)gizmoData.rotationAxis * angle);
 
-                            entity.Rotation.SetFloatingValue(newRotation);
+                            trans.Rotation.SetFloatingValue(newRotation);
                             break;
                         case SelectionState.GizmoMode.Scale:
-                            Vector3 currentScale = entity.Scale.FixedValue;
+                            Vector3 currentScale = trans.Scale.FixedValue;
                             
                             // The point on the gizmo axis that is closest to the current mouse position. Transformed into local space.
-                            Vector3 localHitPointOnAxis = Quaternion.Inverse(entity.Rotation.FixedValue) * hitPointOnAxis;
+                            Vector3 localHitPointOnAxis = Quaternion.Inverse(trans.Rotation.FixedValue) * hitPointOnAxis;
                             Vector3 newScale = currentScale + Vector3.Scale(currentScale,localHitPointOnAxis);
-                            entity.Scale.SetFloatingValue(newScale);
+                            trans.Scale.SetFloatingValue(newScale);
                             break;
                     }
                     EditorStates.CurrentSceneState.CurrentScene.SelectionState.SelectionChangedEvent.Invoke();
