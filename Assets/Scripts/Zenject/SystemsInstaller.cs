@@ -13,5 +13,7 @@ public class SystemsInstaller : MonoInstaller
 
         // QuickFix for static injection TODO: remove when Update Properties from UI System gets its proper injection update
         Container.BindInterfacesAndSelfTo<UpdatePropertiesFromUiSystem>().AsSingle().NonLazy();
+
+        Container.Bind(typeof(InputState)).To<InputState>().AsSingle();
     }
 }

@@ -16,10 +16,6 @@ namespace Assets.Scripts.EditorState
         //[SerializeField]
         //public CameraState CameraState;
 
-        // Input State
-        [SerializeField]
-        public InputState InputState;
-
         // Scene State
         //[SerializeField]
         //public SceneState SceneState;
@@ -87,8 +83,6 @@ namespace Assets.Scripts.EditorState
 
         // Static references to the current states
         public static CameraState CurrentCameraState => currentSceneDependentState?.CameraState;
-        
-        public static InputState CurrentInputState => Instance.InputState;
         public static SceneState CurrentSceneState => Instance._sceneState;
         public static ProjectState CurrentProjectState => Instance.ProjectState;
         public static PathState CurrentPathState => Instance.PathState;

@@ -6,11 +6,21 @@ using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
 using Assets.Scripts.Visuals;
 using UnityEngine;
+using Zenject;
 
 public class UiInspectorVisuals : MonoBehaviour, ISetupSceneEventListeners
 {
     [SerializeField]
     private GameObject _content;
+
+    // dependencies
+    private InputState _inputState;
+
+    [Inject]
+    private void Construct(InputState inputState)
+    {
+        _inputState = inputState;
+    }
 
     public void SetupSceneEventListeners()
     {
@@ -20,7 +30,7 @@ public class UiInspectorVisuals : MonoBehaviour, ISetupSceneEventListeners
 
     private void UpdateVisuals()
     {
-        if (EditorStates.CurrentInputState.InState == InputState.InStateType.UiInput)
+        if (_inputState.InState == InputState.InStateType.UiInput)
         {
             return;
         }

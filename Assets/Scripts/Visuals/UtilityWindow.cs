@@ -7,6 +7,7 @@ using Assets.Scripts.SceneState;
 using Assets.Scripts.Utility;
 using UnityEditor;
 using UnityEngine;
+using Zenject;
 
 namespace Assets.Scripts.Visuals
 {
@@ -28,6 +29,15 @@ namespace Assets.Scripts.Visuals
         private bool _showSelectionState = true;
         private bool _showCommandHistory = true;
 
+        // dependencies
+        private InputState _inputState;
+
+        [Inject]
+        private void Construct(InputState inputState)
+        {
+            _inputState = inputState;
+        }
+
         void OnGUI()
         {
             if (!Application.isPlaying)
@@ -36,7 +46,7 @@ namespace Assets.Scripts.Visuals
                 return;
             }
 
-            GUILayout.Label("InState: " + EditorStates.CurrentInputState.InState);
+            GUILayout.Label("InState: " + _inputState.InState);
 
             _showSelectionState = GUILayout.Toggle(_showSelectionState, "Show Selection State");
             _showCommandHistory = GUILayout.Toggle(_showCommandHistory, "Show Command History");
