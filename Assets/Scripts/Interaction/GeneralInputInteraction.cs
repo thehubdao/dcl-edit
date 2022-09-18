@@ -3,8 +3,6 @@ using Assets.Scripts.Command;
 using Assets.Scripts.EditorState;
 using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
-using ICSharpCode.NRefactory.Visitors;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Zenject;
@@ -16,12 +14,15 @@ namespace Assets.Scripts.Interaction
     {
         private InputSystemAsset _inputSystemAsset;
 
+        // dependencies
         private ISceneSaveSystem _sceneSaveSystem;
+        private ICommandSystem _commandSystem;
 
         [Inject]
-        private void Construct(ISceneSaveSystem sceneSaveSystem)
+        private void Construct(ISceneSaveSystem sceneSaveSystem, ICommandSystem commandSystem)
         {
             _sceneSaveSystem = sceneSaveSystem;
+            _commandSystem = commandSystem;
         }
 
 
@@ -306,7 +307,7 @@ namespace Assets.Scripts.Interaction
                                 Guid.Empty,
                                 Array.Empty<Guid>());
 
-                            CommandSystem.ExecuteCommand(selectionCommand);
+                            _commandSystem.ExecuteCommand(selectionCommand);
                             break;
                         }
                     default: // ignore
@@ -502,17 +503,17 @@ namespace Assets.Scripts.Interaction
                 switch (mode)
                 {
                     case GizmoState.Mode.Translate:
-                        CommandSystem.ExecuteCommand(
+                        _commandSystem.ExecuteCommand(
                             new TranslateTransform(selectedEntity.Id, trans.Position.FixedValue, trans.Position.Value)
                         );
                         break;
                     case GizmoState.Mode.Rotate:
-                        CommandSystem.ExecuteCommand(
+                        _commandSystem.ExecuteCommand(
                             new RotateTransform(selectedEntity.Id, trans.Rotation.FixedValue, trans.Rotation.Value)
                         );
                         break;
                     case GizmoState.Mode.Scale:
-                        CommandSystem.ExecuteCommand(
+                        _commandSystem.ExecuteCommand(
                             new ScaleTransform(selectedEntity.Id, trans.Scale.FixedValue, trans.Scale.Value)
                         );
                         break;
@@ -600,12 +601,12 @@ namespace Assets.Scripts.Interaction
         {
             if (_inputSystemAsset.Hotkeys.Undo.triggered)
             {
-                CommandSystem.UndoCommand();
+                _commandSystem.UndoCommand();
             }
 
             if (_inputSystemAsset.Hotkeys.Redo.triggered)
             {
-                CommandSystem.RedoCommand();
+                _commandSystem.RedoCommand();
             }
         }
 

@@ -1,15 +1,24 @@
 using Assets.Scripts.Command;
 using Assets.Scripts.EditorState;
 using Assets.Scripts.SceneState;
-using UnityEngine;
+using Zenject;
 
 namespace Assets.Scripts.System
 {
-    public class UpdatePropertiesFromUiSystem : MonoBehaviour
+    public class UpdatePropertiesFromUiSystem
     {
+        // dependencies
+        private static ICommandSystem _commandSystem; // TODO: Remove static
+
+        [Inject]
+        public void Construct(ICommandSystem commandSystem)
+        {
+            _commandSystem = commandSystem;
+        }
+
         public static void SetNewName(DclEntity entity, string newName)
         {
-            CommandSystem.ExecuteCommand(new ChangeEntityName(entity.Id, newName, entity.CustomName));
+            _commandSystem.ExecuteCommand(new ChangeEntityName(entity.Id, newName, entity.CustomName));
         }
 
         public static void SetIsExposed(DclEntity entity, bool isExposed)
@@ -21,7 +30,7 @@ namespace Assets.Scripts.System
             {
                 if (ExposeEntitySystem.IsEntityExposable(entity))
                 {
-                    CommandSystem.ExecuteCommand(new ChangeIsExposed(entity.Id,true, entity.IsExposed));
+                    _commandSystem.ExecuteCommand(new ChangeIsExposed(entity.Id, true, entity.IsExposed));
                 }
                 else
                 {
@@ -31,7 +40,7 @@ namespace Assets.Scripts.System
             }
             else
             {
-                CommandSystem.ExecuteCommand(new ChangeIsExposed(entity.Id, false, entity.IsExposed));
+                _commandSystem.ExecuteCommand(new ChangeIsExposed(entity.Id, false, entity.IsExposed));
             }
         }
 
@@ -80,7 +89,7 @@ namespace Assets.Scripts.System
                 return;
             }
 
-            CommandSystem.ExecuteCommand(new ChangeProperty<T>(property, oldValue, value));
+            _commandSystem.ExecuteCommand(new ChangeProperty<T>(property, oldValue, value));
 
 
             // TODO remove comments before merging

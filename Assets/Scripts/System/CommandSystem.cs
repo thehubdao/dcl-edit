@@ -4,9 +4,9 @@ using UnityEngine;
 
 namespace Assets.Scripts.System
 {
-    public class CommandSystem : MonoBehaviour
+    public class CommandSystem : ICommandSystem
     {
-        public static void ExecuteCommand<T>(T command) where T : SceneState.Command
+        public void ExecuteCommand<T>(T command) where T : SceneState.Command
         {
             if (command == null)
                 return;
@@ -31,7 +31,7 @@ namespace Assets.Scripts.System
             command.Do(EditorStates.CurrentSceneState.CurrentScene);
         }
 
-        public static void UndoCommand()
+        public void UndoCommand()
         {
             var commandState = EditorStates.CurrentSceneState.CurrentScene?.CommandHistoryState;
 
@@ -48,7 +48,7 @@ namespace Assets.Scripts.System
             }
         }
 
-        public static void RedoCommand()
+        public void RedoCommand()
         {
             var commandState = EditorStates.CurrentSceneState.CurrentScene?.CommandHistoryState;
 

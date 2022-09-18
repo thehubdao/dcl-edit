@@ -3,16 +3,26 @@ using System.Linq;
 using Assets.Scripts.Command;
 using Assets.Scripts.EditorState;
 using Assets.Scripts.System;
-using UnityEditor;
-using UnityEngine;
 #if UNITY_EDITOR
+using UnityEditor;
 #endif
+using UnityEngine;
+using Zenject;
 
 namespace Assets.Scripts.Interaction
 {
     public class EntitySelectInteraction : MonoBehaviour
     {
         public Guid Id;
+
+        // dependencies
+        private ICommandSystem _commandSystem;
+
+        [Inject]
+        public void Construct(ICommandSystem commandSystem)
+        {
+            _commandSystem = commandSystem;
+        }
 
         public void SelectAdditional()
         {
@@ -25,7 +35,7 @@ namespace Assets.Scripts.Interaction
                     .Select(e => e?.Id ?? Guid.Empty)
                     .Where(id => id != Guid.Empty && id != Id));
 
-            CommandSystem.ExecuteCommand(selectionCommand);
+            _commandSystem.ExecuteCommand(selectionCommand);
         }
 
         public void SelectSingle()
@@ -37,14 +47,18 @@ namespace Assets.Scripts.Interaction
                 Id,
                 Array.Empty<Guid>());
 
-            CommandSystem.ExecuteCommand(selectionCommand);
+            _commandSystem.ExecuteCommand(selectionCommand);
+        }
+
+        public class Factory : PlaceholderFactory<EntitySelectInteraction>
+        {
         }
     }
 
     // Custom editor
 
 #if UNITY_EDITOR
-    
+
     [CustomEditor(typeof(EntitySelectInteraction))]
     //[CanEditMultipleObjects]
     public class LookAtPointEditor : Editor
@@ -71,5 +85,4 @@ namespace Assets.Scripts.Interaction
     }
 
 #endif
-
 }

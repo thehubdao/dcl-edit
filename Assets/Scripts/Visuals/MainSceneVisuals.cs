@@ -4,6 +4,7 @@ using Assets.Scripts.EditorState;
 using Assets.Scripts.Interaction;
 using Assets.Scripts.Utility;
 using UnityEngine;
+using Zenject;
 
 namespace Assets.Scripts.Visuals
 {
@@ -11,6 +12,15 @@ namespace Assets.Scripts.Visuals
     {
         [SerializeField]
         private GameObject _entityVisualsPrefab;
+
+        // Dependencies
+        private EntitySelectInteraction.Factory _entitySelectInteractionFactory;
+
+        [Inject]
+        public void Construct(EntitySelectInteraction.Factory entitySelectionInteractionFactory)
+        {
+            _entitySelectInteractionFactory = entitySelectionInteractionFactory;
+        }
 
         public void SetupSceneEventListeners()
         {
@@ -41,12 +51,14 @@ namespace Assets.Scripts.Visuals
             // Generate entity visuals
             foreach (var entity in scene.AllEntities.Select(e => e.Value))
             {
-                var newEntityVisualsGameObject = Instantiate(_entityVisualsPrefab, transform);
-                var newEntityVisuals = newEntityVisualsGameObject.GetComponent<EntityVisuals>();
+                //var newEntityVisualsGameObject = Instantiate(_entityVisualsPrefab, transform);
+                var newEntityInteraction = _entitySelectInteractionFactory.Create();
+                newEntityInteraction.Id = entity.Id;
+
+                var newEntityVisuals = newEntityInteraction.GetComponent<EntityVisuals>();
                 newEntityVisuals.Id = entity.Id;
 
-                var newEntityInteraction = newEntityVisualsGameObject.GetComponent<EntitySelectInteraction>();
-                newEntityInteraction.Id = entity.Id;
+                newEntityInteraction.transform.parent = transform;
 
                 visuals.Add(newEntityVisuals);
             }
