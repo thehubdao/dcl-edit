@@ -27,7 +27,7 @@ namespace Assets.Scripts.Interaction
         public void SelectAdditional()
         {
             var scene = EditorStates.CurrentSceneState.CurrentScene;
-            var selectionCommand = new ChangeSelection(
+            var selectionCommand = _commandSystem.CommandFactory.CreateChangeSelection(
                 ChangeSelection.GetPrimarySelectionFromScene(scene),
                 ChangeSelection.GetSecondarySelectionFromScene(scene),
                 Id,
@@ -41,7 +41,7 @@ namespace Assets.Scripts.Interaction
         public void SelectSingle()
         {
             var scene = EditorStates.CurrentSceneState.CurrentScene;
-            var selectionCommand = new ChangeSelection(
+            var selectionCommand = _commandSystem.CommandFactory.CreateChangeSelection(
                 ChangeSelection.GetPrimarySelectionFromScene(scene),
                 ChangeSelection.GetSecondarySelectionFromScene(scene),
                 Id,

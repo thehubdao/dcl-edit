@@ -301,7 +301,7 @@ namespace Assets.Scripts.Interaction
                     case Interface3DState.HoveredObjectType.None:
                         {
                             var scene = EditorStates.CurrentSceneState.CurrentScene;
-                            var selectionCommand = new ChangeSelection(
+                            var selectionCommand = _commandSystem.CommandFactory.CreateChangeSelection(
                                 ChangeSelection.GetPrimarySelectionFromScene(scene),
                                 ChangeSelection.GetSecondarySelectionFromScene(scene),
                                 Guid.Empty,
@@ -504,17 +504,17 @@ namespace Assets.Scripts.Interaction
                 {
                     case GizmoState.Mode.Translate:
                         _commandSystem.ExecuteCommand(
-                            new TranslateTransform(selectedEntity.Id, trans.Position.FixedValue, trans.Position.Value)
+                            _commandSystem.CommandFactory.CreateTranslateTransform(selectedEntity.Id, trans.Position.FixedValue, trans.Position.Value)
                         );
                         break;
                     case GizmoState.Mode.Rotate:
                         _commandSystem.ExecuteCommand(
-                            new RotateTransform(selectedEntity.Id, trans.Rotation.FixedValue, trans.Rotation.Value)
+                            _commandSystem.CommandFactory.CreateRotateTransform(selectedEntity.Id, trans.Rotation.FixedValue, trans.Rotation.Value)
                         );
                         break;
                     case GizmoState.Mode.Scale:
                         _commandSystem.ExecuteCommand(
-                            new ScaleTransform(selectedEntity.Id, trans.Scale.FixedValue, trans.Scale.Value)
+                            _commandSystem.CommandFactory.CreateScaleTransform(selectedEntity.Id, trans.Scale.FixedValue, trans.Scale.Value)
                         );
                         break;
                 }

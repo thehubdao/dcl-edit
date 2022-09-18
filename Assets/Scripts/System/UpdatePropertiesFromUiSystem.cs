@@ -18,7 +18,7 @@ namespace Assets.Scripts.System
 
         public static void SetNewName(DclEntity entity, string newName)
         {
-            _commandSystem.ExecuteCommand(new ChangeEntityName(entity.Id, newName, entity.CustomName));
+            _commandSystem.ExecuteCommand(_commandSystem.CommandFactory.CreateChangeEntityName(entity.Id, newName, entity.CustomName));
         }
 
         public static void SetIsExposed(DclEntity entity, bool isExposed)
@@ -30,7 +30,7 @@ namespace Assets.Scripts.System
             {
                 if (ExposeEntitySystem.IsEntityExposable(entity))
                 {
-                    _commandSystem.ExecuteCommand(new ChangeIsExposed(entity.Id, true, entity.IsExposed));
+                    _commandSystem.ExecuteCommand(_commandSystem.CommandFactory.CreateChangeIsExposed(entity.Id, true, entity.IsExposed));
                 }
                 else
                 {
@@ -40,7 +40,7 @@ namespace Assets.Scripts.System
             }
             else
             {
-                _commandSystem.ExecuteCommand(new ChangeIsExposed(entity.Id, false, entity.IsExposed));
+                _commandSystem.ExecuteCommand(_commandSystem.CommandFactory.CreateChangeIsExposed(entity.Id, false, entity.IsExposed));
             }
         }
 
@@ -89,7 +89,7 @@ namespace Assets.Scripts.System
                 return;
             }
 
-            _commandSystem.ExecuteCommand(new ChangeProperty<T>(property, oldValue, value));
+            _commandSystem.ExecuteCommand(_commandSystem.CommandFactory.CreateChangePropertyCommand(property, oldValue, value));
 
 
             // TODO remove comments before merging

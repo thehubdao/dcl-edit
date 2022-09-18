@@ -11,5 +11,7 @@ namespace Assets.Scripts.System
         void ExecuteCommand<T>(T command) where T : SceneState.Command;
         void UndoCommand();
         void RedoCommand();
+
+        CommandFactorySystem CommandFactory { get; }
     }
 }

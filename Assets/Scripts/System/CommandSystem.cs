@@ -1,11 +1,20 @@
 using Assets.Scripts.EditorState;
-using UnityEditor;
 using UnityEngine;
+using Zenject;
 
 namespace Assets.Scripts.System
 {
     public class CommandSystem : ICommandSystem
     {
+        // dependencies
+        public CommandFactorySystem CommandFactory { get; private set; }
+
+        [Inject]
+        public void Construct(CommandFactorySystem commandFactory)
+        {
+            CommandFactory = commandFactory;
+        }
+
         public void ExecuteCommand<T>(T command) where T : SceneState.Command
         {
             if (command == null)
