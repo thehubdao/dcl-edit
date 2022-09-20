@@ -18,13 +18,15 @@ namespace Assets.Scripts.Interaction
         private ISceneSaveSystem _sceneSaveSystem;
         private ICommandSystem _commandSystem;
         private InputState _inputState;
+        private GizmoState _gizmoState;
 
         [Inject]
-        private void Construct(ISceneSaveSystem sceneSaveSystem, ICommandSystem commandSystem, InputState inputState)
+        private void Construct(ISceneSaveSystem sceneSaveSystem, ICommandSystem commandSystem, InputState inputState, GizmoState gizmoState)
         {
             _sceneSaveSystem = sceneSaveSystem;
             _commandSystem = commandSystem;
             _inputState = inputState;
+            _gizmoState = gizmoState;
         }
 
 
@@ -174,7 +176,7 @@ namespace Assets.Scripts.Interaction
 
                                 var entity = EditorStates.CurrentSceneState.CurrentScene?.SelectionState.PrimarySelectedEntity.GetTransformComponent();
 
-                                GizmoState.Mode gizmoMode = EditorStates.CurrentGizmoState.CurrentMode;
+                                GizmoState.Mode gizmoMode = _gizmoState.CurrentMode;
 
                                 // Two special cases when in translation mode:
                                 // Dragging on planes is handled differently from the rest of the gizmo operations.
@@ -382,19 +384,19 @@ namespace Assets.Scripts.Interaction
             // When pressing Translate hotkey, enter translation gizmo mode
             if (_inputSystemAsset.Hotkeys.Translate.triggered)
             {
-                EditorStates.CurrentGizmoState.CurrentMode = GizmoState.Mode.Translate;
+                _gizmoState.CurrentMode = GizmoState.Mode.Translate;
             }
 
             // When pressing Rotate hotkey, enter rotation gizmo mode
             if (_inputSystemAsset.Hotkeys.Rotate.triggered)
             {
-                EditorStates.CurrentGizmoState.CurrentMode = GizmoState.Mode.Rotate;
+                _gizmoState.CurrentMode = GizmoState.Mode.Rotate;
             }
 
             // When pressing Scale hotkey, enter rotation gizmo mode
             if (_inputSystemAsset.Hotkeys.Scale.triggered)
             {
-                EditorStates.CurrentGizmoState.CurrentMode = GizmoState.Mode.Scale;
+                _gizmoState.CurrentMode = GizmoState.Mode.Scale;
             }
         }
 
@@ -492,7 +494,7 @@ namespace Assets.Scripts.Interaction
 
         private void UpdateHoldingGizmoTool()
         {
-            GizmoState.Mode mode = EditorStates.CurrentGizmoState.CurrentMode;
+            GizmoState.Mode mode = _gizmoState.CurrentMode;
             DclEntity selectedEntity = EditorStates.CurrentSceneState.CurrentScene?.SelectionState.PrimarySelectedEntity;
             DclTransformComponent trans = selectedEntity.GetTransformComponent();
 
@@ -538,7 +540,7 @@ namespace Assets.Scripts.Interaction
                     Vector3 dirToHitPoint = hitPoint - trans.GlobalPosition;
 
                     // Handle movement on planes separately:
-                    if (gizmoData.movingOnPlane && EditorStates.CurrentGizmoState.CurrentMode == GizmoState.Mode.Translate)
+                    if (gizmoData.movingOnPlane && _gizmoState.CurrentMode == GizmoState.Mode.Translate)
                     {
                         Vector3 globalPosition = gizmoData.plane.ClosestPointOnPlane(hitPoint - gizmoData.initialMouseOffset);
                         Vector3? localPosition = selectedEntity.Parent?.GetTransformComponent().InverseTransformPoint(globalPosition);
@@ -554,7 +556,7 @@ namespace Assets.Scripts.Interaction
 
                     
 
-                    switch (EditorStates.CurrentGizmoState.CurrentMode)
+                    switch (_gizmoState.CurrentMode)
                     {
                         case GizmoState.Mode.Translate:
                             Vector3 globalPosition = trans.GlobalPosition + hitPointOnAxis;

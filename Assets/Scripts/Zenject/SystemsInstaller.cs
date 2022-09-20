@@ -1,3 +1,4 @@
+using Assets.Scripts.EditorState;
 using Assets.Scripts.System;
 using Zenject;
 
@@ -15,5 +16,6 @@ public class SystemsInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<UpdatePropertiesFromUiSystem>().AsSingle().NonLazy();
 
         Container.Bind(typeof(InputState)).To<InputState>().AsSingle();
+        Container.Bind(typeof(GizmoState)).To<GizmoState>().AsSingle();
     }
 }
