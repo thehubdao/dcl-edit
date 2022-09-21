@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using Assets.Scripts.EditorState;
 using Assets.Scripts.SceneState;
 using UnityEngine;
-using Zenject;
 
 namespace Assets.Scripts.Visuals
 {
@@ -12,15 +11,6 @@ namespace Assets.Scripts.Visuals
         private GameObject _rotateGizmoObject = null;
         private GameObject _scaleGizmoObject = null;
         private GameObject activeGizmo = null;
-
-        // dependencies
-        GizmoState _gizmoState;
-
-        [Inject]
-        private void Construct(GizmoState gizmoState)
-        {
-            _gizmoState = gizmoState;
-        }
 
         public void SetupSceneEventListeners()
         {
@@ -41,7 +31,7 @@ namespace Assets.Scripts.Visuals
             }
 
             activeGizmo?.SetActive(false);
-            switch (_gizmoState.CurrentMode)
+            switch (EditorStates.CurrentGizmoState.CurrentMode)
             {
                 case GizmoState.Mode.Translate:
                     if (_translateGizmoObject == null)

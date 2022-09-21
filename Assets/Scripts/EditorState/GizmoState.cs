@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Assets.Scripts.EditorState
 {
-    public class GizmoState
+    public class GizmoState : MonoBehaviour
     {
         public enum Mode
         {

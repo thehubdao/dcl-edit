@@ -16,6 +16,7 @@ public class SystemsInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<UpdatePropertiesFromUiSystem>().AsSingle().NonLazy();
 
         Container.Bind(typeof(InputState)).To<InputState>().AsSingle();
-        Container.Bind(typeof(GizmoState)).To<GizmoState>().AsSingle();
+
+        Container.Bind<Interface3DState>().To<Interface3DState>().AsSingle();
     }
 }

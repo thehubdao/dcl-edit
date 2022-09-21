@@ -46,9 +46,8 @@ namespace Assets.Scripts.EditorState
         [SerializeField]
         public ModelCacheState ModelCacheState;
 
-        // Interface 3D State
         [SerializeField]
-        public Interface3DState Interface3DState;
+        public GizmoState GizmoState;
 
         // Scene dependent editor states
         [Serializable]
@@ -85,6 +84,6 @@ namespace Assets.Scripts.EditorState
         public static PathState CurrentPathState => Instance.PathState;
         public static UnityState CurrentUnityState => Instance?.UnityState;
         public static ModelCacheState CurrentModelCacheState => Instance.ModelCacheState;
-        public static Interface3DState CurrentInterface3DState => Instance.Interface3DState;
+        public static GizmoState CurrentGizmoState => Instance.GizmoState;
     }
 }
