@@ -4,14 +4,14 @@ using NotImplementedException = System.NotImplementedException;
 
 namespace Assets.Scripts.System
 {
-    public class CameraSystem : MonoBehaviour
+    public class CameraSystem
     {
-        public static void CameraStartup()
+        public void CameraStartup()
         {
             ChooseReasonableStartPosition();
         }
-        
-        public static void ChooseReasonableStartPosition()
+
+        public void ChooseReasonableStartPosition()
         {
             // Calculate average parcel center
             var averageCenter = Vector2.zero;

@@ -18,11 +18,13 @@ namespace Assets.Scripts.System
 
         // dependencies
         private ISceneLoadSystem _sceneLoadSystem;
+        private SetupSceneSystem _setupSceneSystem;
 
         [Inject]
-        private void Construct(ISceneLoadSystem sceneSave)
+        private void Construct(ISceneLoadSystem sceneSave, SetupSceneSystem setupSceneSystem)
         {
             _sceneLoadSystem = sceneSave;
+            _setupSceneSystem = setupSceneSystem;
         }
 
         void Awake()
@@ -36,7 +38,7 @@ namespace Assets.Scripts.System
                 _sceneLoadSystem.Load(v2Path); // :
             //LoadFromVersion1System.Load();
 
-            SetupSceneSystem.SetupScene(scene);
+            _setupSceneSystem.SetupScene(scene);
         }
 
         void Start()

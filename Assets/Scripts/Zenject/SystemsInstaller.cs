@@ -1,21 +1,39 @@
 using Assets.Scripts.EditorState;
 using Assets.Scripts.System;
+using UnityEngine;
 using Zenject;
 
 public class SystemsInstaller : MonoInstaller
 {
+    [SerializeField]
+    private bool _loadSceneFromVersion1 = false;
+
     public override void InstallBindings()
     {
-        Container.Bind(typeof(ISceneSaveSystem), typeof(ISceneLoadSystem)).To<SceneLoadSaveSystem>().AsSingle();
-        //Container.Bind().To<LoadFromVersion1System>().AsSingle();
+        if (_loadSceneFromVersion1)
+        {
+            Container.Bind<ISceneLoadSystem>().To<LoadFromVersion1System>().AsSingle();
+            Container.Bind<ISceneSaveSystem>().To<SceneLoadSaveSystem>().AsSingle();
+        }
+        else
+        {
+            Container
+                .Bind(typeof(ISceneSaveSystem), typeof(ISceneLoadSystem))
+                .To<SceneLoadSaveSystem>().AsSingle();
+        }
 
-        Container.Bind<ICommandSystem>().To<CommandSystem>().AsSingle();
+        Container.BindInterfacesAndSelfTo<CommandSystem>().AsSingle();
+
         Container.BindInterfacesAndSelfTo<CommandFactorySystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<UpdatePropertiesFromUiSystem>().AsSingle();
 
-        Container.Bind(typeof(InputState)).To<InputState>().AsSingle();
+        Container.BindInterfacesAndSelfTo<InputState>().AsSingle();
 
-        Container.Bind<Interface3DState>().To<Interface3DState>().AsSingle();
+        Container.BindInterfacesAndSelfTo<Interface3DState>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<SetupSceneSystem>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<CameraSystem>().AsSingle();
     }
 }

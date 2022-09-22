@@ -8,7 +8,7 @@ namespace Assets.Scripts.System
     public class UpdatePropertiesFromUiSystem
     {
         // dependencies
-        private static ICommandSystem _commandSystem; // TODO: Remove static
+        private ICommandSystem _commandSystem;
 
         [Inject]
         public void Construct(ICommandSystem commandSystem)
