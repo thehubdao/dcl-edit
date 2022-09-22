@@ -19,14 +19,21 @@ namespace Assets.Scripts.Interaction
         private ICommandSystem _commandSystem;
         private InputState _inputState;
         private Interface3DState _interface3DState;
+        private WorkspaceSaveSystem _workspaceSaveSystem;
 
         [Inject]
-        private void Construct(ISceneSaveSystem sceneSaveSystem, ICommandSystem commandSystem, InputState inputState, Interface3DState interface3DState)
+        private void Construct(
+            ISceneSaveSystem sceneSaveSystem,
+            ICommandSystem commandSystem,
+            InputState inputState,
+            Interface3DState interface3DState,
+            WorkspaceSaveSystem workspaceSaveSystem)
         {
             _sceneSaveSystem = sceneSaveSystem;
             _commandSystem = commandSystem;
             _inputState = inputState;
             _interface3DState = interface3DState;
+            _workspaceSaveSystem = workspaceSaveSystem;
         }
 
 
@@ -381,7 +388,7 @@ namespace Assets.Scripts.Interaction
             if (_inputSystemAsset.Hotkeys.Save.triggered)
             {
                 _sceneSaveSystem.Save(EditorStates.CurrentSceneState.CurrentScene);
-                WorkspaceSaveSystem.Save(EditorStates.CurrentUnityState.dynamicPanelsCanvas);
+                _workspaceSaveSystem.Save(EditorStates.CurrentUnityState.dynamicPanelsCanvas);
             }
 
             // When pressing Translate hotkey, enter translation gizmo mode

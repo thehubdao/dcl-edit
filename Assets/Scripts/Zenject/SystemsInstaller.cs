@@ -39,5 +39,7 @@ public class SystemsInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<ExposeEntitySystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<SetupSceneEventListenersSystem>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<WorkspaceSaveSystem>().AsSingle();
     }
 }

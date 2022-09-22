@@ -78,7 +78,7 @@ namespace Assets.Scripts.System
         }
 
 
-        public static void CreateEntityFile(KeyValuePair<Guid, DclEntity> entity, string sceneDirectoryPath)
+        public void CreateEntityFile(KeyValuePair<Guid, DclEntity> entity, string sceneDirectoryPath)
         {
             DclEntityData data = new DclEntityData(entity.Value);
             string dataJson = JsonConvert.SerializeObject(data);
@@ -88,7 +88,7 @@ namespace Assets.Scripts.System
             File.WriteAllText($"{sceneDirectoryPath}/{filename}", dataJson);
         }
 
-        public static void LoadEntityFile(DclScene scene, string absolutePath)
+        public void LoadEntityFile(DclScene scene, string absolutePath)
         {
             var json = File.ReadAllText(absolutePath);
             var entityData = JsonConvert.DeserializeObject<DclEntityData>(json);

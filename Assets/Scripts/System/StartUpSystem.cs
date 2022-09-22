@@ -19,12 +19,14 @@ namespace Assets.Scripts.System
         // dependencies
         private ISceneLoadSystem _sceneLoadSystem;
         private SetupSceneSystem _setupSceneSystem;
+        private WorkspaceSaveSystem _workspaceSaveSystem;
 
         [Inject]
-        private void Construct(ISceneLoadSystem sceneSave, SetupSceneSystem setupSceneSystem)
+        private void Construct(ISceneLoadSystem sceneSave, SetupSceneSystem setupSceneSystem, WorkspaceSaveSystem workspaceSaveSystem)
         {
             _sceneLoadSystem = sceneSave;
             _setupSceneSystem = setupSceneSystem;
+            _workspaceSaveSystem = workspaceSaveSystem;
         }
 
         void Awake()
@@ -43,7 +45,7 @@ namespace Assets.Scripts.System
 
         void Start()
         {
-            WorkspaceSaveSystem.Load(_editorStates.UnityState.dynamicPanelsCanvas);
+            _workspaceSaveSystem.Load(_editorStates.UnityState.dynamicPanelsCanvas);
         }
     }
 }
