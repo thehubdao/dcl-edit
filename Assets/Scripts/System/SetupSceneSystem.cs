@@ -10,11 +10,13 @@ namespace Assets.Scripts.System
     {
         // Dependencies
         private CameraSystem _cameraSystem;
+        private SetupSceneEventListenersSystem _setupSceneEventListenersSystem;
 
         [Inject]
-        private void Construct(CameraSystem cameraSystem)
+        private void Construct(CameraSystem cameraSystem, SetupSceneEventListenersSystem setupSceneEventListenersSystem)
         {
             _cameraSystem = cameraSystem;
+            _setupSceneEventListenersSystem = setupSceneEventListenersSystem;
         }
 
         public void SetupScene(DclScene scene)
@@ -23,7 +25,7 @@ namespace Assets.Scripts.System
 
             _cameraSystem.CameraStartup();
 
-            SetupSceneEventListenersSystem.SetupSceneEventListeners();
+            _setupSceneEventListenersSystem.SetupSceneEventListeners();
         }
     }
 }

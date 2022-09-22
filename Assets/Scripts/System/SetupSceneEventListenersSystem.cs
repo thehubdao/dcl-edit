@@ -4,9 +4,9 @@ using System.Linq;
 using Assets.Scripts.EditorState;
 using UnityEngine;
 
-public class SetupSceneEventListenersSystem : MonoBehaviour
+public class SetupSceneEventListenersSystem
 {
-    public static void SetupSceneEventListeners()
+    public void SetupSceneEventListeners()
     {
         var scene = EditorStates.CurrentSceneState.CurrentScene;
 

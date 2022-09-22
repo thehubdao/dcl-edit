@@ -37,5 +37,7 @@ public class SystemsInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<CameraSystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<ExposeEntitySystem>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<SetupSceneEventListenersSystem>().AsSingle();
     }
 }
