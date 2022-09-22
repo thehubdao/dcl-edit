@@ -9,11 +9,13 @@ namespace Assets.Scripts.System
     {
         // dependencies
         private ICommandSystem _commandSystem;
+        private ExposeEntitySystem _exposeEntitySystem;
 
         [Inject]
-        public void Construct(ICommandSystem commandSystem)
+        public void Construct(ICommandSystem commandSystem, ExposeEntitySystem exposeEntitySystem)
         {
             _commandSystem = commandSystem;
+            _exposeEntitySystem = exposeEntitySystem;
         }
 
         public void SetNewName(DclEntity entity, string newName)
@@ -28,7 +30,7 @@ namespace Assets.Scripts.System
 
             if (isExposed)
             {
-                if (ExposeEntitySystem.IsEntityExposable(entity))
+                if (_exposeEntitySystem.IsEntityExposable(entity))
                 {
                     _commandSystem.ExecuteCommand(_commandSystem.CommandFactory.CreateChangeIsExposed(entity.Id, true, entity.IsExposed));
                 }

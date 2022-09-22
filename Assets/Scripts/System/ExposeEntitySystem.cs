@@ -9,7 +9,7 @@ using UnityEngine;
 
 public class ExposeEntitySystem
 {
-    public static bool IsEntityExposable(DclEntity entity)
+    public bool IsEntityExposable(DclEntity entity)
     {
         var scene = EditorStates.CurrentSceneState.CurrentScene;
         if (scene == null)
@@ -27,12 +27,12 @@ public class ExposeEntitySystem
                 ExposedNameFromEntity(e).Equals(exposedName));
     }
 
-    public static string ExposedNameFromEntity(DclEntity entity)
+    public string ExposedNameFromEntity(DclEntity entity)
     {
         return ExposedNameFromName(entity.ShownName);
     }
 
-    public static string ExposedNameFromName(string name)
+    public string ExposedNameFromName(string name)
     {
         var exposedName = new StringBuilder(name.Length);
 
@@ -63,7 +63,7 @@ public class ExposeEntitySystem
         return exposedName.ToString();
     }
 
-    private static readonly string[] reservedWords =
+    private readonly string[] reservedWords =
     {
         // Reserved Words
         "break",
