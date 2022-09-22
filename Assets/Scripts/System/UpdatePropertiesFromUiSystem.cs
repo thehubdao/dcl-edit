@@ -16,12 +16,12 @@ namespace Assets.Scripts.System
             _commandSystem = commandSystem;
         }
 
-        public static void SetNewName(DclEntity entity, string newName)
+        public void SetNewName(DclEntity entity, string newName)
         {
             _commandSystem.ExecuteCommand(_commandSystem.CommandFactory.CreateChangeEntityName(entity.Id, newName, entity.CustomName));
         }
 
-        public static void SetIsExposed(DclEntity entity, bool isExposed)
+        public void SetIsExposed(DclEntity entity, bool isExposed)
         {
             if(isExposed == entity.IsExposed)
                 return;
@@ -44,7 +44,7 @@ namespace Assets.Scripts.System
             }
         }
 
-        public static void UpdateFloatingProperty<T>(DclPropertyIdentifier property, T value)
+        public void UpdateFloatingProperty<T>(DclPropertyIdentifier property, T value)
         {
             var scene = EditorStates.CurrentSceneState.CurrentScene;
 
@@ -58,7 +58,7 @@ namespace Assets.Scripts.System
             scene.SelectionState.SelectionChangedEvent.Invoke();
         }
 
-        public static void RevertFloatingProperty(DclPropertyIdentifier property)
+        public void RevertFloatingProperty(DclPropertyIdentifier property)
         {
             var scene = EditorStates.CurrentSceneState.CurrentScene;
 
@@ -70,7 +70,7 @@ namespace Assets.Scripts.System
             scene.GetPropertyFromIdentifier(property).ResetFloating();
         }
 
-        public static void UpdateFixedProperty<T>(DclPropertyIdentifier property, T value)
+        public void UpdateFixedProperty<T>(DclPropertyIdentifier property, T value)
         {
             var scene = EditorStates.CurrentSceneState.CurrentScene;
 

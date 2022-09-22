@@ -15,11 +15,13 @@ public class UiInspectorVisuals : MonoBehaviour, ISetupSceneEventListeners
 
     // dependencies
     private InputState _inputState;
+    private UpdatePropertiesFromUiSystem _updatePropertiesSystem;
 
     [Inject]
-    private void Construct(InputState inputState)
+    private void Construct(InputState inputState, UpdatePropertiesFromUiSystem updatePropertiesSystem)
     {
         _inputState = inputState;
+        _updatePropertiesSystem = updatePropertiesSystem;
     }
 
     public void SetupSceneEventListeners()
@@ -50,14 +52,14 @@ public class UiInspectorVisuals : MonoBehaviour, ISetupSceneEventListeners
         var nameInputActions = new UiBuilder.UiPropertyActions<string>
         {
             OnChange = _ => { },
-            OnSubmit = value => UpdatePropertiesFromUiSystem.SetNewName(selectedEntity, value),
+            OnSubmit = value => _updatePropertiesSystem.SetNewName(selectedEntity, value),
             OnAbort = _ => { }
         };
 
         var exposedInputActions = new UiBuilder.UiPropertyActions<bool>
         {
             OnChange = _ => { },
-            OnSubmit = value => UpdatePropertiesFromUiSystem.SetIsExposed(selectedEntity, value),
+            OnSubmit = value => _updatePropertiesSystem.SetIsExposed(selectedEntity, value),
             OnAbort = _ => { }
         };
 
@@ -85,9 +87,9 @@ public class UiInspectorVisuals : MonoBehaviour, ISetupSceneEventListeners
                         {
                             var stringActions = new UiBuilder.UiPropertyActions<string>
                             {
-                                OnChange = (value) => UpdatePropertiesFromUiSystem.UpdateFloatingProperty(propertyIdentifier, value),
-                                OnSubmit = (value) => UpdatePropertiesFromUiSystem.UpdateFixedProperty(propertyIdentifier, value),
-                                OnAbort = (_) => UpdatePropertiesFromUiSystem.RevertFloatingProperty(propertyIdentifier)
+                                OnChange = (value) => _updatePropertiesSystem.UpdateFloatingProperty(propertyIdentifier, value),
+                                OnSubmit = (value) => _updatePropertiesSystem.UpdateFixedProperty(propertyIdentifier, value),
+                                OnAbort = (_) => _updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier)
                             };
 
                             componentBuilder.StringPropertyInput(
@@ -102,9 +104,9 @@ public class UiInspectorVisuals : MonoBehaviour, ISetupSceneEventListeners
                         {
                             var intActions = new UiBuilder.UiPropertyActions<float> // number property requires float actions
                             {
-                                OnChange = (value) => UpdatePropertiesFromUiSystem.UpdateFloatingProperty(propertyIdentifier, (int)value),
-                                OnSubmit = (value) => UpdatePropertiesFromUiSystem.UpdateFixedProperty(propertyIdentifier, (int)value),
-                                OnAbort = (value) => UpdatePropertiesFromUiSystem.RevertFloatingProperty(propertyIdentifier)
+                                OnChange = (value) => _updatePropertiesSystem.UpdateFloatingProperty(propertyIdentifier, (int) value),
+                                OnSubmit = (value) => _updatePropertiesSystem.UpdateFixedProperty(propertyIdentifier, (int) value),
+                                OnAbort = (value) => _updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier)
                             };
 
                             componentBuilder.NumberPropertyInput(
@@ -119,9 +121,9 @@ public class UiInspectorVisuals : MonoBehaviour, ISetupSceneEventListeners
                         {
                             var floatActions = new UiBuilder.UiPropertyActions<float>
                             {
-                                OnChange = (value) => UpdatePropertiesFromUiSystem.UpdateFloatingProperty(propertyIdentifier, value),
-                                OnSubmit = (value) => UpdatePropertiesFromUiSystem.UpdateFixedProperty(propertyIdentifier, value),
-                                OnAbort = (value) => UpdatePropertiesFromUiSystem.RevertFloatingProperty(propertyIdentifier)
+                                OnChange = (value) => _updatePropertiesSystem.UpdateFloatingProperty(propertyIdentifier, value),
+                                OnSubmit = (value) => _updatePropertiesSystem.UpdateFixedProperty(propertyIdentifier, value),
+                                OnAbort = (value) => _updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier)
                             };
 
                             componentBuilder.NumberPropertyInput(
@@ -141,9 +143,9 @@ public class UiInspectorVisuals : MonoBehaviour, ISetupSceneEventListeners
                         {
                             var vec3Actions = new UiBuilder.UiPropertyActions<Vector3>
                             {
-                                OnChange = (value) => UpdatePropertiesFromUiSystem.UpdateFloatingProperty(propertyIdentifier, value),
-                                OnSubmit = (value) => UpdatePropertiesFromUiSystem.UpdateFixedProperty(propertyIdentifier, value),
-                                OnAbort = (value) => UpdatePropertiesFromUiSystem.RevertFloatingProperty(propertyIdentifier)
+                                OnChange = (value) => _updatePropertiesSystem.UpdateFloatingProperty(propertyIdentifier, value),
+                                OnSubmit = (value) => _updatePropertiesSystem.UpdateFixedProperty(propertyIdentifier, value),
+                                OnAbort = (value) => _updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier)
                             };
 
                             string[] xyzString = { "x", "y", "z" };

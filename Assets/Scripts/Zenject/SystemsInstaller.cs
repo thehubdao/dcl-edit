@@ -12,8 +12,7 @@ public class SystemsInstaller : MonoInstaller
         Container.Bind<ICommandSystem>().To<CommandSystem>().AsSingle();
         Container.BindInterfacesAndSelfTo<CommandFactorySystem>().AsSingle();
 
-        // QuickFix for static injection TODO: remove when Update Properties from UI System gets its proper injection update
-        Container.BindInterfacesAndSelfTo<UpdatePropertiesFromUiSystem>().AsSingle().NonLazy();
+        Container.BindInterfacesAndSelfTo<UpdatePropertiesFromUiSystem>().AsSingle();
 
         Container.Bind(typeof(InputState)).To<InputState>().AsSingle();
 
