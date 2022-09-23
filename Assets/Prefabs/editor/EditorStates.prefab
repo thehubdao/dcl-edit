@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 7732126362854482267}
   - component: {fileID: 542692702519556135}
   - component: {fileID: 5317590454083341830}
-  - component: {fileID: 7953543301535803489}
   - component: {fileID: 3038435570432155737}
   m_Layer: 0
   m_Name: EditorStates
@@ -51,7 +50,7 @@ MonoBehaviour:
   ProjectState: {fileID: 7732126362854482267}
   PathState: {fileID: 542692702519556135}
   UnityState: {fileID: 5317590454083341830}
-  ModelCacheState: {fileID: 7953543301535803489}
+  ModelCacheState: {fileID: 0}
   GizmoState: {fileID: 0}
 --- !u!114 &7732126362854482267
 MonoBehaviour:
@@ -112,18 +111,6 @@ MonoBehaviour:
   NumberInputAtom: {fileID: 5812454901384158741, guid: 643cb13cbab094b42887dae813c93af2, type: 3}
   BooleanInputAtom: {fileID: 5233136792266491960, guid: 42f6030112784864f9dc60d33b26df8a, type: 3}
   Vector3InputAtom: {fileID: 5341960638517146307, guid: 45f07c32725cf3c419e1758b1f6b2ab0, type: 3}
---- !u!114 &7953543301535803489
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4344694708095808543}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d372ef3fa2aab1438d363398fd183f1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &3038435570432155737
 MonoBehaviour:
   m_ObjectHideFlags: 0

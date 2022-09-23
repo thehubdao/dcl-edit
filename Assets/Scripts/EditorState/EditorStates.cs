@@ -42,10 +42,6 @@ namespace Assets.Scripts.EditorState
         [SerializeField]
         public UnityState UnityState;
 
-        // Model Cache State
-        [SerializeField]
-        public ModelCacheState ModelCacheState;
-
         [SerializeField]
         public GizmoState GizmoState;
 
@@ -83,7 +79,6 @@ namespace Assets.Scripts.EditorState
         public static ProjectState CurrentProjectState => Instance.ProjectState;
         public static PathState CurrentPathState => Instance.PathState;
         public static UnityState CurrentUnityState => Instance?.UnityState;
-        public static ModelCacheState CurrentModelCacheState => Instance.ModelCacheState;
         public static GizmoState CurrentGizmoState => Instance.GizmoState;
     }
 }

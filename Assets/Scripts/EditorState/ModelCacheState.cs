@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ModelCacheState : MonoBehaviour
+public class ModelCacheState
 {
     public Dictionary<string, GameObject> ModelCache = new Dictionary<string, GameObject>();
 

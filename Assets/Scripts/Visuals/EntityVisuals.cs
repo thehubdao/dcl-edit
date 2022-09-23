@@ -1,6 +1,7 @@
 using System;
 using Assets.Scripts.EditorState;
 using UnityEngine;
+using Zenject;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -10,6 +11,15 @@ namespace Assets.Scripts.Visuals
     public class EntityVisuals : MonoBehaviour
     {
         public Guid Id;
+
+        // Dependencies
+        private GltfShapeVisuals.Factory _gltfShapeVisualsFactory;
+
+        [Inject]
+        private void Construct(GltfShapeVisuals.Factory gltfShapeVisualsFactory)
+        {
+            _gltfShapeVisualsFactory = gltfShapeVisualsFactory;
+        }
 
         public void UpdateVisuals()
         {
@@ -32,7 +42,9 @@ namespace Assets.Scripts.Visuals
             if (gltfShapeComponent != null)
             {
                 if (gltfShapeVisualization == null)
-                    gltfShapeVisualization = gameObject.AddComponent<GltfShapeVisuals>();
+                {
+                    gltfShapeVisualization = _gltfShapeVisualsFactory.Create();
+                }
 
                 gltfShapeVisualization.UpdateVisuals(entity);
             }

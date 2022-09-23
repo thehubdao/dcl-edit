@@ -17,9 +17,7 @@ public class SystemsInstaller : MonoInstaller
         }
         else
         {
-            Container
-                .Bind(typeof(ISceneSaveSystem), typeof(ISceneLoadSystem))
-                .To<SceneLoadSaveSystem>().AsSingle();
+            Container.BindInterfacesAndSelfTo<SceneLoadSaveSystem>().AsSingle();
         }
 
         Container.BindInterfacesAndSelfTo<CommandSystem>().AsSingle();
@@ -41,5 +39,9 @@ public class SystemsInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<SetupSceneEventListenersSystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<WorkspaceSaveSystem>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<ModelCacheSystem>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<ModelCacheState>().AsSingle();
     }
 }

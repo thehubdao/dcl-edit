@@ -4,6 +4,7 @@ using Assets.Scripts.ProjectState;
 using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
 using UnityEngine;
+using Zenject;
 
 namespace Assets.Scripts.Visuals
 {
@@ -11,6 +12,14 @@ namespace Assets.Scripts.Visuals
     {
         private GameObject _currentModelObject = null;
 
+        // Dependencies
+        private ModelCacheSystem _modelCacheSystem;
+
+        [Inject]
+        private void Construct(ModelCacheSystem modelCacheSystem)
+        {
+            _modelCacheSystem = modelCacheSystem;
+        }
 
         public override void UpdateVisuals(DclEntity entity)
         {
@@ -26,7 +35,7 @@ namespace Assets.Scripts.Visuals
                 if (gltfAsset == null)
                     return;
 
-                ModelCacheSystem.GetModel(gltfAsset.Path, "",
+                _modelCacheSystem.GetModel(gltfAsset.Path, "",
                     o =>
                     {
                         if (o == null)
@@ -50,10 +59,13 @@ namespace Assets.Scripts.Visuals
 
         }
 
-
         public override void Deactivate()
         {
             _currentModelObject.SetActive(false);
+        }
+
+        public class Factory : PlaceholderFactory<GltfShapeVisuals>
+        {
         }
     }
 }
