@@ -89,29 +89,5 @@ namespace Assets.Scripts.Command
         {
             return sceneState.SelectionState.SecondarySelectedEntities.Select(e => e.Id);
         }
-
-        public static ChangeSelection MakeAdditionalSelectCommand(DclScene scene, Guid idToAdd)
-        {
-            return new ChangeSelection(
-                GetPrimarySelectionFromScene(scene),
-                GetSecondarySelectionFromScene(scene),
-                idToAdd,
-                scene.SelectionState.AllSelectedEntities
-                    .Select(e => e?.Id ?? Guid.Empty)
-                    .Where(id => id != Guid.Empty && id != idToAdd));
-        }
-
-        public static ChangeSelection MakeSingleSelectCommand(DclScene scene, Guid idToSelect)
-        {
-            if(scene == null)
-                return null;
-
-            return new ChangeSelection(
-                GetPrimarySelectionFromScene(scene),
-                GetSecondarySelectionFromScene(scene),
-                idToSelect,
-                Array.Empty<Guid>());
-        }
-
     }
 }

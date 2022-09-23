@@ -1,28 +1,37 @@
+using Assets.Scripts.ProjectState;
+using Assets.Scripts.SceneState;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Assets.Scripts.EditorState;
-using Assets.Scripts.ProjectState;
-using Assets.Scripts.SceneState;
 using UnityEngine;
 
 namespace Assets.Scripts.System
 {
-    public class LoadFromVersion1System
+    public class LoadFromVersion1System : ISceneLoadSystem
     {
-        public static DclScene Load()
+        // Dependencies
+        private EditorState.ProjectState _projectState;
+        private PathState _pathState;
+
+        public LoadFromVersion1System(EditorState.ProjectState projectState, PathState pathState)
+        {
+            _projectState = projectState;
+            _pathState = pathState;
+        }
+
+        public DclScene Load(string _)
         {
             var sceneSaveFilePath = "";
             var projectSaveFilePath = "";
             var assetSaveFilePath = "";
-            if (File.Exists(EditorStates.CurrentPathState.ProjectPath + "/dcl-edit/saves/save.json"))
+            if (File.Exists(_pathState.ProjectPath + "/dcl-edit/saves/save.json"))
             {
-                sceneSaveFilePath = EditorStates.CurrentPathState.ProjectPath + "/dcl-edit/saves/save.json";
-                projectSaveFilePath = EditorStates.CurrentPathState.ProjectPath + "/dcl-edit/saves/project.json";
-                assetSaveFilePath = EditorStates.CurrentPathState.ProjectPath + "/dcl-edit/saves/assets.json";
+                sceneSaveFilePath = _pathState.ProjectPath + "/dcl-edit/saves/save.json";
+                projectSaveFilePath = _pathState.ProjectPath + "/dcl-edit/saves/project.json";
+                assetSaveFilePath = _pathState.ProjectPath + "/dcl-edit/saves/assets.json";
             }
-            else if (File.Exists(EditorStates.CurrentPathState.ProjectPath + "/scene/scene.json"))
+            else if (File.Exists(_pathState.ProjectPath + "/scene/scene.json"))
             {
                 return null; // To old version. No support for this version
                 //sceneSaveFilePath = EditorStates.CurrentPathState.ProjectPath + "/scene/scene.json";
@@ -139,7 +148,7 @@ namespace Assets.Scripts.System
             return newScene;
         }
 
-        private static void ChangeToLocal(DclEntity entity, DclTransformComponent dclParentTransform)
+        private void ChangeToLocal(DclEntity entity, DclTransformComponent dclParentTransform)
         {
             // can be null
             var dclTransform = entity.GetTransformComponent();
@@ -174,7 +183,7 @@ namespace Assets.Scripts.System
             UnityEngine.Object.Destroy(childTransform.gameObject);
         }
 
-        private static AssetsJsonWrapper LoadAssets(string path)
+        private AssetsJsonWrapper LoadAssets(string path)
         {
             if (File.Exists(path))
             {
@@ -188,7 +197,7 @@ namespace Assets.Scripts.System
                     usedAssets.Add(Guid.Parse(assetJson.id), new DclGltfAsset(assetJson.name, assetJson.gltfPath));
                 }
 
-                EditorStates.CurrentProjectState.Assets.UsedAssets = usedAssets;
+                _projectState.Assets.UsedAssets = usedAssets;
 
                 return assetsJson;
             }
@@ -217,7 +226,7 @@ namespace Assets.Scripts.System
             public Vector3 scale;
         }
 
-        private static DclComponent MakeTransformComponentFromJson(EntityComponentJson componentJson)
+        private DclComponent MakeTransformComponentFromJson(EntityComponentJson componentJson)
         {
             var specificTransformJson = JsonUtility.FromJson<SpecificTransformJson>(componentJson.specifics);
 
@@ -234,7 +243,7 @@ namespace Assets.Scripts.System
             public string assetID;
         }
 
-        private static DclComponent MakeGLTFShapeComponentFromJson(EntityComponentJson componentJson, AssetsJsonWrapper assetsJson)
+        private DclComponent MakeGLTFShapeComponentFromJson(EntityComponentJson componentJson, AssetsJsonWrapper assetsJson)
         {
             var specificTransformJson = JsonUtility.FromJson<SpecificGLTFShapeJson>(componentJson.specifics);
 
@@ -250,34 +259,34 @@ namespace Assets.Scripts.System
         }
 
 
-        private static DclComponent MakeBoxShapeComponentFromJson(EntityComponentJson _)
+        private DclComponent MakeBoxShapeComponentFromJson(EntityComponentJson _)
         {
             return new DclComponent("BoxShape", "Shape");
         }
 
-        private static DclComponent MakeSphereShapeComponentFromJson(EntityComponentJson _)
+        private DclComponent MakeSphereShapeComponentFromJson(EntityComponentJson _)
         {
             return new DclComponent("SphereShape", "Shape");
         }
 
-        private static DclComponent MakeCylinderShapeComponentFromJson(EntityComponentJson _)
+        private DclComponent MakeCylinderShapeComponentFromJson(EntityComponentJson _)
         {
             return new DclComponent("CylinderShape", "Shape");
         }
 
-        private static DclComponent MakePlaneShapeComponentFromJson(EntityComponentJson _)
+        private DclComponent MakePlaneShapeComponentFromJson(EntityComponentJson _)
         {
             return new DclComponent("PlaneShape", "Shape");
         }
 
-        private static DclComponent MakeConeShapeComponentFromJson(EntityComponentJson _)
+        private DclComponent MakeConeShapeComponentFromJson(EntityComponentJson _)
         {
             return new DclComponent("ConeShape", "Shape");
         }
     }
 
     [Serializable]
-    public class EntityJson
+    internal class EntityJson
     {
         //public EntityJson(Entity e)
         //{
@@ -300,7 +309,7 @@ namespace Assets.Scripts.System
     }
 
     [Serializable]
-    public class EntityComponentJson
+    internal class EntityComponentJson
     {
         //public EntityComponentJson(EntityComponent ec)
         //{
@@ -312,7 +321,7 @@ namespace Assets.Scripts.System
         public string specifics;
     }
 
-    public static class SceneSaveJsonHelper
+    internal static class SceneSaveJsonHelper
     {
         //public static T[] FromJson<T>(string json)
         //{
@@ -329,11 +338,6 @@ namespace Assets.Scripts.System
         public static EntityList FromJson(this string jsonString)
         {
             return JsonUtility.FromJson<EntityList>(jsonString);
-        }
-
-        public static string Indent(this String s)
-        {
-            return "    " + s.Replace("\n", "\n    ");
         }
     }
 }

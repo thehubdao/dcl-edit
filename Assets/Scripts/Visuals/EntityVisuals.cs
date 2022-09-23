@@ -1,6 +1,6 @@
 using System;
-using Assets.Scripts.EditorState;
 using UnityEngine;
+using Zenject;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -11,9 +11,25 @@ namespace Assets.Scripts.Visuals
     {
         public Guid Id;
 
+        // Dependencies
+        private GltfShapeVisuals.Factory _gltfShapeVisualsFactory;
+        private PrimitiveShapeVisuals.Factory _primitiveShapeVisualsFactory;
+        private EditorState.SceneState _sceneState;
+
+        [Inject]
+        private void Construct(
+            GltfShapeVisuals.Factory gltfShapeVisualsFactory,
+             PrimitiveShapeVisuals.Factory primitiveShapeVisualsFactory,
+              EditorState.SceneState sceneState)
+        {
+            _gltfShapeVisualsFactory = gltfShapeVisualsFactory;
+            _primitiveShapeVisualsFactory = primitiveShapeVisualsFactory;
+            _sceneState = sceneState;
+        }
+
         public void UpdateVisuals()
         {
-            var entity = EditorStates.CurrentSceneState.CurrentScene?.GetEntityFormId(Id);
+            var entity = _sceneState.CurrentScene?.GetEntityFormId(Id);
             if (entity == null)
                 return;
 
@@ -32,7 +48,9 @@ namespace Assets.Scripts.Visuals
             if (gltfShapeComponent != null)
             {
                 if (gltfShapeVisualization == null)
-                    gltfShapeVisualization = gameObject.AddComponent<GltfShapeVisuals>();
+                {
+                    gltfShapeVisualization = _gltfShapeVisualsFactory.Create();
+                }
 
                 gltfShapeVisualization.UpdateVisuals(entity);
             }
@@ -48,7 +66,7 @@ namespace Assets.Scripts.Visuals
             if (primitiveShapeComponent != null)
             {
                 if (primitiveShapeVisualization == null)
-                    primitiveShapeVisualization = gameObject.AddComponent<PrimitiveShapeVisuals>();
+                    primitiveShapeVisualization = _primitiveShapeVisualsFactory.Create();
 
                 primitiveShapeVisualization.UpdateVisuals(entity);
             }
@@ -75,16 +93,16 @@ namespace Assets.Scripts.Visuals
             if (entityVis == null)
                 return;
 
-            var entity = EditorStates.CurrentSceneState.CurrentScene?.GetEntityFormId(entityVis.Id);
-
-            if (entity == null)
-                return;
-
-
-            // Print Debug info
-            GUILayout.Label("--- DEBUG INFO ---");
-
-            CustomEditorUtils.DrawEntityToGui(entity);
+            //var entity = _sceneState.CurrentScene?.GetEntityFormId(entityVis.Id);
+            //
+            //if (entity == null)
+            //    return;
+            //
+            //
+            //// Print Debug info
+            //GUILayout.Label("--- DEBUG INFO ---");
+            //
+            //CustomEditorUtils.DrawEntityToGui(entity);
         }
     }
 #endif

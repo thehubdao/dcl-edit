@@ -1,24 +1,32 @@
 using System.Collections.Generic;
 using System.Linq;
-using Assets.Scripts.EditorState;
 using Assets.Scripts.Interaction;
 using Assets.Scripts.Utility;
 using UnityEngine;
+using Zenject;
 
 namespace Assets.Scripts.Visuals
 {
     public class MainSceneVisuals : MonoBehaviour, ISetupSceneEventListeners
     {
-        [SerializeField]
-        private GameObject _entityVisualsPrefab;
+        // Dependencies
+        private EntitySelectInteraction.Factory _entitySelectInteractionFactory;
+        private EditorState.SceneState _sceneState;
+
+        [Inject]
+        public void Construct(EntitySelectInteraction.Factory entitySelectionInteractionFactory, EditorState.SceneState sceneState)
+        {
+            _entitySelectInteractionFactory = entitySelectionInteractionFactory;
+            _sceneState = sceneState;
+        }
 
         public void SetupSceneEventListeners()
         {
             // when there is a scene loaded, add the visuals updater
-            EditorStates.CurrentSceneState.CurrentScene?
+            _sceneState.CurrentScene?
                 .HierarchyChangedEvent.AddListener(UpdateVisuals);
 
-            EditorStates.CurrentSceneState.CurrentScene?
+            _sceneState.CurrentScene?
                 .SelectionState.SelectionChangedEvent.AddListener(UpdateVisuals);
 
             UpdateVisuals();
@@ -26,7 +34,7 @@ namespace Assets.Scripts.Visuals
 
         private void UpdateVisuals()
         {
-            var scene = EditorStates.CurrentSceneState.CurrentScene;
+            var scene = _sceneState.CurrentScene;
             if (scene == null)
                 return;
 
@@ -41,12 +49,14 @@ namespace Assets.Scripts.Visuals
             // Generate entity visuals
             foreach (var entity in scene.AllEntities.Select(e => e.Value))
             {
-                var newEntityVisualsGameObject = Instantiate(_entityVisualsPrefab, transform);
-                var newEntityVisuals = newEntityVisualsGameObject.GetComponent<EntityVisuals>();
+                //var newEntityVisualsGameObject = Instantiate(_entityVisualsPrefab, transform);
+                var newEntityInteraction = _entitySelectInteractionFactory.Create();
+                newEntityInteraction.Id = entity.Id;
+
+                var newEntityVisuals = newEntityInteraction.GetComponent<EntityVisuals>();
                 newEntityVisuals.Id = entity.Id;
 
-                var newEntityInteraction = newEntityVisualsGameObject.GetComponent<EntitySelectInteraction>();
-                newEntityInteraction.Id = entity.Id;
+                newEntityInteraction.transform.parent = transform;
 
                 visuals.Add(newEntityVisuals);
             }

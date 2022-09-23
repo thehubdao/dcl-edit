@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 1317382163764204797}
   - component: {fileID: 4421811441549635202}
   - component: {fileID: 7809588600554890269}
+  - component: {fileID: 3957704047849591139}
   m_Layer: 5
   m_Name: TextInput-Number
   m_TagString: Untagged
@@ -220,6 +221,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   TextInputHandler: {fileID: 4421811441549635202}
+--- !u!114 &3957704047849591139
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1317382163764204799}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 717a02054ef2699498e6bd4234fd7995, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _containerSource: 2
 --- !u!1 &1317382164516426305
 GameObject:
   m_ObjectHideFlags: 0

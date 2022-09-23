@@ -1,17 +1,27 @@
 using Assets.Scripts.EditorState;
 using UnityEngine;
+using Zenject;
 
 namespace Assets.Scripts.System
 {
     public class GizmoSizeFixerSystem : MonoBehaviour
     {
+        // Dependencies
+        private CameraState _cameraState;
+
+        [Inject]
+        private void Construct(CameraState cameraState)
+        {
+            _cameraState = cameraState;
+        }
+
         void LateUpdate()
         {
             // vector from camera to gizmo
-            var diffVector = transform.position - EditorStates.CurrentCameraState.Position;
+            var diffVector = transform.position - _cameraState.Position;
 
             // camera forward vector
-            var camForward = EditorStates.CurrentCameraState.Forward;
+            var camForward = _cameraState.Forward;
 
             // project diffVector onto forward vector
             var proj = Vector3.Project(diffVector, camForward);

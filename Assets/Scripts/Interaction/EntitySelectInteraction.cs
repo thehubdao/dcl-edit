@@ -3,10 +3,11 @@ using System.Linq;
 using Assets.Scripts.Command;
 using Assets.Scripts.EditorState;
 using Assets.Scripts.System;
-using UnityEditor;
-using UnityEngine;
 #if UNITY_EDITOR
+using UnityEditor;
 #endif
+using UnityEngine;
+using Zenject;
 
 namespace Assets.Scripts.Interaction
 {
@@ -14,10 +15,21 @@ namespace Assets.Scripts.Interaction
     {
         public Guid Id;
 
+        // dependencies
+        private ICommandSystem _commandSystem;
+        private EditorState.SceneState _sceneState;
+
+        [Inject]
+        public void Construct(ICommandSystem commandSystem, EditorState.SceneState sceneState)
+        {
+            _commandSystem = commandSystem;
+            _sceneState = sceneState;
+        }
+
         public void SelectAdditional()
         {
-            var scene = EditorStates.CurrentSceneState.CurrentScene;
-            var selectionCommand = new ChangeSelection(
+            var scene = _sceneState.CurrentScene;
+            var selectionCommand = _commandSystem.CommandFactory.CreateChangeSelection(
                 ChangeSelection.GetPrimarySelectionFromScene(scene),
                 ChangeSelection.GetSecondarySelectionFromScene(scene),
                 Id,
@@ -25,26 +37,30 @@ namespace Assets.Scripts.Interaction
                     .Select(e => e?.Id ?? Guid.Empty)
                     .Where(id => id != Guid.Empty && id != Id));
 
-            CommandSystem.ExecuteCommand(selectionCommand);
+            _commandSystem.ExecuteCommand(selectionCommand);
         }
 
         public void SelectSingle()
         {
-            var scene = EditorStates.CurrentSceneState.CurrentScene;
-            var selectionCommand = new ChangeSelection(
+            var scene = _sceneState.CurrentScene;
+            var selectionCommand = _commandSystem.CommandFactory.CreateChangeSelection(
                 ChangeSelection.GetPrimarySelectionFromScene(scene),
                 ChangeSelection.GetSecondarySelectionFromScene(scene),
                 Id,
                 Array.Empty<Guid>());
 
-            CommandSystem.ExecuteCommand(selectionCommand);
+            _commandSystem.ExecuteCommand(selectionCommand);
+        }
+
+        public class Factory : PlaceholderFactory<EntitySelectInteraction>
+        {
         }
     }
 
     // Custom editor
 
 #if UNITY_EDITOR
-    
+
     [CustomEditor(typeof(EntitySelectInteraction))]
     //[CanEditMultipleObjects]
     public class LookAtPointEditor : Editor
@@ -71,5 +87,4 @@ namespace Assets.Scripts.Interaction
     }
 
 #endif
-
 }

@@ -1,28 +1,41 @@
+using Assets.Scripts.EditorState;
+using Assets.Scripts.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-using Assets.Scripts.EditorState;
-using Assets.Scripts.Utility;
 using UnityEngine;
 using UnityGLTF;
 using UnityGLTF.Loader;
+using Zenject;
 
 namespace Assets.Scripts.System
 {
-    public class ModelCacheSystem : MonoBehaviour
+    public class ModelCacheSystem
     {
+        // Dependencies
+        private ModelCacheState _modelCacheState;
+        private UnityState _unityState;
+        private PathState _pathState;
+
+        [Inject]
+        private void Construct(ModelCacheState modelCacheState, UnityState unityState, PathState pathState)
+        {
+            _modelCacheState = modelCacheState;
+            _unityState = unityState;
+            _pathState = pathState;
+        }
+
         /// <summary>
         /// Gets the cached model for the specified path
         /// </summary>
         /// <param name="path">the path of the model</param>
         /// <param name="versionInfo">a specifier for the version of the object. Can be any string. E.g.: version counter, timestamp, hash, ...</param>
         /// <param name="then">An action that is called with the Specified Model as a GameObject. This might get called to a later point, if the Model needs to be loaded first.</param>
-        public static void GetModel(string path, string versionInfo, Action<GameObject> then)
+        public void GetModel(string path, string versionInfo, Action<GameObject> then)
         {
-            if (EditorStates.CurrentModelCacheState.ModelCache.TryGetValue(path, out var value)) // TODO: check version
+            if (_modelCacheState.ModelCache.TryGetValue(path, out var value)) // TODO: check version
             {
-                var instance = Instantiate(value);
+                var instance = GameObject.Instantiate(value);
                 instance.SetActive(true);
                 then(instance);
             }
@@ -30,13 +43,13 @@ namespace Assets.Scripts.System
             {
                 Action<GameObject> onLoadedAction = o =>
                 {
-                    var instance = Instantiate(o);
+                    var instance = GameObject.Instantiate(o);
                     instance.SetActive(true);
                     then(instance);
                 };
 
                 // Check if the model is already loading
-                if (EditorStates.CurrentModelCacheState.CurrentlyLoading.TryGetValue(path, out var actions)) 
+                if (_modelCacheState.CurrentlyLoading.TryGetValue(path, out var actions))
                 {
                     // if already loading, just add the onLoadedAction to the list of actions to be fired
                     actions.Add(onLoadedAction);
@@ -46,23 +59,23 @@ namespace Assets.Scripts.System
                     // if model is not loading yet, start loading of model
                     var onLoadedActions = new List<Action<GameObject>>();
                     onLoadedActions.Add(onLoadedAction);
-                    EditorStates.CurrentModelCacheState.CurrentlyLoading.Add(path, onLoadedActions);
+                    _modelCacheState.CurrentlyLoading.Add(path, onLoadedActions);
 
-                    var absolutePath = EditorStates.CurrentPathState.ProjectPath + "/" + path;
+                    var absolutePath = _pathState.ProjectPath + "/" + path;
 
                     var filePathParts = absolutePath.Split('/', '\\');
 
                     var options = new ImportOptions()
                     {
                         DataLoader = new FileLoader(URIHelper.GetDirectoryName(absolutePath)),
-                        AsyncCoroutineHelper = EditorStates.CurrentUnityState.AsyncCoroutineHelper
+                        AsyncCoroutineHelper = _unityState.AsyncCoroutineHelper
                     };
 
                     var importer = new GLTFSceneImporter(filePathParts[filePathParts.Length - 1], options);
 
                     importer.CustomShaderName = "Shader Graphs/GLTFShader";
 
-                    EditorStates.CurrentUnityState.AsyncCoroutineHelper.StartCoroutine(importer.LoadScene(
+                    _unityState.AsyncCoroutineHelper.StartCoroutine(importer.LoadScene(
                         onLoadComplete: (o, info) =>
                         {
                             if (o == null)
@@ -103,13 +116,13 @@ namespace Assets.Scripts.System
                             // find all transforms of visible GameObjects
                             var visibleChildren = allTransforms
                                 .Where(t => !t.name.EndsWith("_collider"))
-                                .Where(t => t.TryGetComponent<MeshFilter>(out _)||t.TryGetComponent<SkinnedMeshRenderer>(out _));
+                                .Where(t => t.TryGetComponent<MeshFilter>(out _) || t.TryGetComponent<SkinnedMeshRenderer>(out _));
 
 
                             // add click collider to all visible GameObjects
                             foreach (var child in visibleChildren)
                             {
-                                var colliderGameObject = Instantiate(new GameObject("Collider"), o.transform);
+                                var colliderGameObject = GameObject.Instantiate(new GameObject("Collider"), o.transform);
                                 colliderGameObject.transform.position = child.position;
                                 colliderGameObject.transform.rotation = child.rotation;
                                 colliderGameObject.transform.localScale = child.localScale;
@@ -117,28 +130,27 @@ namespace Assets.Scripts.System
                                 colliderGameObject.layer = 10; // Entity Click Layer
                                 var newCollider = colliderGameObject.AddComponent<MeshCollider>();
 
-                                if(child.TryGetComponent<MeshFilter>(out var meshFilter))
+                                if (child.TryGetComponent<MeshFilter>(out var meshFilter))
                                     newCollider.sharedMesh = meshFilter.sharedMesh;
 
-                                if(child.TryGetComponent<SkinnedMeshRenderer>(out var skinnedMeshRenderer))
+                                if (child.TryGetComponent<SkinnedMeshRenderer>(out var skinnedMeshRenderer))
                                     newCollider.sharedMesh = skinnedMeshRenderer.sharedMesh;
                             }
 
-                            if (EditorStates.CurrentModelCacheState.ModelCache.ContainsKey(path))
-                                EditorStates.CurrentModelCacheState.ModelCache[path] = o;
+                            if (_modelCacheState.ModelCache.ContainsKey(path))
+                                _modelCacheState.ModelCache[path] = o;
                             else
-                                EditorStates.CurrentModelCacheState.ModelCache.Add(path, o);
+                                _modelCacheState.ModelCache.Add(path, o);
 
                             o.SetActive(false);
 
                             // dispatch all actions for the loading complete event
-                            foreach (var loadingCompleteAction in EditorStates.CurrentModelCacheState.CurrentlyLoading[path])
+                            foreach (var loadingCompleteAction in _modelCacheState.CurrentlyLoading[path])
                             {
                                 loadingCompleteAction(o);
                             }
                         }));
                 }
-
             }
         }
     }

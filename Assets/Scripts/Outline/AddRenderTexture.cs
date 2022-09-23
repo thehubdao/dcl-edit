@@ -1,13 +1,21 @@
-using System.Collections;
-using System.Collections.Generic;
 using Assets.Scripts.EditorState;
 using UnityEngine;
-using UnityEngine.Android;
 using UnityEngine.Experimental.Rendering;
+using Zenject;
 
 public class AddRenderTexture : MonoBehaviour
 {
     private Camera cam;
+
+    // Dependencies
+    private UnityState _unityState;
+
+    [Inject]
+    private void Construct(UnityState unityState)
+    {
+        _unityState = unityState;
+    }
+
     // Start is called before the first frame update
     void Awake()
     {
@@ -26,7 +34,7 @@ public class AddRenderTexture : MonoBehaviour
         }
     }
 
-    private Vector2 ViewPortSize => EditorStates.CurrentUnityState?.SceneImage.rectTransform.rect.size ?? Vector2.one;
+    private Vector2 ViewPortSize => _unityState.SceneImage.rectTransform.rect.size;
 
 
     private void UpdateRenderTexture()
@@ -39,6 +47,6 @@ public class AddRenderTexture : MonoBehaviour
         lastSize = ViewPortSize;
 
         if (gameObject.name == "Main Camera") // TODO: Make a more robust solution for that
-            EditorStates.CurrentUnityState.SceneImage.texture = cam.targetTexture;
+            _unityState.SceneImage.texture = cam.targetTexture;
     }
 }

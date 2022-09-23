@@ -46,16 +46,6 @@ namespace Assets.Scripts.EditorState
         [SerializeField]
         public Material DefaultMat;
 
-        [Header("Gizmo Prefabs")]
-        [SerializeField]
-        public GameObject TranslateGizmoPrefab;
-
-        [SerializeField]
-        public GameObject RotateGizmoPrefab;
-
-        [SerializeField]
-        public GameObject ScaleGizmoPrefab;
-
         [Header("Ui Atoms")] 
         [SerializeField]
         public GameObject TitleAtom;

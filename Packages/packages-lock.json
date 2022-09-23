@@ -1,5 +1,12 @@
 {
   "dependencies": {
+    "com.svermeulen.extenject": {
+      "version": "https://github.com/Mathijs-Bakker/Extenject.git?path=/UnityProject/Assets/Plugins/Zenject/#9.2.1",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "8d8cc2ca14189b3efe91e19f41d1ae89cf44bf8a"
+    },
     "com.unity.2d.sprite": {
       "version": "1.0.0",
       "depth": 0,

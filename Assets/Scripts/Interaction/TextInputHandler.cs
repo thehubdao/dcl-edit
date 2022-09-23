@@ -2,8 +2,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Assets.Scripts.EditorState;
+using Assets.Scripts.System;
 using TMPro;
 using UnityEngine;
+using Zenject;
 
 public class TextInputHandler : MonoBehaviour
 {
@@ -12,6 +14,15 @@ public class TextInputHandler : MonoBehaviour
 
     [SerializeField]
     private TextMeshProUGUI placeHolderText;
+
+    // dependencies
+    private InputState _inputState;
+
+    [Inject]
+    private void Construct(InputState inputState)
+    {
+        _inputState = inputState;
+    }
 
     public void SetCurrentText(string text)
     {
@@ -35,11 +46,11 @@ public class TextInputHandler : MonoBehaviour
         inputField.onValueChanged.RemoveAllListeners();
         inputField.onEndEdit.RemoveAllListeners();
 
-        inputField.onSelect.AddListener(_ => EditorStates.CurrentInputState.InState = InputState.InStateType.UiInput);
+        inputField.onSelect.AddListener(_ => _inputState.InState = InputState.InStateType.UiInput);
         inputField.onValueChanged.AddListener(value => onChange(value));
         inputField.onEndEdit.AddListener(value =>
         {
-            EditorStates.CurrentInputState.InState = InputState.InStateType.NoInput;
+            _inputState.InState = InputState.InStateType.NoInput;
             if(inputField.wasCanceled)
             {
                 //Debug.Log("Aborting input");

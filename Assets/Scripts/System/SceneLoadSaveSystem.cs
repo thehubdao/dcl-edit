@@ -1,24 +1,41 @@
 using Assets.Scripts.SceneState;
-using System.Collections.Generic;
-using UnityEngine;
-using System.IO;
-using System;
-using System.Linq;
 using Newtonsoft.Json;
-using Assets.Scripts.EditorState;
 using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using UnityEngine;
 using Debug = UnityEngine.Debug;
 
 namespace Assets.Scripts.System
 {
-    public class SceneLoadSaveSystem
+    public interface ISceneLoadSystem
     {
-        public static void Save(DclScene scene)
+        DclScene Load(string absolutePath);
+    }
+
+    public interface ISceneSaveSystem
+    {
+        void Save(DclScene scene);
+    }
+
+    public class SceneLoadSaveSystem : ISceneLoadSystem, ISceneSaveSystem
+    {
+        // Dependencies
+        private PathState _pathState;
+
+        public SceneLoadSaveSystem(PathState pathState)
+        {
+            _pathState = pathState;
+        }
+
+        public void Save(DclScene scene)
         {
             DclSceneData sceneData = new DclSceneData(scene);
 
             // Create scene directory (if not exists)
-            string sceneDirPath = $"{EditorStates.CurrentPathState.ProjectPath}/dcl-edit/saves/v2/{sceneData.name}.dclscene";
+            string sceneDirPath = $"{_pathState.ProjectPath}/dcl-edit/saves/v2/{sceneData.name}.dclscene";
             DirectoryInfo sceneDir = Directory.CreateDirectory(sceneDirPath);
 
             // Clear scene directory
@@ -35,7 +52,7 @@ namespace Assets.Scripts.System
             }
         }
 
-        public static DclScene Load(string absolutePath)
+        public DclScene Load(string absolutePath)
         {
             // return if path isn't directory
             if (!Directory.Exists(absolutePath))
@@ -68,7 +85,7 @@ namespace Assets.Scripts.System
         }
 
 
-        public static void CreateEntityFile(KeyValuePair<Guid, DclEntity> entity, string sceneDirectoryPath)
+        public void CreateEntityFile(KeyValuePair<Guid, DclEntity> entity, string sceneDirectoryPath)
         {
             DclEntityData data = new DclEntityData(entity.Value);
             string dataJson = JsonConvert.SerializeObject(data);
@@ -78,7 +95,7 @@ namespace Assets.Scripts.System
             File.WriteAllText($"{sceneDirectoryPath}/{filename}", dataJson);
         }
 
-        public static void LoadEntityFile(DclScene scene, string absolutePath)
+        public void LoadEntityFile(DclScene scene, string absolutePath)
         {
             var json = File.ReadAllText(absolutePath);
             var entityData = JsonConvert.DeserializeObject<DclEntityData>(json);

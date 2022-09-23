@@ -1,43 +1,54 @@
-using Assets.Scripts.Command;
-using Assets.Scripts.EditorState;
 using Assets.Scripts.SceneState;
-using UnityEngine;
+using Zenject;
 
 namespace Assets.Scripts.System
 {
-    public class UpdatePropertiesFromUiSystem : MonoBehaviour
+    public class UpdatePropertiesFromUiSystem
     {
-        public static void SetNewName(DclEntity entity, string newName)
+        // dependencies
+        private ICommandSystem _commandSystem;
+        private ExposeEntitySystem _exposeEntitySystem;
+        private EditorState.SceneState _sceneState;
+
+        [Inject]
+        public void Construct(ICommandSystem commandSystem, ExposeEntitySystem exposeEntitySystem, EditorState.SceneState sceneState)
         {
-            CommandSystem.ExecuteCommand(new ChangeEntityName(entity.Id, newName, entity.CustomName));
+            _commandSystem = commandSystem;
+            _exposeEntitySystem = exposeEntitySystem;
+            _sceneState = sceneState;
         }
 
-        public static void SetIsExposed(DclEntity entity, bool isExposed)
+        public void SetNewName(DclEntity entity, string newName)
+        {
+            _commandSystem.ExecuteCommand(_commandSystem.CommandFactory.CreateChangeEntityName(entity.Id, newName, entity.CustomName));
+        }
+
+        public void SetIsExposed(DclEntity entity, bool isExposed)
         {
             if(isExposed == entity.IsExposed)
                 return;
 
             if (isExposed)
             {
-                if (ExposeEntitySystem.IsEntityExposable(entity))
+                if (_exposeEntitySystem.IsEntityExposable(entity))
                 {
-                    CommandSystem.ExecuteCommand(new ChangeIsExposed(entity.Id,true, entity.IsExposed));
+                    _commandSystem.ExecuteCommand(_commandSystem.CommandFactory.CreateChangeIsExposed(entity.Id, true, entity.IsExposed));
                 }
                 else
                 {
                     // TODO: show expose failed message
-                    EditorStates.CurrentSceneState.CurrentScene?.SelectionState.SelectionChangedEvent.Invoke();
+                    _sceneState.CurrentScene?.SelectionState.SelectionChangedEvent.Invoke();
                 }
             }
             else
             {
-                CommandSystem.ExecuteCommand(new ChangeIsExposed(entity.Id, false, entity.IsExposed));
+                _commandSystem.ExecuteCommand(_commandSystem.CommandFactory.CreateChangeIsExposed(entity.Id, false, entity.IsExposed));
             }
         }
 
-        public static void UpdateFloatingProperty<T>(DclPropertyIdentifier property, T value)
+        public void UpdateFloatingProperty<T>(DclPropertyIdentifier property, T value)
         {
-            var scene = EditorStates.CurrentSceneState.CurrentScene;
+            var scene = _sceneState.CurrentScene;
 
             if (scene == null)
             {
@@ -49,9 +60,9 @@ namespace Assets.Scripts.System
             scene.SelectionState.SelectionChangedEvent.Invoke();
         }
 
-        public static void RevertFloatingProperty(DclPropertyIdentifier property)
+        public void RevertFloatingProperty(DclPropertyIdentifier property)
         {
-            var scene = EditorStates.CurrentSceneState.CurrentScene;
+            var scene = _sceneState.CurrentScene;
 
             if (scene == null)
             {
@@ -61,9 +72,9 @@ namespace Assets.Scripts.System
             scene.GetPropertyFromIdentifier(property).ResetFloating();
         }
 
-        public static void UpdateFixedProperty<T>(DclPropertyIdentifier property, T value)
+        public void UpdateFixedProperty<T>(DclPropertyIdentifier property, T value)
         {
-            var scene = EditorStates.CurrentSceneState.CurrentScene;
+            var scene = _sceneState.CurrentScene;
 
             if (scene == null)
             {
@@ -80,7 +91,13 @@ namespace Assets.Scripts.System
                 return;
             }
 
-            CommandSystem.ExecuteCommand(new ChangeProperty<T>(property, oldValue, value));
+            _commandSystem.ExecuteCommand(_commandSystem.CommandFactory.CreateChangePropertyCommand(property, oldValue, value));
+
+
+            // TODO remove comments before merging
+            //_commandSystem.ExecuteCommand(_commandFactory.MakeChangeProperty<T>(property, oldValue, value));
+            //_commandSystem.ExecuteCommand(_commandSystem.Factory.CreateChangeProperty<T>(property, oldValue, value));
+            //_commandSystem.ExecuteChangePropertyCommand<T>(property, oldValue, value);
         }
     }
 }

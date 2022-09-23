@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using JetBrains.Annotations;
 using UnityEngine;
@@ -9,9 +7,9 @@ using UnityEditor;
 #endif
 
 
-public class PathState : MonoBehaviour
+public class PathState
 {
-    [CanBeNull] 
+    [CanBeNull]
     private string _projectPath = null;
     public string ProjectPath
     {

@@ -3,7 +3,7 @@ using UnityEngine.Events;
 
 namespace Assets.Scripts.EditorState
 {
-    public class Interface3DState : MonoBehaviour
+    public class Interface3DState
     {
         private GameObject _currentlyHoveredObject = null;
         public GameObject CurrentlyHoveredObject

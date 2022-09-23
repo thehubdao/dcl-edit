@@ -1,17 +1,24 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Assets.Scripts.EditorState;
 using Assets.Scripts.SceneState;
-using UnityEngine;
+using Zenject;
 
 public class ExposeEntitySystem
 {
-    public static bool IsEntityExposable(DclEntity entity)
+    // Dependencies
+    private SceneState _sceneState;
+
+    [Inject]
+    private void Construct(SceneState sceneState)
     {
-        var scene = EditorStates.CurrentSceneState.CurrentScene;
+        _sceneState = sceneState;
+    }
+
+
+    public bool IsEntityExposable(DclEntity entity)
+    {
+        var scene = _sceneState.CurrentScene;
         if (scene == null)
         {
             return false;
@@ -27,12 +34,12 @@ public class ExposeEntitySystem
                 ExposedNameFromEntity(e).Equals(exposedName));
     }
 
-    public static string ExposedNameFromEntity(DclEntity entity)
+    public string ExposedNameFromEntity(DclEntity entity)
     {
         return ExposedNameFromName(entity.ShownName);
     }
 
-    public static string ExposedNameFromName(string name)
+    public string ExposedNameFromName(string name)
     {
         var exposedName = new StringBuilder(name.Length);
 
@@ -63,7 +70,7 @@ public class ExposeEntitySystem
         return exposedName.ToString();
     }
 
-    private static readonly string[] reservedWords =
+    private readonly string[] reservedWords =
     {
         // Reserved Words
         "break",

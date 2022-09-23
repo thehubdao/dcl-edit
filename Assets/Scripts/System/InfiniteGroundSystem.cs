@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using Assets.Scripts.EditorState;
 using Assets.Scripts.System.Utility;
 using UnityEngine;
+using Zenject;
 
 namespace Assets.Scripts.System
 {
@@ -23,6 +24,15 @@ namespace Assets.Scripts.System
 
 
         private Dictionary<Vector2Int, InfiniteGroundTile> _tiles = new Dictionary<Vector2Int, InfiniteGroundTile>();
+
+        // Dependencies
+        private CameraState _cameraState;
+
+        [Inject]
+        private void Construct(CameraState cameraState)
+        {
+            _cameraState = cameraState;
+        }
 
 
         //private Vector3 CameraPositionOnGround => camera.transform.position.OnGroundPlane();
@@ -50,7 +60,7 @@ namespace Assets.Scripts.System
         // Update is called once per frame
         void Update()
         {
-            var downScaledCameraPosition = EditorStates.CurrentCameraState.Position / 16;
+            var downScaledCameraPosition = _cameraState.Position / 16;
             var campos = new Vector2Int((int)downScaledCameraPosition.x, (int)downScaledCameraPosition.z);
 
             // Create new Ground Tile

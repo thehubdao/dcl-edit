@@ -5,18 +5,18 @@ using System.IO;
 
 namespace Assets.Scripts.System
 {
-    public class WorkspaceSaveSystem : MonoBehaviour
+    public class WorkspaceSaveSystem
     {
-        public static string saveFilePath => Application.dataPath + "/panel_layout.txt";
+        public string saveFilePath => Application.dataPath + "/panel_layout.txt";
 
-        public static void Save(DynamicPanelsCanvas canvas)
+        public void Save(DynamicPanelsCanvas canvas)
         {
             byte[] data = PanelSerialization.SerializeCanvasToArray(canvas);
             string dataString = Convert.ToBase64String(data);
             File.WriteAllText(saveFilePath, dataString);
         }
 
-        public static void Load(DynamicPanelsCanvas canvas)
+        public void Load(DynamicPanelsCanvas canvas)
         {
             if(!File.Exists(saveFilePath))
             {

@@ -1,6 +1,7 @@
 using Assets.Scripts.EditorState;
 using Assets.Scripts.SceneState;
 using UnityEngine;
+using Zenject;
 
 namespace Assets.Scripts.Visuals
 {
@@ -8,8 +9,16 @@ namespace Assets.Scripts.Visuals
     [RequireComponent(typeof(MeshFilter))]
     public class PrimitiveShapeVisuals : ShapeVisuals
     {
-
         private GameObject _colliderObject = null;
+
+        // Dependencies
+        UnityState _unityState;
+
+        [Inject]
+        private void Construct(UnityState unityState)
+        {
+            _unityState = unityState;
+        }
 
         public override void UpdateVisuals(DclEntity entity)
         {
@@ -27,20 +36,20 @@ namespace Assets.Scripts.Visuals
             }
 
             meshRenderer.enabled = true;
-
+            
             meshFilter.mesh = primitiveShapeComponent.NameInCode switch
             {
-                "BoxShape" => EditorStates.CurrentUnityState.BoxMesh,
-                "SphereShape" => EditorStates.CurrentUnityState.SphereMesh,
-                "CylinderShape" => EditorStates.CurrentUnityState.CylinderMesh,
-                "PlaneShape" => EditorStates.CurrentUnityState.PlaneMesh,
-                "ConeShape" => EditorStates.CurrentUnityState.ConeMesh,
+                "BoxShape" => _unityState.BoxMesh,
+                "SphereShape" => _unityState.SphereMesh,
+                "CylinderShape" => _unityState.CylinderMesh,
+                "PlaneShape" => _unityState.PlaneMesh,
+                "ConeShape" => _unityState.ConeMesh,
                 _ => meshFilter.mesh
             };
 
             // TODO: Check for material
 
-            meshRenderer.material = EditorStates.CurrentUnityState.DefaultMat;
+            meshRenderer.material = _unityState.DefaultMat;
 
             // check if collider exists
 
@@ -99,5 +108,7 @@ namespace Assets.Scripts.Visuals
             var meshRenderer = GetComponent<MeshRenderer>();
             meshRenderer.enabled = false;
         }
+
+        public class Factory : PlaceholderFactory<PrimitiveShapeVisuals> { }
     }
 }

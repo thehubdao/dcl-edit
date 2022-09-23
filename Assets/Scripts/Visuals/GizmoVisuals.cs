@@ -1,7 +1,7 @@
-using System.Collections.Generic;
 using Assets.Scripts.EditorState;
-using Assets.Scripts.SceneState;
+using Assets.Scripts.System;
 using UnityEngine;
+using Zenject;
 
 namespace Assets.Scripts.Visuals
 {
@@ -10,16 +10,41 @@ namespace Assets.Scripts.Visuals
         private GameObject _translateGizmoObject = null;
         private GameObject _rotateGizmoObject = null;
         private GameObject _scaleGizmoObject = null;
-        private GameObject activeGizmo = null;
+        private GameObject _activeGizmo = null;
+
+        // Dependencies
+        private EditorState.SceneState _sceneState;
+        private TranslateFactory _translateFactory;
+        private RotateFactory _rotateFactory;
+        private ScaleFactory _scaleFactory;
+        private GizmoState _gizmoState;
+        private UnityState _unityState;
+
+        [Inject]
+        private void Construct(
+            EditorState.SceneState sceneState,
+            TranslateFactory translateFactory,
+            RotateFactory rotateFactory,
+            ScaleFactory scaleFactory,
+            GizmoState gizmoState, 
+            UnityState unityState)
+        {
+            _sceneState = sceneState;
+            _translateFactory = translateFactory;
+            _rotateFactory = rotateFactory;
+            _scaleFactory = scaleFactory;
+            _gizmoState = gizmoState;
+            _unityState = unityState;
+        }
 
         public void SetupSceneEventListeners()
         {
-            EditorStates.CurrentSceneState.CurrentScene?.SelectionState.SelectionChangedEvent.AddListener(UpdateVisuals);
+            _sceneState.CurrentScene?.SelectionState.SelectionChangedEvent.AddListener(UpdateVisuals);
         }
 
         private void UpdateVisuals()
         {
-            var selectedEntity = EditorStates.CurrentSceneState?
+            var selectedEntity = _sceneState?
                 .CurrentScene?
                 .SelectionState?
                 .PrimarySelectedEntity;
@@ -30,30 +55,31 @@ namespace Assets.Scripts.Visuals
                 return;
             }
 
-            activeGizmo?.SetActive(false);
-            switch (EditorStates.CurrentGizmoState.CurrentMode)
+            _activeGizmo?.SetActive(false);
+            switch (_gizmoState.CurrentMode)
             {
                 case GizmoState.Mode.Translate:
                     if (_translateGizmoObject == null)
-                        _translateGizmoObject = Instantiate(EditorStates.CurrentUnityState.TranslateGizmoPrefab);
-                    activeGizmo = _translateGizmoObject;
+                        _translateGizmoObject = _translateFactory.Create().gameObject;
+                    _activeGizmo = _translateGizmoObject;
                     break;
                 case GizmoState.Mode.Rotate:
                     if (_rotateGizmoObject == null)
-                        _rotateGizmoObject = Instantiate(EditorStates.CurrentUnityState.RotateGizmoPrefab);
-                    activeGizmo = _rotateGizmoObject;
+                        _rotateGizmoObject = _rotateFactory.Create().gameObject;
+                    _activeGizmo = _rotateGizmoObject;
                     break;
                 case GizmoState.Mode.Scale:
                     if (_scaleGizmoObject == null)
-                        _scaleGizmoObject = Instantiate(EditorStates.CurrentUnityState.ScaleGizmoPrefab);
-                    activeGizmo = _scaleGizmoObject;
+                        _scaleGizmoObject = _scaleFactory.Create().gameObject;
+                    _activeGizmo = _scaleGizmoObject;
                     break;
             }
-            activeGizmo.SetActive(true);
+
+            _activeGizmo.SetActive(true);
 
             var selectedTransform = selectedEntity.GetTransformComponent();
-            activeGizmo.transform.position = selectedTransform.GlobalPosition;
-            activeGizmo.transform.rotation = selectedTransform.GlobalRotation;
+            _activeGizmo.transform.position = selectedTransform.GlobalPosition;
+            _activeGizmo.transform.rotation = selectedTransform.GlobalRotation;
         }
 
         private void HideGizmo()
@@ -61,6 +87,18 @@ namespace Assets.Scripts.Visuals
             _translateGizmoObject?.SetActive(false);
             _rotateGizmoObject?.SetActive(false);
             _scaleGizmoObject?.SetActive(false);
+        }
+
+        public class TranslateFactory : PlaceholderFactory<GizmoSizeFixerSystem>
+        {
+        }
+
+        public class RotateFactory : PlaceholderFactory<GizmoSizeFixerSystem>
+        {
+        }
+
+        public class ScaleFactory : PlaceholderFactory<GizmoSizeFixerSystem>
+        {
         }
     }
 }

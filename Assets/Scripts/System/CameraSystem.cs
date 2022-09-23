@@ -1,21 +1,30 @@
 using Assets.Scripts.EditorState;
 using UnityEngine;
-using NotImplementedException = System.NotImplementedException;
+using Zenject;
 
 namespace Assets.Scripts.System
 {
-    public class CameraSystem : MonoBehaviour
+    public class CameraSystem
     {
-        public static void CameraStartup()
+        // Dependencies
+        private CameraState _cameraState;
+
+        [Inject]
+        private void Construct(CameraState cameraState)
+        {
+            _cameraState = cameraState;
+        }
+
+        public void CameraStartup()
         {
             ChooseReasonableStartPosition();
         }
-        
-        public static void ChooseReasonableStartPosition()
+
+        public void ChooseReasonableStartPosition()
         {
             // Calculate average parcel center
             var averageCenter = Vector2.zero;
-            
+
             // TODO: look for the used parcels
             //foreach (var parcel in DclSceneManager.sceneJson.scene.Parcels)
             //{
@@ -32,17 +41,17 @@ namespace Assets.Scripts.System
             //Position = averageCenterWorldPoint;
 
             // Move Camera up
-            EditorStates.CurrentCameraState.Yaw = 45;
-            EditorStates.CurrentCameraState.Pitch = 30;
+            _cameraState.Yaw = 45;
+            _cameraState.Pitch = 30;
 
             //var dist = Mathf.Log(DclSceneManager.sceneJson.scene.Parcels.Length, 2);
 
             //if (dist < 0)
             //    dist = 0;
 
-            EditorStates.CurrentCameraState.MoveFixed(new Vector3(0, 0, -10 * (/*dist*/ 1 + 1)));
+            _cameraState.MoveFixed(new Vector3(0, 0, -10 * ( /*dist*/ 1 + 1)));
 
-            EditorStates.CurrentCameraState.Pitch = 45;
+            _cameraState.Pitch = 45;
         }
     }
 }

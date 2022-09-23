@@ -1,14 +1,13 @@
 {
-    "name": "Interaction",
+    "name": "Installers",
     "rootNamespace": "",
     "references": [
-        "GUID:b882599d087b02e4691b090e7e01ffbb",
         "GUID:6756ec8e32f5a594081909037fcd0fc9",
         "GUID:8f3c0bd18dece7b478199413c9d64c9f",
+        "GUID:69b5d71643fb20c4c91246d92c855000",
         "GUID:ba5f34704421b214d809dfc96dc77b31",
-        "GUID:75469ad4d38634e559750d17036d5f7c",
-        "GUID:6055be8ebefd69e48b49212b09b47b2f",
-        "GUID:47588e3d37f573d458b0eaa6cc8109c2",
+        "GUID:b7320dc7496b5b14ab96b7aeb158b775",
+        "GUID:112a36faae31ab24289969670ae345a3",
         "GUID:0d8beb7f090555447a6cf5ce9e54dbb4"
     ],
     "includePlatforms": [],

@@ -1,9 +1,9 @@
-using System;
-using Assets.Scripts.EditorState;
 using Assets.Scripts.ProjectState;
 using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
+using System;
 using UnityEngine;
+using Zenject;
 
 namespace Assets.Scripts.Visuals
 {
@@ -11,6 +11,16 @@ namespace Assets.Scripts.Visuals
     {
         private GameObject _currentModelObject = null;
 
+        // Dependencies
+        private ModelCacheSystem _modelCacheSystem;
+        private EditorState.ProjectState _projectState;
+
+        [Inject]
+        private void Construct(ModelCacheSystem modelCacheSystem, EditorState.ProjectState projectState)
+        {
+            _modelCacheSystem = modelCacheSystem;
+            _projectState = projectState;
+        }
 
         public override void UpdateVisuals(DclEntity entity)
         {
@@ -19,14 +29,14 @@ namespace Assets.Scripts.Visuals
             if (!assetGuid.HasValue)
                 return;
 
-            if (EditorStates.CurrentProjectState.Assets.UsedAssets.TryGetValue(assetGuid.Value, out var asset))
+            if (_projectState.Assets.UsedAssets.TryGetValue(assetGuid.Value, out var asset))
             {
                 var gltfAsset = asset as DclGltfAsset;
 
                 if (gltfAsset == null)
                     return;
 
-                ModelCacheSystem.GetModel(gltfAsset.Path, "",
+                _modelCacheSystem.GetModel(gltfAsset.Path, "",
                     o =>
                     {
                         if (o == null)
@@ -50,10 +60,13 @@ namespace Assets.Scripts.Visuals
 
         }
 
-
         public override void Deactivate()
         {
             _currentModelObject.SetActive(false);
+        }
+
+        public class Factory : PlaceholderFactory<GltfShapeVisuals>
+        {
         }
     }
 }
