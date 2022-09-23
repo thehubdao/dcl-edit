@@ -1,10 +1,10 @@
 #if UNITY_EDITOR
 
-using System;
-using System.Linq;
-using Assets.Scripts.EditorState;
+using Assets.Scripts.ProjectState;
 using Assets.Scripts.SceneState;
 using Assets.Scripts.Utility;
+using System;
+using System.Linq;
 using UnityEngine;
 
 namespace Assets.Scripts.Visuals
@@ -78,7 +78,9 @@ namespace Assets.Scripts.Visuals
                                 break;
                             case DclComponent.DclComponentProperty.PropertyType.Asset:
                                 var guid = property.GetConcrete<Guid>().Value;
-                                var asset = EditorStates.CurrentProjectState.Assets.GetAssetById(guid);
+                                // TODO: Add editor relays
+                                //var asset = EditorStates.CurrentProjectState.Assets.GetAssetById(guid);
+                                DclAsset asset = null;
                                 if (asset != null)
                                     GUILayout.Label(indentString + $"            {asset.Name} ({guid.Shortened()})");
                                 else

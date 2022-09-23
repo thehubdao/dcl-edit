@@ -1,12 +1,11 @@
 using Assets.Scripts.SceneState;
-using System.Collections.Generic;
-using UnityEngine;
-using System.IO;
-using System;
-using System.Linq;
 using Newtonsoft.Json;
-using Assets.Scripts.EditorState;
 using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using UnityEngine;
 using Debug = UnityEngine.Debug;
 
 namespace Assets.Scripts.System
@@ -23,12 +22,20 @@ namespace Assets.Scripts.System
 
     public class SceneLoadSaveSystem : ISceneLoadSystem, ISceneSaveSystem
     {
+        // Dependencies
+        private PathState _pathState;
+
+        public SceneLoadSaveSystem(PathState pathState)
+        {
+            _pathState = pathState;
+        }
+
         public void Save(DclScene scene)
         {
             DclSceneData sceneData = new DclSceneData(scene);
 
             // Create scene directory (if not exists)
-            string sceneDirPath = $"{EditorStates.CurrentPathState.ProjectPath}/dcl-edit/saves/v2/{sceneData.name}.dclscene";
+            string sceneDirPath = $"{_pathState.ProjectPath}/dcl-edit/saves/v2/{sceneData.name}.dclscene";
             DirectoryInfo sceneDir = Directory.CreateDirectory(sceneDirPath);
 
             // Clear scene directory

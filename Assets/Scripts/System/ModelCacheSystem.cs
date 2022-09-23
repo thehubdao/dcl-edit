@@ -1,9 +1,8 @@
+using Assets.Scripts.EditorState;
+using Assets.Scripts.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-using Assets.Scripts.EditorState;
-using Assets.Scripts.Utility;
 using UnityEngine;
 using UnityGLTF;
 using UnityGLTF.Loader;
@@ -15,11 +14,15 @@ namespace Assets.Scripts.System
     {
         // Dependencies
         private ModelCacheState _modelCacheState;
+        private UnityState _unityState;
+        private PathState _pathState;
 
         [Inject]
-        private void Construct(ModelCacheState modelCacheState)
+        private void Construct(ModelCacheState modelCacheState, UnityState unityState, PathState pathState)
         {
             _modelCacheState = modelCacheState;
+            _unityState = unityState;
+            _pathState = pathState;
         }
 
         /// <summary>
@@ -58,21 +61,21 @@ namespace Assets.Scripts.System
                     onLoadedActions.Add(onLoadedAction);
                     _modelCacheState.CurrentlyLoading.Add(path, onLoadedActions);
 
-                    var absolutePath = EditorStates.CurrentPathState.ProjectPath + "/" + path;
+                    var absolutePath = _pathState.ProjectPath + "/" + path;
 
                     var filePathParts = absolutePath.Split('/', '\\');
 
                     var options = new ImportOptions()
                     {
                         DataLoader = new FileLoader(URIHelper.GetDirectoryName(absolutePath)),
-                        AsyncCoroutineHelper = EditorStates.CurrentUnityState.AsyncCoroutineHelper
+                        AsyncCoroutineHelper = _unityState.AsyncCoroutineHelper
                     };
 
                     var importer = new GLTFSceneImporter(filePathParts[filePathParts.Length - 1], options);
 
                     importer.CustomShaderName = "Shader Graphs/GLTFShader";
 
-                    EditorStates.CurrentUnityState.AsyncCoroutineHelper.StartCoroutine(importer.LoadScene(
+                    _unityState.AsyncCoroutineHelper.StartCoroutine(importer.LoadScene(
                         onLoadComplete: (o, info) =>
                         {
                             if (o == null)

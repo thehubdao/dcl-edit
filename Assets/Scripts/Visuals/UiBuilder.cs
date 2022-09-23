@@ -7,6 +7,7 @@ using JetBrains.Annotations;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
+using Zenject;
 using Object = UnityEngine.Object;
 
 namespace Assets.Scripts.Visuals
@@ -47,6 +48,14 @@ namespace Assets.Scripts.Visuals
         }
 
         private readonly List<UiAtom> _atoms = new List<UiAtom>();
+
+        // Dependencies
+        UnityState _unityState;
+
+        public UiBuilder(UnityState unityState)
+        {
+            _unityState = unityState;
+        }
 
         public UiBuilder Title(string title)
         {
@@ -318,18 +327,16 @@ namespace Assets.Scripts.Visuals
         // TODO: make static
         private GameObject GetAtomObjectFromPool(AtomType type)
         {
-            var unityState = EditorStates.CurrentUnityState;
-
             return type switch
             {
-                AtomType.Title => Object.Instantiate(unityState.TitleAtom),
-                AtomType.Text => Object.Instantiate(unityState.TextAtom),
-                AtomType.Panel => Object.Instantiate(unityState.PanelAtom),
-                AtomType.PanelHeader => Object.Instantiate(unityState.PanelHeaderAtom),
-                AtomType.StringPropertyInput => Object.Instantiate(unityState.StringInputAtom),
-                AtomType.NumberPropertyInput => Object.Instantiate(unityState.NumberInputAtom),
-                AtomType.BooleanPropertyInput => Object.Instantiate(unityState.BooleanInputAtom),
-                AtomType.Vector3PropertyInput => Object.Instantiate(unityState.Vector3InputAtom),
+                AtomType.Title => Object.Instantiate(_unityState.TitleAtom),
+                AtomType.Text => Object.Instantiate(_unityState.TextAtom),
+                AtomType.Panel => Object.Instantiate(_unityState.PanelAtom),
+                AtomType.PanelHeader => Object.Instantiate(_unityState.PanelHeaderAtom),
+                AtomType.StringPropertyInput => Object.Instantiate(_unityState.StringInputAtom),
+                AtomType.NumberPropertyInput => Object.Instantiate(_unityState.NumberInputAtom),
+                AtomType.BooleanPropertyInput => Object.Instantiate(_unityState.BooleanInputAtom),
+                AtomType.Vector3PropertyInput => Object.Instantiate(_unityState.Vector3InputAtom),
                 _ => null
             };
         }
@@ -338,5 +345,7 @@ namespace Assets.Scripts.Visuals
         {
             Object.Destroy(objects);
         }
+
+        public class Factory : PlaceholderFactory<UiBuilder> { }
     }
 }

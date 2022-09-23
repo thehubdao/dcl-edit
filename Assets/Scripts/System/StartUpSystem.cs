@@ -1,4 +1,3 @@
-using System.IO;
 using Assets.Scripts.EditorState;
 using UnityEngine;
 using Zenject;
@@ -7,9 +6,6 @@ namespace Assets.Scripts.System
 {
     public class StartUpSystem : MonoBehaviour
     {
-        [SerializeField]
-        private EditorStates _editorStates;
-
         [SerializeField]
         private CameraSystem _cameraSystem;
 
@@ -20,21 +16,23 @@ namespace Assets.Scripts.System
         private ISceneLoadSystem _sceneLoadSystem;
         private SetupSceneSystem _setupSceneSystem;
         private WorkspaceSaveSystem _workspaceSaveSystem;
+        private UnityState _unityState;
+        private PathState _pathState;
 
         [Inject]
-        private void Construct(ISceneLoadSystem sceneSave, SetupSceneSystem setupSceneSystem, WorkspaceSaveSystem workspaceSaveSystem)
+        private void Construct(ISceneLoadSystem sceneSave, SetupSceneSystem setupSceneSystem, WorkspaceSaveSystem workspaceSaveSystem, UnityState unityState, PathState pathState)
         {
             _sceneLoadSystem = sceneSave;
             _setupSceneSystem = setupSceneSystem;
             _workspaceSaveSystem = workspaceSaveSystem;
+            _unityState = unityState;
+            _pathState = pathState;
         }
 
         void Awake()
         {
-            EditorStates.Instance = _editorStates;
-
             // Load scene
-            var v2Path = EditorStates.CurrentPathState.ProjectPath + "/dcl-edit/saves/v2/New Scene.dclscene";
+            var v2Path = _pathState.ProjectPath + "/dcl-edit/saves/v2/New Scene.dclscene";
 
             var scene = //Directory.Exists(v2Path) ?
                 _sceneLoadSystem.Load(v2Path); // :
@@ -45,7 +43,7 @@ namespace Assets.Scripts.System
 
         void Start()
         {
-            _workspaceSaveSystem.Load(_editorStates.UnityState.dynamicPanelsCanvas);
+            _workspaceSaveSystem.Load(_unityState.dynamicPanelsCanvas);
         }
     }
 }

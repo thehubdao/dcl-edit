@@ -1,7 +1,7 @@
-using Assets.Scripts.EditorState;
 using Assets.Scripts.SceneState;
 using Assets.Scripts.Utility;
 using UnityEngine;
+using Zenject;
 
 namespace Assets.Scripts.Visuals
 {
@@ -9,16 +9,24 @@ namespace Assets.Scripts.Visuals
     {
         protected const int EntityClickLayer = 10;
 
+        // Dependencies
+        private EditorState.SceneState _sceneState;
+
+        [Inject]
+        private void Construct(EditorState.SceneState sceneState)
+        {
+            _sceneState = sceneState;
+        }
+
+
         public virtual void UpdateVisuals(DclEntity entity)
         {
-
         }
 
 
         protected void UpdateSelection(DclEntity entity)
         {
-
-            var selectionState = EditorStates.CurrentSceneState?.CurrentScene?.SelectionState;
+            var selectionState = _sceneState?.CurrentScene?.SelectionState;
             if (selectionState != null)
             {
                 if (selectionState.PrimarySelectedEntity == entity)
@@ -62,7 +70,6 @@ namespace Assets.Scripts.Visuals
 
         public virtual void Deactivate()
         {
-
         }
     }
 }

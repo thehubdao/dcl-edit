@@ -1,26 +1,29 @@
 using System.Collections;
-using System.Linq;
-using Assets.Scripts.Command;
-using Assets.Scripts.EditorState;
 using Assets.Scripts.SceneState;
-using Assets.Scripts.System;
 using NUnit.Framework;
-using UnityEditor;
-using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
-using Object = UnityEngine.Object;
 
 namespace Assets.Scripts.Tests.PlayModeTests.CommandTests
 {
     public class AddEntityTest
     {
+        // Dependencies
+        private EditorState.SceneState _sceneState;
+
+        [OneTimeSetUp]
+        private void OneTimeSetUp()
+        {
+            _sceneState = new EditorState.SceneState();
+        }
+
+
         private IEnumerator SetupScene()
         {
             SceneManager.LoadScene(0);
             yield return null;
             // create new dcl scene
-            EditorStates.CurrentSceneState.CurrentScene = new DclScene();
+            _sceneState.CurrentScene = new DclScene();
         }
 
 
@@ -29,7 +32,7 @@ namespace Assets.Scripts.Tests.PlayModeTests.CommandTests
         {
             yield return SetupScene();
 
-            var currentScene = EditorStates.CurrentSceneState.CurrentScene;
+            var currentScene = _sceneState.CurrentScene;
 
             //CommandSystem.ExecuteCommand(new AddEntity("cool name", null));
             //Assert.AreEqual(1, currentScene.AllEntities.Count);
@@ -45,7 +48,7 @@ namespace Assets.Scripts.Tests.PlayModeTests.CommandTests
         {
             yield return SetupScene();
 
-            var currentScene = EditorStates.CurrentSceneState.CurrentScene;
+            var currentScene = _sceneState.CurrentScene;
 
             //CommandSystem.ExecuteCommand(new AddEntity("parent", null));
             //var parent = currentScene.AllEntities.First(e => e.Value.ShownName == "parent");
@@ -64,7 +67,7 @@ namespace Assets.Scripts.Tests.PlayModeTests.CommandTests
         {
             yield return SetupScene();
 
-            var currentScene = EditorStates.CurrentSceneState.CurrentScene;
+            var currentScene = _sceneState.CurrentScene;
 
             //CommandSystem.ExecuteCommand(new AddEntity("entity 1", null));
             //CommandSystem.ExecuteCommand(new AddEntity("entity 2", null));

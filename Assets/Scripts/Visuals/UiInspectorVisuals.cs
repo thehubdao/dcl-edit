@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using Assets.Scripts.EditorState;
 using Assets.Scripts.SceneState;
@@ -16,17 +15,21 @@ public class UiInspectorVisuals : MonoBehaviour, ISetupSceneEventListeners
     // dependencies
     private InputState _inputState;
     private UpdatePropertiesFromUiSystem _updatePropertiesSystem;
+    private UiBuilder.Factory _uiBuilderFactory;
+    private SceneState _sceneState;
 
     [Inject]
-    private void Construct(InputState inputState, UpdatePropertiesFromUiSystem updatePropertiesSystem)
+    private void Construct(InputState inputState, UpdatePropertiesFromUiSystem updatePropertiesSystem, UiBuilder.Factory uiBuilderFactory, SceneState sceneState)
     {
         _inputState = inputState;
         _updatePropertiesSystem = updatePropertiesSystem;
+        _uiBuilderFactory = uiBuilderFactory;
+        _sceneState = sceneState;
     }
 
     public void SetupSceneEventListeners()
     {
-        EditorStates.CurrentSceneState.CurrentScene?.SelectionState.SelectionChangedEvent.AddListener(UpdateVisuals);
+        _sceneState.CurrentScene?.SelectionState.SelectionChangedEvent.AddListener(UpdateVisuals);
         UpdateVisuals();
     }
 
@@ -37,9 +40,9 @@ public class UiInspectorVisuals : MonoBehaviour, ISetupSceneEventListeners
             return;
         }
 
-        var inspectorBuilder = new UiBuilder();
+        var inspectorBuilder = _uiBuilderFactory.Create();
 
-        var selectedEntity = EditorStates.CurrentSceneState.CurrentScene?.SelectionState.PrimarySelectedEntity;
+        var selectedEntity = _sceneState.CurrentScene?.SelectionState.PrimarySelectedEntity;
 
         if (selectedEntity == null)
         {
@@ -64,7 +67,7 @@ public class UiInspectorVisuals : MonoBehaviour, ISetupSceneEventListeners
         };
 
 
-        var entityHeadBuilder = new UiBuilder()
+        var entityHeadBuilder = _uiBuilderFactory.Create()
             .StringPropertyInput("Name", "Name", selectedEntity.CustomName ?? "", nameInputActions)
             .BooleanPropertyInput("Is Exposed", selectedEntity.IsExposed, exposedInputActions);
 
@@ -72,7 +75,7 @@ public class UiInspectorVisuals : MonoBehaviour, ISetupSceneEventListeners
 
         foreach (var component in selectedEntity.Components ?? new List<DclComponent>())
         {
-            var componentBuilder = new UiBuilder()
+            var componentBuilder = _uiBuilderFactory.Create()
                 .PanelHeader(component.NameInCode, null);
 
             foreach (var property in component.Properties)

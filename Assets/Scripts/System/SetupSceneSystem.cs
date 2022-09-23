@@ -11,17 +11,19 @@ namespace Assets.Scripts.System
         // Dependencies
         private CameraSystem _cameraSystem;
         private SetupSceneEventListenersSystem _setupSceneEventListenersSystem;
+        private EditorState.SceneState _sceneState;
 
         [Inject]
-        private void Construct(CameraSystem cameraSystem, SetupSceneEventListenersSystem setupSceneEventListenersSystem)
+        private void Construct(CameraSystem cameraSystem, SetupSceneEventListenersSystem setupSceneEventListenersSystem, EditorState.SceneState sceneState)
         {
             _cameraSystem = cameraSystem;
             _setupSceneEventListenersSystem = setupSceneEventListenersSystem;
+            _sceneState = sceneState;
         }
 
         public void SetupScene(DclScene scene)
         {
-            EditorStates.Instance.NewSceneState(scene);
+            _sceneState.CurrentScene = scene;
 
             _cameraSystem.CameraStartup();
 

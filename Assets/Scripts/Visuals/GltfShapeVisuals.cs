@@ -1,8 +1,7 @@
-using System;
-using Assets.Scripts.EditorState;
 using Assets.Scripts.ProjectState;
 using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
+using System;
 using UnityEngine;
 using Zenject;
 
@@ -14,11 +13,13 @@ namespace Assets.Scripts.Visuals
 
         // Dependencies
         private ModelCacheSystem _modelCacheSystem;
+        private EditorState.ProjectState _projectState;
 
         [Inject]
-        private void Construct(ModelCacheSystem modelCacheSystem)
+        private void Construct(ModelCacheSystem modelCacheSystem, EditorState.ProjectState projectState)
         {
             _modelCacheSystem = modelCacheSystem;
+            _projectState = projectState;
         }
 
         public override void UpdateVisuals(DclEntity entity)
@@ -28,7 +29,7 @@ namespace Assets.Scripts.Visuals
             if (!assetGuid.HasValue)
                 return;
 
-            if (EditorStates.CurrentProjectState.Assets.UsedAssets.TryGetValue(assetGuid.Value, out var asset))
+            if (_projectState.Assets.UsedAssets.TryGetValue(assetGuid.Value, out var asset))
             {
                 var gltfAsset = asset as DclGltfAsset;
 

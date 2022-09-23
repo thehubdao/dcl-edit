@@ -1,17 +1,24 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Assets.Scripts.EditorState;
 using Assets.Scripts.SceneState;
-using UnityEngine;
+using Zenject;
 
 public class ExposeEntitySystem
 {
+    // Dependencies
+    private SceneState _sceneState;
+
+    [Inject]
+    private void Construct(SceneState sceneState)
+    {
+        _sceneState = sceneState;
+    }
+
+
     public bool IsEntityExposable(DclEntity entity)
     {
-        var scene = EditorStates.CurrentSceneState.CurrentScene;
+        var scene = _sceneState.CurrentScene;
         if (scene == null)
         {
             return false;

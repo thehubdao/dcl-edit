@@ -1,14 +1,24 @@
 using Assets.Scripts.EditorState;
 using UnityEngine;
+using Zenject;
 
 namespace Assets.Scripts.Visuals
 {
 
     public class CameraVisuals : MonoBehaviour
     {
+        // Dependencies
+        private CameraState _cameraState;
+
+        [Inject]
+        private void Construct(CameraState cameraState)
+        {
+            _cameraState = cameraState;
+        }
+
         void Start()
         {
-            EditorStates.CurrentCameraState.OnCameraStateChanged.AddListener(SetDirty);
+            _cameraState.OnCameraStateChanged.AddListener(SetDirty);
 
             SetDirty();
         }
@@ -31,8 +41,8 @@ namespace Assets.Scripts.Visuals
 
         private void UpdateCameraTransform()
         {
-            transform.position = EditorStates.CurrentCameraState.Position;
-            transform.rotation = EditorStates.CurrentCameraState.Rotation;
+            transform.position = _cameraState.Position;
+            transform.rotation = _cameraState.Rotation;
         }
     }
 }

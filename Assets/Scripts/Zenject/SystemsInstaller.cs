@@ -1,5 +1,7 @@
 using Assets.Scripts.EditorState;
+using Assets.Scripts.Interaction;
 using Assets.Scripts.System;
+using Assets.Scripts.Visuals;
 using UnityEngine;
 using Zenject;
 
@@ -43,5 +45,21 @@ public class SystemsInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<ModelCacheSystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<ModelCacheState>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<CameraState>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<SceneState>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<GizmoState>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<UnityState>().FromComponentOn(gameObject).AsSingle();
+
+        Container.BindInterfacesAndSelfTo<InputHelper>().AsSingle();
+
+        Container.BindFactory<UiBuilder, UiBuilder.Factory>();
+
+        Container.BindInterfacesAndSelfTo<ProjectState>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<PathState>().AsSingle();
     }
 }

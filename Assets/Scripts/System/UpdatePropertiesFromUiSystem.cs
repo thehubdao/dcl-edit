@@ -1,5 +1,3 @@
-using Assets.Scripts.Command;
-using Assets.Scripts.EditorState;
 using Assets.Scripts.SceneState;
 using Zenject;
 
@@ -10,12 +8,14 @@ namespace Assets.Scripts.System
         // dependencies
         private ICommandSystem _commandSystem;
         private ExposeEntitySystem _exposeEntitySystem;
+        private EditorState.SceneState _sceneState;
 
         [Inject]
-        public void Construct(ICommandSystem commandSystem, ExposeEntitySystem exposeEntitySystem)
+        public void Construct(ICommandSystem commandSystem, ExposeEntitySystem exposeEntitySystem, EditorState.SceneState sceneState)
         {
             _commandSystem = commandSystem;
             _exposeEntitySystem = exposeEntitySystem;
+            _sceneState = sceneState;
         }
 
         public void SetNewName(DclEntity entity, string newName)
@@ -37,7 +37,7 @@ namespace Assets.Scripts.System
                 else
                 {
                     // TODO: show expose failed message
-                    EditorStates.CurrentSceneState.CurrentScene?.SelectionState.SelectionChangedEvent.Invoke();
+                    _sceneState.CurrentScene?.SelectionState.SelectionChangedEvent.Invoke();
                 }
             }
             else
@@ -48,7 +48,7 @@ namespace Assets.Scripts.System
 
         public void UpdateFloatingProperty<T>(DclPropertyIdentifier property, T value)
         {
-            var scene = EditorStates.CurrentSceneState.CurrentScene;
+            var scene = _sceneState.CurrentScene;
 
             if (scene == null)
             {
@@ -62,7 +62,7 @@ namespace Assets.Scripts.System
 
         public void RevertFloatingProperty(DclPropertyIdentifier property)
         {
-            var scene = EditorStates.CurrentSceneState.CurrentScene;
+            var scene = _sceneState.CurrentScene;
 
             if (scene == null)
             {
@@ -74,7 +74,7 @@ namespace Assets.Scripts.System
 
         public void UpdateFixedProperty<T>(DclPropertyIdentifier property, T value)
         {
-            var scene = EditorStates.CurrentSceneState.CurrentScene;
+            var scene = _sceneState.CurrentScene;
 
             if (scene == null)
             {
