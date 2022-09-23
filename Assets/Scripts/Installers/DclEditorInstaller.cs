@@ -5,10 +5,25 @@ using Assets.Scripts.Visuals;
 using UnityEngine;
 using Zenject;
 
-public class SystemsInstaller : MonoInstaller
+public class DclEditorInstaller : MonoInstaller
 {
+    [Header("Scene Loading and Saving")]
     [SerializeField]
     private bool _loadSceneFromVersion1 = false;
+    
+    [Header("Prefabs")]
+    [SerializeField]
+    private GameObject _entityVisualPrefab;
+
+    [SerializeField]
+    private GameObject _translateGizmoPrefab;
+
+    [SerializeField]
+    private GameObject _rotateGizmoPrefab;
+
+    [SerializeField]
+    private GameObject _scaleGizmoPrefab;
+
 
     public override void InstallBindings()
     {
@@ -61,5 +76,13 @@ public class SystemsInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<ProjectState>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<PathState>().AsSingle();
+        
+        Container.BindFactory<EntitySelectInteraction, EntitySelectInteraction.Factory>().FromComponentInNewPrefab(_entityVisualPrefab);
+
+        Container.BindFactory<GizmoSizeFixerSystem, GizmoVisuals.TranslateFactory>().FromComponentInNewPrefab(_translateGizmoPrefab).AsSingle();
+
+        Container.BindFactory<GizmoSizeFixerSystem, GizmoVisuals.RotateFactory>().FromComponentInNewPrefab(_rotateGizmoPrefab).AsSingle();
+        
+        Container.BindFactory<GizmoSizeFixerSystem, GizmoVisuals.ScaleFactory>().FromComponentInNewPrefab(_scaleGizmoPrefab).AsSingle();
     }
 }

@@ -9,9 +9,6 @@ namespace Assets.Scripts.Visuals
 {
     public class MainSceneVisuals : MonoBehaviour, ISetupSceneEventListeners
     {
-        [SerializeField]
-        private GameObject _entityVisualsPrefab;
-
         // Dependencies
         private EntitySelectInteraction.Factory _entitySelectInteractionFactory;
         private EditorState.SceneState _sceneState;
