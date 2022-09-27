@@ -5,10 +5,10 @@ namespace Assets.Scripts.SceneState
 {
     public class DclTransformComponent : DclComponent
     {
-        public DclTransformComponent() : base("transform", "transform")
+        public DclTransformComponent() : base("Transform", "Transform")
         { }
 
-        public DclTransformComponent(DclComponent c) : base("transform", "transform")
+        public DclTransformComponent(DclComponent c) : base(c.NameInCode, c.NameInCode)
         {
             Properties = c.Properties;
             Entity = c.Entity;
@@ -86,6 +86,12 @@ namespace Assets.Scripts.SceneState
 
         public bool Validate()
         {
+            if (NameInCode != "Transform")
+                return false;
+
+            if (NameOfSlot != "Transform")
+                return false;
+
             var posProperty = GetPropertyByName("position");
 
             if (posProperty == null)

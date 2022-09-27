@@ -101,7 +101,7 @@ namespace Assets.Scripts.SceneState
         // Transform
         public DclTransformComponent GetTransformComponent()
         {
-            var component = GetComponentByName("transform");
+            var component = GetComponentByName("Transform");
 
             if (component == null)
                 return null;
