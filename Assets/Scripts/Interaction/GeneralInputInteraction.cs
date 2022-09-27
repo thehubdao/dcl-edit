@@ -24,6 +24,7 @@ namespace Assets.Scripts.Interaction
         private InputHelper _inputHelper;
         private EditorState.SceneState _sceneState;
         private CameraState _cameraState;
+        private TypeScriptGenerationSystem _typeScriptGenerationSystem;
 
         [Inject]
         private void Construct(
@@ -36,7 +37,8 @@ namespace Assets.Scripts.Interaction
             CameraState cameraState,
             GizmoState gizmoState,
             UnityState unityState,
-            InputHelper inputHelper)
+            InputHelper inputHelper,
+            TypeScriptGenerationSystem typeScriptGenerationSystem)
         {
             _sceneSaveSystem = sceneSaveSystem;
             _commandSystem = commandSystem;
@@ -48,6 +50,7 @@ namespace Assets.Scripts.Interaction
             _inputHelper = inputHelper;
             _sceneState = sceneState;
             _cameraState = cameraState;
+            _typeScriptGenerationSystem = typeScriptGenerationSystem;
         }
 
 
@@ -401,6 +404,7 @@ namespace Assets.Scripts.Interaction
             {
                 _sceneSaveSystem.Save(_sceneState.CurrentScene);
                 _workspaceSaveSystem.Save(_unityState.dynamicPanelsCanvas);
+                _typeScriptGenerationSystem.GenerateTypeScript();
             }
 
             // When pressing Translate hotkey, enter translation gizmo mode

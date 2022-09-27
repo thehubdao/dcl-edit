@@ -24,22 +24,22 @@ public class ExposeEntitySystem
             return false;
         }
 
-        var exposedName = ExposedNameFromEntity(entity);
+        var exposedName = ExposedName(entity);
 
         return !scene
             .AllEntities
             .Select(pair => pair.Value)
-            .Where(e=>e.IsExposed)
-            .Any(e => 
-                ExposedNameFromEntity(e).Equals(exposedName));
+            .Where(e => e.IsExposed)
+            .Any(e =>
+                ExposedName(e).Equals(exposedName));
     }
 
-    public string ExposedNameFromEntity(DclEntity entity)
+    public string ExposedName(DclEntity entity)
     {
-        return ExposedNameFromName(entity.ShownName);
+        return GenerateValidSymbol(entity.ShownName);
     }
 
-    public string ExposedNameFromName(string name)
+    public string GenerateValidSymbol(string name)
     {
         var exposedName = new StringBuilder(name.Length);
 

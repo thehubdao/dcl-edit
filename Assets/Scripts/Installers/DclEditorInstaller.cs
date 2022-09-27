@@ -76,6 +76,8 @@ public class DclEditorInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<ProjectState>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<PathState>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<TypeScriptGenerationSystem>().AsSingle();
         
         Container.BindFactory<EntitySelectInteraction, EntitySelectInteraction.Factory>().FromComponentInNewPrefab(_entityVisualPrefab);
 
