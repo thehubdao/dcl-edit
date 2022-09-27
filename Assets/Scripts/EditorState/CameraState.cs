@@ -1,7 +1,6 @@
-using System;
+using Assets.Scripts.System;
 using Assets.Scripts.Utility;
 using UnityEngine;
-using UnityEngine.Events;
 
 
 namespace Assets.Scripts.EditorState
@@ -11,7 +10,6 @@ namespace Assets.Scripts.EditorState
         private float CameraNormalFlySpeed => PersistentData.CameraSpeed;
         private float CameraFastFlySpeed => CameraNormalFlySpeed * 3;
         private float MouseSensitivity => PersistentData.MouseSensitivity;
-
 
         private Vector3 _position;
         private float _pitch;
@@ -23,7 +21,7 @@ namespace Assets.Scripts.EditorState
             set
             {
                 _position = value;
-                OnCameraStateChanged.Invoke();
+                _editorEvents.CameraStateChangedEvent();
             }
         }
 
@@ -40,7 +38,7 @@ namespace Assets.Scripts.EditorState
                 if (_pitch < -100)
                     _pitch = -100;
 
-                OnCameraStateChanged.Invoke();
+                _editorEvents.CameraStateChangedEvent();
             }
         }
 
@@ -50,7 +48,7 @@ namespace Assets.Scripts.EditorState
             set
             {
                 _yaw = value;
-                OnCameraStateChanged.Invoke();
+                _editorEvents.CameraStateChangedEvent();
             }
         }
 
@@ -61,7 +59,17 @@ namespace Assets.Scripts.EditorState
         public Vector3 Left => Rotation * Vector3.left;
         public Vector3 Up => Rotation * Vector3.up;
         public Vector3 Down => Rotation * Vector3.down;
- 
+
+
+        // Dependencies
+        private EditorEvents _editorEvents;
+
+        public CameraState(EditorEvents editorEvents)
+        {
+            _editorEvents = editorEvents;
+        }
+
+
         public void RotateStep(Vector2 direction)
         {
             RotateStep(direction.x, direction.y);
@@ -95,7 +103,7 @@ namespace Assets.Scripts.EditorState
             Vector3 move = dirToDest.normalized * Time.deltaTime * (isFast ? CameraFastFlySpeed : CameraNormalFlySpeed);
 
             // Check if destination was reached
-            if(dirToDest.magnitude < move.magnitude)
+            if (dirToDest.magnitude < move.magnitude)
             {
                 Position += dirToDest;
                 return true;
@@ -121,9 +129,6 @@ namespace Assets.Scripts.EditorState
             // Move back from pivot
             MoveFixed(-moveToPivot);
         }
-
-
-        public UnityEvent OnCameraStateChanged = new UnityEvent();
 
         // The main camera, through with the user sees the scene
         //[NonSerialized]

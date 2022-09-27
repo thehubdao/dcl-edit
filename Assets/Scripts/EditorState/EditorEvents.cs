@@ -6,5 +6,9 @@ namespace Assets.Scripts.System
     {
         public event Action onSelectionChangedEvent;
         public void SelectionChangedEvent() => onSelectionChangedEvent?.Invoke();
+
+
+        public event Action onCameraStateChanged;
+        public void CameraStateChangedEvent() => onCameraStateChanged?.Invoke();
     }
 }
