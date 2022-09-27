@@ -14,5 +14,9 @@ namespace Assets.Scripts.System
 
         public event Action onHoverChanged;
         public void HoverChangedEvent() => onHoverChanged?.Invoke();
+
+
+        public event Action onHierarchyChangedEvent;
+        public void HierarchyChangedEvent() => onHierarchyChangedEvent?.Invoke();
     }
 }

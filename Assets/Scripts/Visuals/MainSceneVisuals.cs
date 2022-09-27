@@ -29,8 +29,7 @@ namespace Assets.Scripts.Visuals
         public void SetupSceneEventListeners()
         {
             // when there is a scene loaded, add the visuals updater
-            _sceneState.CurrentScene?
-                .HierarchyChangedEvent.AddListener(UpdateVisuals);
+            _editorEvents.onHierarchyChangedEvent += UpdateVisuals;
 
             _editorEvents.onSelectionChangedEvent += UpdateVisuals;
 
@@ -73,7 +72,7 @@ namespace Assets.Scripts.Visuals
 
                 if (parent != null)
                     // set the transforms parent to the transform of the parent visual
-                    visual.transform.SetParent(visuals.Find(v => v.Id == parent.Id).transform,true);
+                    visual.transform.SetParent(visuals.Find(v => v.Id == parent.Id).transform, true);
             }
 
             // update entity visuals
