@@ -8,12 +8,12 @@ namespace Assets.Scripts.System
         public void SelectionChangedEvent() => onSelectionChangedEvent?.Invoke();
 
 
-        public event Action onCameraStateChanged;
-        public void CameraStateChangedEvent() => onCameraStateChanged?.Invoke();
+        public event Action onCameraStateChangedEvent;
+        public void CameraStateChangedEvent() => onCameraStateChangedEvent?.Invoke();
 
 
-        public event Action onHoverChanged;
-        public void HoverChangedEvent() => onHoverChanged?.Invoke();
+        public event Action onHoverChangedEvent;
+        public void HoverChangedEvent() => onHoverChangedEvent?.Invoke();
 
 
         public event Action onHierarchyChangedEvent;

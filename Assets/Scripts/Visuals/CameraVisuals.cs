@@ -21,7 +21,7 @@ namespace Assets.Scripts.Visuals
 
         void Start()
         {
-            _editorEvents.onCameraStateChanged += SetDirty;
+            _editorEvents.onCameraStateChangedEvent += SetDirty;
 
             SetDirty();
         }

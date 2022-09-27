@@ -28,7 +28,7 @@ namespace Assets.Scripts.Visuals
 
         public void SetupSceneEventListeners()
         {
-            _editorEvents.onHoverChanged += () =>
+            _editorEvents.onHoverChangedEvent += () =>
             {
                 if (_interface3DState.CurrentlyHoveredObject == gameObject)
                 {
