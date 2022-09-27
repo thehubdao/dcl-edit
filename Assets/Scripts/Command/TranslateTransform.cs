@@ -1,6 +1,7 @@
-using UnityEngine;
-using System;
 using Assets.Scripts.SceneState;
+using Assets.Scripts.System;
+using System;
+using UnityEngine;
 
 namespace Assets.Scripts.Command
 {
@@ -12,25 +13,29 @@ namespace Assets.Scripts.Command
         Vector3 oldFixedPosition;
         Vector3 newFixedPosition;
 
-        public TranslateTransform(Guid selectedEntity, Vector3 oldFixedPosition, Vector3 newFixedPosition)
+        // Dependencies
+        EditorEvents _editorEvents;
+
+        public TranslateTransform(Guid selectedEntity, Vector3 oldFixedPosition, Vector3 newFixedPosition, EditorEvents editorEvents)
         {
             this.selectedEntityGuid = selectedEntity;
             this.oldFixedPosition = oldFixedPosition;
             this.newFixedPosition = newFixedPosition;
+            _editorEvents = editorEvents;
         }
 
         public override void Do(DclScene sceneState)
         {
             DclTransformComponent transform = TransformFromEntityGuid(sceneState, selectedEntityGuid);
             transform?.Position.SetFixedValue(newFixedPosition);
-            sceneState.SelectionState.SelectionChangedEvent.Invoke();
+            _editorEvents.SelectionChangedEvent();
         }
 
         public override void Undo(DclScene sceneState)
         {
             DclTransformComponent transform = TransformFromEntityGuid(sceneState, selectedEntityGuid);
             transform?.Position.SetFixedValue(oldFixedPosition);
-            sceneState.SelectionState.SelectionChangedEvent.Invoke();
+            _editorEvents.SelectionChangedEvent();
         }
 
         DclTransformComponent TransformFromEntityGuid(DclScene sceneState, Guid guid)

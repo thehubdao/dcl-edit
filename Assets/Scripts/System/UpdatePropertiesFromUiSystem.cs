@@ -9,13 +9,15 @@ namespace Assets.Scripts.System
         private ICommandSystem _commandSystem;
         private ExposeEntitySystem _exposeEntitySystem;
         private EditorState.SceneState _sceneState;
+        private EditorEvents _editorEvents;
 
         [Inject]
-        public void Construct(ICommandSystem commandSystem, ExposeEntitySystem exposeEntitySystem, EditorState.SceneState sceneState)
+        public void Construct(ICommandSystem commandSystem, ExposeEntitySystem exposeEntitySystem, EditorState.SceneState sceneState, EditorEvents editorEvents)
         {
             _commandSystem = commandSystem;
             _exposeEntitySystem = exposeEntitySystem;
             _sceneState = sceneState;
+            _editorEvents = editorEvents;
         }
 
         public void SetNewName(DclEntity entity, string newName)
@@ -37,7 +39,7 @@ namespace Assets.Scripts.System
                 else
                 {
                     // TODO: show expose failed message
-                    _sceneState.CurrentScene?.SelectionState.SelectionChangedEvent.Invoke();
+                    _editorEvents.SelectionChangedEvent();
                 }
             }
             else
@@ -57,7 +59,7 @@ namespace Assets.Scripts.System
 
             scene.GetPropertyFromIdentifier(property).GetConcrete<T>().SetFloatingValue(value);
 
-            scene.SelectionState.SelectionChangedEvent.Invoke();
+            _editorEvents.SelectionChangedEvent();
         }
 
         public void RevertFloatingProperty(DclPropertyIdentifier property)

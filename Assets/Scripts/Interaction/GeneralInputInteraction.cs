@@ -1,8 +1,8 @@
-using System;
 using Assets.Scripts.Command;
 using Assets.Scripts.EditorState;
 using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Zenject;
@@ -24,6 +24,7 @@ namespace Assets.Scripts.Interaction
         private InputHelper _inputHelper;
         private EditorState.SceneState _sceneState;
         private CameraState _cameraState;
+        private EditorEvents _editorEvents;
 
         [Inject]
         private void Construct(
@@ -36,7 +37,8 @@ namespace Assets.Scripts.Interaction
             CameraState cameraState,
             GizmoState gizmoState,
             UnityState unityState,
-            InputHelper inputHelper)
+            InputHelper inputHelper,
+            EditorEvents editorEvents)
         {
             _sceneSaveSystem = sceneSaveSystem;
             _commandSystem = commandSystem;
@@ -48,6 +50,7 @@ namespace Assets.Scripts.Interaction
             _inputHelper = inputHelper;
             _sceneState = sceneState;
             _cameraState = cameraState;
+            _editorEvents = editorEvents;
         }
 
 
@@ -571,7 +574,7 @@ namespace Assets.Scripts.Interaction
                         Vector3 globalPosition = gizmoData.plane.ClosestPointOnPlane(hitPoint - gizmoData.initialMouseOffset);
                         Vector3? localPosition = selectedEntity.Parent?.GetTransformComponent().InverseTransformPoint(globalPosition);
                         trans.Position.SetFloatingValue(localPosition ?? globalPosition);
-                        _sceneState.CurrentScene?.SelectionState.SelectionChangedEvent.Invoke();
+                        _editorEvents.SelectionChangedEvent();
                         return;
                     }
 
@@ -622,7 +625,7 @@ namespace Assets.Scripts.Interaction
                             break;
                     }
 
-                    _sceneState.CurrentScene?.SelectionState.SelectionChangedEvent.Invoke();
+                    _editorEvents.SelectionChangedEvent();
                 }
             }
         }

@@ -1,6 +1,7 @@
-using UnityEngine;
-using System;
 using Assets.Scripts.SceneState;
+using Assets.Scripts.System;
+using System;
+using UnityEngine;
 
 namespace Assets.Scripts.Command
 {
@@ -12,25 +13,29 @@ namespace Assets.Scripts.Command
         Vector3 oldFixedScale;
         Vector3 newFixedScale;
 
-        public ScaleTransform(Guid selectedEntity, Vector3 oldFixedScale, Vector3 newFixedScale)
+        // Dependencies
+        private EditorEvents _editorEvents;
+
+        public ScaleTransform(Guid selectedEntity, Vector3 oldFixedScale, Vector3 newFixedScale, EditorEvents editorEvents)
         {
             this.selectedEntityGuid = selectedEntity;
             this.oldFixedScale = oldFixedScale;
             this.newFixedScale = newFixedScale;
+            _editorEvents = editorEvents;
         }
 
         public override void Do(DclScene sceneState)
         {
             DclTransformComponent transform = TransformFromEntityGuid(sceneState, selectedEntityGuid);
             transform?.Scale.SetFixedValue(newFixedScale);
-            sceneState.SelectionState.SelectionChangedEvent.Invoke();
+            _editorEvents.SelectionChangedEvent();
         }
 
         public override void Undo(DclScene sceneState)
         {
             DclTransformComponent transform = TransformFromEntityGuid(sceneState, selectedEntityGuid);
             transform?.Scale.SetFixedValue(oldFixedScale);
-            sceneState.SelectionState.SelectionChangedEvent.Invoke();
+            _editorEvents.SelectionChangedEvent();
         }
 
         DclTransformComponent TransformFromEntityGuid(DclScene sceneState, Guid guid)

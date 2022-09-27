@@ -1,7 +1,8 @@
+using Assets.Scripts.Interaction;
+using Assets.Scripts.System;
+using Assets.Scripts.Utility;
 using System.Collections.Generic;
 using System.Linq;
-using Assets.Scripts.Interaction;
-using Assets.Scripts.Utility;
 using UnityEngine;
 using Zenject;
 
@@ -12,12 +13,17 @@ namespace Assets.Scripts.Visuals
         // Dependencies
         private EntitySelectInteraction.Factory _entitySelectInteractionFactory;
         private EditorState.SceneState _sceneState;
+        private EditorEvents _editorEvents;
 
         [Inject]
-        public void Construct(EntitySelectInteraction.Factory entitySelectionInteractionFactory, EditorState.SceneState sceneState)
+        public void Construct(
+            EntitySelectInteraction.Factory entitySelectionInteractionFactory,
+            EditorState.SceneState sceneState,
+            EditorEvents editorEvents)
         {
             _entitySelectInteractionFactory = entitySelectionInteractionFactory;
             _sceneState = sceneState;
+            _editorEvents = editorEvents;
         }
 
         public void SetupSceneEventListeners()
@@ -26,8 +32,7 @@ namespace Assets.Scripts.Visuals
             _sceneState.CurrentScene?
                 .HierarchyChangedEvent.AddListener(UpdateVisuals);
 
-            _sceneState.CurrentScene?
-                .SelectionState.SelectionChangedEvent.AddListener(UpdateVisuals);
+            _editorEvents.onSelectionChangedEvent += UpdateVisuals;
 
             UpdateVisuals();
         }
