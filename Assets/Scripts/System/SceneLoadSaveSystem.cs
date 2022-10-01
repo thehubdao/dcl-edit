@@ -88,7 +88,7 @@ namespace Assets.Scripts.System
         public void CreateEntityFile(KeyValuePair<Guid, DclEntity> entity, string sceneDirectoryPath)
         {
             DclEntityData data = new DclEntityData(entity.Value);
-            string dataJson = JsonConvert.SerializeObject(data);
+            string dataJson = JsonConvert.SerializeObject(data, Formatting.Indented);
 
             string filename = data.customName.Replace(' ', '_') + "-" + data.guid.ToString() + ".json";
 
