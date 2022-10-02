@@ -9,12 +9,12 @@ namespace Assets.Scripts.Tests.PlayModeTests.CommandTests
     public class AddEntityTest
     {
         // Dependencies
-        private EditorState.SceneState _sceneState;
+        private EditorState.SceneFile _sceneFile;
 
         [OneTimeSetUp]
         private void OneTimeSetUp()
         {
-            _sceneState = new EditorState.SceneState();
+            _sceneFile = new EditorState.SceneFile();
         }
 
 
@@ -23,7 +23,7 @@ namespace Assets.Scripts.Tests.PlayModeTests.CommandTests
             SceneManager.LoadScene(0);
             yield return null;
             // create new dcl scene
-            _sceneState.CurrentScene = new DclScene();
+            _sceneFile.CurrentScene = new DclScene();
         }
 
 
@@ -32,7 +32,7 @@ namespace Assets.Scripts.Tests.PlayModeTests.CommandTests
         {
             yield return SetupScene();
 
-            var currentScene = _sceneState.CurrentScene;
+            var currentScene = _sceneFile.CurrentScene;
 
             //CommandSystem.ExecuteCommand(new AddEntity("cool name", null));
             //Assert.AreEqual(1, currentScene.AllEntities.Count);
@@ -48,7 +48,7 @@ namespace Assets.Scripts.Tests.PlayModeTests.CommandTests
         {
             yield return SetupScene();
 
-            var currentScene = _sceneState.CurrentScene;
+            var currentScene = _sceneFile.CurrentScene;
 
             //CommandSystem.ExecuteCommand(new AddEntity("parent", null));
             //var parent = currentScene.AllEntities.First(e => e.Value.ShownName == "parent");
@@ -67,7 +67,7 @@ namespace Assets.Scripts.Tests.PlayModeTests.CommandTests
         {
             yield return SetupScene();
 
-            var currentScene = _sceneState.CurrentScene;
+            var currentScene = _sceneFile.CurrentScene;
 
             //CommandSystem.ExecuteCommand(new AddEntity("entity 1", null));
             //CommandSystem.ExecuteCommand(new AddEntity("entity 2", null));

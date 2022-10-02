@@ -14,22 +14,22 @@ namespace Assets.Scripts.Visuals
         // Dependencies
         private GltfShapeVisuals.Factory _gltfShapeVisualsFactory;
         private PrimitiveShapeVisuals.Factory _primitiveShapeVisualsFactory;
-        private EditorState.SceneState _sceneState;
+        private EditorState.SceneFile _sceneFile;
 
         [Inject]
         private void Construct(
             GltfShapeVisuals.Factory gltfShapeVisualsFactory,
-             PrimitiveShapeVisuals.Factory primitiveShapeVisualsFactory,
-              EditorState.SceneState sceneState)
+            PrimitiveShapeVisuals.Factory primitiveShapeVisualsFactory,
+            EditorState.SceneFile sceneFile)
         {
             _gltfShapeVisualsFactory = gltfShapeVisualsFactory;
             _primitiveShapeVisualsFactory = primitiveShapeVisualsFactory;
-            _sceneState = sceneState;
+            _sceneFile = sceneFile;
         }
 
         public void UpdateVisuals()
         {
-            var entity = _sceneState.CurrentScene?.GetEntityFormId(Id);
+            var entity = _sceneFile.CurrentScene?.GetEntityFormId(Id);
             if (entity == null)
                 return;
 

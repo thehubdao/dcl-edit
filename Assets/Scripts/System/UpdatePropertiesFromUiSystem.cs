@@ -8,14 +8,14 @@ namespace Assets.Scripts.System
         // dependencies
         private ICommandSystem _commandSystem;
         private ExposeEntitySystem _exposeEntitySystem;
-        private EditorState.SceneState _sceneState;
+        private EditorState.SceneFile _sceneFile;
 
         [Inject]
-        public void Construct(ICommandSystem commandSystem, ExposeEntitySystem exposeEntitySystem, EditorState.SceneState sceneState)
+        public void Construct(ICommandSystem commandSystem, ExposeEntitySystem exposeEntitySystem, EditorState.SceneFile sceneFile)
         {
             _commandSystem = commandSystem;
             _exposeEntitySystem = exposeEntitySystem;
-            _sceneState = sceneState;
+            _sceneFile = sceneFile;
         }
 
         public void SetNewName(DclEntity entity, string newName)
@@ -37,7 +37,7 @@ namespace Assets.Scripts.System
                 else
                 {
                     // TODO: show expose failed message
-                    _sceneState.CurrentScene?.SelectionState.SelectionChangedEvent.Invoke();
+                    _sceneFile.CurrentScene?.SelectionState.SelectionChangedEvent.Invoke();
                 }
             }
             else
@@ -48,7 +48,7 @@ namespace Assets.Scripts.System
 
         public void UpdateFloatingProperty<T>(DclPropertyIdentifier property, T value)
         {
-            var scene = _sceneState.CurrentScene;
+            var scene = _sceneFile.CurrentScene;
 
             if (scene == null)
             {
@@ -62,7 +62,7 @@ namespace Assets.Scripts.System
 
         public void RevertFloatingProperty(DclPropertyIdentifier property)
         {
-            var scene = _sceneState.CurrentScene;
+            var scene = _sceneFile.CurrentScene;
 
             if (scene == null)
             {
@@ -74,7 +74,7 @@ namespace Assets.Scripts.System
 
         public void UpdateFixedProperty<T>(DclPropertyIdentifier property, T value)
         {
-            var scene = _sceneState.CurrentScene;
+            var scene = _sceneFile.CurrentScene;
 
             if (scene == null)
             {

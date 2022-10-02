@@ -16,20 +16,20 @@ public class UiInspectorVisuals : MonoBehaviour, ISetupSceneEventListeners
     private InputState _inputState;
     private UpdatePropertiesFromUiSystem _updatePropertiesSystem;
     private UiBuilder.Factory _uiBuilderFactory;
-    private SceneState _sceneState;
+    private SceneFile _sceneFile;
 
     [Inject]
-    private void Construct(InputState inputState, UpdatePropertiesFromUiSystem updatePropertiesSystem, UiBuilder.Factory uiBuilderFactory, SceneState sceneState)
+    private void Construct(InputState inputState, UpdatePropertiesFromUiSystem updatePropertiesSystem, UiBuilder.Factory uiBuilderFactory, SceneFile sceneFile)
     {
         _inputState = inputState;
         _updatePropertiesSystem = updatePropertiesSystem;
         _uiBuilderFactory = uiBuilderFactory;
-        _sceneState = sceneState;
+        _sceneFile = sceneFile;
     }
 
     public void SetupSceneEventListeners()
     {
-        _sceneState.CurrentScene?.SelectionState.SelectionChangedEvent.AddListener(UpdateVisuals);
+        _sceneFile.CurrentScene?.SelectionState.SelectionChangedEvent.AddListener(UpdateVisuals);
         UpdateVisuals();
     }
 
@@ -42,7 +42,7 @@ public class UiInspectorVisuals : MonoBehaviour, ISetupSceneEventListeners
 
         var inspectorBuilder = _uiBuilderFactory.Create();
 
-        var selectedEntity = _sceneState.CurrentScene?.SelectionState.PrimarySelectedEntity;
+        var selectedEntity = _sceneFile.CurrentScene?.SelectionState.PrimarySelectedEntity;
 
         if (selectedEntity == null)
         {

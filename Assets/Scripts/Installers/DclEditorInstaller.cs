@@ -63,7 +63,7 @@ public class DclEditorInstaller : MonoInstaller
 
         Container.BindInterfacesAndSelfTo<CameraState>().AsSingle();
 
-        Container.BindInterfacesAndSelfTo<SceneState>().AsSingle();
+        Container.BindInterfacesAndSelfTo<SceneFile>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<GizmoState>().AsSingle();
 

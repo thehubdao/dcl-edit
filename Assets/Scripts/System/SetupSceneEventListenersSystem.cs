@@ -9,18 +9,18 @@ public class SetupSceneEventListenersSystem
 {
     // Dependencies
     private UnityState _unityState;
-    private SceneState _sceneState;
+    private SceneFile _sceneFile;
 
     [Inject]
-    private void Construct(UnityState unityState, SceneState sceneState)
+    private void Construct(UnityState unityState, SceneFile sceneFile)
     {
         _unityState = unityState;
-        _sceneState = sceneState;
+        _sceneFile = sceneFile;
     }
 
     public void SetupSceneEventListeners()
     {
-        var scene = _sceneState.CurrentScene;
+        var scene = _sceneFile.CurrentScene;
 
         if (scene == null)
             return;

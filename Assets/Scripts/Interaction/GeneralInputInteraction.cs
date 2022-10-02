@@ -22,7 +22,7 @@ namespace Assets.Scripts.Interaction
         private GizmoState _gizmoState;
         private UnityState _unityState;
         private InputHelper _inputHelper;
-        private EditorState.SceneState _sceneState;
+        private EditorState.SceneFile _sceneFile;
         private CameraState _cameraState;
 
         [Inject]
@@ -32,7 +32,7 @@ namespace Assets.Scripts.Interaction
             InputState inputState,
             Interface3DState interface3DState,
             WorkspaceSaveSystem workspaceSaveSystem,
-            EditorState.SceneState sceneState,
+            EditorState.SceneFile sceneFile,
             CameraState cameraState,
             GizmoState gizmoState,
             UnityState unityState,
@@ -46,7 +46,7 @@ namespace Assets.Scripts.Interaction
             _gizmoState = gizmoState;
             _unityState = unityState;
             _inputHelper = inputHelper;
-            _sceneState = sceneState;
+            _sceneFile = sceneFile;
             _cameraState = cameraState;
         }
 
@@ -193,7 +193,7 @@ namespace Assets.Scripts.Interaction
                             if (gizmoDir == null) break;
                             Vector3 localGizmoDir = gizmoDir.GetVector();
 
-                            var entity = _sceneState.CurrentScene?.SelectionState.PrimarySelectedEntity.GetTransformComponent();
+                            var entity = _sceneFile.CurrentScene?.SelectionState.PrimarySelectedEntity.GetTransformComponent();
 
                             GizmoState.Mode gizmoMode = _gizmoState.CurrentMode;
 
@@ -326,7 +326,7 @@ namespace Assets.Scripts.Interaction
                     }
                     case Interface3DState.HoveredObjectType.None:
                     {
-                        var scene = _sceneState.CurrentScene;
+                        var scene = _sceneFile.CurrentScene;
                         var selectionCommand = _commandSystem.CommandFactory.CreateChangeSelection(
                             ChangeSelection.GetPrimarySelectionFromScene(scene),
                             ChangeSelection.GetSecondarySelectionFromScene(scene),
@@ -382,10 +382,10 @@ namespace Assets.Scripts.Interaction
             }
 
             // When pressing the focus hotkey and having a selected primary entity, switch to Focus Transition state
-            if (_inputSystemAsset.CameraMovement.Focus.triggered && _sceneState.CurrentScene?.SelectionState.PrimarySelectedEntity != null)
+            if (_inputSystemAsset.CameraMovement.Focus.triggered && _sceneFile.CurrentScene?.SelectionState.PrimarySelectedEntity != null)
             {
                 // Fetch position of selected object
-                var selectedEntity = _sceneState.CurrentScene?.SelectionState.PrimarySelectedEntity;
+                var selectedEntity = _sceneFile.CurrentScene?.SelectionState.PrimarySelectedEntity;
                 var entityPos = selectedEntity.GetTransformComponent().GlobalPosition;
 
                 // Calculate an offset position so that the camera keeps its rotation and looks at the selected entity
@@ -399,7 +399,7 @@ namespace Assets.Scripts.Interaction
             // When pressing the save hotkey, save the scene and workspace layout
             if (_inputSystemAsset.Hotkeys.Save.triggered)
             {
-                _sceneSaveSystem.Save(_sceneState.CurrentScene);
+                _sceneSaveSystem.Save(_sceneFile.CurrentScene);
                 _workspaceSaveSystem.Save(_unityState.dynamicPanelsCanvas);
             }
 
@@ -520,7 +520,7 @@ namespace Assets.Scripts.Interaction
         private void UpdateHoldingGizmoTool()
         {
             GizmoState.Mode mode = _gizmoState.CurrentMode;
-            DclEntity selectedEntity = _sceneState.CurrentScene?.SelectionState.PrimarySelectedEntity;
+            DclEntity selectedEntity = _sceneFile.CurrentScene?.SelectionState.PrimarySelectedEntity;
             DclTransformComponent trans = selectedEntity.GetTransformComponent();
 
             // When releasing LMB, stop holding gizmo
@@ -571,7 +571,7 @@ namespace Assets.Scripts.Interaction
                         Vector3 globalPosition = gizmoData.plane.ClosestPointOnPlane(hitPoint - gizmoData.initialMouseOffset);
                         Vector3? localPosition = selectedEntity.Parent?.GetTransformComponent().InverseTransformPoint(globalPosition);
                         trans.Position.SetFloatingValue(localPosition ?? globalPosition);
-                        _sceneState.CurrentScene?.SelectionState.SelectionChangedEvent.Invoke();
+                        _sceneFile.CurrentScene?.SelectionState.SelectionChangedEvent.Invoke();
                         return;
                     }
 
@@ -622,7 +622,7 @@ namespace Assets.Scripts.Interaction
                             break;
                     }
 
-                    _sceneState.CurrentScene?.SelectionState.SelectionChangedEvent.Invoke();
+                    _sceneFile.CurrentScene?.SelectionState.SelectionChangedEvent.Invoke();
                 }
             }
         }

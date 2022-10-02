@@ -7,13 +7,13 @@ namespace Assets.Scripts.System
     {
         // dependencies
         public CommandFactorySystem CommandFactory { get; private set; }
-        private EditorState.SceneState _sceneState;
+        private EditorState.SceneFile _sceneFile;
 
         [Inject]
-        public void Construct(CommandFactorySystem commandFactory, EditorState.SceneState sceneState)
+        public void Construct(CommandFactorySystem commandFactory, EditorState.SceneFile sceneFile)
         {
             CommandFactory = commandFactory;
-            _sceneState = sceneState;
+            _sceneFile = sceneFile;
         }
 
         public void ExecuteCommand<T>(T command) where T : SceneState.Command
@@ -21,7 +21,7 @@ namespace Assets.Scripts.System
             if (command == null)
                 return;
 
-            var commandState = _sceneState.CurrentScene?.CommandHistoryState;
+            var commandState = _sceneFile.CurrentScene?.CommandHistoryState;
 
             if (commandState == null)
             {
@@ -38,12 +38,12 @@ namespace Assets.Scripts.System
             commandState.CommandHistory.Add(command);
             commandState.CurrentCommandIndex = commandState.CommandHistory.Count - 1;
 
-            command.Do(_sceneState.CurrentScene);
+            command.Do(_sceneFile.CurrentScene);
         }
 
         public void UndoCommand()
         {
-            var commandState = _sceneState.CurrentScene?.CommandHistoryState;
+            var commandState = _sceneFile.CurrentScene?.CommandHistoryState;
 
             if (commandState == null)
             {
@@ -53,14 +53,14 @@ namespace Assets.Scripts.System
 
             if (commandState.CurrentCommandIndex >= 0)
             {
-                commandState.CommandHistory[commandState.CurrentCommandIndex].Undo(_sceneState.CurrentScene);
+                commandState.CommandHistory[commandState.CurrentCommandIndex].Undo(_sceneFile.CurrentScene);
                 commandState.CurrentCommandIndex--;
             }
         }
 
         public void RedoCommand()
         {
-            var commandState = _sceneState.CurrentScene?.CommandHistoryState;
+            var commandState = _sceneFile.CurrentScene?.CommandHistoryState;
 
             if (commandState == null)
             {
@@ -71,7 +71,7 @@ namespace Assets.Scripts.System
             if (commandState.CurrentCommandIndex < commandState.CommandHistory.Count - 1)
             {
                 commandState.CurrentCommandIndex++;
-                commandState.CommandHistory[commandState.CurrentCommandIndex].Do(_sceneState.CurrentScene);
+                commandState.CommandHistory[commandState.CurrentCommandIndex].Do(_sceneFile.CurrentScene);
             }
         }
     }

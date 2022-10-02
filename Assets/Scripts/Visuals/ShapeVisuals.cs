@@ -10,12 +10,12 @@ namespace Assets.Scripts.Visuals
         protected const int EntityClickLayer = 10;
 
         // Dependencies
-        private EditorState.SceneState _sceneState;
+        private EditorState.SceneFile _sceneFile;
 
         [Inject]
-        private void Construct(EditorState.SceneState sceneState)
+        private void Construct(EditorState.SceneFile sceneFile)
         {
-            _sceneState = sceneState;
+            _sceneFile = sceneFile;
         }
 
 
@@ -26,7 +26,7 @@ namespace Assets.Scripts.Visuals
 
         protected void UpdateSelection(DclEntity entity)
         {
-            var selectionState = _sceneState?.CurrentScene?.SelectionState;
+            var selectionState = _sceneFile?.CurrentScene?.SelectionState;
             if (selectionState != null)
             {
                 if (selectionState.PrimarySelectedEntity == entity)

@@ -11,22 +11,22 @@ namespace Assets.Scripts.Visuals
     {
         // Dependencies
         private EntitySelectInteraction.Factory _entitySelectInteractionFactory;
-        private EditorState.SceneState _sceneState;
+        private EditorState.SceneFile _sceneFile;
 
         [Inject]
-        public void Construct(EntitySelectInteraction.Factory entitySelectionInteractionFactory, EditorState.SceneState sceneState)
+        public void Construct(EntitySelectInteraction.Factory entitySelectionInteractionFactory, EditorState.SceneFile sceneFile)
         {
             _entitySelectInteractionFactory = entitySelectionInteractionFactory;
-            _sceneState = sceneState;
+            _sceneFile = sceneFile;
         }
 
         public void SetupSceneEventListeners()
         {
             // when there is a scene loaded, add the visuals updater
-            _sceneState.CurrentScene?
+            _sceneFile.CurrentScene?
                 .HierarchyChangedEvent.AddListener(UpdateVisuals);
 
-            _sceneState.CurrentScene?
+            _sceneFile.CurrentScene?
                 .SelectionState.SelectionChangedEvent.AddListener(UpdateVisuals);
 
             UpdateVisuals();
@@ -34,7 +34,7 @@ namespace Assets.Scripts.Visuals
 
         private void UpdateVisuals()
         {
-            var scene = _sceneState.CurrentScene;
+            var scene = _sceneFile.CurrentScene;
             if (scene == null)
                 return;
 

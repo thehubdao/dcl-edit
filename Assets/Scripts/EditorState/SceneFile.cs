@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Assets.Scripts.EditorState
 {
-    public class SceneState
+    public class SceneFile
     {
         /**
          * <summary>
@@ -40,7 +40,5 @@ namespace Assets.Scripts.EditorState
         [NonSerialized]
         [CanBeNull]
         public DclScene CurrentScene;
-
-
     }
 }

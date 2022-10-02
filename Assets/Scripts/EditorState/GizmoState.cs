@@ -6,12 +6,12 @@ namespace Assets.Scripts.EditorState
     public class GizmoState
     {
         // Dependencies
-        private SceneState _sceneState;
+        private SceneFile _sceneFile;
 
         [Inject]
-        private void Construct(SceneState sceneState)
+        private void Construct(SceneFile sceneFile)
         {
-            _sceneState = sceneState;
+            _sceneFile = sceneFile;
         }
 
         public enum Mode
@@ -29,7 +29,7 @@ namespace Assets.Scripts.EditorState
             set
             {
                 _currentMode = value;
-                _sceneState.CurrentScene?.SelectionState.SelectionChangedEvent.Invoke();
+                _sceneFile.CurrentScene?.SelectionState.SelectionChangedEvent.Invoke();
             }
         }
     }
