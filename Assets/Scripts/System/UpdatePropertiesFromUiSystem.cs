@@ -39,7 +39,7 @@ namespace Assets.Scripts.System
                 else
                 {
                     // TODO: show expose failed message
-                    _editorEvents.SelectionChangedEvent();
+                    _editorEvents.InvokeSelectionChangedEvent();
                 }
             }
             else
@@ -59,7 +59,7 @@ namespace Assets.Scripts.System
 
             scene.GetPropertyFromIdentifier(property).GetConcrete<T>().SetFloatingValue(value);
 
-            _editorEvents.SelectionChangedEvent();
+            _editorEvents.InvokeSelectionChangedEvent();
         }
 
         public void RevertFloatingProperty(DclPropertyIdentifier property)

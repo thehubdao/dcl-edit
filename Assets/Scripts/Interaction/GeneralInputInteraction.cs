@@ -574,7 +574,7 @@ namespace Assets.Scripts.Interaction
                         Vector3 globalPosition = gizmoData.plane.ClosestPointOnPlane(hitPoint - gizmoData.initialMouseOffset);
                         Vector3? localPosition = selectedEntity.Parent?.GetTransformComponent().InverseTransformPoint(globalPosition);
                         trans.Position.SetFloatingValue(localPosition ?? globalPosition);
-                        _editorEvents.SelectionChangedEvent();
+                        _editorEvents.InvokeSelectionChangedEvent();
                         return;
                     }
 
@@ -625,7 +625,7 @@ namespace Assets.Scripts.Interaction
                             break;
                     }
 
-                    _editorEvents.SelectionChangedEvent();
+                    _editorEvents.InvokeSelectionChangedEvent();
                 }
             }
         }

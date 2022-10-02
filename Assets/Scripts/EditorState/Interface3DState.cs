@@ -24,7 +24,7 @@ namespace Assets.Scripts.EditorState
                 if (_currentlyHoveredObject != value)
                 {
                     _currentlyHoveredObject = value;
-                    _editorEvents.HoverChangedEvent();
+                    _editorEvents.InvokeHoverChangedEvent();
                 }
             }
         }

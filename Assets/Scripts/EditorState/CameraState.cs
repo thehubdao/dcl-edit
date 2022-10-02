@@ -21,7 +21,7 @@ namespace Assets.Scripts.EditorState
             set
             {
                 _position = value;
-                _editorEvents.CameraStateChangedEvent();
+                _editorEvents.InvokeCameraStateChangedEvent();
             }
         }
 
@@ -38,7 +38,7 @@ namespace Assets.Scripts.EditorState
                 if (_pitch < -100)
                     _pitch = -100;
 
-                _editorEvents.CameraStateChangedEvent();
+                _editorEvents.InvokeCameraStateChangedEvent();
             }
         }
 
@@ -48,7 +48,7 @@ namespace Assets.Scripts.EditorState
             set
             {
                 _yaw = value;
-                _editorEvents.CameraStateChangedEvent();
+                _editorEvents.InvokeCameraStateChangedEvent();
             }
         }
 

@@ -71,7 +71,7 @@ namespace Assets.Scripts.Command
             {
                 sceneState.SelectionState.SecondarySelectedEntities.Add(sceneState.GetEntityFormId(secondary));
             }
-            _editorEvents.SelectionChangedEvent();
+            _editorEvents.InvokeSelectionChangedEvent();
         }
 
         public override void Undo(DclScene sceneState)
@@ -82,7 +82,7 @@ namespace Assets.Scripts.Command
             {
                 sceneState.SelectionState.SecondarySelectedEntities.Add(sceneState.GetEntityFormId(secondary));
             }
-            _editorEvents.SelectionChangedEvent();
+            _editorEvents.InvokeSelectionChangedEvent();
         }
 
         public static Guid GetPrimarySelectionFromScene(DclScene sceneState)

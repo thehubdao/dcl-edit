@@ -28,14 +28,14 @@ namespace Assets.Scripts.Command
         {
             DclTransformComponent transform = TransformFromEntityGuid(sceneState, selectedEntityGuid);
             transform?.Rotation.SetFixedValue(newFixedRotation);
-            _editorEvents.SelectionChangedEvent();
+            _editorEvents.InvokeSelectionChangedEvent();
         }
 
         public override void Undo(DclScene sceneState)
         {
             DclTransformComponent transform = TransformFromEntityGuid(sceneState, selectedEntityGuid);
             transform?.Rotation.SetFixedValue(oldFixedRotation);
-            _editorEvents.SelectionChangedEvent();
+            _editorEvents.InvokeSelectionChangedEvent();
         }
 
         DclTransformComponent TransformFromEntityGuid(DclScene sceneState, Guid guid)

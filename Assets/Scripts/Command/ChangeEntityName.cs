@@ -33,7 +33,7 @@ public class ChangeEntityName : Command
 
         entity.CustomName = newName;
 
-        _editorEvents.SelectionChangedEvent();
+        _editorEvents.InvokeSelectionChangedEvent();
     }
 
     public override void Undo(DclScene sceneState)
@@ -47,6 +47,6 @@ public class ChangeEntityName : Command
 
         entity.CustomName = oldName;
 
-        _editorEvents.SelectionChangedEvent();
+        _editorEvents.InvokeSelectionChangedEvent();
     }
 }

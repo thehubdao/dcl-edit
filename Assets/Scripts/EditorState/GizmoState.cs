@@ -31,7 +31,7 @@ namespace Assets.Scripts.EditorState
             set
             {
                 _currentMode = value;
-                _editorEvents.SelectionChangedEvent();
+                _editorEvents.InvokeSelectionChangedEvent();
             }
         }
     }
