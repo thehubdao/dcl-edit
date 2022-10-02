@@ -75,7 +75,7 @@ namespace Assets.Scripts.SceneState
                 .Select(pair => pair.Value)
                 .Where(e => e.Parent == this);
 
-        public DclScene Scene { get; }
+        public DclScene Scene { get; set; }
 
         public List<DclComponent> Components { get; } = new List<DclComponent>();
 
@@ -118,14 +118,11 @@ namespace Assets.Scripts.SceneState
             return names.Any(name => Components.Exists(c => c.NameInCode == name));
         }
 
-        public DclEntity(DclScene scene, Guid id, string name = "", Guid parentId = default)
+        public DclEntity(Guid id, string name = "", Guid parentId = default)
         {
-            Scene = scene;
             Id = id;
             _customName = name;
             _parentId = parentId;
-
-            scene.AllEntities.Add(id, this);
         }
     }
 }

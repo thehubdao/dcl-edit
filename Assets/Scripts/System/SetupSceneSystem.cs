@@ -12,18 +12,26 @@ namespace Assets.Scripts.System
         private CameraSystem _cameraSystem;
         private SetupSceneEventListenersSystem _setupSceneEventListenersSystem;
         private EditorState.SceneFile _sceneFile;
+        private ISceneLoadSystem _sceneLoadSystem;
 
         [Inject]
-        private void Construct(CameraSystem cameraSystem, SetupSceneEventListenersSystem setupSceneEventListenersSystem, EditorState.SceneFile sceneFile)
+        private void Construct(
+            CameraSystem cameraSystem,
+            SetupSceneEventListenersSystem setupSceneEventListenersSystem,
+            EditorState.SceneFile sceneFile,
+            ISceneLoadSystem sceneLoadSystem)
         {
             _cameraSystem = cameraSystem;
             _setupSceneEventListenersSystem = setupSceneEventListenersSystem;
             _sceneFile = sceneFile;
+            _sceneLoadSystem = sceneLoadSystem;
         }
 
-        public void SetupScene(DclScene scene)
+        public void SetupScene(string path)
         {
-            _sceneFile.CurrentScene = scene;
+            _sceneFile.DirectoryPath = path;
+
+            _sceneLoadSystem.Load(_sceneFile);
 
             _cameraSystem.CameraStartup();
 

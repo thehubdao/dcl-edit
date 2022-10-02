@@ -9,7 +9,7 @@ namespace Assets.Scripts.SceneState
     {
         public string name = "New Scene";
 
-        public Dictionary<Guid, DclEntity> AllEntities = new Dictionary<Guid, DclEntity>();
+        private Dictionary<Guid, DclEntity> _allEntities = new Dictionary<Guid, DclEntity>();
 
         public IEnumerable<DclEntity> EntitiesInSceneRoot =>
             AllEntities
@@ -21,7 +21,20 @@ namespace Assets.Scripts.SceneState
             if (id == Guid.Empty)
                 return null;
 
-            return AllEntities.TryGetValue(id, out var entity) ? entity : null;
+            return _allEntities.TryGetValue(id, out var entity) ? entity : null;
+        }
+
+        public IEnumerable<KeyValuePair<Guid, DclEntity>> AllEntities => _allEntities;
+
+        public void AddEntity(DclEntity entity)
+        {
+            entity.Scene = this;
+            _allEntities.Add(entity.Id, entity);
+        }
+
+        public void RemoveEntity(Guid id)
+        {
+            _allEntities.Remove(id);
         }
 
         public UnityEvent HierarchyChangedEvent = new UnityEvent();

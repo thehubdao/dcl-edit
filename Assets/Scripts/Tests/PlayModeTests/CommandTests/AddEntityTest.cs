@@ -40,7 +40,7 @@ namespace Assets.Scripts.Tests.PlayModeTests.CommandTests
             //var entity = currentScene.AllEntities.First(e => e.Value.ShownName == "cool name");
             //Assert.AreEqual("cool name", entity.Value.ShownName);
             //
-            //Assert.AreEqual(currentScene, entity.Value.Scene);
+            //Assert.AreEqual(currentScene, entity.Value.CurrentScene);
         }
 
         [UnityTest]
@@ -58,8 +58,8 @@ namespace Assets.Scripts.Tests.PlayModeTests.CommandTests
             //Assert.AreEqual(2, currentScene.AllEntities.Count);
             //Assert.AreEqual(parent.Value, child.Value.Parent);
             //
-            //Assert.AreEqual(currentScene, parent.Value.Scene);
-            //Assert.AreEqual(currentScene, child.Value.Scene);
+            //Assert.AreEqual(currentScene, parent.Value.CurrentScene);
+            //Assert.AreEqual(currentScene, child.Value.CurrentScene);
         }
 
         [UnityTest]

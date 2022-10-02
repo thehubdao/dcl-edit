@@ -399,7 +399,7 @@ namespace Assets.Scripts.Interaction
             // When pressing the save hotkey, save the scene and workspace layout
             if (_inputSystemAsset.Hotkeys.Save.triggered)
             {
-                _sceneSaveSystem.Save(_sceneFile.CurrentScene);
+                _sceneSaveSystem.Save(_sceneFile);
                 _workspaceSaveSystem.Save(_unityState.dynamicPanelsCanvas);
             }
 
