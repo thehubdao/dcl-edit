@@ -34,7 +34,7 @@ namespace Assets.Scripts.System
         void Awake()
         {
             // Load default scene
-            var v2Path = _pathState.ProjectPath + "/dcl-edit/saves/v2/New CurrentScene.dclscene";
+            var v2Path = _pathState.ProjectPath + "/dcl-edit/saves/v2/New Scene.dclscene";
 
             _setupSceneSystem.SetupScene(v2Path);
         }
