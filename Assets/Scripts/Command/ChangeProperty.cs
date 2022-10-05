@@ -1,5 +1,5 @@
+using Assets.Scripts.Events;
 using Assets.Scripts.SceneState;
-using Assets.Scripts.System;
 
 namespace Assets.Scripts.Command
 {

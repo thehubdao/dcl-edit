@@ -1,4 +1,5 @@
 using Assets.Scripts.EditorState;
+using Assets.Scripts.Events;
 using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
 using Assets.Scripts.Visuals;
@@ -114,8 +115,8 @@ public class UiInspectorVisuals : MonoBehaviour, ISetupSceneEventListeners
                         {
                             var intActions = new UiBuilder.UiPropertyActions<float> // number property requires float actions
                             {
-                                OnChange = (value) => _updatePropertiesSystem.UpdateFloatingProperty(propertyIdentifier, (int) value),
-                                OnSubmit = (value) => _updatePropertiesSystem.UpdateFixedProperty(propertyIdentifier, (int) value),
+                                OnChange = (value) => _updatePropertiesSystem.UpdateFloatingProperty(propertyIdentifier, (int)value),
+                                OnSubmit = (value) => _updatePropertiesSystem.UpdateFixedProperty(propertyIdentifier, (int)value),
                                 OnAbort = (value) => _updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier)
                             };
 

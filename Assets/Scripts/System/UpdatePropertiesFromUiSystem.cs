@@ -1,3 +1,4 @@
+using Assets.Scripts.Events;
 using Assets.Scripts.SceneState;
 using Zenject;
 
@@ -27,7 +28,7 @@ namespace Assets.Scripts.System
 
         public void SetIsExposed(DclEntity entity, bool isExposed)
         {
-            if(isExposed == entity.IsExposed)
+            if (isExposed == entity.IsExposed)
                 return;
 
             if (isExposed)

@@ -1,6 +1,6 @@
 using System;
 
-namespace Assets.Scripts.System
+namespace Assets.Scripts.Events
 {
     public class EditorEvents
     {

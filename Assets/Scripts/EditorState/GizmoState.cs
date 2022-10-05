@@ -1,4 +1,4 @@
-using Assets.Scripts.System;
+using Assets.Scripts.Events;
 using Zenject;
 
 namespace Assets.Scripts.EditorState
