@@ -1,8 +1,9 @@
-using System;
 using Assets.Scripts.Command;
 using Assets.Scripts.EditorState;
+using Assets.Scripts.Events;
 using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Zenject;
@@ -22,8 +23,9 @@ namespace Assets.Scripts.Interaction
         private GizmoState _gizmoState;
         private UnityState _unityState;
         private InputHelper _inputHelper;
-        private EditorState.SceneState _sceneState;
+        private EditorState.SceneDirectoryState _sceneDirectoryState;
         private CameraState _cameraState;
+        private EditorEvents _editorEvents;
         private TypeScriptGenerationSystem _typeScriptGenerationSystem;
 
         [Inject]
@@ -33,11 +35,12 @@ namespace Assets.Scripts.Interaction
             InputState inputState,
             Interface3DState interface3DState,
             WorkspaceSaveSystem workspaceSaveSystem,
-            EditorState.SceneState sceneState,
+            EditorState.SceneDirectoryState sceneDirectoryState,
             CameraState cameraState,
             GizmoState gizmoState,
             UnityState unityState,
             InputHelper inputHelper,
+            EditorEvents editorEvents,
             TypeScriptGenerationSystem typeScriptGenerationSystem)
         {
             _sceneSaveSystem = sceneSaveSystem;
@@ -48,8 +51,9 @@ namespace Assets.Scripts.Interaction
             _gizmoState = gizmoState;
             _unityState = unityState;
             _inputHelper = inputHelper;
-            _sceneState = sceneState;
+            _sceneDirectoryState = sceneDirectoryState;
             _cameraState = cameraState;
+            _editorEvents = editorEvents;
             _typeScriptGenerationSystem = typeScriptGenerationSystem;
         }
 
@@ -196,7 +200,7 @@ namespace Assets.Scripts.Interaction
                             if (gizmoDir == null) break;
                             Vector3 localGizmoDir = gizmoDir.GetVector();
 
-                            var entity = _sceneState.CurrentScene?.SelectionState.PrimarySelectedEntity.GetTransformComponent();
+                            var entity = _sceneDirectoryState.CurrentScene?.SelectionState.PrimarySelectedEntity.GetTransformComponent();
 
                             GizmoState.Mode gizmoMode = _gizmoState.CurrentMode;
 
@@ -329,7 +333,7 @@ namespace Assets.Scripts.Interaction
                     }
                     case Interface3DState.HoveredObjectType.None:
                     {
-                        var scene = _sceneState.CurrentScene;
+                        var scene = _sceneDirectoryState.CurrentScene;
                         var selectionCommand = _commandSystem.CommandFactory.CreateChangeSelection(
                             ChangeSelection.GetPrimarySelectionFromScene(scene),
                             ChangeSelection.GetSecondarySelectionFromScene(scene),
@@ -385,10 +389,10 @@ namespace Assets.Scripts.Interaction
             }
 
             // When pressing the focus hotkey and having a selected primary entity, switch to Focus Transition state
-            if (_inputSystemAsset.CameraMovement.Focus.triggered && _sceneState.CurrentScene?.SelectionState.PrimarySelectedEntity != null)
+            if (_inputSystemAsset.CameraMovement.Focus.triggered && _sceneDirectoryState.CurrentScene?.SelectionState.PrimarySelectedEntity != null)
             {
                 // Fetch position of selected object
-                var selectedEntity = _sceneState.CurrentScene?.SelectionState.PrimarySelectedEntity;
+                var selectedEntity = _sceneDirectoryState.CurrentScene?.SelectionState.PrimarySelectedEntity;
                 var entityPos = selectedEntity.GetTransformComponent().GlobalPosition;
 
                 // Calculate an offset position so that the camera keeps its rotation and looks at the selected entity
@@ -402,7 +406,7 @@ namespace Assets.Scripts.Interaction
             // When pressing the save hotkey, save the scene and workspace layout
             if (_inputSystemAsset.Hotkeys.Save.triggered)
             {
-                _sceneSaveSystem.Save(_sceneState.CurrentScene);
+                _sceneSaveSystem.Save(_sceneDirectoryState);
                 _workspaceSaveSystem.Save(_unityState.dynamicPanelsCanvas);
                 _typeScriptGenerationSystem.GenerateTypeScript();
             }
@@ -510,7 +514,7 @@ namespace Assets.Scripts.Interaction
             }
 
 
-            if (_cameraState.MoveTowards((Vector3) _inputState.FocusTransitionDestination, true))
+            if (_cameraState.MoveTowards((Vector3)_inputState.FocusTransitionDestination, true))
             {
                 _inputState.InState = InputState.InStateType.NoInput;
             }
@@ -524,7 +528,7 @@ namespace Assets.Scripts.Interaction
         private void UpdateHoldingGizmoTool()
         {
             GizmoState.Mode mode = _gizmoState.CurrentMode;
-            DclEntity selectedEntity = _sceneState.CurrentScene?.SelectionState.PrimarySelectedEntity;
+            DclEntity selectedEntity = _sceneDirectoryState.CurrentScene?.SelectionState.PrimarySelectedEntity;
             DclTransformComponent trans = selectedEntity.GetTransformComponent();
 
             // When releasing LMB, stop holding gizmo
@@ -557,7 +561,7 @@ namespace Assets.Scripts.Interaction
 
             if (_inputState.CurrentGizmoData != null)
             {
-                InputState.GizmoData gizmoData = (InputState.GizmoData) _inputState.CurrentGizmoData;
+                InputState.GizmoData gizmoData = (InputState.GizmoData)_inputState.CurrentGizmoData;
 
                 // Find mouse position in world on previously calculated plane
                 Ray ray = _unityState.MainCamera.ViewportPointToRay(_inputHelper.GetMousePositionInScenePanel());
@@ -575,14 +579,14 @@ namespace Assets.Scripts.Interaction
                         Vector3 globalPosition = gizmoData.plane.ClosestPointOnPlane(hitPoint - gizmoData.initialMouseOffset);
                         Vector3? localPosition = selectedEntity.Parent?.GetTransformComponent().InverseTransformPoint(globalPosition);
                         trans.Position.SetFloatingValue(localPosition ?? globalPosition);
-                        _sceneState.CurrentScene?.SelectionState.SelectionChangedEvent.Invoke();
+                        _editorEvents.InvokeSelectionChangedEvent();
                         return;
                     }
 
                     // Project the dirToHitPoint onto gizmoAxis. This results in a "shadow" of the dirToHitPoint which lies
                     // on the gizmoAxis. Also factor in the mouse offset from the start of the drag to keep the object at the
                     // same position relative to the mouse cursor. This point is relative to the selected object.
-                    Vector3 hitPointOnAxis = Vector3.Project(dirToHitPoint - gizmoData.initialMouseOffset, (Vector3) gizmoData.dragAxis);
+                    Vector3 hitPointOnAxis = Vector3.Project(dirToHitPoint - gizmoData.initialMouseOffset, (Vector3)gizmoData.dragAxis);
 
 
                     switch (_gizmoState.CurrentMode)
@@ -597,7 +601,7 @@ namespace Assets.Scripts.Interaction
                             // If the hit point on axis lies in the positive direction, the dot product returns 1. If it lies
                             // in the negative direction, the dot product returns -1. Therefore we can determine how far we pointed
                             // along the gizmo axis and in which direction.
-                            float signedHitDistance = Vector3.Dot(hitPointOnAxis.normalized, (Vector3) gizmoData.dragAxis) * hitPointOnAxis.magnitude;
+                            float signedHitDistance = Vector3.Dot(hitPointOnAxis.normalized, (Vector3)gizmoData.dragAxis) * hitPointOnAxis.magnitude;
 
                             // Measure the radius of the rotation gizmo circle. As the initial mouse position is pretty close
                             // to the circle we can take that as a radius.
@@ -612,7 +616,7 @@ namespace Assets.Scripts.Interaction
                             // Invert to rotate in the correct direction
                             angle *= -1;
 
-                            Quaternion newRotation = trans.Rotation.FixedValue * Quaternion.Euler((Vector3) gizmoData.rotationAxis * angle);
+                            Quaternion newRotation = trans.Rotation.FixedValue * Quaternion.Euler((Vector3)gizmoData.rotationAxis * angle);
 
                             trans.Rotation.SetFloatingValue(newRotation);
                             break;
@@ -626,7 +630,7 @@ namespace Assets.Scripts.Interaction
                             break;
                     }
 
-                    _sceneState.CurrentScene?.SelectionState.SelectionChangedEvent.Invoke();
+                    _editorEvents.InvokeSelectionChangedEvent();
                 }
             }
         }

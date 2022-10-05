@@ -1,4 +1,5 @@
 using Assets.Scripts.EditorState;
+using Assets.Scripts.Events;
 using Assets.Scripts.System;
 using UnityEngine;
 using Zenject;
@@ -13,38 +14,41 @@ namespace Assets.Scripts.Visuals
         private GameObject _activeGizmo = null;
 
         // Dependencies
-        private EditorState.SceneState _sceneState;
+        private EditorState.SceneDirectoryState _sceneDirectoryState;
         private TranslateFactory _translateFactory;
         private RotateFactory _rotateFactory;
         private ScaleFactory _scaleFactory;
         private GizmoState _gizmoState;
         private UnityState _unityState;
+        private EditorEvents _editorEvents;
 
         [Inject]
         private void Construct(
-            EditorState.SceneState sceneState,
+            EditorState.SceneDirectoryState sceneDirectoryState,
             TranslateFactory translateFactory,
             RotateFactory rotateFactory,
             ScaleFactory scaleFactory,
-            GizmoState gizmoState, 
-            UnityState unityState)
+            GizmoState gizmoState,
+            UnityState unityState,
+            EditorEvents editorEvents)
         {
-            _sceneState = sceneState;
+            _sceneDirectoryState = sceneDirectoryState;
             _translateFactory = translateFactory;
             _rotateFactory = rotateFactory;
             _scaleFactory = scaleFactory;
             _gizmoState = gizmoState;
             _unityState = unityState;
+            _editorEvents = editorEvents;
         }
 
         public void SetupSceneEventListeners()
         {
-            _sceneState.CurrentScene?.SelectionState.SelectionChangedEvent.AddListener(UpdateVisuals);
+            _editorEvents.onSelectionChangedEvent += UpdateVisuals;
         }
 
         private void UpdateVisuals()
         {
-            var selectedEntity = _sceneState?
+            var selectedEntity = _sceneDirectoryState?
                 .CurrentScene?
                 .SelectionState?
                 .PrimarySelectedEntity;

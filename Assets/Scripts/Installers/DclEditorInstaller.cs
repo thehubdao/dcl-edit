@@ -1,4 +1,5 @@
 using Assets.Scripts.EditorState;
+using Assets.Scripts.Events;
 using Assets.Scripts.Interaction;
 using Assets.Scripts.System;
 using Assets.Scripts.Visuals;
@@ -10,7 +11,7 @@ public class DclEditorInstaller : MonoInstaller
     [Header("Scene Loading and Saving")]
     [SerializeField]
     private bool _loadSceneFromVersion1 = false;
-    
+
     [Header("Prefabs")]
     [SerializeField]
     private GameObject _entityVisualPrefab;
@@ -63,7 +64,7 @@ public class DclEditorInstaller : MonoInstaller
 
         Container.BindInterfacesAndSelfTo<CameraState>().AsSingle();
 
-        Container.BindInterfacesAndSelfTo<SceneState>().AsSingle();
+        Container.BindInterfacesAndSelfTo<SceneDirectoryState>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<GizmoState>().AsSingle();
 
@@ -84,7 +85,9 @@ public class DclEditorInstaller : MonoInstaller
         Container.BindFactory<GizmoSizeFixerSystem, GizmoVisuals.TranslateFactory>().FromComponentInNewPrefab(_translateGizmoPrefab).AsSingle();
 
         Container.BindFactory<GizmoSizeFixerSystem, GizmoVisuals.RotateFactory>().FromComponentInNewPrefab(_rotateGizmoPrefab).AsSingle();
-        
+
         Container.BindFactory<GizmoSizeFixerSystem, GizmoVisuals.ScaleFactory>().FromComponentInNewPrefab(_scaleGizmoPrefab).AsSingle();
+
+        Container.BindInterfacesAndSelfTo<EditorEvents>().AsSingle();
     }
 }

@@ -1,7 +1,6 @@
+using Assets.Scripts.Command;
 using System;
 using System.Collections.Generic;
-using Assets.Scripts.Command;
-using Assets.Scripts.SceneState;
 using UnityEngine;
 
 public class CommandFactorySystem

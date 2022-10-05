@@ -2060,7 +2060,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92972a1bc64730f409369eb1c9911021, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _loadSceneFromVersion1: 1
+  _loadSceneFromVersion1: 0
   _entityVisualPrefab: {fileID: 6372860658045843851, guid: 3bcc8b42bfda9e7458172cccfdc26c96, type: 3}
   _translateGizmoPrefab: {fileID: 4030547528416928526, guid: 5902694aa7e366a498edb54f63dfe949, type: 3}
   _rotateGizmoPrefab: {fileID: 7576839295262608665, guid: bd121112ea8e3144ca5e8e5af300829c, type: 3}

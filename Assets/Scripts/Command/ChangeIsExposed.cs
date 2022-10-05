@@ -1,12 +1,10 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
+using Assets.Scripts.Events;
 using Assets.Scripts.SceneState;
-using UnityEngine;
+using System;
 
 public class ChangeIsExposed : Command
 {
-    public override string Name => (newExposedState?"Expose":"Unexpose")+" entity";
+    public override string Name => (newExposedState ? "Expose" : "Unexpose") + " entity";
 
     public override string Description => (newExposedState ? "Expose" : "Unexpose") + " entity from " +
                                           (oldExposedState ? "exposed" : "unexposed");
@@ -21,15 +19,15 @@ public class ChangeIsExposed : Command
         this.oldExposedState = oldExposedState;
     }
 
-    public override void Do(DclScene sceneState)
+    public override void Do(DclScene sceneState, EditorEvents editorEvents)
     {
-        sceneState.GetEntityFormId(entityId).IsExposed = newExposedState;
-        sceneState.SelectionState.SelectionChangedEvent.Invoke();
+        sceneState.GetEntityById(entityId).IsExposed = newExposedState;
+        editorEvents.InvokeSelectionChangedEvent();
     }
 
-    public override void Undo(DclScene sceneState)
+    public override void Undo(DclScene sceneState, EditorEvents editorEvents)
     {
-        sceneState.GetEntityFormId(entityId).IsExposed = oldExposedState;
-        sceneState.SelectionState.SelectionChangedEvent.Invoke();
+        sceneState.GetEntityById(entityId).IsExposed = oldExposedState;
+        editorEvents.InvokeSelectionChangedEvent();
     }
 }

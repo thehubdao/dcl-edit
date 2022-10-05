@@ -1,6 +1,7 @@
-using UnityEngine;
-using System;
+using Assets.Scripts.Events;
 using Assets.Scripts.SceneState;
+using System;
+using UnityEngine;
 
 namespace Assets.Scripts.Command
 {
@@ -19,23 +20,23 @@ namespace Assets.Scripts.Command
             this.newFixedRotation = newFixedRotation;
         }
 
-        public override void Do(DclScene sceneState)
+        public override void Do(DclScene sceneState, EditorEvents editorEvents)
         {
             DclTransformComponent transform = TransformFromEntityGuid(sceneState, selectedEntityGuid);
             transform?.Rotation.SetFixedValue(newFixedRotation);
-            sceneState.SelectionState.SelectionChangedEvent.Invoke();
+            editorEvents.InvokeSelectionChangedEvent();
         }
 
-        public override void Undo(DclScene sceneState)
+        public override void Undo(DclScene sceneState, EditorEvents editorEvents)
         {
             DclTransformComponent transform = TransformFromEntityGuid(sceneState, selectedEntityGuid);
             transform?.Rotation.SetFixedValue(oldFixedRotation);
-            sceneState.SelectionState.SelectionChangedEvent.Invoke();
+            editorEvents.InvokeSelectionChangedEvent();
         }
 
         DclTransformComponent TransformFromEntityGuid(DclScene sceneState, Guid guid)
         {
-            return sceneState.AllEntities[guid]?.GetTransformComponent() ?? null;
+            return sceneState.GetEntityById(guid)?.GetTransformComponent() ?? null;
         }
     }
 }

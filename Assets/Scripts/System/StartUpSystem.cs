@@ -13,16 +13,18 @@ namespace Assets.Scripts.System
         private SetupSceneEventListenersSystem _setupSceneEventListenersSystem;
 
         // dependencies
-        private ISceneLoadSystem _sceneLoadSystem;
         private SetupSceneSystem _setupSceneSystem;
         private WorkspaceSaveSystem _workspaceSaveSystem;
         private UnityState _unityState;
         private PathState _pathState;
 
         [Inject]
-        private void Construct(ISceneLoadSystem sceneSave, SetupSceneSystem setupSceneSystem, WorkspaceSaveSystem workspaceSaveSystem, UnityState unityState, PathState pathState)
+        private void Construct(
+            SetupSceneSystem setupSceneSystem,
+            WorkspaceSaveSystem workspaceSaveSystem,
+            UnityState unityState,
+            PathState pathState)
         {
-            _sceneLoadSystem = sceneSave;
             _setupSceneSystem = setupSceneSystem;
             _workspaceSaveSystem = workspaceSaveSystem;
             _unityState = unityState;
@@ -31,14 +33,10 @@ namespace Assets.Scripts.System
 
         void Awake()
         {
-            // Load scene
+            // Load default scene
             var v2Path = _pathState.ProjectPath + "/dcl-edit/saves/v2/New Scene.dclscene";
 
-            var scene = //Directory.Exists(v2Path) ?
-                _sceneLoadSystem.Load(v2Path); // :
-            //LoadFromVersion1System.Load();
-
-            _setupSceneSystem.SetupScene(scene);
+            _setupSceneSystem.SetupScene(v2Path);
         }
 
         void Start()

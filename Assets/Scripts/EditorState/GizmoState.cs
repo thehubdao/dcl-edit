@@ -1,4 +1,4 @@
-using UnityEngine;
+using Assets.Scripts.Events;
 using Zenject;
 
 namespace Assets.Scripts.EditorState
@@ -6,12 +6,14 @@ namespace Assets.Scripts.EditorState
     public class GizmoState
     {
         // Dependencies
-        private SceneState _sceneState;
+        private SceneDirectoryState _sceneDirectoryState;
+        private EditorEvents _editorEvents;
 
         [Inject]
-        private void Construct(SceneState sceneState)
+        private void Construct(SceneDirectoryState sceneDirectoryState, EditorEvents editorEvents)
         {
-            _sceneState = sceneState;
+            _sceneDirectoryState = sceneDirectoryState;
+            _editorEvents = editorEvents;
         }
 
         public enum Mode
@@ -29,7 +31,7 @@ namespace Assets.Scripts.EditorState
             set
             {
                 _currentMode = value;
-                _sceneState.CurrentScene?.SelectionState.SelectionChangedEvent.Invoke();
+                _editorEvents.InvokeSelectionChangedEvent();
             }
         }
     }

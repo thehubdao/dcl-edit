@@ -1,3 +1,4 @@
+using Assets.Scripts.Events;
 using System.Linq;
 using UnityEngine;
 using Zenject;
@@ -7,29 +8,30 @@ namespace Assets.Scripts.Visuals
     public class TemporaryEntityVisuals : MonoBehaviour, ISetupSceneEventListeners
     {
         // Dependencies
-        private EditorState.SceneState _sceneState;
+        private EditorState.SceneDirectoryState _sceneDirectoryState;
+        private EditorEvents _editorEvents;
 
         [Inject]
-        private void Construct(EditorState.SceneState sceneState)
+        private void Construct(EditorState.SceneDirectoryState sceneDirectoryState, EditorEvents editorEvents)
         {
-            _sceneState = sceneState;
+            _sceneDirectoryState = sceneDirectoryState;
+            _editorEvents = editorEvents;
         }
 
         public void SetupSceneEventListeners()
         {
             // when there is a scene loaded, add the visuals updater
-            _sceneState.CurrentScene?
-                .HierarchyChangedEvent.AddListener(UpdateVisuals);
+            _editorEvents.onHierarchyChangedEvent += UpdateVisuals;
 
             UpdateVisuals();
         }
 
         private void UpdateVisuals()
         {
-            if (_sceneState.CurrentScene == null)
+            if (_sceneDirectoryState.CurrentScene == null)
                 return;
 
-            foreach (var entity in _sceneState.CurrentScene.AllEntities.Select(e => e.Value))
+            foreach (var entity in _sceneDirectoryState.CurrentScene.AllEntities.Select(e => e.Value))
             {
                 var entityPos = entity.GetComponentByName("transform")?.GetPropertyByName("position")
                     ?.GetConcrete<Vector3>().Value;
