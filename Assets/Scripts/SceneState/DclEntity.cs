@@ -10,8 +10,6 @@ namespace Assets.Scripts.SceneState
 {
     public class DclEntity
     {
-
-
         // Names
         /// <summary>
         /// In order to reduce confusion, "name" is not used and marked obsolete
@@ -62,7 +60,7 @@ namespace Assets.Scripts.SceneState
         [CanBeNull]
         public DclEntity Parent
         {
-            get => Scene.GetEntityFormId(_parentId);
+            get => Scene.GetEntityById(_parentId);
             set => _parentId = value?.Id ?? Guid.Empty;
         }
 
@@ -101,7 +99,7 @@ namespace Assets.Scripts.SceneState
         // Transform
         public DclTransformComponent GetTransformComponent()
         {
-            var component = GetComponentByName("transform");
+            var component = GetComponentByName("Transform");
 
             if (component == null)
                 return null;
@@ -126,4 +124,3 @@ namespace Assets.Scripts.SceneState
         }
     }
 }
-

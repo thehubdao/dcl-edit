@@ -233,7 +233,7 @@ namespace Assets.Scripts.System
         {
             var specificTransformJson = JsonUtility.FromJson<SpecificTransformJson>(componentJson.specifics);
 
-            var newTransformComponent = new DclComponent("transform", "transform");
+            var newTransformComponent = new DclComponent("Transform", "Transform");
             newTransformComponent.Properties.Add(new DclComponent.DclComponentProperty<Vector3>("position", specificTransformJson.pos)); // This will save the global position
             newTransformComponent.Properties.Add(new DclComponent.DclComponentProperty<Quaternion>("rotation", specificTransformJson.rot)); // This will save the global rotation
             newTransformComponent.Properties.Add(new DclComponent.DclComponentProperty<Vector3>("scale", specificTransformJson.scale)); // This will save the local scale

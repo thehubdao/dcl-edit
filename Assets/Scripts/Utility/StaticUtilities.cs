@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using UnityEngine;
 
 namespace Assets.Scripts.Utility
@@ -20,6 +21,11 @@ namespace Assets.Scripts.Utility
             }
         }
 
+        public static IEnumerable<T> InEnumerable<T>(this T t)
+        {
+            yield return t;
+        }
+
         public static T FirstOrNull<T>(this IEnumerable<T> ts, Func<T, bool> predicate) where T : class
         {
             foreach (var t in ts)
@@ -35,6 +41,20 @@ namespace Assets.Scripts.Utility
         {
             var guidString = guid.ToString();
             return guidString.Substring(0,4) + " ... " + guidString.Substring(guidString.Length-4, 4);
+        }
+
+        public static string Indent(this string value, int level)
+        {
+            var builder = new StringBuilder(value.Length + (level * 4));
+
+            for (int i = 0; i < level; i++)
+            {
+                builder.Append("    ");
+            }
+
+            builder.Append(value);
+
+            return builder.ToString();
         }
     }
 }
