@@ -10,6 +10,10 @@ using UnityEngine;
 using Zenject;
 using Debug = UnityEngine.Debug;
 
+// Warning 0162 warns about unreachable code.
+// The variable _obfuscate is currently constantly false.
+// This variable is then used in an if statement, that leads to the unreachable code.
+// This will be changed in the future.
 #pragma warning disable 0162
 
 namespace Assets.Scripts.System
@@ -101,8 +105,6 @@ namespace Assets.Scripts.System
             Directory.CreateDirectory(scriptsFolderPath);
 
             File.WriteAllText(scriptsFolderPath + "scenes.ts", script);
-
-            Debug.Log(script);
         }
 
         private GenerationInfo? GatherInfo()
