@@ -13,29 +13,25 @@ namespace Assets.Scripts.Command
         Quaternion oldFixedRotation;
         Quaternion newFixedRotation;
 
-        // Dependencies
-        private EditorEvents _editorEvents;
-
-        public RotateTransform(Guid selectedEntity, Quaternion oldFixedRotation, Quaternion newFixedRotation, EditorEvents editorEvents)
+        public RotateTransform(Guid selectedEntity, Quaternion oldFixedRotation, Quaternion newFixedRotation)
         {
             this.selectedEntityGuid = selectedEntity;
             this.oldFixedRotation = oldFixedRotation;
             this.newFixedRotation = newFixedRotation;
-            _editorEvents = editorEvents;
         }
 
-        public override void Do(DclScene sceneState)
+        public override void Do(DclScene sceneState, EditorEvents editorEvents)
         {
             DclTransformComponent transform = TransformFromEntityGuid(sceneState, selectedEntityGuid);
             transform?.Rotation.SetFixedValue(newFixedRotation);
-            _editorEvents.InvokeSelectionChangedEvent();
+            editorEvents.InvokeSelectionChangedEvent();
         }
 
-        public override void Undo(DclScene sceneState)
+        public override void Undo(DclScene sceneState, EditorEvents editorEvents)
         {
             DclTransformComponent transform = TransformFromEntityGuid(sceneState, selectedEntityGuid);
             transform?.Rotation.SetFixedValue(oldFixedRotation);
-            _editorEvents.InvokeSelectionChangedEvent();
+            editorEvents.InvokeSelectionChangedEvent();
         }
 
         DclTransformComponent TransformFromEntityGuid(DclScene sceneState, Guid guid)

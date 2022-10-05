@@ -11,18 +11,14 @@ public class ChangeEntityName : Command
     private Guid entityId;
     private string newName, oldName;
 
-    // Dependencies
-    private EditorEvents _editorEvents;
-
-    public ChangeEntityName(Guid entityId, string newName, string oldName, EditorEvents editorEvents)
+    public ChangeEntityName(Guid entityId, string newName, string oldName)
     {
         this.entityId = entityId;
         this.newName = newName;
         this.oldName = oldName;
-        _editorEvents = editorEvents;
     }
 
-    public override void Do(DclScene sceneState)
+    public override void Do(DclScene sceneState, EditorEvents editorEvents)
     {
         var entity = sceneState.GetEntityFormId(entityId);
         if (entity == null)
@@ -33,10 +29,10 @@ public class ChangeEntityName : Command
 
         entity.CustomName = newName;
 
-        _editorEvents.InvokeSelectionChangedEvent();
+        editorEvents.InvokeSelectionChangedEvent();
     }
 
-    public override void Undo(DclScene sceneState)
+    public override void Undo(DclScene sceneState, EditorEvents editorEvents)
     {
         var entity = sceneState.GetEntityFormId(entityId);
         if (entity == null)
@@ -47,6 +43,6 @@ public class ChangeEntityName : Command
 
         entity.CustomName = oldName;
 
-        _editorEvents.InvokeSelectionChangedEvent();
+        editorEvents.InvokeSelectionChangedEvent();
     }
 }

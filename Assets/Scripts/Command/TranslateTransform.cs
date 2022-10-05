@@ -13,29 +13,25 @@ namespace Assets.Scripts.Command
         Vector3 oldFixedPosition;
         Vector3 newFixedPosition;
 
-        // Dependencies
-        EditorEvents _editorEvents;
-
-        public TranslateTransform(Guid selectedEntity, Vector3 oldFixedPosition, Vector3 newFixedPosition, EditorEvents editorEvents)
+        public TranslateTransform(Guid selectedEntity, Vector3 oldFixedPosition, Vector3 newFixedPosition)
         {
             this.selectedEntityGuid = selectedEntity;
             this.oldFixedPosition = oldFixedPosition;
             this.newFixedPosition = newFixedPosition;
-            _editorEvents = editorEvents;
         }
 
-        public override void Do(DclScene sceneState)
+        public override void Do(DclScene sceneState, EditorEvents editorEvents)
         {
             DclTransformComponent transform = TransformFromEntityGuid(sceneState, selectedEntityGuid);
             transform?.Position.SetFixedValue(newFixedPosition);
-            _editorEvents.InvokeSelectionChangedEvent();
+            editorEvents.InvokeSelectionChangedEvent();
         }
 
-        public override void Undo(DclScene sceneState)
+        public override void Undo(DclScene sceneState, EditorEvents editorEvents)
         {
             DclTransformComponent transform = TransformFromEntityGuid(sceneState, selectedEntityGuid);
             transform?.Position.SetFixedValue(oldFixedPosition);
-            _editorEvents.InvokeSelectionChangedEvent();
+            editorEvents.InvokeSelectionChangedEvent();
         }
 
         DclTransformComponent TransformFromEntityGuid(DclScene sceneState, Guid guid)

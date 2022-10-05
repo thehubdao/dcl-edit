@@ -13,29 +13,25 @@ namespace Assets.Scripts.Command
         Vector3 oldFixedScale;
         Vector3 newFixedScale;
 
-        // Dependencies
-        private EditorEvents _editorEvents;
-
-        public ScaleTransform(Guid selectedEntity, Vector3 oldFixedScale, Vector3 newFixedScale, EditorEvents editorEvents)
+        public ScaleTransform(Guid selectedEntity, Vector3 oldFixedScale, Vector3 newFixedScale)
         {
             this.selectedEntityGuid = selectedEntity;
             this.oldFixedScale = oldFixedScale;
             this.newFixedScale = newFixedScale;
-            _editorEvents = editorEvents;
         }
 
-        public override void Do(DclScene sceneState)
+        public override void Do(DclScene sceneState, EditorEvents editorEvents)
         {
             DclTransformComponent transform = TransformFromEntityGuid(sceneState, selectedEntityGuid);
             transform?.Scale.SetFixedValue(newFixedScale);
-            _editorEvents.InvokeSelectionChangedEvent();
+            editorEvents.InvokeSelectionChangedEvent();
         }
 
-        public override void Undo(DclScene sceneState)
+        public override void Undo(DclScene sceneState, EditorEvents editorEvents)
         {
             DclTransformComponent transform = TransformFromEntityGuid(sceneState, selectedEntityGuid);
             transform?.Scale.SetFixedValue(oldFixedScale);
-            _editorEvents.InvokeSelectionChangedEvent();
+            editorEvents.InvokeSelectionChangedEvent();
         }
 
         DclTransformComponent TransformFromEntityGuid(DclScene sceneState, Guid guid)

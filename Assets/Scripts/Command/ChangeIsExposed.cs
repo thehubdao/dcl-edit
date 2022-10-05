@@ -12,26 +12,22 @@ public class ChangeIsExposed : Command
     private Guid entityId;
     private bool newExposedState, oldExposedState;
 
-    // Dependencies
-    private EditorEvents _editorEvents;
-
-    public ChangeIsExposed(Guid entityId, bool newExposedState, bool oldExposedState, EditorEvents editorEvents)
+    public ChangeIsExposed(Guid entityId, bool newExposedState, bool oldExposedState)
     {
         this.entityId = entityId;
         this.newExposedState = newExposedState;
         this.oldExposedState = oldExposedState;
-        _editorEvents = editorEvents;
     }
 
-    public override void Do(DclScene sceneState)
+    public override void Do(DclScene sceneState, EditorEvents editorEvents)
     {
         sceneState.GetEntityFormId(entityId).IsExposed = newExposedState;
-        _editorEvents.InvokeSelectionChangedEvent();
+        editorEvents.InvokeSelectionChangedEvent();
     }
 
-    public override void Undo(DclScene sceneState)
+    public override void Undo(DclScene sceneState, EditorEvents editorEvents)
     {
         sceneState.GetEntityFormId(entityId).IsExposed = oldExposedState;
-        _editorEvents.InvokeSelectionChangedEvent();
+        editorEvents.InvokeSelectionChangedEvent();
     }
 }
