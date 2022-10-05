@@ -1,7 +1,8 @@
-using System.Collections.Generic;
-using System.Linq;
+using Assets.Scripts.Events;
 using Assets.Scripts.Interaction;
 using Assets.Scripts.Utility;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Zenject;
 
@@ -12,22 +13,25 @@ namespace Assets.Scripts.Visuals
         // Dependencies
         private EntitySelectInteraction.Factory _entitySelectInteractionFactory;
         private EditorState.SceneState _sceneState;
+        private EditorEvents _editorEvents;
 
         [Inject]
-        public void Construct(EntitySelectInteraction.Factory entitySelectionInteractionFactory, EditorState.SceneState sceneState)
+        public void Construct(
+            EntitySelectInteraction.Factory entitySelectionInteractionFactory,
+            EditorState.SceneState sceneState,
+            EditorEvents editorEvents)
         {
             _entitySelectInteractionFactory = entitySelectionInteractionFactory;
             _sceneState = sceneState;
+            _editorEvents = editorEvents;
         }
 
         public void SetupSceneEventListeners()
         {
             // when there is a scene loaded, add the visuals updater
-            _sceneState.CurrentScene?
-                .HierarchyChangedEvent.AddListener(UpdateVisuals);
+            _editorEvents.onHierarchyChangedEvent += UpdateVisuals;
 
-            _sceneState.CurrentScene?
-                .SelectionState.SelectionChangedEvent.AddListener(UpdateVisuals);
+            _editorEvents.onSelectionChangedEvent += UpdateVisuals;
 
             UpdateVisuals();
         }
@@ -68,7 +72,7 @@ namespace Assets.Scripts.Visuals
 
                 if (parent != null)
                     // set the transforms parent to the transform of the parent visual
-                    visual.transform.SetParent(visuals.Find(v => v.Id == parent.Id).transform,true);
+                    visual.transform.SetParent(visuals.Find(v => v.Id == parent.Id).transform, true);
             }
 
             // update entity visuals

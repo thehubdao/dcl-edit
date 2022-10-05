@@ -1,3 +1,4 @@
+using Assets.Scripts.Events;
 using Assets.Scripts.SceneState;
 using Zenject;
 
@@ -9,13 +10,15 @@ namespace Assets.Scripts.System
         private ICommandSystem _commandSystem;
         private ExposeEntitySystem _exposeEntitySystem;
         private EditorState.SceneState _sceneState;
+        private EditorEvents _editorEvents;
 
         [Inject]
-        public void Construct(ICommandSystem commandSystem, ExposeEntitySystem exposeEntitySystem, EditorState.SceneState sceneState)
+        public void Construct(ICommandSystem commandSystem, ExposeEntitySystem exposeEntitySystem, EditorState.SceneState sceneState, EditorEvents editorEvents)
         {
             _commandSystem = commandSystem;
             _exposeEntitySystem = exposeEntitySystem;
             _sceneState = sceneState;
+            _editorEvents = editorEvents;
         }
 
         public void SetNewName(DclEntity entity, string newName)
@@ -25,7 +28,7 @@ namespace Assets.Scripts.System
 
         public void SetIsExposed(DclEntity entity, bool isExposed)
         {
-            if(isExposed == entity.IsExposed)
+            if (isExposed == entity.IsExposed)
                 return;
 
             if (isExposed)
@@ -37,7 +40,7 @@ namespace Assets.Scripts.System
                 else
                 {
                     // TODO: show expose failed message
-                    _sceneState.CurrentScene?.SelectionState.SelectionChangedEvent.Invoke();
+                    _editorEvents.InvokeSelectionChangedEvent();
                 }
             }
             else
@@ -57,7 +60,7 @@ namespace Assets.Scripts.System
 
             scene.GetPropertyFromIdentifier(property).GetConcrete<T>().SetFloatingValue(value);
 
-            scene.SelectionState.SelectionChangedEvent.Invoke();
+            _editorEvents.InvokeSelectionChangedEvent();
         }
 
         public void RevertFloatingProperty(DclPropertyIdentifier property)

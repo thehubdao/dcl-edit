@@ -1,3 +1,4 @@
+using Assets.Scripts.Events;
 using System.Linq;
 using UnityEngine;
 using Zenject;
@@ -8,18 +9,19 @@ namespace Assets.Scripts.Visuals
     {
         // Dependencies
         private EditorState.SceneState _sceneState;
+        private EditorEvents _editorEvents;
 
         [Inject]
-        private void Construct(EditorState.SceneState sceneState)
+        private void Construct(EditorState.SceneState sceneState, EditorEvents editorEvents)
         {
             _sceneState = sceneState;
+            _editorEvents = editorEvents;
         }
 
         public void SetupSceneEventListeners()
         {
             // when there is a scene loaded, add the visuals updater
-            _sceneState.CurrentScene?
-                .HierarchyChangedEvent.AddListener(UpdateVisuals);
+            _editorEvents.onHierarchyChangedEvent += UpdateVisuals;
 
             UpdateVisuals();
         }

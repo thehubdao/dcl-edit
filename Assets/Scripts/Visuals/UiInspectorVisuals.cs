@@ -1,9 +1,10 @@
-using System;
-using System.Collections.Generic;
 using Assets.Scripts.EditorState;
+using Assets.Scripts.Events;
 using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
 using Assets.Scripts.Visuals;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 
@@ -12,24 +13,31 @@ public class UiInspectorVisuals : MonoBehaviour, ISetupSceneEventListeners
     [SerializeField]
     private GameObject _content;
 
-    // dependencies
+    // Dependencies
     private InputState _inputState;
     private UpdatePropertiesFromUiSystem _updatePropertiesSystem;
     private UiBuilder.Factory _uiBuilderFactory;
     private SceneState _sceneState;
+    private EditorEvents _editorEvents;
 
     [Inject]
-    private void Construct(InputState inputState, UpdatePropertiesFromUiSystem updatePropertiesSystem, UiBuilder.Factory uiBuilderFactory, SceneState sceneState)
+    private void Construct(
+        InputState inputState,
+        UpdatePropertiesFromUiSystem updatePropertiesSystem,
+        UiBuilder.Factory uiBuilderFactory,
+        SceneState sceneState,
+        EditorEvents editorEvents)
     {
         _inputState = inputState;
         _updatePropertiesSystem = updatePropertiesSystem;
         _uiBuilderFactory = uiBuilderFactory;
         _sceneState = sceneState;
+        _editorEvents = editorEvents;
     }
 
     public void SetupSceneEventListeners()
     {
-        _sceneState.CurrentScene?.SelectionState.SelectionChangedEvent.AddListener(UpdateVisuals);
+        _editorEvents.onSelectionChangedEvent += UpdateVisuals;
         UpdateVisuals();
     }
 
@@ -107,8 +115,8 @@ public class UiInspectorVisuals : MonoBehaviour, ISetupSceneEventListeners
                         {
                             var intActions = new UiBuilder.UiPropertyActions<float> // number property requires float actions
                             {
-                                OnChange = (value) => _updatePropertiesSystem.UpdateFloatingProperty(propertyIdentifier, (int) value),
-                                OnSubmit = (value) => _updatePropertiesSystem.UpdateFixedProperty(propertyIdentifier, (int) value),
+                                OnChange = (value) => _updatePropertiesSystem.UpdateFloatingProperty(propertyIdentifier, (int)value),
+                                OnSubmit = (value) => _updatePropertiesSystem.UpdateFixedProperty(propertyIdentifier, (int)value),
                                 OnAbort = (value) => _updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier)
                             };
 

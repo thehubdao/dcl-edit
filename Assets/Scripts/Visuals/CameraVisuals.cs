@@ -1,4 +1,5 @@
 using Assets.Scripts.EditorState;
+using Assets.Scripts.Events;
 using UnityEngine;
 using Zenject;
 
@@ -9,16 +10,18 @@ namespace Assets.Scripts.Visuals
     {
         // Dependencies
         private CameraState _cameraState;
+        private EditorEvents _editorEvents;
 
         [Inject]
-        private void Construct(CameraState cameraState)
+        private void Construct(CameraState cameraState, EditorEvents editorEvents)
         {
             _cameraState = cameraState;
+            _editorEvents = editorEvents;
         }
 
         void Start()
         {
-            _cameraState.OnCameraStateChanged.AddListener(SetDirty);
+            _editorEvents.onCameraStateChangedEvent += SetDirty;
 
             SetDirty();
         }

@@ -1,4 +1,5 @@
 using Assets.Scripts.EditorState;
+using Assets.Scripts.Events;
 using Assets.Scripts.System;
 using UnityEngine;
 using Zenject;
@@ -19,6 +20,7 @@ namespace Assets.Scripts.Visuals
         private ScaleFactory _scaleFactory;
         private GizmoState _gizmoState;
         private UnityState _unityState;
+        private EditorEvents _editorEvents;
 
         [Inject]
         private void Construct(
@@ -26,8 +28,9 @@ namespace Assets.Scripts.Visuals
             TranslateFactory translateFactory,
             RotateFactory rotateFactory,
             ScaleFactory scaleFactory,
-            GizmoState gizmoState, 
-            UnityState unityState)
+            GizmoState gizmoState,
+            UnityState unityState,
+            EditorEvents editorEvents)
         {
             _sceneState = sceneState;
             _translateFactory = translateFactory;
@@ -35,11 +38,12 @@ namespace Assets.Scripts.Visuals
             _scaleFactory = scaleFactory;
             _gizmoState = gizmoState;
             _unityState = unityState;
+            _editorEvents = editorEvents;
         }
 
         public void SetupSceneEventListeners()
         {
-            _sceneState.CurrentScene?.SelectionState.SelectionChangedEvent.AddListener(UpdateVisuals);
+            _editorEvents.onSelectionChangedEvent += UpdateVisuals;
         }
 
         private void UpdateVisuals()

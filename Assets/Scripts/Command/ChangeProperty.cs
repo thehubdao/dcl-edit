@@ -1,8 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using Assets.Scripts.Events;
 using Assets.Scripts.SceneState;
-using Assets.Scripts.Utility;
 
 namespace Assets.Scripts.Command
 {
@@ -11,7 +8,7 @@ namespace Assets.Scripts.Command
         public override string Name => $"Changing property value {_identifier.Component} -> {_identifier.Property}";
 
         public override string Description =>
-            $"For the Entity {_identifier.Entity.ToString()}\n" + 
+            $"For the Entity {_identifier.Entity.ToString()}\n" +
             $"in the Component {_identifier.Component}\n" +
             $"the property {_identifier.Property}\n" +
             $"was changed from {_oldValue.ToString()} to {_newValue.ToString()}";
@@ -26,16 +23,16 @@ namespace Assets.Scripts.Command
             _newValue = newValue;
         }
 
-        public override void Do(DclScene sceneState)
+        public override void Do(DclScene sceneState, EditorEvents editorEvents)
         {
             sceneState.GetPropertyFromIdentifier(_identifier).GetConcrete<T>().SetFixedValue(_newValue);
-            sceneState.SelectionState.SelectionChangedEvent.Invoke();
+            editorEvents.InvokeSelectionChangedEvent();
         }
 
-        public override void Undo(DclScene sceneState)
+        public override void Undo(DclScene sceneState, EditorEvents editorEvents)
         {
             sceneState.GetPropertyFromIdentifier(_identifier).GetConcrete<T>().SetFixedValue(_oldValue);
-            sceneState.SelectionState.SelectionChangedEvent.Invoke();
+            editorEvents.InvokeSelectionChangedEvent();
         }
     }
 }

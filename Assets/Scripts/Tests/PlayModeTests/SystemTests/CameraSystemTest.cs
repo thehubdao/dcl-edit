@@ -1,7 +1,8 @@
-using System.Collections;
 using Assets.Scripts.EditorState;
+using Assets.Scripts.Events;
 using Assets.Scripts.Utility;
 using NUnit.Framework;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
@@ -12,11 +13,17 @@ namespace Assets.Scripts.Tests.PlayModeTests.SystemTests
     {
         // Dependencies
         private CameraState _cameraState;
+        private EditorEvents _editorEvents;
+
+        public CameraSystemTest(EditorEvents editorEvents)
+        {
+            _editorEvents = editorEvents;
+        }
 
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
-            _cameraState = new CameraState();
+            _cameraState = new CameraState(_editorEvents);
         }
 
         private IEnumerator SetupScene()
