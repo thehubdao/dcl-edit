@@ -23,7 +23,7 @@ namespace Assets.Scripts.Interaction
         private GizmoState _gizmoState;
         private UnityState _unityState;
         private InputHelper _inputHelper;
-        private EditorState.SceneFile _sceneFile;
+        private EditorState.SceneDirectoryState _sceneDirectoryState;
         private CameraState _cameraState;
         private EditorEvents _editorEvents;
 
@@ -34,7 +34,7 @@ namespace Assets.Scripts.Interaction
             InputState inputState,
             Interface3DState interface3DState,
             WorkspaceSaveSystem workspaceSaveSystem,
-            EditorState.SceneFile sceneFile,
+            EditorState.SceneDirectoryState sceneDirectoryState,
             CameraState cameraState,
             GizmoState gizmoState,
             UnityState unityState,
@@ -49,7 +49,7 @@ namespace Assets.Scripts.Interaction
             _gizmoState = gizmoState;
             _unityState = unityState;
             _inputHelper = inputHelper;
-            _sceneFile = sceneFile;
+            _sceneDirectoryState = sceneDirectoryState;
             _cameraState = cameraState;
             _editorEvents = editorEvents;
         }
@@ -197,7 +197,7 @@ namespace Assets.Scripts.Interaction
                             if (gizmoDir == null) break;
                             Vector3 localGizmoDir = gizmoDir.GetVector();
 
-                            var entity = _sceneFile.CurrentScene?.SelectionState.PrimarySelectedEntity.GetTransformComponent();
+                            var entity = _sceneDirectoryState.CurrentScene?.SelectionState.PrimarySelectedEntity.GetTransformComponent();
 
                             GizmoState.Mode gizmoMode = _gizmoState.CurrentMode;
 
@@ -330,7 +330,7 @@ namespace Assets.Scripts.Interaction
                     }
                     case Interface3DState.HoveredObjectType.None:
                     {
-                        var scene = _sceneFile.CurrentScene;
+                        var scene = _sceneDirectoryState.CurrentScene;
                         var selectionCommand = _commandSystem.CommandFactory.CreateChangeSelection(
                             ChangeSelection.GetPrimarySelectionFromScene(scene),
                             ChangeSelection.GetSecondarySelectionFromScene(scene),
@@ -386,10 +386,10 @@ namespace Assets.Scripts.Interaction
             }
 
             // When pressing the focus hotkey and having a selected primary entity, switch to Focus Transition state
-            if (_inputSystemAsset.CameraMovement.Focus.triggered && _sceneFile.CurrentScene?.SelectionState.PrimarySelectedEntity != null)
+            if (_inputSystemAsset.CameraMovement.Focus.triggered && _sceneDirectoryState.CurrentScene?.SelectionState.PrimarySelectedEntity != null)
             {
                 // Fetch position of selected object
-                var selectedEntity = _sceneFile.CurrentScene?.SelectionState.PrimarySelectedEntity;
+                var selectedEntity = _sceneDirectoryState.CurrentScene?.SelectionState.PrimarySelectedEntity;
                 var entityPos = selectedEntity.GetTransformComponent().GlobalPosition;
 
                 // Calculate an offset position so that the camera keeps its rotation and looks at the selected entity
@@ -403,7 +403,7 @@ namespace Assets.Scripts.Interaction
             // When pressing the save hotkey, save the scene and workspace layout
             if (_inputSystemAsset.Hotkeys.Save.triggered)
             {
-                _sceneSaveSystem.Save(_sceneFile);
+                _sceneSaveSystem.Save(_sceneDirectoryState);
                 _workspaceSaveSystem.Save(_unityState.dynamicPanelsCanvas);
             }
 
@@ -524,7 +524,7 @@ namespace Assets.Scripts.Interaction
         private void UpdateHoldingGizmoTool()
         {
             GizmoState.Mode mode = _gizmoState.CurrentMode;
-            DclEntity selectedEntity = _sceneFile.CurrentScene?.SelectionState.PrimarySelectedEntity;
+            DclEntity selectedEntity = _sceneDirectoryState.CurrentScene?.SelectionState.PrimarySelectedEntity;
             DclTransformComponent trans = selectedEntity.GetTransformComponent();
 
             // When releasing LMB, stop holding gizmo

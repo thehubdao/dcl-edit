@@ -7,18 +7,18 @@ using Zenject;
 public class ExposeEntitySystem
 {
     // Dependencies
-    private SceneFile _sceneFile;
+    private SceneDirectoryState _sceneDirectoryState;
 
     [Inject]
-    private void Construct(SceneFile sceneFile)
+    private void Construct(SceneDirectoryState sceneDirectoryState)
     {
-        _sceneFile = sceneFile;
+        _sceneDirectoryState = sceneDirectoryState;
     }
 
 
     public bool IsEntityExposable(DclEntity entity)
     {
-        var scene = _sceneFile.CurrentScene;
+        var scene = _sceneDirectoryState.CurrentScene;
         if (scene == null)
         {
             return false;

@@ -17,7 +17,7 @@ public class UiInspectorVisuals : MonoBehaviour, ISetupSceneEventListeners
     private InputState _inputState;
     private UpdatePropertiesFromUiSystem _updatePropertiesSystem;
     private UiBuilder.Factory _uiBuilderFactory;
-    private SceneFile _sceneFile;
+    private SceneDirectoryState _sceneDirectoryState;
     private EditorEvents _editorEvents;
 
     [Inject]
@@ -25,13 +25,13 @@ public class UiInspectorVisuals : MonoBehaviour, ISetupSceneEventListeners
         InputState inputState,
         UpdatePropertiesFromUiSystem updatePropertiesSystem,
         UiBuilder.Factory uiBuilderFactory,
-        SceneFile sceneFile,
+        SceneDirectoryState sceneDirectoryState,
         EditorEvents editorEvents)
     {
         _inputState = inputState;
         _updatePropertiesSystem = updatePropertiesSystem;
         _uiBuilderFactory = uiBuilderFactory;
-        _sceneFile = sceneFile;
+        _sceneDirectoryState = sceneDirectoryState;
         _editorEvents = editorEvents;
     }
 
@@ -50,7 +50,7 @@ public class UiInspectorVisuals : MonoBehaviour, ISetupSceneEventListeners
 
         var inspectorBuilder = _uiBuilderFactory.Create();
 
-        var selectedEntity = _sceneFile.CurrentScene?.SelectionState.PrimarySelectedEntity;
+        var selectedEntity = _sceneDirectoryState.CurrentScene?.SelectionState.PrimarySelectedEntity;
 
         if (selectedEntity == null)
         {

@@ -9,15 +9,15 @@ namespace Assets.Scripts.System
         // dependencies
         private ICommandSystem _commandSystem;
         private ExposeEntitySystem _exposeEntitySystem;
-        private EditorState.SceneFile _sceneFile;
+        private EditorState.SceneDirectoryState _sceneDirectoryState;
         private EditorEvents _editorEvents;
 
         [Inject]
-        public void Construct(ICommandSystem commandSystem, ExposeEntitySystem exposeEntitySystem, EditorState.SceneFile sceneFile, EditorEvents editorEvents)
+        public void Construct(ICommandSystem commandSystem, ExposeEntitySystem exposeEntitySystem, EditorState.SceneDirectoryState sceneDirectoryState, EditorEvents editorEvents)
         {
             _commandSystem = commandSystem;
             _exposeEntitySystem = exposeEntitySystem;
-            _sceneFile = sceneFile;
+            _sceneDirectoryState = sceneDirectoryState;
             _editorEvents = editorEvents;
         }
 
@@ -51,7 +51,7 @@ namespace Assets.Scripts.System
 
         public void UpdateFloatingProperty<T>(DclPropertyIdentifier property, T value)
         {
-            var scene = _sceneFile.CurrentScene;
+            var scene = _sceneDirectoryState.CurrentScene;
 
             if (scene == null)
             {
@@ -65,7 +65,7 @@ namespace Assets.Scripts.System
 
         public void RevertFloatingProperty(DclPropertyIdentifier property)
         {
-            var scene = _sceneFile.CurrentScene;
+            var scene = _sceneDirectoryState.CurrentScene;
 
             if (scene == null)
             {
@@ -77,7 +77,7 @@ namespace Assets.Scripts.System
 
         public void UpdateFixedProperty<T>(DclPropertyIdentifier property, T value)
         {
-            var scene = _sceneFile.CurrentScene;
+            var scene = _sceneDirectoryState.CurrentScene;
 
             if (scene == null)
             {

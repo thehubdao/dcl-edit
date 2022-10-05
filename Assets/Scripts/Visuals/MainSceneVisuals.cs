@@ -12,17 +12,17 @@ namespace Assets.Scripts.Visuals
     {
         // Dependencies
         private EntitySelectInteraction.Factory _entitySelectInteractionFactory;
-        private EditorState.SceneFile _sceneFile;
+        private EditorState.SceneDirectoryState _sceneDirectoryState;
         private EditorEvents _editorEvents;
 
         [Inject]
         public void Construct(
             EntitySelectInteraction.Factory entitySelectionInteractionFactory,
-            EditorState.SceneFile sceneFile,
+            EditorState.SceneDirectoryState sceneDirectoryState,
             EditorEvents editorEvents)
         {
             _entitySelectInteractionFactory = entitySelectionInteractionFactory;
-            _sceneFile = sceneFile;
+            _sceneDirectoryState = sceneDirectoryState;
             _editorEvents = editorEvents;
         }
 
@@ -38,7 +38,7 @@ namespace Assets.Scripts.Visuals
 
         private void UpdateVisuals()
         {
-            var scene = _sceneFile.CurrentScene;
+            var scene = _sceneDirectoryState.CurrentScene;
             if (scene == null)
                 return;
 

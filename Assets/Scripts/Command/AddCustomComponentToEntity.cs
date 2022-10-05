@@ -23,14 +23,14 @@ namespace Assets.Scripts.Command
     //        }
     //    }
     //
-    //    internal override void Do(SceneFile sceneState)
+    //    internal override void Do(SceneDirectoryState sceneState)
     //    {
     //        var entity = sceneState.CurrentScene.GetEntityFormId(_entityId);
     //
     //        entity.Components.Add(new DclComponent(_name, _name, _properties));
     //    }
     //
-    //    internal override void Undo(SceneFile sceneState)
+    //    internal override void Undo(SceneDirectoryState sceneState)
     //    {
     //        var entity = sceneState.CurrentScene.GetEntityFormId(_entityId);
     //

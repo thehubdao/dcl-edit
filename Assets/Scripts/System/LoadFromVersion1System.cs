@@ -21,7 +21,7 @@ namespace Assets.Scripts.System
             _pathState = pathState;
         }
 
-        public void Load(SceneFile sceneFile)
+        public void Load(SceneDirectoryState sceneDirectoryState)
         {
             var sceneSaveFilePath = "";
             var projectSaveFilePath = "";
@@ -125,7 +125,7 @@ namespace Assets.Scripts.System
                     }
                 }
 
-                sceneFile.CurrentScene!.AddEntity(newEntity);
+                sceneDirectoryState.CurrentScene!.AddEntity(newEntity);
             }
 
             // set all the parents
@@ -148,7 +148,7 @@ namespace Assets.Scripts.System
                 ChangeToLocal(entity, null);
             }
 
-            sceneFile.CurrentScene = newScene;
+            sceneDirectoryState.CurrentScene = newScene;
         }
 
         private void ChangeToLocal(DclEntity entity, DclTransformComponent dclParentTransform)

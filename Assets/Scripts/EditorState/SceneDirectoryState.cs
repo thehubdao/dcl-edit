@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Assets.Scripts.EditorState
 {
-    public class SceneFile
+    public class SceneDirectoryState
     {
         /**
          * <summary>
