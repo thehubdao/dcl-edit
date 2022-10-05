@@ -21,14 +21,14 @@ namespace Assets.Scripts.System
     public class TypeScriptGenerationSystem
     {
         // Dependencies
-        private EditorState.SceneState _sceneState;
+        private EditorState.SceneDirectoryState _sceneDirectoryState;
         private ExposeEntitySystem _exposeEntitySystem;
         private PathState _pathState;
 
         [Inject]
-        private void Construct(EditorState.SceneState sceneState, ExposeEntitySystem exposeEntitySystem, PathState pathState)
+        private void Construct(EditorState.SceneDirectoryState sceneDirectoryState, ExposeEntitySystem exposeEntitySystem, PathState pathState)
         {
-            _sceneState = sceneState;
+            _sceneDirectoryState = sceneDirectoryState;
             _exposeEntitySystem = exposeEntitySystem;
             _pathState = pathState;
         }
@@ -109,7 +109,7 @@ namespace Assets.Scripts.System
 
         private GenerationInfo? GatherInfo()
         {
-            if (_sceneState.CurrentScene == null)
+            if (_sceneDirectoryState.CurrentScene == null)
                 return null;
 
             var generationInfo = new GenerationInfo()
@@ -120,7 +120,7 @@ namespace Assets.Scripts.System
 
             // TODO: generate info for all scenes
             {
-                var scene = _sceneState.CurrentScene;
+                var scene = _sceneDirectoryState.CurrentScene;
                 var uniqueSymbols = new List<string>();
 
                 var sceneInfo = new SceneInfo()
@@ -129,7 +129,7 @@ namespace Assets.Scripts.System
                     GatheredEntityInfos = new List<EntityInfo>()
                 };
 
-                foreach (var entity in scene.AllEntities.Values)
+                foreach (var entity in scene.AllEntities.Select(pair => pair.Value))
                 {
                     var internalEntitySymbol = _exposeEntitySystem.GenerateValidSymbol(_obfuscate ? "e" : entity.CustomName);
 
