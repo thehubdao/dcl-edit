@@ -21,13 +21,13 @@ public class ChangeIsExposed : Command
 
     public override void Do(DclScene sceneState, EditorEvents editorEvents)
     {
-        sceneState.GetEntityFormId(entityId).IsExposed = newExposedState;
+        sceneState.GetEntityById(entityId).IsExposed = newExposedState;
         editorEvents.InvokeSelectionChangedEvent();
     }
 
     public override void Undo(DclScene sceneState, EditorEvents editorEvents)
     {
-        sceneState.GetEntityFormId(entityId).IsExposed = oldExposedState;
+        sceneState.GetEntityById(entityId).IsExposed = oldExposedState;
         editorEvents.InvokeSelectionChangedEvent();
     }
 }

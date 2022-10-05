@@ -20,7 +20,7 @@ public class ChangeEntityName : Command
 
     public override void Do(DclScene sceneState, EditorEvents editorEvents)
     {
-        var entity = sceneState.GetEntityFormId(entityId);
+        var entity = sceneState.GetEntityById(entityId);
         if (entity == null)
         {
             Debug.LogError($"Entity {entityId} not found");
@@ -34,7 +34,7 @@ public class ChangeEntityName : Command
 
     public override void Undo(DclScene sceneState, EditorEvents editorEvents)
     {
-        var entity = sceneState.GetEntityFormId(entityId);
+        var entity = sceneState.GetEntityById(entityId);
         if (entity == null)
         {
             Debug.LogError($"Entity {entityId} not found");

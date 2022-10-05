@@ -43,7 +43,7 @@ namespace Assets.Scripts.Tests.PlayModeTests.CommandTests
     //    {
     //        yield return SetupScene();
     //
-    //        var usedEntity = EditorStates.CurrentSceneState.CurrentScene.GetEntityFormId(entId);
+    //        var usedEntity = EditorStates.CurrentSceneState.CurrentScene.GetEntityById(entId);
     //
     //        Command.Command.ExecuteCommand(new AddCustomComponentToEntity(
     //            entId,

@@ -101,7 +101,7 @@ namespace Assets.Scripts.Visuals
             //    GUILayout.Label("Unity Selection:");
             //    CustomEditorUtils.DrawEntityToGui(
             //        EditorStates.CurrentSceneState.CurrentScene
-            //            .GetEntityFormId(selectedEntityVisual.Id), 1, true);
+            //            .GetEntityById(selectedEntityVisual.Id), 1, true);
             //}
             //
             //GUILayout.Label("Primary Selection:");

@@ -68,7 +68,7 @@ namespace Assets.Scripts.Visuals
             // set entity visual's parents
             foreach (var visual in visuals)
             {
-                var parent = scene.GetEntityFormId(visual.Id).Parent; // look, if the actual entity of the visual has a parent
+                var parent = scene.GetEntityById(visual.Id).Parent; // look, if the actual entity of the visual has a parent
 
                 if (parent != null)
                     // set the transforms parent to the transform of the parent visual

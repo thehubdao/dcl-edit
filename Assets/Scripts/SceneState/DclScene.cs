@@ -15,7 +15,7 @@ namespace Assets.Scripts.SceneState
                 .Where(e => e.Value.Parent == null)
                 .Select(e => e.Value);
 
-        public DclEntity GetEntityFormId(Guid id)
+        public DclEntity GetEntityById(Guid id)
         {
             if (id == Guid.Empty)
                 return null;
@@ -44,9 +44,9 @@ namespace Assets.Scripts.SceneState
 
         public DclComponent.DclComponentProperty GetPropertyFromIdentifier(DclPropertyIdentifier identifier)
         {
-            return GetEntityFormId(identifier.Entity)
-                    .GetComponentByName(identifier.Component)
-                    .GetPropertyByName(identifier.Property);
+            return GetEntityById(identifier.Entity)
+                .GetComponentByName(identifier.Component)
+                .GetPropertyByName(identifier.Property);
         }
     }
 }
