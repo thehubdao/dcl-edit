@@ -54,7 +54,7 @@ namespace Assets.Scripts.System
             foreach (FileInfo file in sceneDir
                          .GetFiles()
                          .Where(f => sceneDirectoryState.LoadedFilePathsInScene.Contains(f.Name)))
-                // Only delete files that where loaded into the scene.
+                // Only delete files that were loaded into the scene.
                 // This prevents the deletion of faulty entity files and files the user added manually into the scene folder
             {
                 file.Delete();
