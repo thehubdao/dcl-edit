@@ -17,18 +17,18 @@ namespace Assets.Scripts.Interaction
 
         // dependencies
         private ICommandSystem _commandSystem;
-        private EditorState.SceneState _sceneState;
+        private EditorState.SceneDirectoryState _sceneDirectoryState;
 
         [Inject]
-        public void Construct(ICommandSystem commandSystem, EditorState.SceneState sceneState)
+        public void Construct(ICommandSystem commandSystem, EditorState.SceneDirectoryState sceneDirectoryState)
         {
             _commandSystem = commandSystem;
-            _sceneState = sceneState;
+            _sceneDirectoryState = sceneDirectoryState;
         }
 
         public void SelectAdditional()
         {
-            var scene = _sceneState.CurrentScene;
+            var scene = _sceneDirectoryState.CurrentScene;
             var selectionCommand = _commandSystem.CommandFactory.CreateChangeSelection(
                 ChangeSelection.GetPrimarySelectionFromScene(scene),
                 ChangeSelection.GetSecondarySelectionFromScene(scene),
@@ -42,7 +42,7 @@ namespace Assets.Scripts.Interaction
 
         public void SelectSingle()
         {
-            var scene = _sceneState.CurrentScene;
+            var scene = _sceneDirectoryState.CurrentScene;
             var selectionCommand = _commandSystem.CommandFactory.CreateChangeSelection(
                 ChangeSelection.GetPrimarySelectionFromScene(scene),
                 ChangeSelection.GetSecondarySelectionFromScene(scene),

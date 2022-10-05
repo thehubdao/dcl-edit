@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Assets.Scripts.EditorState;
 using UnityEngine;
 
 namespace Assets.Scripts.System
@@ -20,7 +21,7 @@ namespace Assets.Scripts.System
             _pathState = pathState;
         }
 
-        public DclScene Load(string _)
+        public void Load(SceneDirectoryState sceneDirectoryState)
         {
             var sceneSaveFilePath = "";
             var projectSaveFilePath = "";
@@ -33,7 +34,7 @@ namespace Assets.Scripts.System
             }
             else if (File.Exists(_pathState.ProjectPath + "/scene/scene.json"))
             {
-                return null; // To old version. No support for this version
+                return; // To old version. No support for this version
                 //sceneSaveFilePath = EditorStates.CurrentPathState.ProjectPath + "/scene/scene.json";
             }
 
@@ -75,7 +76,7 @@ namespace Assets.Scripts.System
             var uniqueNumbers = new Dictionary<int, DclEntity>();
             foreach (var entity in entities.entities)
             {
-                var newEntity = new DclEntity(newScene, Guid.NewGuid(), entity.name);
+                var newEntity = new DclEntity(Guid.NewGuid(), entity.name);
 
 
                 //newEntity.IsExposed = entity.exposed;
@@ -123,6 +124,8 @@ namespace Assets.Scripts.System
                             break;
                     }
                 }
+
+                sceneDirectoryState.CurrentScene!.AddEntity(newEntity);
             }
 
             // set all the parents
@@ -145,7 +148,7 @@ namespace Assets.Scripts.System
                 ChangeToLocal(entity, null);
             }
 
-            return newScene;
+            sceneDirectoryState.CurrentScene = newScene;
         }
 
         private void ChangeToLocal(DclEntity entity, DclTransformComponent dclParentTransform)

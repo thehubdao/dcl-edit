@@ -5,19 +5,31 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Assets.Scripts.EditorState;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
 namespace Assets.Scripts.System
 {
+    internal class SceneLoadException : Exception
+    {
+        public SceneLoadException() : base("A problem occurred while loading a scene")
+        {
+        }
+
+        public SceneLoadException(string message) : base(message)
+        {
+        }
+    }
+
     public interface ISceneLoadSystem
     {
-        DclScene Load(string absolutePath);
+        void Load(SceneDirectoryState sceneDirectoryState);
     }
 
     public interface ISceneSaveSystem
     {
-        void Save(DclScene scene);
+        void Save(SceneDirectoryState sceneDirectoryState);
     }
 
     public class SceneLoadSaveSystem : ISceneLoadSystem, ISceneSaveSystem
@@ -30,65 +42,88 @@ namespace Assets.Scripts.System
             _pathState = pathState;
         }
 
-        public void Save(DclScene scene)
+        public void Save(SceneDirectoryState sceneDirectoryState)
         {
-            DclSceneData sceneData = new DclSceneData(scene);
+            DclSceneData sceneData = new DclSceneData(sceneDirectoryState.CurrentScene);
 
             // Create scene directory (if not exists)
             string sceneDirPath = $"{_pathState.ProjectPath}/dcl-edit/saves/v2/{sceneData.name}.dclscene";
             DirectoryInfo sceneDir = Directory.CreateDirectory(sceneDirPath);
 
-            // Clear scene directory
-            foreach (FileInfo file in sceneDir.GetFiles()) file.Delete();
+            // Clear scene directory from files, that are regenerated
+            foreach (FileInfo file in sceneDir
+                         .GetFiles()
+                         .Where(f => sceneDirectoryState.LoadedFilePathsInScene.Contains(f.Name)))
+                // Only delete files that were loaded into the scene.
+                // This prevents the deletion of faulty entity files and files the user added manually into the scene folder
+            {
+                file.Delete();
+            }
 
             // Create scene metadata file
             string metadataFilePath = $"{sceneDirPath}/scene.json";
             File.WriteAllText(metadataFilePath, "");
 
             // Create entity files
-            foreach (var entity in scene.AllEntities)
+            foreach (var entity in sceneDirectoryState.CurrentScene!.AllEntities.Select(pair => pair.Value))
             {
                 CreateEntityFile(entity, sceneDirPath);
             }
         }
 
-        public DclScene Load(string absolutePath)
+        public void Load(SceneDirectoryState sceneDirectoryState)
         {
+            var scenePath = sceneDirectoryState.DirectoryPath;
+
             // return if path isn't directory
-            if (!Directory.Exists(absolutePath))
+            if (!Directory.Exists(scenePath))
             {
                 Debug.LogError("trying to load non existing scene");
-                return null;
+                return;
             }
 
             // path should end with ".dclscene"
-            if (!absolutePath.EndsWith(".dclscene") && !absolutePath.EndsWith(".dclscene/"))
+            if (!scenePath.EndsWith(".dclscene") && !scenePath.EndsWith(".dclscene/"))
             {
                 Debug.LogWarning("scene folders should end with \".dclscene\"");
             }
 
             var scene = new DclScene();
 
-            var directoryInfo = new DirectoryInfo(absolutePath);
+            var directoryInfo = new DirectoryInfo(scenePath);
             foreach (var fileName in directoryInfo.GetFiles().Select(fi => fi.Name))
             {
-                if (fileName == "scene.json" || !fileName.EndsWith(".json"))
+                if (!fileName.EndsWith(".json"))
                 {
                     continue;
                 }
 
-                LoadEntityFile(scene, directoryInfo.FullName + "/" + fileName);
+                if (fileName == "scene.json")
+                {
+                    sceneDirectoryState.LoadedFilePathsInScene.Add("scene.json");
+                    continue;
+                }
+
+                try
+                {
+                    LoadEntityFile(scene, directoryInfo.FullName + "/" + fileName);
+
+                    sceneDirectoryState.LoadedFilePathsInScene.Add(fileName);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError(e.Message);
+                }
             }
 
-
-            return scene;
+            sceneDirectoryState.CurrentScene = scene;
         }
 
 
-        public void CreateEntityFile(KeyValuePair<Guid, DclEntity> entity, string sceneDirectoryPath)
+        public void CreateEntityFile(DclEntity entity, string sceneDirectoryPath)
         {
-            DclEntityData data = new DclEntityData(entity.Value);
-            string dataJson = JsonConvert.SerializeObject(data);
+            DclEntityData data = new DclEntityData(entity);
+            string dataJson = JsonConvert.SerializeObject(data, Formatting.Indented);
 
             string filename = data.customName.Replace(' ', '_') + "-" + data.guid.ToString() + ".json";
 
@@ -115,7 +150,6 @@ namespace Assets.Scripts.System
         }
         public struct DclEntityData
         {
-            public string shownName;
             public string customName;
             public Guid guid;
             public Guid? parentGuid;
@@ -123,7 +157,6 @@ namespace Assets.Scripts.System
 
             public DclEntityData(DclEntity entity)
             {
-                this.shownName = entity.ShownName;
                 this.customName = entity.CustomName;
                 this.guid = entity.Id;
                 this.parentGuid = entity.Parent?.Id;
@@ -137,7 +170,19 @@ namespace Assets.Scripts.System
 
             public void MakeEntity(DclScene scene)
             {
-                var dclEntity = new DclEntity(scene, guid, customName, parentGuid ?? default);
+                // Check for proper values
+                if (customName == null)
+                {
+                    throw new SceneLoadException("Custom name was not set");
+                }
+
+                if (guid == default)
+                {
+                    throw new SceneLoadException($"Guid was not set for entity {customName}");
+                }
+
+
+                var dclEntity = new DclEntity(guid, customName, parentGuid ?? default);
 
                 // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator 
                 foreach (var component in components)
@@ -148,6 +193,8 @@ namespace Assets.Scripts.System
                         dclEntity.AddComponent(dclComponent);
                     }
                 }
+
+                scene.AddEntity(dclEntity);
             }
         }
         public struct DclComponentData
@@ -169,24 +216,24 @@ namespace Assets.Scripts.System
 
             public DclComponent GetComponent()
             {
-                var component = new DclComponent(nameInCode, nameOfSlot);
-                try
+                // Validate data
+                if (string.IsNullOrEmpty(nameInCode))
                 {
-                    foreach (var property in properties)
-                    {
-                        var dclComponentProperty = property.GetProperty();
-
-                        if (dclComponentProperty == null)
-                        {
-                            return null;
-                        }
-
-                        component.Properties.Add(dclComponentProperty);
-                    }
+                    throw new SceneLoadException("Component has no nameInCode defined");
                 }
-                catch (Exception)
+
+                if (string.IsNullOrEmpty(nameOfSlot))
                 {
-                    return null;
+                    throw new SceneLoadException("Component has no nameOfSlot defined");
+                }
+
+                var component = new DclComponent(nameInCode, nameOfSlot);
+
+                foreach (var property in properties)
+                {
+                    var dclComponentProperty = property.GetProperty();
+
+                    component.Properties.Add(dclComponentProperty);
                 }
 
                 return component;
@@ -235,32 +282,101 @@ namespace Assets.Scripts.System
 
             public DclComponent.DclComponentProperty GetProperty()
             {
+                // Validate data
+                if (string.IsNullOrEmpty(name))
+                {
+                    throw new SceneLoadException("Property has no name defined");
+                }
+
+                if (string.IsNullOrEmpty(type))
+                {
+                    throw new SceneLoadException("Property has no type defined");
+                }
+
                 if (!Enum.TryParse(type, true, out DclComponent.DclComponentProperty.PropertyType typeEnum))
                 {
-                    Debug.LogError($"Type {type} does not exist");
-                    return null;
+                    throw new SceneLoadException($"Type {type} does not exist");
                 }
+
 
                 switch (typeEnum)
                 {
                     case DclComponent.DclComponentProperty.PropertyType.None:
-                        return null;
+                        throw new SceneLoadException("Can't load property from type none");
                     case DclComponent.DclComponentProperty.PropertyType.String:
+                        if (fixedValue.Type != JTokenType.String)
+                        {
+                            throw new SceneLoadException("String property has no String value");
+                        }
+
                         return new DclComponent.DclComponentProperty<string>(name, fixedValue.ToObject<string>());
                     case DclComponent.DclComponentProperty.PropertyType.Int:
+                        if (fixedValue.Type != JTokenType.Integer)
+                        {
+                            throw new SceneLoadException("Int property has no Integer value");
+                        }
+
                         return new DclComponent.DclComponentProperty<int>(name, fixedValue.ToObject<int>());
                     case DclComponent.DclComponentProperty.PropertyType.Float:
+                        if (fixedValue.Type != JTokenType.Float)
+                        {
+                            throw new SceneLoadException("Float property has no Float value");
+                        }
+
                         return new DclComponent.DclComponentProperty<float>(name, fixedValue.ToObject<float>());
                     case DclComponent.DclComponentProperty.PropertyType.Boolean:
+                        if (fixedValue.Type != JTokenType.Boolean)
+                        {
+                            throw new SceneLoadException("Boolean property has no Boolean value");
+                        }
+
                         return new DclComponent.DclComponentProperty<bool>(name, fixedValue.ToObject<bool>());
                     case DclComponent.DclComponentProperty.PropertyType.Vector3:
+                        if (fixedValue.Type != JTokenType.Object)
+                        {
+                            throw new SceneLoadException("Vector3 property has no Object value");
+                        }
+
+                        try
+                        {
+                            fixedValue.SelectToken("x", true);
+                            fixedValue.SelectToken("y", true);
+                            fixedValue.SelectToken("z", true);
+                        }
+                        catch (Exception)
+                        {
+                            throw new SceneLoadException("Vector3 property does not contain x, y, and z values");
+                        }
+
                         return new DclComponent.DclComponentProperty<Vector3>(name, fixedValue.ToObject<Vector3>());
                     case DclComponent.DclComponentProperty.PropertyType.Quaternion:
+                        if (fixedValue.Type != JTokenType.Object)
+                        {
+                            throw new SceneLoadException("Quaternion property has no Object value");
+                        }
+
+                        try
+                        {
+                            fixedValue.SelectToken("x", true);
+                            fixedValue.SelectToken("y", true);
+                            fixedValue.SelectToken("z", true);
+                            fixedValue.SelectToken("w", true);
+                        }
+                        catch (Exception)
+                        {
+                            throw new SceneLoadException("Quaternion property does not contain x, y, z, and w values");
+                        }
+
                         return new DclComponent.DclComponentProperty<Quaternion>(name, fixedValue.ToObject<Quaternion>());
                     case DclComponent.DclComponentProperty.PropertyType.Asset:
+                        if (fixedValue.Type != JTokenType.String)
+                        {
+                            throw new SceneLoadException("Asset property has no String value");
+                        }
+
                         return new DclComponent.DclComponentProperty<Guid>(name, fixedValue.ToObject<Guid>());
                     default:
-                        return null;
+                        throw new SceneLoadException("Unknown property type");
                 }
             }
         }

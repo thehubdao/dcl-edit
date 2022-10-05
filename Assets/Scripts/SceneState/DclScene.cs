@@ -8,19 +8,32 @@ namespace Assets.Scripts.SceneState
     {
         public string name = "New Scene";
 
-        public Dictionary<Guid, DclEntity> AllEntities = new Dictionary<Guid, DclEntity>();
+        private Dictionary<Guid, DclEntity> _allEntities = new Dictionary<Guid, DclEntity>();
 
         public IEnumerable<DclEntity> EntitiesInSceneRoot =>
             AllEntities
                 .Where(e => e.Value.Parent == null)
                 .Select(e => e.Value);
 
-        public DclEntity GetEntityFormId(Guid id)
+        public DclEntity GetEntityById(Guid id)
         {
             if (id == Guid.Empty)
                 return null;
 
-            return AllEntities.TryGetValue(id, out var entity) ? entity : null;
+            return _allEntities.TryGetValue(id, out var entity) ? entity : null;
+        }
+
+        public IEnumerable<KeyValuePair<Guid, DclEntity>> AllEntities => _allEntities;
+
+        public void AddEntity(DclEntity entity)
+        {
+            entity.Scene = this;
+            _allEntities.Add(entity.Id, entity);
+        }
+
+        public void RemoveEntity(Guid id)
+        {
+            _allEntities.Remove(id);
         }
 
         // Other States
@@ -31,9 +44,9 @@ namespace Assets.Scripts.SceneState
 
         public DclComponent.DclComponentProperty GetPropertyFromIdentifier(DclPropertyIdentifier identifier)
         {
-            return GetEntityFormId(identifier.Entity)
-                    .GetComponentByName(identifier.Component)
-                    .GetPropertyByName(identifier.Property);
+            return GetEntityById(identifier.Entity)
+                .GetComponentByName(identifier.Component)
+                .GetPropertyByName(identifier.Property);
         }
     }
 }

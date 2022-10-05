@@ -8,13 +8,13 @@ namespace Assets.Scripts.Visuals
     public class TemporaryEntityVisuals : MonoBehaviour, ISetupSceneEventListeners
     {
         // Dependencies
-        private EditorState.SceneState _sceneState;
+        private EditorState.SceneDirectoryState _sceneDirectoryState;
         private EditorEvents _editorEvents;
 
         [Inject]
-        private void Construct(EditorState.SceneState sceneState, EditorEvents editorEvents)
+        private void Construct(EditorState.SceneDirectoryState sceneDirectoryState, EditorEvents editorEvents)
         {
-            _sceneState = sceneState;
+            _sceneDirectoryState = sceneDirectoryState;
             _editorEvents = editorEvents;
         }
 
@@ -28,10 +28,10 @@ namespace Assets.Scripts.Visuals
 
         private void UpdateVisuals()
         {
-            if (_sceneState.CurrentScene == null)
+            if (_sceneDirectoryState.CurrentScene == null)
                 return;
 
-            foreach (var entity in _sceneState.CurrentScene.AllEntities.Select(e => e.Value))
+            foreach (var entity in _sceneDirectoryState.CurrentScene.AllEntities.Select(e => e.Value))
             {
                 var entityPos = entity.GetComponentByName("transform")?.GetPropertyByName("position")
                     ?.GetConcrete<Vector3>().Value;

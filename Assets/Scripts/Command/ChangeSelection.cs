@@ -61,22 +61,22 @@ namespace Assets.Scripts.Command
 
         public override void Do(DclScene sceneState, EditorEvents editorEvents)
         {
-            sceneState.SelectionState.PrimarySelectedEntity = sceneState.GetEntityFormId(_newSelection.Primary);
+            sceneState.SelectionState.PrimarySelectedEntity = sceneState.GetEntityById(_newSelection.Primary);
             sceneState.SelectionState.SecondarySelectedEntities.Clear();
             foreach (var secondary in _newSelection.Secondary)
             {
-                sceneState.SelectionState.SecondarySelectedEntities.Add(sceneState.GetEntityFormId(secondary));
+                sceneState.SelectionState.SecondarySelectedEntities.Add(sceneState.GetEntityById(secondary));
             }
             editorEvents.InvokeSelectionChangedEvent();
         }
 
         public override void Undo(DclScene sceneState, EditorEvents editorEvents)
         {
-            sceneState.SelectionState.PrimarySelectedEntity = sceneState.GetEntityFormId(_oldSelection.Primary);
+            sceneState.SelectionState.PrimarySelectedEntity = sceneState.GetEntityById(_oldSelection.Primary);
             sceneState.SelectionState.SecondarySelectedEntities.Clear();
             foreach (var secondary in _oldSelection.Secondary)
             {
-                sceneState.SelectionState.SecondarySelectedEntities.Add(sceneState.GetEntityFormId(secondary));
+                sceneState.SelectionState.SecondarySelectedEntities.Add(sceneState.GetEntityById(secondary));
             }
             editorEvents.InvokeSelectionChangedEvent();
         }

@@ -9,12 +9,12 @@ namespace Assets.Scripts.Tests.PlayModeTests.CommandTests
     public class AddEntityTest
     {
         // Dependencies
-        private EditorState.SceneState _sceneState;
+        private EditorState.SceneDirectoryState _sceneDirectoryState;
 
         [OneTimeSetUp]
         private void OneTimeSetUp()
         {
-            _sceneState = new EditorState.SceneState();
+            _sceneDirectoryState = new EditorState.SceneDirectoryState();
         }
 
 
@@ -23,7 +23,7 @@ namespace Assets.Scripts.Tests.PlayModeTests.CommandTests
             SceneManager.LoadScene(0);
             yield return null;
             // create new dcl scene
-            _sceneState.CurrentScene = new DclScene();
+            _sceneDirectoryState.CurrentScene = new DclScene();
         }
 
 
@@ -32,7 +32,7 @@ namespace Assets.Scripts.Tests.PlayModeTests.CommandTests
         {
             yield return SetupScene();
 
-            var currentScene = _sceneState.CurrentScene;
+            var currentScene = _sceneDirectoryState.CurrentScene;
 
             //CommandSystem.ExecuteCommand(new AddEntity("cool name", null));
             //Assert.AreEqual(1, currentScene.AllEntities.Count);
@@ -40,7 +40,7 @@ namespace Assets.Scripts.Tests.PlayModeTests.CommandTests
             //var entity = currentScene.AllEntities.First(e => e.Value.ShownName == "cool name");
             //Assert.AreEqual("cool name", entity.Value.ShownName);
             //
-            //Assert.AreEqual(currentScene, entity.Value.Scene);
+            //Assert.AreEqual(currentScene, entity.Value.CurrentScene);
         }
 
         [UnityTest]
@@ -48,7 +48,7 @@ namespace Assets.Scripts.Tests.PlayModeTests.CommandTests
         {
             yield return SetupScene();
 
-            var currentScene = _sceneState.CurrentScene;
+            var currentScene = _sceneDirectoryState.CurrentScene;
 
             //CommandSystem.ExecuteCommand(new AddEntity("parent", null));
             //var parent = currentScene.AllEntities.First(e => e.Value.ShownName == "parent");
@@ -58,8 +58,8 @@ namespace Assets.Scripts.Tests.PlayModeTests.CommandTests
             //Assert.AreEqual(2, currentScene.AllEntities.Count);
             //Assert.AreEqual(parent.Value, child.Value.Parent);
             //
-            //Assert.AreEqual(currentScene, parent.Value.Scene);
-            //Assert.AreEqual(currentScene, child.Value.Scene);
+            //Assert.AreEqual(currentScene, parent.Value.CurrentScene);
+            //Assert.AreEqual(currentScene, child.Value.CurrentScene);
         }
 
         [UnityTest]
@@ -67,7 +67,7 @@ namespace Assets.Scripts.Tests.PlayModeTests.CommandTests
         {
             yield return SetupScene();
 
-            var currentScene = _sceneState.CurrentScene;
+            var currentScene = _sceneDirectoryState.CurrentScene;
 
             //CommandSystem.ExecuteCommand(new AddEntity("entity 1", null));
             //CommandSystem.ExecuteCommand(new AddEntity("entity 2", null));

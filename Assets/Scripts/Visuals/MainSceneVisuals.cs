@@ -12,17 +12,17 @@ namespace Assets.Scripts.Visuals
     {
         // Dependencies
         private EntitySelectInteraction.Factory _entitySelectInteractionFactory;
-        private EditorState.SceneState _sceneState;
+        private EditorState.SceneDirectoryState _sceneDirectoryState;
         private EditorEvents _editorEvents;
 
         [Inject]
         public void Construct(
             EntitySelectInteraction.Factory entitySelectionInteractionFactory,
-            EditorState.SceneState sceneState,
+            EditorState.SceneDirectoryState sceneDirectoryState,
             EditorEvents editorEvents)
         {
             _entitySelectInteractionFactory = entitySelectionInteractionFactory;
-            _sceneState = sceneState;
+            _sceneDirectoryState = sceneDirectoryState;
             _editorEvents = editorEvents;
         }
 
@@ -38,7 +38,7 @@ namespace Assets.Scripts.Visuals
 
         private void UpdateVisuals()
         {
-            var scene = _sceneState.CurrentScene;
+            var scene = _sceneDirectoryState.CurrentScene;
             if (scene == null)
                 return;
 
@@ -68,7 +68,7 @@ namespace Assets.Scripts.Visuals
             // set entity visual's parents
             foreach (var visual in visuals)
             {
-                var parent = scene.GetEntityFormId(visual.Id).Parent; // look, if the actual entity of the visual has a parent
+                var parent = scene.GetEntityById(visual.Id).Parent; // look, if the actual entity of the visual has a parent
 
                 if (parent != null)
                     // set the transforms parent to the transform of the parent visual

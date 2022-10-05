@@ -36,7 +36,7 @@ namespace Assets.Scripts.Command
 
         DclTransformComponent TransformFromEntityGuid(DclScene sceneState, Guid guid)
         {
-            return sceneState.AllEntities[guid]?.GetTransformComponent() ?? null;
+            return sceneState.GetEntityById(guid)?.GetTransformComponent() ?? null;
         }
     }
 }

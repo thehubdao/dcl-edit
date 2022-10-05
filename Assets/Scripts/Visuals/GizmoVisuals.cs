@@ -14,7 +14,7 @@ namespace Assets.Scripts.Visuals
         private GameObject _activeGizmo = null;
 
         // Dependencies
-        private EditorState.SceneState _sceneState;
+        private EditorState.SceneDirectoryState _sceneDirectoryState;
         private TranslateFactory _translateFactory;
         private RotateFactory _rotateFactory;
         private ScaleFactory _scaleFactory;
@@ -24,7 +24,7 @@ namespace Assets.Scripts.Visuals
 
         [Inject]
         private void Construct(
-            EditorState.SceneState sceneState,
+            EditorState.SceneDirectoryState sceneDirectoryState,
             TranslateFactory translateFactory,
             RotateFactory rotateFactory,
             ScaleFactory scaleFactory,
@@ -32,7 +32,7 @@ namespace Assets.Scripts.Visuals
             UnityState unityState,
             EditorEvents editorEvents)
         {
-            _sceneState = sceneState;
+            _sceneDirectoryState = sceneDirectoryState;
             _translateFactory = translateFactory;
             _rotateFactory = rotateFactory;
             _scaleFactory = scaleFactory;
@@ -48,7 +48,7 @@ namespace Assets.Scripts.Visuals
 
         private void UpdateVisuals()
         {
-            var selectedEntity = _sceneState?
+            var selectedEntity = _sceneDirectoryState?
                 .CurrentScene?
                 .SelectionState?
                 .PrimarySelectedEntity;
