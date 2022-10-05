@@ -1,8 +1,9 @@
+using Assets.Scripts.Events;
+using Assets.Scripts.SceneState;
+using Assets.Scripts.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Assets.Scripts.SceneState;
-using Assets.Scripts.Utility;
 
 namespace Assets.Scripts.Command
 {
@@ -30,7 +31,7 @@ namespace Assets.Scripts.Command
         {
             get
             {
-                if(_newSelection.Primary == Guid.Empty)
+                if (_newSelection.Primary == Guid.Empty)
                     return "Deselecting all Entities";
 
                 var retVal = $"Selecting as primary selection: {GetNameFromGuid(_newSelection.Primary)}";
@@ -58,7 +59,7 @@ namespace Assets.Scripts.Command
             return id.Shortened();
         }
 
-        public override void Do(DclScene sceneState)
+        public override void Do(DclScene sceneState, EditorEvents editorEvents)
         {
             sceneState.SelectionState.PrimarySelectedEntity = sceneState.GetEntityFormId(_newSelection.Primary);
             sceneState.SelectionState.SecondarySelectedEntities.Clear();
@@ -66,10 +67,10 @@ namespace Assets.Scripts.Command
             {
                 sceneState.SelectionState.SecondarySelectedEntities.Add(sceneState.GetEntityFormId(secondary));
             }
-            sceneState.SelectionState.SelectionChangedEvent.Invoke();
+            editorEvents.InvokeSelectionChangedEvent();
         }
 
-        public override void Undo(DclScene sceneState)
+        public override void Undo(DclScene sceneState, EditorEvents editorEvents)
         {
             sceneState.SelectionState.PrimarySelectedEntity = sceneState.GetEntityFormId(_oldSelection.Primary);
             sceneState.SelectionState.SecondarySelectedEntities.Clear();
@@ -77,7 +78,7 @@ namespace Assets.Scripts.Command
             {
                 sceneState.SelectionState.SecondarySelectedEntities.Add(sceneState.GetEntityFormId(secondary));
             }
-            sceneState.SelectionState.SelectionChangedEvent.Invoke();
+            editorEvents.InvokeSelectionChangedEvent();
         }
 
         public static Guid GetPrimarySelectionFromScene(DclScene sceneState)

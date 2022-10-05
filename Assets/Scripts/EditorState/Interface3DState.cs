@@ -1,11 +1,21 @@
+using Assets.Scripts.Events;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace Assets.Scripts.EditorState
 {
     public class Interface3DState
     {
         private GameObject _currentlyHoveredObject = null;
+
+        // Dependencies
+        EditorEvents _editorEvents;
+
+        public Interface3DState(EditorEvents editorEvents)
+        {
+            _editorEvents = editorEvents;
+        }
+
+
         public GameObject CurrentlyHoveredObject
         {
             get => _currentlyHoveredObject;
@@ -13,8 +23,8 @@ namespace Assets.Scripts.EditorState
             {
                 if (_currentlyHoveredObject != value)
                 {
-                    _currentlyHoveredObject = value; 
-                    HoverChangeEvent.Invoke();
+                    _currentlyHoveredObject = value;
+                    _editorEvents.InvokeHoverChangedEvent();
                 }
             }
         }
@@ -27,8 +37,5 @@ namespace Assets.Scripts.EditorState
         }
 
         public HoveredObjectType CurrentlyHoveredObjectType = HoveredObjectType.None;
-
-
-        public readonly UnityEvent HoverChangeEvent = new UnityEvent();
     }
 }

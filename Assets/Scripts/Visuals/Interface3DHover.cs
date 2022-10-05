@@ -1,4 +1,5 @@
 using Assets.Scripts.EditorState;
+using Assets.Scripts.Events;
 using UnityEngine;
 using Zenject;
 
@@ -16,16 +17,18 @@ namespace Assets.Scripts.Visuals
 
         // Dependencies
         private Interface3DState _interface3DState;
+        private EditorEvents _editorEvents;
 
         [Inject]
-        private void Construct(Interface3DState interface3DState)
+        private void Construct(Interface3DState interface3DState, EditorEvents editorEvents)
         {
             _interface3DState = interface3DState;
+            _editorEvents = editorEvents;
         }
 
         public void SetupSceneEventListeners()
         {
-            _interface3DState.HoverChangeEvent.AddListener(() =>
+            _editorEvents.onHoverChangedEvent += () =>
             {
                 if (_interface3DState.CurrentlyHoveredObject == gameObject)
                 {
@@ -45,9 +48,9 @@ namespace Assets.Scripts.Visuals
                         _isHovering = false;
                     }
                 }
-            });
+            };
         }
-        
+
         public virtual void StartHover()
         {
 
@@ -57,12 +60,12 @@ namespace Assets.Scripts.Visuals
         {
 
         }
-        
+
         public virtual void EndHover()
         {
 
         }
 
-        
+
     }
 }

@@ -1,8 +1,6 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using Assets.Scripts.EditorState;
+using Assets.Scripts.Events;
 using Assets.Scripts.SceneState;
+using System;
 using UnityEngine;
 
 public class ChangeEntityName : Command
@@ -20,7 +18,7 @@ public class ChangeEntityName : Command
         this.oldName = oldName;
     }
 
-    public override void Do(DclScene sceneState)
+    public override void Do(DclScene sceneState, EditorEvents editorEvents)
     {
         var entity = sceneState.GetEntityFormId(entityId);
         if (entity == null)
@@ -31,10 +29,10 @@ public class ChangeEntityName : Command
 
         entity.CustomName = newName;
 
-        sceneState.SelectionState.SelectionChangedEvent.Invoke(); 
+        editorEvents.InvokeSelectionChangedEvent();
     }
 
-    public override void Undo(DclScene sceneState)
+    public override void Undo(DclScene sceneState, EditorEvents editorEvents)
     {
         var entity = sceneState.GetEntityFormId(entityId);
         if (entity == null)
@@ -45,6 +43,6 @@ public class ChangeEntityName : Command
 
         entity.CustomName = oldName;
 
-        sceneState.SelectionState.SelectionChangedEvent.Invoke();
+        editorEvents.InvokeSelectionChangedEvent();
     }
 }

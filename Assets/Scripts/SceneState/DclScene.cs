@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine.Events;
 
 namespace Assets.Scripts.SceneState
 {
@@ -36,8 +35,6 @@ namespace Assets.Scripts.SceneState
         {
             _allEntities.Remove(id);
         }
-
-        public UnityEvent HierarchyChangedEvent = new UnityEvent();
 
         // Other States
 

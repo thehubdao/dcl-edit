@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine.Events;
 
 namespace Assets.Scripts.SceneState
 {
@@ -12,12 +11,8 @@ namespace Assets.Scripts.SceneState
 
         public List<DclEntity> SecondarySelectedEntities => _secondarySelectedEntities;
 
-        public IEnumerable<DclEntity> AllSelectedEntities => 
+        public IEnumerable<DclEntity> AllSelectedEntities =>
             _secondarySelectedEntities
                 .Prepend(PrimarySelectedEntity);
-
-
-        // Change Event
-        public UnityEvent SelectionChangedEvent = new UnityEvent();
     }
 }
