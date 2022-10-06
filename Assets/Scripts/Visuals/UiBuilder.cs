@@ -166,9 +166,9 @@ namespace Assets.Scripts.Visuals
             return this;
         }
 
-        public UiBuilder HierarchyItem(string name, int level, bool hasChildren, bool isExpanded, TextHandler.TextStyle textStyle)
+        public UiBuilder HierarchyItem(string name, int level, bool hasChildren, bool isExpanded, TextHandler.TextStyle textStyle, HierarchyItemHandler.UiHierarchyItemActions actions)
         {
-            _atoms.Add(new UiAtom()
+            _atoms.Add(new UiAtom
             {
                 Type = AtomType.HierarchyItem,
                 MakeGameObject = () =>
@@ -180,6 +180,7 @@ namespace Assets.Scripts.Visuals
                     hierarchyItem.Text.text = name;
                     hierarchyItem.Indent.offsetMin = new Vector2(20 * level, 0);
                     hierarchyItem.Text.textStyle = textStyle;
+                    hierarchyItem.actions = actions;
 
                     if (hasChildren)
                     {
@@ -193,7 +194,6 @@ namespace Assets.Scripts.Visuals
                     {
                         hierarchyItem.Arrow.gameObject.SetActive(false);
                     }
-
 
                     return new MakeGmReturn {go = go, height = 30};
                 }

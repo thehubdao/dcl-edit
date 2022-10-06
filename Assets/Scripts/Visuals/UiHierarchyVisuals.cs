@@ -62,7 +62,11 @@ public class UiHierarchyVisuals : MonoBehaviour, ISetupSceneEventListeners
                         TextHandler.TextStyle.SecondarySelection :
                         TextHandler.TextStyle.Normal;
 
-            uiBuilder.HierarchyItem(entity.ShownName, level, entity.Children.Any(), true, style);
+            uiBuilder.HierarchyItem(entity.ShownName, level, entity.Children.Any(), true, style, new HierarchyItemHandler.UiHierarchyItemActions
+            {
+                OnArrowClick = () => { Debug.Log("arrow"); },
+                OnNameClick = () => { Debug.Log("name"); }
+            });
 
             MakeHierarchyItemsRecursive(uiBuilder, level + 1, entity.Children);
         }
