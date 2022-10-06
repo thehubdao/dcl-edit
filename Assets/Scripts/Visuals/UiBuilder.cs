@@ -166,7 +166,7 @@ namespace Assets.Scripts.Visuals
             return this;
         }
 
-        public UiBuilder HierarchyItem(string name, int level, bool isExpanded)
+        public UiBuilder HierarchyItem(string name, int level, bool hasChildren, bool isExpanded, TextHandler.TextStyle textStyle)
         {
             _atoms.Add(new UiAtom()
             {
@@ -179,9 +179,23 @@ namespace Assets.Scripts.Visuals
 
                     hierarchyItem.Text.text = name;
                     hierarchyItem.Indent.offsetMin = new Vector2(20 * level, 0);
-                    hierarchyItem.Arrow.rotation = isExpanded ? Quaternion.identity : Quaternion.Euler(0, 0, 90);
+                    hierarchyItem.Text.textStyle = textStyle;
 
-                    return new MakeGmReturn {go = go, height = 40};
+                    if (hasChildren)
+                    {
+                        hierarchyItem.Arrow.gameObject.SetActive(true);
+                        hierarchyItem.Arrow.rotation =
+                            isExpanded ?
+                                Quaternion.identity :
+                                Quaternion.Euler(0, 0, 90);
+                    }
+                    else
+                    {
+                        hierarchyItem.Arrow.gameObject.SetActive(false);
+                    }
+
+
+                    return new MakeGmReturn {go = go, height = 30};
                 }
             });
 

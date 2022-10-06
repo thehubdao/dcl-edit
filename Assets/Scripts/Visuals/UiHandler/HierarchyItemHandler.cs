@@ -7,7 +7,7 @@ namespace Assets.Scripts.Visuals.UiHandler
     public class HierarchyItemHandler : MonoBehaviour
     {
         [SerializeField]
-        public TextMeshProUGUI Text;
+        public TextHandler Text;
 
         [SerializeField]
         public RectTransform Arrow;
