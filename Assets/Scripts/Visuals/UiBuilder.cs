@@ -14,7 +14,6 @@ namespace Assets.Scripts.Visuals
 {
     public class UiBuilder
     {
-
         private enum AtomType
         {
             Title,
@@ -22,6 +21,7 @@ namespace Assets.Scripts.Visuals
             Spacer,
             Panel,
             PanelHeader,
+            HierarchyItem,
             StringPropertyInput,
             NumberPropertyInput,
             BooleanPropertyInput,
@@ -162,6 +162,28 @@ namespace Assets.Scripts.Visuals
                     return new MakeGmReturn { go = go, height = 60 };
                 }
             }); 
+
+            return this;
+        }
+
+        public UiBuilder HierarchyItem(string name, int level, bool isExpanded)
+        {
+            _atoms.Add(new UiAtom()
+            {
+                Type = AtomType.HierarchyItem,
+                MakeGameObject = () =>
+                {
+                    var go = GetAtomObjectFromPool(AtomType.HierarchyItem);
+
+                    var hierarchyItem = go.GetComponent<HierarchyItemHandler>();
+
+                    hierarchyItem.Text.text = name;
+                    hierarchyItem.Indent.offsetMin = new Vector2(20 * level, 0);
+                    hierarchyItem.Arrow.rotation = isExpanded ? Quaternion.identity : Quaternion.Euler(0, 0, 90);
+
+                    return new MakeGmReturn {go = go, height = 40};
+                }
+            });
 
             return this;
         }
@@ -333,6 +355,7 @@ namespace Assets.Scripts.Visuals
                 AtomType.Text => Object.Instantiate(_unityState.TextAtom),
                 AtomType.Panel => Object.Instantiate(_unityState.PanelAtom),
                 AtomType.PanelHeader => Object.Instantiate(_unityState.PanelHeaderAtom),
+                AtomType.HierarchyItem => Object.Instantiate(_unityState.HierarchyItemAtom),
                 AtomType.StringPropertyInput => Object.Instantiate(_unityState.StringInputAtom),
                 AtomType.NumberPropertyInput => Object.Instantiate(_unityState.NumberInputAtom),
                 AtomType.BooleanPropertyInput => Object.Instantiate(_unityState.BooleanInputAtom),
