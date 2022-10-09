@@ -10,7 +10,10 @@ namespace Assets.Scripts.Visuals.UiHandler
         public TextHandler Text;
 
         [SerializeField]
-        public RectTransform Arrow;
+        private RectTransform Arrow;
+
+        [SerializeField]
+        private RectTransform ArrowContainer;
 
         [SerializeField]
         public RectTransform Indent;
@@ -28,6 +31,28 @@ namespace Assets.Scripts.Visuals.UiHandler
                 Arrow.GetComponent<Toggle>().onValueChanged.AddListener(_ => value.OnArrowClick());
                 Text.GetComponent<Button>().onClick.AddListener(() => value.OnNameClick());
             }
+        }
+
+        public bool isExpanded
+        {
+            set
+            {
+                if (value)
+                {
+                    ArrowContainer.rotation = Quaternion.Euler(0, 0, 0);
+                    ArrowContainer.localScale = new Vector3(1, 1, 1);
+                }
+                else
+                {
+                    ArrowContainer.rotation = Quaternion.Euler(0, 0, 90);
+                    ArrowContainer.localScale = new Vector3(-1, 1, 1);
+                }
+            }
+        }
+
+        public bool showArrow
+        {
+            set => ArrowContainer.gameObject.SetActive(value);
         }
     }
 }

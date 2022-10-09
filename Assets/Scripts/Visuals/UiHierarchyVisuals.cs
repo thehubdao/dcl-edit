@@ -69,14 +69,18 @@ namespace Assets.Scripts.Visuals
                             TextHandler.TextStyle.SecondarySelection :
                             TextHandler.TextStyle.Normal;
 
+                var isExpanded = _hierarchyChangeSystem.IsExpanded(entity);
 
-                uiBuilder.HierarchyItem(entity.ShownName, level, entity.Children.Any(), true, style, new HierarchyItemHandler.UiHierarchyItemActions
+                uiBuilder.HierarchyItem(entity.ShownName, level, entity.Children.Any(), isExpanded, style, new HierarchyItemHandler.UiHierarchyItemActions
                 {
-                    OnArrowClick = () => { Debug.Log("arrow"); },
+                    OnArrowClick = () => { _hierarchyChangeSystem.ClickedOnEntityExpandArrow(entity); },
                     OnNameClick = () => { _hierarchyChangeSystem.ClickedOnEntityInHierarchy(entity); }
                 });
 
-                MakeHierarchyItemsRecursive(uiBuilder, level + 1, entity.Children);
+                if (isExpanded)
+                {
+                    MakeHierarchyItemsRecursive(uiBuilder, level + 1, entity.Children);
+                }
             }
         }
     }

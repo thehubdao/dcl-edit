@@ -1,6 +1,7 @@
 using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
 using Assets.Scripts.Interaction;
+using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
 using Assets.Scripts.Visuals;
 using UnityEngine;
@@ -93,5 +94,7 @@ public class DclEditorInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<HierarchyChangeSystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<EntitySelectSystem>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<HierarchyExpansionState>().AsSingle();
     }
 }

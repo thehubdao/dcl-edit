@@ -184,15 +184,12 @@ namespace Assets.Scripts.Visuals
 
                     if (hasChildren)
                     {
-                        hierarchyItem.Arrow.gameObject.SetActive(true);
-                        hierarchyItem.Arrow.rotation =
-                            isExpanded ?
-                                Quaternion.identity :
-                                Quaternion.Euler(0, 0, 90);
+                        hierarchyItem.showArrow = true;
+                        hierarchyItem.isExpanded = isExpanded;
                     }
                     else
                     {
-                        hierarchyItem.Arrow.gameObject.SetActive(false);
+                        hierarchyItem.showArrow = false;
                     }
 
                     return new MakeGmReturn {go = go, height = 30};
