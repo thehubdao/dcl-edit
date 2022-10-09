@@ -4,7 +4,7 @@ using UnityEngine.InputSystem;
 using Zenject;
 using Cursor = UnityEngine.Cursor;
 
-namespace Assets.Scripts.Interaction
+namespace Assets.Scripts.System
 {
     public class InputHelper
     {
@@ -18,16 +18,31 @@ namespace Assets.Scripts.Interaction
         private bool _isMiddleDown;
         private bool _isRightDown;
 
+        private int _lastMouseDownCalculated = -1;
+
         // Dependencies
-        UnityState _unityState;
+        private InputSystemAsset _inputSystemAsset;
+        private UnityState _unityState;
 
         [Inject]
         private void Construct(UnityState unityState)
         {
-            _unityState = unityState;
-        }        
+            _inputSystemAsset = new InputSystemAsset();
+            _inputSystemAsset.Modifier.Enable();
 
-        public void UpdateMouseDowns()
+            _unityState = unityState;
+        }
+
+        private void RequireMouseDowns()
+        {
+            if (_lastMouseDownCalculated != Time.frameCount)
+            {
+                UpdateMouseDowns();
+                _lastMouseDownCalculated = Time.frameCount;
+            }
+        }
+
+        private void UpdateMouseDowns()
         {
             var leftPressed = IsLeftMouseButtonPressed();
             _isLeftDown = leftPressed && !_wasLeftPressed; // left down when left is pressed but was not pressed in the last frame
@@ -66,6 +81,21 @@ namespace Assets.Scripts.Interaction
         public Vector2 GetMousePosition()
         {
             return Mouse.current.position.ReadValue();
+        }
+
+        public bool GetIsControlPressed()
+        {
+            return _inputSystemAsset.Modifier.Ctrl.IsPressed();
+        }
+
+        public bool GetIsAltPressed()
+        {
+            return _inputSystemAsset.Modifier.Alt.IsPressed();
+        }
+
+        public bool GetIsShiftPressed()
+        {
+            return _inputSystemAsset.Modifier.Shift.IsPressed();
         }
 
         /// <summary>
@@ -107,17 +137,28 @@ namespace Assets.Scripts.Interaction
 
         public bool IsLeftMouseButtonDown()
         {
+            RequireMouseDowns();
             return _isLeftDown;
         }
 
         public bool IsMiddleMouseButtonDown()
         {
+            RequireMouseDowns();
             return _isMiddleDown;
         }
 
         public bool IsRightMouseButtonDown()
         {
+            RequireMouseDowns();
             return _isRightDown;
+        }
+    }
+
+    public static class InputHelper2
+    {
+        public static bool IsPressed(this InputAction action)
+        {
+            return action.ReadValue<float>() > 0;
         }
     }
 }

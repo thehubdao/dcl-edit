@@ -80,15 +80,5 @@ namespace Assets.Scripts.Command
             }
             editorEvents.InvokeSelectionChangedEvent();
         }
-
-        public static Guid GetPrimarySelectionFromScene(DclScene sceneState)
-        {
-            return sceneState.SelectionState.PrimarySelectedEntity?.Id ?? Guid.Empty;
-        }
-
-        public static IEnumerable<Guid> GetSecondarySelectionFromScene(DclScene sceneState)
-        {
-            return sceneState.SelectionState.SecondarySelectedEntities.Select(e => e.Id);
-        }
     }
 }

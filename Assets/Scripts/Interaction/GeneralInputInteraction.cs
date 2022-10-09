@@ -27,6 +27,7 @@ namespace Assets.Scripts.Interaction
         private CameraState _cameraState;
         private EditorEvents _editorEvents;
         private TypeScriptGenerationSystem _typeScriptGenerationSystem;
+        private EntitySelectSystem _entitySelectSystem;
 
         [Inject]
         private void Construct(
@@ -41,7 +42,8 @@ namespace Assets.Scripts.Interaction
             UnityState unityState,
             InputHelper inputHelper,
             EditorEvents editorEvents,
-            TypeScriptGenerationSystem typeScriptGenerationSystem)
+            TypeScriptGenerationSystem typeScriptGenerationSystem,
+            EntitySelectSystem entitySelectSystem)
         {
             _sceneSaveSystem = sceneSaveSystem;
             _commandSystem = commandSystem;
@@ -55,6 +57,7 @@ namespace Assets.Scripts.Interaction
             _cameraState = cameraState;
             _editorEvents = editorEvents;
             _typeScriptGenerationSystem = typeScriptGenerationSystem;
+            _entitySelectSystem = entitySelectSystem;
         }
 
 
@@ -69,8 +72,6 @@ namespace Assets.Scripts.Interaction
         // Update is called once per frame
         void Update()
         {
-            _inputHelper.UpdateMouseDowns();
-
             ProcessHotKeys();
 
             switch (_inputState.InState)
@@ -319,28 +320,14 @@ namespace Assets.Scripts.Interaction
 
                         if (selectInteraction != null)
                         {
-                            if (pressingControl)
-                            {
-                                selectInteraction.SelectAdditional(); // When pressing control, add entity to selection
-                            }
-                            else
-                            {
-                                selectInteraction.SelectSingle(); // When not pressing control, set entity as single selection
-                            }
+                            selectInteraction.Select();
                         }
 
                         break;
                     }
                     case Interface3DState.HoveredObjectType.None:
                     {
-                        var scene = _sceneDirectoryState.CurrentScene;
-                        var selectionCommand = _commandSystem.CommandFactory.CreateChangeSelection(
-                            ChangeSelection.GetPrimarySelectionFromScene(scene),
-                            ChangeSelection.GetSecondarySelectionFromScene(scene),
-                            Guid.Empty,
-                            Array.Empty<Guid>());
-
-                        _commandSystem.ExecuteCommand(selectionCommand);
+                        _entitySelectSystem.DeselectAll();
                         break;
                     }
                     default: // ignore
@@ -646,14 +633,6 @@ namespace Assets.Scripts.Interaction
             {
                 _commandSystem.RedoCommand();
             }
-        }
-    }
-
-    internal static class InputHelper2
-    {
-        public static bool IsPressed(this InputAction action)
-        {
-            return action.ReadValue<float>() > 0;
         }
     }
 }

@@ -89,5 +89,9 @@ public class DclEditorInstaller : MonoInstaller
         Container.BindFactory<GizmoSizeFixerSystem, GizmoVisuals.ScaleFactory>().FromComponentInNewPrefab(_scaleGizmoPrefab).AsSingle();
 
         Container.BindInterfacesAndSelfTo<EditorEvents>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<HierarchyChangeSystem>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<EntitySelectSystem>().AsSingle();
     }
 }
