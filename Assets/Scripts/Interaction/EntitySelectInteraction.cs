@@ -1,13 +1,11 @@
 using System;
-using System.Linq;
-using Assets.Scripts.Command;
-using Assets.Scripts.EditorState;
 using Assets.Scripts.System;
+using UnityEngine;
+using Zenject;
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
-using UnityEngine;
-using Zenject;
 
 namespace Assets.Scripts.Interaction
 {
@@ -18,38 +16,19 @@ namespace Assets.Scripts.Interaction
         // dependencies
         private ICommandSystem _commandSystem;
         private EditorState.SceneDirectoryState _sceneDirectoryState;
+        private EntitySelectSystem _entitySelectSystem;
 
         [Inject]
-        public void Construct(ICommandSystem commandSystem, EditorState.SceneDirectoryState sceneDirectoryState)
+        public void Construct(ICommandSystem commandSystem, EditorState.SceneDirectoryState sceneDirectoryState, EntitySelectSystem entitySelectSystem)
         {
             _commandSystem = commandSystem;
             _sceneDirectoryState = sceneDirectoryState;
+            _entitySelectSystem = entitySelectSystem;
         }
 
-        public void SelectAdditional()
+        public void Select()
         {
-            var scene = _sceneDirectoryState.CurrentScene;
-            var selectionCommand = _commandSystem.CommandFactory.CreateChangeSelection(
-                ChangeSelection.GetPrimarySelectionFromScene(scene),
-                ChangeSelection.GetSecondarySelectionFromScene(scene),
-                Id,
-                scene.SelectionState.AllSelectedEntities
-                    .Select(e => e?.Id ?? Guid.Empty)
-                    .Where(id => id != Guid.Empty && id != Id));
-
-            _commandSystem.ExecuteCommand(selectionCommand);
-        }
-
-        public void SelectSingle()
-        {
-            var scene = _sceneDirectoryState.CurrentScene;
-            var selectionCommand = _commandSystem.CommandFactory.CreateChangeSelection(
-                ChangeSelection.GetPrimarySelectionFromScene(scene),
-                ChangeSelection.GetSecondarySelectionFromScene(scene),
-                Id,
-                Array.Empty<Guid>());
-
-            _commandSystem.ExecuteCommand(selectionCommand);
+            _entitySelectSystem.ClickedOnEntity(Id);
         }
 
         public class Factory : PlaceholderFactory<EntitySelectInteraction>
@@ -74,14 +53,10 @@ namespace Assets.Scripts.Interaction
             if (entitySelectInteraction == null)
                 return;
 
-            if (GUILayout.Button("Select Additional"))
-            {
-                entitySelectInteraction.SelectAdditional();
-            }
 
-            if (GUILayout.Button("Select Single"))
+            if (GUILayout.Button(new GUIContent("Select", "Hold Ctrl to select additional")))
             {
-                entitySelectInteraction.SelectSingle();
+                entitySelectInteraction.Select();
             }
         }
     }
