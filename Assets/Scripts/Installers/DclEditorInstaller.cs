@@ -96,5 +96,7 @@ public class DclEditorInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<EntitySelectSystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<HierarchyExpansionState>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<SettingsSystem>().AsSingle();
     }
 }
