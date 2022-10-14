@@ -1,6 +1,7 @@
 using System.Collections.Generic;
-using System.Globalization;
+using Assets.Scripts.EditorState;
 using UnityEngine;
+using Zenject;
 
 namespace Assets.Scripts.System
 {
@@ -10,7 +11,8 @@ namespace Assets.Scripts.System
         {
             Text,
             Number,
-            Integer
+            Integer,
+            Vector3
         }
 
         public enum SettingStage
@@ -110,17 +112,83 @@ namespace Assets.Scripts.System
             }
         }
 
-        public SettingsSystem()
+        public abstract class ProjectSetting<T> : ISetting
         {
+            protected ProjectSetting(string name, T defaultValue, ProjectSettingsState projectSettingsState)
+            {
+                this.name = name;
+                this.defaultValue = defaultValue;
+
+                stage = SettingStage.Project;
+
+                _projectSettingsState = projectSettingsState;
+            }
+
+            protected ProjectSettingsState _projectSettingsState;
+
+            public string name { get; }
+            public string valueString => Get().ToString();
+            public T defaultValue { get; }
+            public SettingType type { get; protected set; }
+            public SettingStage stage { get; }
+
+            public T Get()
+            {
+                var settingValue = _projectSettingsState.GetSetting<T>(name);
+
+                return settingValue.TryGetValue(out var value) ?
+                    value :
+                    defaultValue;
+            }
+
+            public void Set(T value)
+            {
+                _projectSettingsState.SetSetting(name, value);
+            }
+        }
+
+        public class Vec3ProjectSetting : ProjectSetting<Vector3>
+        {
+            public Vec3ProjectSetting(string name, Vector3 defaultValue, ProjectSettingsState projectSettingsState) : base(name, defaultValue, projectSettingsState)
+            {
+                type = SettingType.Vector3;
+            }
+        }
+
+        public class StringProjectSetting : ProjectSetting<string>
+        {
+            public StringProjectSetting(string name, string defaultValue, ProjectSettingsState projectSettingsState) : base(name, defaultValue, projectSettingsState)
+            {
+                type = SettingType.Text;
+            }
+        }
+
+        [Inject]
+        public SettingsSystem(ProjectSettingsState projectSettingsState)
+        {
+            TestNumber = new FloatUserSetting("Test number", 12.34f);
             AllSettings.Add(TestNumber);
+
+            TestInteger = new IntUserSetting("Test integer", 123);
             AllSettings.Add(TestInteger);
+
+            TestString = new StringUserSetting("Test text", "Hello world!");
             AllSettings.Add(TestString);
+
+            TestProjVec3 = new Vec3ProjectSetting("Test Vec3 Project", Vector3.one, projectSettingsState);
+            AllSettings.Add(TestProjVec3);
+
+            TestProjString = new StringProjectSetting("Test String Project", "some text", projectSettingsState);
+            AllSettings.Add(TestProjString);
         }
 
         public List<ISetting> AllSettings = new List<ISetting>();
 
-        public FloatUserSetting TestNumber = new FloatUserSetting("Test number", 12.34f);
-        public IntUserSetting TestInteger = new IntUserSetting("Test integer", 123);
-        public StringUserSetting TestString = new StringUserSetting("Test text", "Hello world!");
+        public FloatUserSetting TestNumber;
+        public IntUserSetting TestInteger;
+        public StringUserSetting TestString;
+
+        public Vec3ProjectSetting TestProjVec3;
+        public StringProjectSetting TestProjString;
     }
 }
