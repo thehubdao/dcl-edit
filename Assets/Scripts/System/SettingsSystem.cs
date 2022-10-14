@@ -112,19 +112,27 @@ namespace Assets.Scripts.System
             }
         }
 
-        public abstract class ProjectSetting<T> : ISetting
+        public abstract class JsonSetting<T, TSettingState> : ISetting where TSettingState : JsonSettingState
         {
-            protected ProjectSetting(string name, T defaultValue, ProjectSettingsState projectSettingsState)
+            protected JsonSetting(string name, T defaultValue, TSettingState tSettingState)
             {
                 this.name = name;
                 this.defaultValue = defaultValue;
 
-                stage = SettingStage.Project;
+                if (typeof(TSettingState) == typeof(ProjectSettingState))
+                {
+                    stage = SettingStage.Project;
+                }
 
-                _projectSettingsState = projectSettingsState;
+                if (typeof(TSettingState) == typeof(SceneSettingState))
+                {
+                    stage = SettingStage.Scene;
+                }
+
+                SettingState = tSettingState;
             }
 
-            protected ProjectSettingsState _projectSettingsState;
+            protected TSettingState SettingState;
 
             public string name { get; }
             public string valueString => Get().ToString();
@@ -134,7 +142,7 @@ namespace Assets.Scripts.System
 
             public T Get()
             {
-                var settingValue = _projectSettingsState.GetSetting<T>(name);
+                var settingValue = SettingState.GetSetting<T>(name);
 
                 return settingValue.TryGetValue(out var value) ?
                     value :
@@ -143,28 +151,38 @@ namespace Assets.Scripts.System
 
             public void Set(T value)
             {
-                _projectSettingsState.SetSetting(name, value);
+                SettingState.SetSetting(name, value);
             }
         }
 
-        public class Vec3ProjectSetting : ProjectSetting<Vector3>
+        public class Vec3ProjectSetting : JsonSetting<Vector3, ProjectSettingState>
         {
-            public Vec3ProjectSetting(string name, Vector3 defaultValue, ProjectSettingsState projectSettingsState) : base(name, defaultValue, projectSettingsState)
+            public Vec3ProjectSetting(string name, Vector3 defaultValue, ProjectSettingState projectSettingsState) : base(name, defaultValue, projectSettingsState)
             {
                 type = SettingType.Vector3;
             }
         }
 
-        public class StringProjectSetting : ProjectSetting<string>
+
+        public class StringProjectSetting : JsonSetting<string, ProjectSettingState>
         {
-            public StringProjectSetting(string name, string defaultValue, ProjectSettingsState projectSettingsState) : base(name, defaultValue, projectSettingsState)
+            public StringProjectSetting(string name, string defaultValue, ProjectSettingState projectSettingsState) : base(name, defaultValue, projectSettingsState)
             {
                 type = SettingType.Text;
             }
         }
 
+        public class Vec3SceneSetting : JsonSetting<Vector3, SceneSettingState>
+        {
+            public Vec3SceneSetting(string name, Vector3 defaultValue, SceneSettingState projectSettingsState) : base(name, defaultValue, projectSettingsState)
+            {
+                type = SettingType.Vector3;
+            }
+        }
+
+
         [Inject]
-        public SettingsSystem(ProjectSettingsState projectSettingsState)
+        public SettingsSystem(ProjectSettingState projectSettingsState, SceneSettingState sceneSettingState)
         {
             TestNumber = new FloatUserSetting("Test number", 12.34f);
             AllSettings.Add(TestNumber);
@@ -180,6 +198,9 @@ namespace Assets.Scripts.System
 
             TestProjString = new StringProjectSetting("Test String Project", "some text", projectSettingsState);
             AllSettings.Add(TestProjString);
+
+            TestSceneVec3 = new Vec3SceneSetting("Test Vec3 Scene", Vector3.one, sceneSettingState);
+            AllSettings.Add(TestSceneVec3);
         }
 
         public List<ISetting> AllSettings = new List<ISetting>();
@@ -190,5 +211,7 @@ namespace Assets.Scripts.System
 
         public Vec3ProjectSetting TestProjVec3;
         public StringProjectSetting TestProjString;
+
+        public Vec3SceneSetting TestSceneVec3;
     }
 }

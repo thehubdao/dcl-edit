@@ -99,6 +99,8 @@ public class DclEditorInstaller : MonoInstaller
 
         Container.BindInterfacesAndSelfTo<SettingsSystem>().AsSingle();
 
-        Container.BindInterfacesAndSelfTo<ProjectSettingsState>().AsSingle();
+        Container.Bind<ProjectSettingState>().To<ProjectSettingState>().AsSingle();
+
+        Container.Bind<SceneSettingState>().To<SceneSettingState>().AsSingle();
     }
 }
