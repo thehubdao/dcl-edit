@@ -73,7 +73,7 @@ public class DclEditorInstaller : MonoInstaller
 
         Container.BindInterfacesAndSelfTo<InputHelper>().AsSingle();
 
-        Container.BindFactory<UiBuilder, UiBuilder.Factory>();
+        Container.BindFactory<UiBuilder, UiBuilder.Factory>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<ProjectState>().AsSingle();
 

@@ -9,8 +9,8 @@ namespace Assets.Scripts.System
     {
         public enum SettingType
         {
-            Text,
-            Number,
+            String,
+            Float,
             Integer,
             Vector3
         }
@@ -56,7 +56,7 @@ namespace Assets.Scripts.System
         {
             public StringUserSetting(string name, string defaultValue) : base(name, defaultValue)
             {
-                type = SettingType.Text;
+                type = SettingType.String;
             }
 
             public override string Get()
@@ -96,7 +96,7 @@ namespace Assets.Scripts.System
         {
             public FloatUserSetting(string name, float defaultValue) : base(name, defaultValue)
             {
-                type = SettingType.Number;
+                type = SettingType.Float;
             }
 
             public override float Get()
@@ -168,7 +168,7 @@ namespace Assets.Scripts.System
         {
             public StringProjectSetting(string name, string defaultValue, ProjectSettingState projectSettingsState) : base(name, defaultValue, projectSettingsState)
             {
-                type = SettingType.Text;
+                type = SettingType.String;
             }
         }
 
@@ -184,26 +184,40 @@ namespace Assets.Scripts.System
         [Inject]
         public SettingsSystem(ProjectSettingState projectSettingsState, SceneSettingState sceneSettingState)
         {
+            var userSettings = new List<ISetting>();
+
             TestNumber = new FloatUserSetting("Test number", 12.34f);
-            AllSettings.Add(TestNumber);
+            userSettings.Add(TestNumber);
 
             TestInteger = new IntUserSetting("Test integer", 123);
-            AllSettings.Add(TestInteger);
+            userSettings.Add(TestInteger);
 
             TestString = new StringUserSetting("Test text", "Hello world!");
-            AllSettings.Add(TestString);
+            userSettings.Add(TestString);
+
+            ShownSettings.Add("User Settings", userSettings);
+
+
+            var projectSettings = new List<ISetting>();
 
             TestProjVec3 = new Vec3ProjectSetting("Test Vec3 Project", Vector3.one, projectSettingsState);
-            AllSettings.Add(TestProjVec3);
+            projectSettings.Add(TestProjVec3);
 
             TestProjString = new StringProjectSetting("Test String Project", "some text", projectSettingsState);
-            AllSettings.Add(TestProjString);
+            projectSettings.Add(TestProjString);
+
+            ShownSettings.Add("Project Settings", projectSettings);
+
+
+            var sceneSettings = new List<ISetting>();
 
             TestSceneVec3 = new Vec3SceneSetting("Test Vec3 Scene", Vector3.one, sceneSettingState);
-            AllSettings.Add(TestSceneVec3);
+            sceneSettings.Add(TestSceneVec3);
+
+            ShownSettings.Add("Scene Settings", sceneSettings);
         }
 
-        public List<ISetting> AllSettings = new List<ISetting>();
+        public Dictionary<string, List<ISetting>> ShownSettings = new Dictionary<string, List<ISetting>>();
 
         public FloatUserSetting TestNumber;
         public IntUserSetting TestInteger;

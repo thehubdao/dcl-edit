@@ -10,5 +10,10 @@ namespace Assets.Scripts.Visuals.PropertyHandler
         
         [SerializeField]
         public NumberInputHandler numberInput;
+
+        public void SetActions(UiBuilder.UiPropertyActions<float> actions)
+        {
+            numberInput.SetActions(actions.OnChange, actions.OnSubmit, actions.OnAbort);
+        }
     }
 }

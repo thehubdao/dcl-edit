@@ -18,5 +18,9 @@ namespace Assets.Scripts.Events
 
         public event Action onHierarchyChangedEvent;
         public void InvokeHierarchyChangedEvent() => onHierarchyChangedEvent?.Invoke();
+
+
+        public event Action onSettingsChangedEvent;
+        public void InvokeSettingsChangedEvent() => onSettingsChangedEvent?.Invoke();
     }
 }
