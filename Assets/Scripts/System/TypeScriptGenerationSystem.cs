@@ -283,21 +283,31 @@ namespace Assets.Scripts.System
             // This contains the types for the dce entity and the dce scene
             var generatedScript = new StringBuilder();
             generatedScript.Append(@"export type DceScene = {
+    /**
+     * The root entity of the scene. All entities in this scene are children of either this scene root entity, or of another entity in the scene
+     */
     sceneRoot: DceEntity
 
     /**
-     * Shortcut for `sceneRoot.show()`
+     * Shows the scene with all its entities. Shortcut for `sceneRoot.show()`
      */
     show: () => void;
 
     /**
-     * Shortcut for `sceneRoot.hide()`
+     * Hides the scene with all its entities. Shortcut for `sceneRoot.hide()`
      */
     hide: () => void
 }
 
 export type DceEntity = {
+    /**
+     * The Decentraland entity
+     */
     entity: Entity
+
+    /**
+     * The Transform component of the entity. Although, it is not required by Decentraland, every DceEntity will have a Transform added
+     */
     transform: Transform
 
     /**
@@ -441,6 +451,11 @@ export type DceEntity = {
 
             foreach (var sceneInfo in generationInfo.GatheredSceneInfos)
             {
+                generatedScript.AppendLine("/**".Indent(1));
+                generatedScript.AppendLine($" * Creates a new instance of the scene {sceneInfo.Symbol}".Indent(1));
+                generatedScript.AppendLine(" * @param rootEntity specify a root entity for the newly created scene. If null, a new Entity will be generated as the root".Indent(1));
+                generatedScript.AppendLine(" */".Indent(1));
+
                 generatedScript.AppendLine($"static create{sceneInfo.Symbol}(rootEntity: Entity | null = null): {sceneInfo.Symbol} {{".Indent(1));
 
                 const string rootEntitySymbol = "rootEntity";
