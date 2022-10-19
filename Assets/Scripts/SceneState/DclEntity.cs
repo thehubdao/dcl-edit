@@ -116,11 +116,12 @@ namespace Assets.Scripts.SceneState
             return names.Any(name => Components.Exists(c => c.NameInCode == name));
         }
 
-        public DclEntity(Guid id, string name = "", Guid parentId = default)
+        public DclEntity(Guid id, string name = "", Guid parentId = default, bool isExposed = false)
         {
             Id = id;
             _customName = name;
             _parentId = parentId;
+            IsExposed = isExposed;
         }
     }
 }
