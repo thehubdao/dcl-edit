@@ -125,7 +125,7 @@ namespace Assets.Scripts.System
                     }
                 }
 
-                sceneDirectoryState.CurrentScene!.AddEntity(newEntity);
+                newScene.AddEntity(newEntity);
             }
 
             // set all the parents
