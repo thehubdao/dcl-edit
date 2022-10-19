@@ -372,10 +372,16 @@ export type DceEntity = {
             // Scene factory
             /* Example:
             export class SceneFactory {
-            |   static createMyScene(): MyScene {
-            |   |   const rootEnt = new Entity()
-            |   |   const rootTrans = new Transform()
-            |   |   rootEnt.addComponent(rootTrans)
+            |   static createMyScene(rootEntity: Entity | null = null): MyScene {
+            |   |   if (rootEntity == null) {
+            |   |   |   rootEntity = new Entity()
+            |   |   |   const rootEntityTrans = new Transform()
+            |   |   |   rootEntity.addComponent(rootEntityTrans)
+            |   |   } else {
+            |   |   |   if (!rootEntity.hasComponent(Transform)) {
+            |   |   |   |   rootEntity.addComponent(new Transform)
+            |   |   |   }
+            |   |   }
             |   |
             |   |   const testCubeEnt = new Entity()
             |   |   const testCubeTrans = new Transform()
@@ -409,7 +415,7 @@ export type DceEntity = {
             |   |   |   exposed: {
             |   |   |   |   testCube: {
             |   |   |   |   |   entity: testCubeEnt,
-            |   |   |   |   |   transform: testCubeTrans,
+            |   |   |   |   |   transform: rootEntity.getComponent(Transform),
             |   |   |   |   |   boxShape: testCubeBoxShape,
             |   |   |   |   |   show() { engine.addEntity(this.entity) },
             |   |   |   |   |   hide() { engine.removeEntity(this.entity) }
@@ -435,22 +441,38 @@ export type DceEntity = {
 
             foreach (var sceneInfo in generationInfo.GatheredSceneInfos)
             {
-                generatedScript.AppendLine($"static create{sceneInfo.Symbol}(): {sceneInfo.Symbol} {{".Indent(1));
+                generatedScript.AppendLine($"static create{sceneInfo.Symbol}(rootEntity: Entity | null = null): {sceneInfo.Symbol} {{".Indent(1));
 
-                const string rootEntitySymbol = _obfuscate ? "er" : "rootEntity";
+                const string rootEntitySymbol = "rootEntity";
                 const string rootTransformSymbol = rootEntitySymbol + "Trans";
 
                 // Root entity
-                generatedScript.AppendLine($"const {rootEntitySymbol} = new Entity()".Indent(2));
-                generatedScript.AppendLine($"const {rootTransformSymbol} = new Transform()".Indent(2));
+                generatedScript.AppendLine($"if ({rootEntitySymbol} == null) {{".Indent(2));
+                generatedScript.AppendLine($"{rootEntitySymbol} = new Entity()".Indent(3));
+                generatedScript.AppendLine($"const {rootTransformSymbol} = new Transform()".Indent(3));
                 if (_obfuscate)
                 {
-                    generatedScript.AppendLine($"o({rootEntitySymbol},{rootTransformSymbol})".Indent(2));
+                    generatedScript.AppendLine($"o({rootEntitySymbol},{rootTransformSymbol})");
                 }
                 else
                 {
-                    generatedScript.AppendLine($"{rootEntitySymbol}.addComponent({rootTransformSymbol})".Indent(2));
+                    generatedScript.AppendLine($"{rootEntitySymbol}.addComponent({rootTransformSymbol})".Indent(3));
                 }
+
+                generatedScript.AppendLine("} else {".Indent(2));
+                generatedScript.AppendLine($"if (!{rootEntitySymbol}.hasComponent(Transform)) {{".Indent(3));
+                if (_obfuscate)
+                {
+                    generatedScript.AppendLine($"o({rootEntitySymbol},new Transform)");
+                }
+                else
+                {
+                    generatedScript.AppendLine($"{rootEntitySymbol}.addComponent(new Transform)".Indent(4));
+                }
+
+                generatedScript.AppendLine($"}}".Indent(3));
+                generatedScript.AppendLine("}".Indent(2));
+
 
                 generatedScript.AppendLine();
 
@@ -537,7 +559,7 @@ export type DceEntity = {
              */
                 generatedScript.AppendLine("sceneRoot: {".Indent(3));
                 generatedScript.AppendLine($"entity: {rootEntitySymbol},".Indent(4));
-                generatedScript.AppendLine($"transform: {rootTransformSymbol},".Indent(4));
+                generatedScript.AppendLine($"transform: {rootEntitySymbol}.getComponent(Transform),".Indent(4));
                 generatedScript.AppendLine("show() { engine.addEntity(this.entity) },".Indent(4));
                 generatedScript.AppendLine("hide() { engine.removeEntity(this.entity) }".Indent(4));
                 generatedScript.AppendLine("},".Indent(3));
