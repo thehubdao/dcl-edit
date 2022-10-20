@@ -38,6 +38,12 @@ namespace Assets.Scripts.EditorState
         [CanBeNull]
         public DclScene CurrentScene;
 
+        /**
+         * <summary>
+         * Stores the paths of all files, that contribute to the opened scene. When the scene is saved again, it will only overwrite those files, that are part of the scene.
+         * All files, that are in the scene directory but for what ever reason not part of the scene, will stay unharmed.
+         * </summary>
+         */
         public List<string> LoadedFilePathsInScene = new List<string>();
     }
 }
