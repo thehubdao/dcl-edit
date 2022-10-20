@@ -73,14 +73,14 @@ public class DclEditorInstaller : MonoInstaller
 
         Container.BindInterfacesAndSelfTo<InputHelper>().AsSingle();
 
-        Container.BindFactory<UiBuilder, UiBuilder.Factory>();
+        Container.BindFactory<UiBuilder, UiBuilder.Factory>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<ProjectState>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<PathState>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<TypeScriptGenerationSystem>().AsSingle();
-        
+
         Container.BindFactory<EntitySelectInteraction, EntitySelectInteraction.Factory>().FromComponentInNewPrefab(_entityVisualPrefab);
 
         Container.BindFactory<GizmoSizeFixerSystem, GizmoVisuals.TranslateFactory>().FromComponentInNewPrefab(_translateGizmoPrefab).AsSingle();
@@ -96,5 +96,11 @@ public class DclEditorInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<EntitySelectSystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<HierarchyExpansionState>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<SettingsSystem>().AsSingle();
+
+        Container.Bind<ProjectSettingState>().To<ProjectSettingState>().AsSingle();
+
+        Container.Bind<SceneSettingState>().To<SceneSettingState>().AsSingle();
     }
 }

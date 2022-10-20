@@ -52,7 +52,8 @@ namespace Assets.Scripts.Visuals
         // Dependencies
         UnityState _unityState;
 
-        public UiBuilder(UnityState unityState)
+        [Inject]
+        private void Constructor(UnityState unityState)
         {
             _unityState = unityState;
         }
@@ -238,6 +239,8 @@ namespace Assets.Scripts.Visuals
                     numberProperty.propertyNameText.text = name;
                     numberProperty.numberInput.SetCurrentNumber(currentContents);
                     numberProperty.numberInput.TextInputHandler.SetPlaceHolder(placeholder);
+
+                    numberProperty.SetActions(actions);
 
                     return new MakeGmReturn { go = go, height = 50 };
                 }
