@@ -3,6 +3,7 @@ using System.IO;
 using Assets.Scripts.Utility;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using UnityEngine;
 using Zenject;
 
 namespace Assets.Scripts.EditorState
@@ -25,10 +26,7 @@ namespace Assets.Scripts.EditorState
 
         public MyNullable<T> GetSetting<T>(string key)
         {
-            if (_jsonSettings == null)
-            {
-                LoadSettings();
-            }
+            RequireSettingsLoaded();
 
             return _jsonSettings!.ContainsKey(key) ?
                 _jsonSettings[key]!.ToObject<T>() :
@@ -37,14 +35,19 @@ namespace Assets.Scripts.EditorState
 
         public void SetSetting<T>(string key, T value)
         {
-            if (_jsonSettings == null)
-            {
-                LoadSettings();
-            }
+            RequireSettingsLoaded();
 
             _jsonSettings![key] = JToken.FromObject(value);
 
             SaveSettings();
+        }
+
+        private void RequireSettingsLoaded()
+        {
+            if (_jsonSettings == null)
+            {
+                LoadSettings();
+            }
         }
 
         protected abstract void SaveSettings();
@@ -53,25 +56,31 @@ namespace Assets.Scripts.EditorState
 
     public class ProjectSettingState : JsonSettingState
     {
+        private string _projectSettingDirectoryPath => _pathState.ProjectPath + "/dcl-edit/";
+
+        private string _projectSettingPath => _projectSettingDirectoryPath + "settings.json";
+
         protected override void SaveSettings()
         {
-            var projectSettingsDirectoryPath = _pathState.ProjectPath + "/dcl-edit";
-            var projectSettingsPath = projectSettingsDirectoryPath + "/settings.json";
-
-            if (!Directory.Exists(projectSettingsDirectoryPath))
+            if (!Directory.Exists(_projectSettingDirectoryPath))
             {
-                Directory.CreateDirectory(projectSettingsDirectoryPath);
+                Directory.CreateDirectory(_projectSettingDirectoryPath);
             }
 
-            File.WriteAllText(projectSettingsPath, JsonConvert.SerializeObject(_jsonSettings, Formatting.Indented));
+            try
+            {
+                File.WriteAllText(_projectSettingPath, JsonConvert.SerializeObject(_jsonSettings, Formatting.Indented));
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+            }
         }
 
         protected override void LoadSettings()
         {
-            var projectSettingsPath = _pathState.ProjectPath + "/dcl-edit/settings.json";
-
-            _jsonSettings = File.Exists(projectSettingsPath) ?
-                JObject.Parse(File.ReadAllText(projectSettingsPath)) :
+            _jsonSettings = File.Exists(_projectSettingPath) ?
+                JObject.Parse(File.ReadAllText(_projectSettingPath)) :
                 new JObject();
         }
     }
@@ -100,8 +109,14 @@ namespace Assets.Scripts.EditorState
             }
 
             sceneJson["settings"] = _jsonSettings;
-
-            File.WriteAllText(sceneJsonPath, JsonConvert.SerializeObject(sceneJson, Formatting.Indented));
+            try
+            {
+                File.WriteAllText(sceneJsonPath, JsonConvert.SerializeObject(sceneJson, Formatting.Indented));
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+            }
         }
 
         protected override void LoadSettings()
