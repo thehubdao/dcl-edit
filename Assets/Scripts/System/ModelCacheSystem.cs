@@ -15,10 +15,10 @@ namespace Assets.Scripts.System
         // Dependencies
         private ModelCacheState _modelCacheState;
         private UnityState _unityState;
-        private PathState _pathState;
+        private IPathState _pathState;
 
         [Inject]
-        private void Construct(ModelCacheState modelCacheState, UnityState unityState, PathState pathState)
+        private void Construct(ModelCacheState modelCacheState, UnityState unityState, IPathState pathState)
         {
             _modelCacheState = modelCacheState;
             _unityState = unityState;

@@ -13,9 +13,9 @@ namespace Assets.Scripts.System
     {
         // Dependencies
         private EditorState.ProjectState _projectState;
-        private PathState _pathState;
+        private IPathState _pathState;
 
-        public LoadFromVersion1System(EditorState.ProjectState projectState, PathState pathState)
+        public LoadFromVersion1System(EditorState.ProjectState projectState, IPathState pathState)
         {
             _projectState = projectState;
             _pathState = pathState;

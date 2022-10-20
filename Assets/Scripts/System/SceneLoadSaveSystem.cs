@@ -35,9 +35,9 @@ namespace Assets.Scripts.System
     public class SceneLoadSaveSystem : ISceneLoadSystem, ISceneSaveSystem
     {
         // Dependencies
-        private PathState _pathState;
+        private IPathState _pathState;
 
-        public SceneLoadSaveSystem(PathState pathState)
+        public SceneLoadSaveSystem(IPathState pathState)
         {
             _pathState = pathState;
         }
