@@ -153,6 +153,7 @@ namespace Assets.Scripts.System
             public string customName;
             public Guid guid;
             public Guid? parentGuid;
+            public bool isExposed;
             public List<DclComponentData> components;
 
             public DclEntityData(DclEntity entity)
@@ -160,6 +161,7 @@ namespace Assets.Scripts.System
                 this.customName = entity.CustomName;
                 this.guid = entity.Id;
                 this.parentGuid = entity.Parent?.Id;
+                isExposed = entity.IsExposed;
 
                 this.components = new List<DclComponentData>();
                 foreach (DclComponent component in entity.Components)
@@ -182,7 +184,7 @@ namespace Assets.Scripts.System
                 }
 
 
-                var dclEntity = new DclEntity(guid, customName, parentGuid ?? default);
+                var dclEntity = new DclEntity(guid, customName, parentGuid ?? default, isExposed);
 
                 // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator 
                 foreach (var component in components)
