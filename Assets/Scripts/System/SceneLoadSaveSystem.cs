@@ -60,14 +60,20 @@ namespace Assets.Scripts.System
                 file.Delete();
             }
 
+            sceneDirectoryState.LoadedFilePathsInScene.Clear();
+
             // Create scene metadata file
             string metadataFilePath = $"{sceneDirPath}/scene.json";
             File.WriteAllText(metadataFilePath, "");
 
+            sceneDirectoryState.LoadedFilePathsInScene.Add(metadataFilePath);
+
             // Create entity files
             foreach (var entity in sceneDirectoryState.CurrentScene!.AllEntities.Select(pair => pair.Value))
             {
-                CreateEntityFile(entity, sceneDirPath);
+                var newPath = CreateEntityFile(entity, sceneDirPath);
+
+                sceneDirectoryState.LoadedFilePathsInScene.Add(newPath);
             }
         }
 
@@ -119,15 +125,27 @@ namespace Assets.Scripts.System
             sceneDirectoryState.CurrentScene = scene;
         }
 
-
-        public void CreateEntityFile(DclEntity entity, string sceneDirectoryPath)
+        /**
+         * <summary>
+         * Creates a save file for a given entity
+         * </summary>
+         * <param name="entity">The entity to save</param>
+         * <param name="sceneDirectoryPath">The directory where the entity should be saved to</param>
+         * <returns>
+         * The path to the newly created file
+         * </returns>
+         */
+        public string CreateEntityFile(DclEntity entity, string sceneDirectoryPath)
         {
             DclEntityData data = new DclEntityData(entity);
             string dataJson = JsonConvert.SerializeObject(data, Formatting.Indented);
 
             string filename = data.customName.Replace(' ', '_') + "-" + data.guid.ToString() + ".json";
 
-            File.WriteAllText($"{sceneDirectoryPath}/{filename}", dataJson);
+            var path = $"{sceneDirectoryPath}/{filename}";
+            File.WriteAllText(path, dataJson);
+
+            return path;
         }
 
         public void LoadEntityFile(DclScene scene, string absolutePath)
