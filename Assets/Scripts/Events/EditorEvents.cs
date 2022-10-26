@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Assets.Scripts.Events
 {
@@ -18,5 +19,13 @@ namespace Assets.Scripts.Events
 
         public event Action onHierarchyChangedEvent;
         public void InvokeHierarchyChangedEvent() => onHierarchyChangedEvent?.Invoke();
+
+
+        public event Action<List<Guid>> onAssetDataUpdatedEvent;
+        public void InvokeAssetDataUpdatedEvent(List<Guid> assetIds) => onAssetDataUpdatedEvent?.Invoke(assetIds);
+
+
+        public event Action onAssetMetadataCacheUpdatedEvent;
+        public void InvokeAssetMetadataCacheUpdatedEvent() => onAssetMetadataCacheUpdatedEvent?.Invoke();
     }
 }
