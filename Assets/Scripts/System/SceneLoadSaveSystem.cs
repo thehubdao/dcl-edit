@@ -53,7 +53,7 @@ namespace Assets.Scripts.System
             // Clear scene directory from files, that are regenerated
             foreach (FileInfo file in sceneDir
                          .GetFiles()
-                         .Where(f => sceneDirectoryState.LoadedFilePathsInScene.Contains(f.Name)))
+                         .Where(f => sceneDirectoryState.LoadedFilePathsInScene.Contains(NormalizePath(f.FullName))))
                 // Only delete files that were loaded into the scene.
                 // This prevents the deletion of faulty entity files and files the user added manually into the scene folder
             {
@@ -66,14 +66,14 @@ namespace Assets.Scripts.System
             string metadataFilePath = $"{sceneDirPath}/scene.json";
             File.WriteAllText(metadataFilePath, "");
 
-            sceneDirectoryState.LoadedFilePathsInScene.Add(metadataFilePath);
+            sceneDirectoryState.LoadedFilePathsInScene.Add(NormalizePath(metadataFilePath));
 
             // Create entity files
             foreach (var entity in sceneDirectoryState.CurrentScene!.AllEntities.Select(pair => pair.Value))
             {
                 var newPath = CreateEntityFile(entity, sceneDirPath);
 
-                sceneDirectoryState.LoadedFilePathsInScene.Add(newPath);
+                sceneDirectoryState.LoadedFilePathsInScene.Add(NormalizePath(newPath));
             }
         }
 
@@ -399,6 +399,13 @@ namespace Assets.Scripts.System
                         throw new SceneLoadException("Unknown property type");
                 }
             }
+        }
+
+        public static string NormalizePath(string path)
+        {
+            return Path.GetFullPath(new Uri(path).LocalPath)
+                .TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
+                .ToUpperInvariant();
         }
     }
 }
