@@ -1,10 +1,10 @@
-using System.Collections.Generic;
-using System.Linq;
 using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
 using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
 using Assets.Scripts.Visuals.UiHandler;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Zenject;
 
@@ -64,10 +64,10 @@ namespace Assets.Scripts.Visuals
 
                 var style =
                     isPrimarySelection ?
-                        TextHandler.TextStyle.PrimarySelection :
+                        TextHandler.TextStyle.PrimarySelectionTextStyle :
                         isSecondarySelection ?
-                            TextHandler.TextStyle.SecondarySelection :
-                            TextHandler.TextStyle.Normal;
+                            TextHandler.TextStyle.SecondarySelectionTextStyle :
+                            TextHandler.TextStyle.NormalTextStyle;
 
                 var isExpanded = _hierarchyChangeSystem.IsExpanded(entity);
 

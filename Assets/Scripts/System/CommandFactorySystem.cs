@@ -45,4 +45,9 @@ public class CommandFactorySystem
     {
         return new ChangeSelection(oldPrimary, oldSecondary, newPrimary, newSecondary);
     }
+
+    public AddModelAssetToScene CreateAddModelAssetToScene(Guid entityId, string entityCustomName, Guid assetId, Vector3 positionInScene)
+    {
+        return new AddModelAssetToScene(entityId, entityCustomName, assetId, positionInScene);
+    }
 }

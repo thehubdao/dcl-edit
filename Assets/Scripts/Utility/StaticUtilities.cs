@@ -40,7 +40,7 @@ namespace Assets.Scripts.Utility
         public static string Shortened(this Guid guid)
         {
             var guidString = guid.ToString();
-            return guidString.Substring(0,4) + " ... " + guidString.Substring(guidString.Length-4, 4);
+            return guidString.Substring(0, 4) + " ... " + guidString.Substring(guidString.Length - 4, 4);
         }
 
         public static string Indent(this string value, int level)
@@ -55,6 +55,15 @@ namespace Assets.Scripts.Utility
             builder.Append(value);
 
             return builder.ToString();
+        }
+
+        public static void SetLayerRecursive(GameObject gameObject, LayerMask layer)
+        {
+            gameObject.layer = layer;
+            foreach (Transform child in gameObject.transform)
+            {
+                SetLayerRecursive(child.gameObject, layer);
+            }
         }
     }
 }

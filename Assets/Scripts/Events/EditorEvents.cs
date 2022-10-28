@@ -27,5 +27,9 @@ namespace Assets.Scripts.Events
 
         public event Action onAssetMetadataCacheUpdatedEvent;
         public void InvokeAssetMetadataCacheUpdatedEvent() => onAssetMetadataCacheUpdatedEvent?.Invoke();
+
+
+        public event Action onUiChangedEvent;
+        public void InvokeUiChangedEvent() => onUiChangedEvent?.Invoke();
     }
 }

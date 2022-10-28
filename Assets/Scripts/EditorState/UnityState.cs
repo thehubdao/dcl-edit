@@ -1,7 +1,7 @@
+using DynamicPanels;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityGLTF;
-using DynamicPanels;
 
 namespace Assets.Scripts.EditorState
 {
@@ -46,7 +46,26 @@ namespace Assets.Scripts.EditorState
         [SerializeField]
         public Material DefaultMat;
 
-        [Header("Ui Atoms")] 
+        [SerializeField]
+        public Texture2D DefaultAssetThumbnail;
+
+        [Space]
+        [SerializeField]
+        public GameObject ErrorModel;
+
+        [Header("Ui Atoms")]
+        [SerializeField]
+        public GameObject ButtonAtom;
+
+        [SerializeField]
+        public GameObject AssetButton;
+
+        [SerializeField]
+        public GameObject GridAtom;
+
+        [SerializeField]
+        public GameObject RowAtom;
+
         [SerializeField]
         public GameObject TitleAtom;
 
@@ -55,7 +74,7 @@ namespace Assets.Scripts.EditorState
 
         [SerializeField]
         public GameObject PanelAtom;
-        
+
         [SerializeField]
         public GameObject PanelHeaderAtom;
 

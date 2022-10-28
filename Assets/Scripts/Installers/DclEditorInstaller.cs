@@ -80,7 +80,7 @@ public class DclEditorInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<PathState>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<TypeScriptGenerationSystem>().AsSingle();
-        
+
         Container.BindFactory<EntitySelectInteraction, EntitySelectInteraction.Factory>().FromComponentInNewPrefab(_entityVisualPrefab);
 
         Container.BindFactory<GizmoSizeFixerSystem, GizmoVisuals.TranslateFactory>().FromComponentInNewPrefab(_translateGizmoPrefab).AsSingle();
@@ -96,5 +96,15 @@ public class DclEditorInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<EntitySelectSystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<HierarchyExpansionState>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<AssetManagerSystem>().AsSingle();
+
+        Container.Bind<IAssetLoaderSystem>().To<FileAssetLoaderSystem>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<FileAssetLoaderState>().AsTransient();
+
+        Container.BindInterfacesAndSelfTo<AssetBrowserSystem>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<AssetBrowserState>().AsSingle();
     }
 }
