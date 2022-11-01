@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Assets.Scripts.EditorState;
 using Assets.Scripts.SceneState;
 using Assets.Scripts.Utility;
 using UnityEngine;
@@ -23,10 +24,10 @@ namespace Assets.Scripts.System
         // Dependencies
         private EditorState.SceneDirectoryState _sceneDirectoryState;
         private ExposeEntitySystem _exposeEntitySystem;
-        private PathState _pathState;
+        private IPathState _pathState;
 
         [Inject]
-        private void Construct(EditorState.SceneDirectoryState sceneDirectoryState, ExposeEntitySystem exposeEntitySystem, PathState pathState)
+        private void Construct(EditorState.SceneDirectoryState sceneDirectoryState, ExposeEntitySystem exposeEntitySystem, IPathState pathState)
         {
             _sceneDirectoryState = sceneDirectoryState;
             _exposeEntitySystem = exposeEntitySystem;

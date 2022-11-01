@@ -16,14 +16,14 @@ namespace Assets.Scripts.System
         private SetupSceneSystem _setupSceneSystem;
         private WorkspaceSaveSystem _workspaceSaveSystem;
         private UnityState _unityState;
-        private PathState _pathState;
+        private IPathState _pathState;
 
         [Inject]
         private void Construct(
             SetupSceneSystem setupSceneSystem,
             WorkspaceSaveSystem workspaceSaveSystem,
             UnityState unityState,
-            PathState pathState)
+            IPathState pathState)
         {
             _setupSceneSystem = setupSceneSystem;
             _workspaceSaveSystem = workspaceSaveSystem;

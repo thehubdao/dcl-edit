@@ -35,9 +35,9 @@ namespace Assets.Scripts.System
     public class SceneLoadSaveSystem : ISceneLoadSystem, ISceneSaveSystem
     {
         // Dependencies
-        private PathState _pathState;
+        private IPathState _pathState;
 
-        public SceneLoadSaveSystem(PathState pathState)
+        public SceneLoadSaveSystem(IPathState pathState)
         {
             _pathState = pathState;
         }
@@ -53,21 +53,27 @@ namespace Assets.Scripts.System
             // Clear scene directory from files, that are regenerated
             foreach (FileInfo file in sceneDir
                          .GetFiles()
-                         .Where(f => sceneDirectoryState.LoadedFilePathsInScene.Contains(f.Name)))
+                         .Where(f => sceneDirectoryState.LoadedFilePathsInScene.Contains(NormalizePath(f.FullName))))
                 // Only delete files that were loaded into the scene.
                 // This prevents the deletion of faulty entity files and files the user added manually into the scene folder
             {
                 file.Delete();
             }
 
+            sceneDirectoryState.LoadedFilePathsInScene.Clear();
+
             // Create scene metadata file
             string metadataFilePath = $"{sceneDirPath}/scene.json";
             File.WriteAllText(metadataFilePath, "");
 
+            sceneDirectoryState.LoadedFilePathsInScene.Add(NormalizePath(metadataFilePath));
+
             // Create entity files
             foreach (var entity in sceneDirectoryState.CurrentScene!.AllEntities.Select(pair => pair.Value))
             {
-                CreateEntityFile(entity, sceneDirPath);
+                var newPath = CreateEntityFile(entity, sceneDirPath);
+
+                sceneDirectoryState.LoadedFilePathsInScene.Add(NormalizePath(newPath));
             }
         }
 
@@ -119,15 +125,27 @@ namespace Assets.Scripts.System
             sceneDirectoryState.CurrentScene = scene;
         }
 
-
-        public void CreateEntityFile(DclEntity entity, string sceneDirectoryPath)
+        /**
+         * <summary>
+         * Creates a save file for a given entity
+         * </summary>
+         * <param name="entity">The entity to save</param>
+         * <param name="sceneDirectoryPath">The directory where the entity should be saved to</param>
+         * <returns>
+         * The path to the newly created file
+         * </returns>
+         */
+        public string CreateEntityFile(DclEntity entity, string sceneDirectoryPath)
         {
             DclEntityData data = new DclEntityData(entity);
             string dataJson = JsonConvert.SerializeObject(data, Formatting.Indented);
 
             string filename = data.customName.Replace(' ', '_') + "-" + data.guid.ToString() + ".json";
 
-            File.WriteAllText($"{sceneDirectoryPath}/{filename}", dataJson);
+            var path = $"{sceneDirectoryPath}/{filename}";
+            File.WriteAllText(path, dataJson);
+
+            return path;
         }
 
         public void LoadEntityFile(DclScene scene, string absolutePath)
@@ -381,6 +399,13 @@ namespace Assets.Scripts.System
                         throw new SceneLoadException("Unknown property type");
                 }
             }
+        }
+
+        public static string NormalizePath(string path)
+        {
+            return Path.GetFullPath(new Uri(path).LocalPath)
+                .TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
+                .ToUpperInvariant();
         }
     }
 }
