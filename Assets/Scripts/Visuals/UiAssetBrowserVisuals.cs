@@ -14,19 +14,23 @@ namespace Assets.Scripts.Visuals
         private GameObject _scrollViewContent;
         [SerializeField]
         private GameObject _headerContent;
+        [SerializeField]
+        private GameObject _footerContent;
 
         // Dependencies
         private UiBuilder.Factory _uiBuilderFactory;
         private EditorEvents _editorEvents;
         private AssetBrowserSystem _assetBrowserSystem;
+        private AssetManagerSystem _assetManagerSystem;
         private UnityState _unityState;
 
         [Inject]
-        private void Construct(UiBuilder.Factory uiBuilderFactory, EditorEvents editorEvents, AssetBrowserSystem assetBrowserSystem, UnityState unityState)
+        private void Construct(UiBuilder.Factory uiBuilderFactory, EditorEvents editorEvents, AssetBrowserSystem assetBrowserSystem, AssetManagerSystem assetManagerSystem, UnityState unityState)
         {
             _uiBuilderFactory = uiBuilderFactory;
             _editorEvents = editorEvents;
             _assetBrowserSystem = assetBrowserSystem;
+            _assetManagerSystem = assetManagerSystem;
             _unityState = unityState;
         }
 
@@ -121,6 +125,14 @@ namespace Assets.Scripts.Visuals
             }
             scrollViewBuilder.Grid(gridBuilder);
             scrollViewBuilder.ClearAndMake(_scrollViewContent);
+
+
+            // Build footer
+            var footerBuilder = _uiBuilderFactory.Create();
+            var footerRowBuilder = _uiBuilderFactory.Create();
+            footerRowBuilder.Button("Refresh", headerButtonStyle, () => _assetManagerSystem.CacheAllAssetMetadata());
+            footerBuilder.Row(footerRowBuilder);
+            footerBuilder.ClearAndMake(_footerContent);
         }
     }
 }
