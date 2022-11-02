@@ -90,7 +90,7 @@ namespace Assets.Scripts.Visuals
             var buttonTextStyle = new TextHandler.TextStyle
             {
                 horizontalAlignment = TMPro.HorizontalAlignmentOptions.Center,
-                verticalAlignment = TMPro.VerticalAlignmentOptions.Bottom,
+                verticalAlignment = TMPro.VerticalAlignmentOptions.Middle,
                 color = TextHandler.TextColor.Normal
             };
             foreach (var a in assets)
