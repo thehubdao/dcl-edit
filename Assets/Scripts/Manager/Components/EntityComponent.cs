@@ -58,7 +58,7 @@ public abstract class EntityComponent: MonoBehaviour
     /// 
     public abstract int InspectorOrder { get; }
 
-    public string InternalComponentSymbol => entity.InternalSymbol + ComponentName;
+    public string InternalComponentSymbol => $"{entity.InternalSymbol}_{ComponentName}";
 
     public struct Ts
     {
