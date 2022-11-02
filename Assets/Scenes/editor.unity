@@ -2739,6 +2739,7 @@ MonoBehaviour:
   _translateGizmoPrefab: {fileID: 4030547528416928526, guid: 5902694aa7e366a498edb54f63dfe949, type: 3}
   _rotateGizmoPrefab: {fileID: 7576839295262608665, guid: bd121112ea8e3144ca5e8e5af300829c, type: 3}
   _scaleGizmoPrefab: {fileID: 6226587272053408715, guid: 08b0965eef8544b43a35a9a4be5dab6a, type: 3}
+  _assetThumbnailGeneratorPrefab: {fileID: 7535211212909013817, guid: c920a71b6949a694798102689c32baf8, type: 3}
 --- !u!114 &1774098893
 MonoBehaviour:
   m_ObjectHideFlags: 0

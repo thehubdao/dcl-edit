@@ -26,6 +26,9 @@ public class DclEditorInstaller : MonoInstaller
     [SerializeField]
     private GameObject _scaleGizmoPrefab;
 
+    [SerializeField]
+    private GameObject _assetThumbnailGeneratorPrefab;
+
 
     public override void InstallBindings()
     {
@@ -123,5 +126,11 @@ public class DclEditorInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<BuilderAssetLoaderState>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<WebRequestSystem>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<AssetThumbnailManagerSystem>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<AssetThumbnailGeneratorSystem>().FromComponentInNewPrefab(_assetThumbnailGeneratorPrefab).AsSingle();
+
+        Container.BindInterfacesAndSelfTo<AssetThumbnailGeneratorState>().AsSingle();
     }
 }

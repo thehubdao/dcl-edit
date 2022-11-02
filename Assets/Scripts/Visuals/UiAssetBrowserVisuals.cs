@@ -25,9 +25,10 @@ namespace Assets.Scripts.Visuals
         private AssetManagerSystem _assetManagerSystem;
         private UnityState _unityState;
         private ContextMenuSystem _contextMenuSystem;
+        private AssetThumbnailManagerSystem _assetThumbnailManagerSystem;
 
         [Inject]
-        private void Construct(UiBuilder.Factory uiBuilderFactory, EditorEvents editorEvents, AssetBrowserSystem assetBrowserSystem, AssetManagerSystem assetManagerSystem, UnityState unityState, ContextMenuSystem contextMenuSystem)
+        private void Construct(UiBuilder.Factory uiBuilderFactory, EditorEvents editorEvents, AssetBrowserSystem assetBrowserSystem, AssetThumbnailManagerSystem assetThumbnailManagerSystem, AssetManagerSystem assetManagerSystem, UnityState unityState, ContextMenuSystem contextMenuSystem)
         {
             _uiBuilderFactory = uiBuilderFactory;
             _editorEvents = editorEvents;
@@ -35,6 +36,7 @@ namespace Assets.Scripts.Visuals
             _assetManagerSystem = assetManagerSystem;
             _unityState = unityState;
             _contextMenuSystem = contextMenuSystem;
+            _assetThumbnailManagerSystem = assetThumbnailManagerSystem;
         }
 
 
@@ -151,12 +153,12 @@ namespace Assets.Scripts.Visuals
                             break;
                     }
 
-                    // Request thumbnail from Thumbnail Manager system
+                    var thumbnail = _assetThumbnailManagerSystem.GetThumbnailById(a.assetId);
                     gridBuilder.AssetButton(
                         text: a.assetDisplayName,
                         textStyle: buttonTextStyle,
                         assetTypeIndicator: typeIndicator,
-                        //thumbnail: thumbnail,
+                        thumbnail: thumbnail,
                         assetMetadata: a
                     );
                 }

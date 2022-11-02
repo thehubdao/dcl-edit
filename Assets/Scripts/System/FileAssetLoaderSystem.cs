@@ -76,10 +76,7 @@ namespace Assets.Scripts.System
             return null;
         }
 
-        public AssetThumbnail GetThumbnailById(Guid id)
-        {
-            throw new NotImplementedException();
-        }
+        public Texture2D GetThumbnailById(Guid id) => AssetMetadataCache[id]?.contents.Thumbnail;
 
         public AssetData GetDataById(Guid id)
         {
@@ -91,8 +88,20 @@ namespace Assets.Scripts.System
             return LoadAssetData(id);
         }
 
-        #endregion
+        public bool SetThumbnailById(Guid id, Texture2D newThumbnail)
+        {
+            if (newThumbnail == null) return false;
 
+            if (AssetMetadataCache.TryGetValue(id, out AssetMetadataFile metaFile))
+            {
+                metaFile.contents.Thumbnail = newThumbnail;
+                WriteMetadataToFile(Path.GetDirectoryName(metaFile.metadataFilePath), metaFile.contents.Metadata, newThumbnail);
+                _editorEvents.InvokeAssetMetadataCacheUpdatedEvent();
+                return true;
+            }
+            return false;
+        }
+        #endregion
 
         #region Metadata related methods
 
