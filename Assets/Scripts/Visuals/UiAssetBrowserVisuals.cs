@@ -19,13 +19,15 @@ namespace Assets.Scripts.Visuals
         private UiBuilder.Factory _uiBuilderFactory;
         private EditorEvents _editorEvents;
         private AssetBrowserSystem _assetBrowserSystem;
+        private UnityState _unityState;
 
         [Inject]
-        private void Construct(UiBuilder.Factory uiBuilderFactory, EditorEvents editorEvents, AssetBrowserSystem assetBrowserSystem)
+        private void Construct(UiBuilder.Factory uiBuilderFactory, EditorEvents editorEvents, AssetBrowserSystem assetBrowserSystem, UnityState unityState)
         {
             _uiBuilderFactory = uiBuilderFactory;
             _editorEvents = editorEvents;
             _assetBrowserSystem = assetBrowserSystem;
+            _unityState = unityState;
         }
 
 
@@ -93,10 +95,26 @@ namespace Assets.Scripts.Visuals
             };
             foreach (var a in assets)
             {
+                Texture2D typeIndicator = null;
+                switch (a.assetType)
+                {
+                    case AssetMetadata.AssetType.Unknown:
+                        break;
+                    case AssetMetadata.AssetType.Model:
+                        typeIndicator = _unityState.AssetTypeModelIcon;
+                        break;
+                    case AssetMetadata.AssetType.Image:
+                        typeIndicator = _unityState.AssetTypeImageIcon;
+                        break;
+                    default:
+                        break;
+                }
+
                 // Request thumbnail from Thumbnail Manager system
                 gridBuilder.AssetButton(
                     text: a.assetDisplayName,
                     textStyle: buttonTextStyle,
+                    assetTypeIndicator: typeIndicator,
                     //thumbnail: thumbnail,
                     assetMetadata: a
                 );

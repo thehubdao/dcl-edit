@@ -2483,7 +2483,6 @@ MonoBehaviour:
   _translateGizmoPrefab: {fileID: 4030547528416928526, guid: 5902694aa7e366a498edb54f63dfe949, type: 3}
   _rotateGizmoPrefab: {fileID: 7576839295262608665, guid: bd121112ea8e3144ca5e8e5af300829c, type: 3}
   _scaleGizmoPrefab: {fileID: 6226587272053408715, guid: 08b0965eef8544b43a35a9a4be5dab6a, type: 3}
-  _assetThumbnailGeneratorPrefab: {fileID: 0}
 --- !u!114 &1774098893
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2555,6 +2554,8 @@ MonoBehaviour:
   ConeMesh: {fileID: 3613567641014311022, guid: e140720f2ef3dc5459b3d88eacb859c8, type: 3}
   DefaultMat: {fileID: 2100000, guid: c1295392ace60d94da19d7a387884d71, type: 2}
   DefaultAssetThumbnail: {fileID: 2800000, guid: 617c143300c28314e8539c12f20d5b21, type: 3}
+  AssetTypeModelIcon: {fileID: 2800000, guid: fe476aebf1136394a9100229fa339276, type: 3}
+  AssetTypeImageIcon: {fileID: 2800000, guid: 0ebbff0ce96e9244ea03a1752ad226fd, type: 3}
   ErrorModel: {fileID: 6504601161887710305, guid: 831ff32fe892a894ca0586aa133eb24d, type: 3}
   ButtonAtom: {fileID: 747852077168732134, guid: d530f0d1ef157894cadc657abe174f42, type: 3}
   AssetButton: {fileID: 9199737783199215851, guid: 5fbffa0ef7a6dae40aee2be1808b6979, type: 3}

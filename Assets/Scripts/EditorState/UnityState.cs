@@ -49,6 +49,12 @@ namespace Assets.Scripts.EditorState
         [SerializeField]
         public Texture2D DefaultAssetThumbnail;
 
+        [SerializeField]
+        public Texture2D AssetTypeModelIcon;
+
+        [SerializeField]
+        public Texture2D AssetTypeImageIcon;
+
         [Space]
         [SerializeField]
         public GameObject ErrorModel;

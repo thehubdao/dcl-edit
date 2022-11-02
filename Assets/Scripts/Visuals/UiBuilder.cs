@@ -84,7 +84,7 @@ namespace Assets.Scripts.Visuals
             return this;
         }
 
-        public UiBuilder AssetButton(string text, TextHandler.TextStyle textStyle, AssetMetadata assetMetadata, Texture2D thumbnail = null)
+        public UiBuilder AssetButton(string text, TextHandler.TextStyle textStyle, AssetMetadata assetMetadata, Texture2D assetTypeIndicator, Texture2D thumbnail = null)
         {
             _atoms.Add(new UiAtom
             {
@@ -98,6 +98,11 @@ namespace Assets.Scripts.Visuals
                     buttonHandler.text.text = text;
                     buttonHandler.text.textStyle = textStyle;
                     buttonHandler.assetButtonInteraction.assetMetadata = assetMetadata;
+
+                    if (assetTypeIndicator != null)
+                    {
+                        buttonHandler.assetTypeIndicator.sprite = Sprite.Create(assetTypeIndicator, new Rect(0, 0, assetTypeIndicator.width, assetTypeIndicator.height), new Vector2(0.5f, 0.5f));
+                    }
 
                     if (thumbnail != null)
                     {
