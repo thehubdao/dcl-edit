@@ -17,7 +17,7 @@ public class SaveFileUpgrader : MonoBehaviour,ISerializedFieldToStatic
     }
 
     
-    private static readonly int currentSaveFileVersion = 1;
+    private static readonly int currentSaveFileVersion = 2;
 
     private class JsonWrapper
     {
@@ -51,16 +51,17 @@ public class SaveFileUpgrader : MonoBehaviour,ISerializedFieldToStatic
         {
             var newVersion = fromVersion switch
             {
-                0 => UpgradeFrom0(),
+                0 => UpgradeFrom(0),
+                1 => UpgradeFrom(1),
                 _ => throw new ArgumentOutOfRangeException(nameof(fromVersion), fromVersion, "version not implemented yet"),
             };
             UpgradeSaveFiles(newVersion);
         }
-    }
-
-    private static int UpgradeFrom0()
+    } 
+    
+    private static int UpgradeFrom(int version)
     {
-        Debug.Log("Upgrading Save file from version 0 to 1");
+        Debug.Log($"Upgrading Save file from version {version} to {version + 1}");
 
         var savesDirectoryPath = DclSceneManager.DclProjectPath + "/dcl-edit/saves/";
         var saveVersionPath = savesDirectoryPath + "version.json";
@@ -69,7 +70,6 @@ public class SaveFileUpgrader : MonoBehaviour,ISerializedFieldToStatic
         
         File.WriteAllText(saveVersionPath,JsonUtility.ToJson(new JsonWrapper()));
 
-        return 1;
+        return version + 1;
     }
-
 }

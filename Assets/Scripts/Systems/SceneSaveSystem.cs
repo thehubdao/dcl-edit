@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 
 public class SceneSaveSystem : MonoBehaviour
@@ -112,20 +113,34 @@ public class SceneSaveSystem : MonoBehaviour
                 Destroy(entity.gameObject);
             } 
 
-            var parentNumbers = new Dictionary<Entity, int>();
-            var uniqueNumbers = new Dictionary<int, Entity>();
+            var parentNumbers = new Dictionary<Entity, GUID>();
+            var uniqueNumbers = new Dictionary<GUID, Entity>();
+            var oldUniqueValues = new Dictionary<int, GUID>();
             foreach (var entity in entities.entities)
             {
                 var newEntityGameObject = Instantiate(DclSceneManager.EntityTemplate, DclSceneManager.EntityParent);
                 var newEntity = newEntityGameObject.GetComponent<Entity>();
+                var uniqueIdDidParse = GUID.TryParse(entity.uniqueId, out var uniqueId);
+                var parentIdDidParse = GUID.TryParse(entity.parentId, out var parentId);
+                
+                if (!uniqueIdDidParse && !oldUniqueValues.ContainsKey(entity.uniqueNumber))
+                {
+                    oldUniqueValues.Add(entity.uniqueNumber, GUID.Generate());
+                }
+
+                if (!parentIdDidParse && !oldUniqueValues.ContainsKey(entity.parent))
+                {
+                    oldUniqueValues.Add(entity.parent, entity.parent == -1 ? default : GUID.Generate());
+                }
 
                 newEntity.HierarchyOrder = entity.hierarchyOrder;
                 newEntity.CustomName = entity.name;
                 newEntity.uniqueNumber = entity.uniqueNumber;
+                newEntity.uniqueId = uniqueIdDidParse ? uniqueId : oldUniqueValues[entity.uniqueNumber];
                 newEntity.Exposed = entity.exposed;
                 newEntity.CollapsedChildren = entity.collapsedChildren;
-                parentNumbers.Add(newEntity,entity.parent);
-                uniqueNumbers.Add(entity.uniqueNumber, newEntity);
+                parentNumbers.Add(newEntity, parentIdDidParse ? parentId : oldUniqueValues[entity.parent]);
+                uniqueNumbers.Add(uniqueIdDidParse ? uniqueId : oldUniqueValues[entity.uniqueNumber], newEntity);
 
                 foreach (var component in entity.components)
                 {

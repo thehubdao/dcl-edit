@@ -1,9 +1,8 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
-using UnityEngine.Rendering;
 using static System.Char;
 
 public class Entity : SceneTreeObject
@@ -17,6 +16,8 @@ public class Entity : SceneTreeObject
             name = e.CustomName;
             uniqueNumber = e.uniqueNumber;
             parent = (e.Parent as Entity)?.uniqueNumber ?? -1;
+            uniqueId = e.uniqueId.ToString();
+            parentId = (e.Parent as Entity)?.uniqueId.ToString() ?? string.Empty;
             exposed = e.Exposed;
             collapsedChildren = e.CollapsedChildren;
             components = e.Components.Select(c => new EntityComponent.Json(c)).ToList();
@@ -26,6 +27,8 @@ public class Entity : SceneTreeObject
         public string name;
         public int uniqueNumber;
         public int parent;
+        public string uniqueId;
+        public string parentId;
         public bool exposed;
         public bool collapsedChildren;
         public List<EntityComponent.Json> components;
@@ -36,7 +39,7 @@ public class Entity : SceneTreeObject
         get => transform.parent.GetComponentInParent<SceneTreeObject>();
         set => SetParentKeepGlobalTransform(value);
     }
-    
+
     public void SetParentKeepGlobalTransform(SceneTreeObject newParent)
     {
         transform.SetParent(newParent.childParent, true);
@@ -97,7 +100,7 @@ public class Entity : SceneTreeObject
     /// The Symbol, that is used in the internal TypeScript
     /// </summary>
     /// Is always Unique
-    public string InternalSymbol => (ShownName + uniqueNumber.ToString()).ToCamelCase();
+    public string InternalSymbol => $"{ShownName.ToCamelCase()}_{uniqueId}";
 
     /// <summary>
     /// The Symbol, that is exposed to the users TypeScript.
@@ -106,12 +109,15 @@ public class Entity : SceneTreeObject
     /// 
     /// Example:
     /// scene.mySuperCoolEntity.transform
-    ///       `-- this part --´
+    ///       `-- this part --ï¿½
     public string ExposedSymbol => ShownName.ToCamelCase();
 
+    [Obsolete("Moving to guid with uniqueId parameter")]
     public int uniqueNumber = -1;
 
     public static int uniqueNumberCounter = 1;
+
+    public GUID uniqueId;
 
     [SerializeField]
     private bool _exposed = false;
@@ -199,6 +205,9 @@ public class Entity : SceneTreeObject
 
     void Start()
     {
+        if (uniqueId == default)
+            uniqueId = GUID.Generate();
+        
         if (uniqueNumber < 0)
             uniqueNumber = uniqueNumberCounter++;
     }
