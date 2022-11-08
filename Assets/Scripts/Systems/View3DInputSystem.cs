@@ -373,9 +373,14 @@ public class View3DInputSystem : MonoBehaviour
                 if (selectedEntity != null)
                 {
                     var childRenderers = selectedEntity.GetComponentsInChildren<Renderer>();
-                    var thisFar = childRenderers.Length > 0 ? childRenderers.Min(r => r.bounds.size.magnitude) : 10f;
+                    var magnitude = 10f;
+                    if (childRenderers.Length > 0)
+                    {
+                        var bestRenderer = childRenderers.ElementAtOrDefault(selectedEntity.AllChildCount);
+                        if(bestRenderer != null) magnitude = bestRenderer.bounds.size.magnitude;
+                    }
                     
-                    var newPos = CameraManager.Forward * (-1 * thisFar);
+                    var newPos = CameraManager.Forward * (-1 * magnitude);
                     CameraManager.Position = selectedEntity.transform.position + newPos;
                 }
             }
