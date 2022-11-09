@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 8024071907148859788}
   - component: {fileID: 8024071907148859789}
   - component: {fileID: 1287049970833695327}
+  - component: {fileID: 9161437581977317862}
   m_Layer: 5
   m_Name: Text
   m_TagString: Untagged
@@ -151,3 +152,15 @@ MonoBehaviour:
   PrimaryColorGradient: {fileID: 11400000, guid: fd55bb3cc1e5ba944b4bb9f9aa355a18, type: 2}
   SecondaryColorGradient: {fileID: 11400000, guid: 391ea3c2d39da864c959c30ce56a8da1, type: 2}
   TextComponent: {fileID: 8024071907148859789}
+--- !u!114 &9161437581977317862
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8024071907148859791}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e809fde91554ef4392f83848a1a6bcb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

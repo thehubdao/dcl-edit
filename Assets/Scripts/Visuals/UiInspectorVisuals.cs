@@ -6,6 +6,7 @@ using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
 using UnityEngine;
 using Zenject;
+using static Assets.Scripts.Events.EventDependentTypes;
 
 namespace Assets.Scripts.Visuals
 {
@@ -17,7 +18,8 @@ namespace Assets.Scripts.Visuals
         // Dependencies
         private InputState _inputState;
         private UpdatePropertiesFromUiSystem _updatePropertiesSystem;
-        private UiBuilder.Factory _uiBuilderFactory;
+        private UiBuilderSystem.UiBuilder.Factory _uiBuilderFactory;
+        private UiBuilderVisuals.Factory _uiBuilderVisualsFactory;
         private SceneDirectoryState _sceneDirectoryState;
         private EditorEvents _editorEvents;
 
@@ -25,15 +27,20 @@ namespace Assets.Scripts.Visuals
         private void Construct(
             InputState inputState,
             UpdatePropertiesFromUiSystem updatePropertiesSystem,
-            UiBuilder.Factory uiBuilderFactory,
+            UiBuilderSystem.UiBuilder.Factory uiBuilderFactory,
+            UiBuilderVisuals.Factory uiBuilderVisualsFactory,
             SceneDirectoryState sceneDirectoryState,
             EditorEvents editorEvents)
         {
             _inputState = inputState;
             _updatePropertiesSystem = updatePropertiesSystem;
             _uiBuilderFactory = uiBuilderFactory;
+            _uiBuilderVisualsFactory = uiBuilderVisualsFactory;
             _sceneDirectoryState = sceneDirectoryState;
             _editorEvents = editorEvents;
+
+
+            _uiBuilderVisualsFactory.Create(new UiBuilderSetupKey{Id = UiBuilderSetupKey.UiBuilderId.Inspector}, _content);
         }
 
         public void SetupSceneEventListeners()
@@ -49,7 +56,7 @@ namespace Assets.Scripts.Visuals
                 return;
             }
 
-            var inspectorBuilder = _uiBuilderFactory.Create();
+            var inspectorBuilder = _uiBuilderFactory.Create(new UiBuilderSetupKey { Id = UiBuilderSetupKey.UiBuilderId.Inspector });
 
             var selectedEntity = _sceneDirectoryState.CurrentScene?.SelectionState.PrimarySelectedEntity;
 
@@ -57,18 +64,20 @@ namespace Assets.Scripts.Visuals
             {
                 inspectorBuilder
                     .Title("No Entity selected")
-                    .ClearAndMake(_content);
+                    .Done();
+                
+
                 return;
             }
 
-            var nameInputActions = new UiBuilder.UiPropertyActions<string>
+            var nameInputActions = new UiBuilderAtom.UiPropertyActions<string>
             {
                 OnChange = _ => { },
                 OnSubmit = value => _updatePropertiesSystem.SetNewName(selectedEntity, value),
                 OnAbort = _ => { }
             };
 
-            var exposedInputActions = new UiBuilder.UiPropertyActions<bool>
+            var exposedInputActions = new UiBuilderAtom.UiPropertyActions<bool>
             {
                 OnChange = _ => { },
                 OnSubmit = value => _updatePropertiesSystem.SetIsExposed(selectedEntity, value),
@@ -76,15 +85,17 @@ namespace Assets.Scripts.Visuals
             };
 
 
-            var entityHeadBuilder = _uiBuilderFactory.Create()
+            var entityHeadBuilder = _uiBuilderFactory.Create(new UiBuilderSetupKey { Id = UiBuilderSetupKey.UiBuilderId.Inspector, SubId = "0-Entity-Head"})
                 .StringPropertyInput("Name", "Name", selectedEntity.CustomName ?? "", nameInputActions)
                 .BooleanPropertyInput("Is Exposed", selectedEntity.IsExposed, exposedInputActions);
 
-            inspectorBuilder.Panel(entityHeadBuilder);
+            entityHeadBuilder.Done();
+
+            inspectorBuilder.Panel(entityHeadBuilder.key);
 
             foreach (var component in selectedEntity.Components ?? new List<DclComponent>())
             {
-                var componentBuilder = _uiBuilderFactory.Create()
+                var componentBuilder = _uiBuilderFactory.Create(new UiBuilderSetupKey { Id = UiBuilderSetupKey.UiBuilderId.Inspector, SubId = $"Component-{component.NameInCode}" })
                     .PanelHeader(component.NameInCode, null);
 
                 foreach (var property in component.Properties)
@@ -97,7 +108,7 @@ namespace Assets.Scripts.Visuals
                             break;
                         case DclComponent.DclComponentProperty.PropertyType.String:
                         {
-                            var stringActions = new UiBuilder.UiPropertyActions<string>
+                            var stringActions = new UiBuilderAtom.UiPropertyActions<string>
                             {
                                 OnChange = (value) => _updatePropertiesSystem.UpdateFloatingProperty(propertyIdentifier, value),
                                 OnSubmit = (value) => _updatePropertiesSystem.UpdateFixedProperty(propertyIdentifier, value),
@@ -114,7 +125,7 @@ namespace Assets.Scripts.Visuals
                         }
                         case DclComponent.DclComponentProperty.PropertyType.Int:
                         {
-                            var intActions = new UiBuilder.UiPropertyActions<float> // number property requires float actions
+                            var intActions = new UiBuilderAtom.UiPropertyActions<float> // number property requires float actions
                             {
                                 OnChange = (value) => _updatePropertiesSystem.UpdateFloatingProperty(propertyIdentifier, (int) value),
                                 OnSubmit = (value) => _updatePropertiesSystem.UpdateFixedProperty(propertyIdentifier, (int) value),
@@ -131,7 +142,7 @@ namespace Assets.Scripts.Visuals
                         }
                         case DclComponent.DclComponentProperty.PropertyType.Float:
                         {
-                            var floatActions = new UiBuilder.UiPropertyActions<float>
+                            var floatActions = new UiBuilderAtom.UiPropertyActions<float>
                             {
                                 OnChange = (value) => _updatePropertiesSystem.UpdateFloatingProperty(propertyIdentifier, value),
                                 OnSubmit = (value) => _updatePropertiesSystem.UpdateFixedProperty(propertyIdentifier, value),
@@ -153,7 +164,7 @@ namespace Assets.Scripts.Visuals
                         }
                         case DclComponent.DclComponentProperty.PropertyType.Vector3:
                         {
-                            var vec3Actions = new UiBuilder.UiPropertyActions<Vector3>
+                            var vec3Actions = new UiBuilderAtom.UiPropertyActions<Vector3>
                             {
                                 OnChange = (value) => _updatePropertiesSystem.UpdateFloatingProperty(propertyIdentifier, value),
                                 OnSubmit = (value) => _updatePropertiesSystem.UpdateFixedProperty(propertyIdentifier, value),
@@ -171,7 +182,7 @@ namespace Assets.Scripts.Visuals
                         }
                         case DclComponent.DclComponentProperty.PropertyType.Quaternion: // Shows quaternions in euler angles
                         {
-                            var vec3Actions = new UiBuilder.UiPropertyActions<Vector3>
+                            var vec3Actions = new UiBuilderAtom.UiPropertyActions<Vector3>
                             {
                                 OnChange = (value) => _updatePropertiesSystem.UpdateFloatingProperty(propertyIdentifier, Quaternion.Euler(value)),
                                 OnSubmit = (value) => _updatePropertiesSystem.UpdateFixedProperty(propertyIdentifier, Quaternion.Euler(value)),
@@ -196,11 +207,12 @@ namespace Assets.Scripts.Visuals
                             throw new ArgumentOutOfRangeException();
                     }
                 }
+                componentBuilder.Done();
 
-                inspectorBuilder.Panel(componentBuilder);
+                inspectorBuilder.Panel(componentBuilder.key);
             }
 
-            inspectorBuilder.ClearAndMake(_content);
+            inspectorBuilder.Done();
         }
     }
 }

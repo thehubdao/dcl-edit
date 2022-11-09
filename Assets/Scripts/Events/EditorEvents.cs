@@ -22,5 +22,9 @@ namespace Assets.Scripts.Events
 
         public event Action onSettingsChangedEvent;
         public void InvokeSettingsChangedEvent() => onSettingsChangedEvent?.Invoke();
+
+
+        public event Action<EventDependentTypes.UiBuilderSetupKey> onUiBuilderChangedEvent;
+        public void InvokeUiBuilderChangedEvent(EventDependentTypes.UiBuilderSetupKey uiBuilderKey) => onUiBuilderChangedEvent?.Invoke(uiBuilderKey);
     }
 }

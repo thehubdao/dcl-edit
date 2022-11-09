@@ -7,6 +7,7 @@ using Assets.Scripts.System;
 using Assets.Scripts.Visuals.UiHandler;
 using UnityEngine;
 using Zenject;
+using static Assets.Scripts.Events.EventDependentTypes;
 
 namespace Assets.Scripts.Visuals
 {
@@ -21,19 +22,26 @@ namespace Assets.Scripts.Visuals
 
         // Dependencies
         private EditorEvents _events;
-        private UiBuilder.Factory _uiBuilderFactory;
+        private UiBuilderSystem.UiBuilder.Factory _uiBuilderFactory;
+        private UiBuilderVisuals.Factory _uiBuilderVisualsFactory;
         private SceneDirectoryState _sceneDirectoryState;
         private CommandSystem _commandSystem;
         private HierarchyChangeSystem _hierarchyChangeSystem;
 
+        private UiBuilderVisuals _uiBuilderVisuals;
+
         [Inject]
-        private void Construct(EditorEvents events, UiBuilder.Factory uiBuilderFactory, SceneDirectoryState scene, CommandSystem commandSystem, HierarchyChangeSystem hierarchyChangeSystem)
+        private void Construct(EditorEvents events, UiBuilderSystem.UiBuilder.Factory uiBuilderFactory, UiBuilderVisuals.Factory uiBuilderVisualsFactory, SceneDirectoryState scene, CommandSystem commandSystem, HierarchyChangeSystem hierarchyChangeSystem)
         {
             _events = events;
             _uiBuilderFactory = uiBuilderFactory;
+            _uiBuilderVisualsFactory = uiBuilderVisualsFactory;
             _sceneDirectoryState = scene;
             _commandSystem = commandSystem;
             _hierarchyChangeSystem = hierarchyChangeSystem;
+
+            _uiBuilderVisuals = _uiBuilderVisualsFactory.Create(new UiBuilderSetupKey{Id = UiBuilderSetupKey.UiBuilderId.Hierarchy}, _content);
+            _uiBuilderVisuals.UpdateVisuals();
         }
 
         public void SetupSceneEventListeners()
@@ -45,16 +53,16 @@ namespace Assets.Scripts.Visuals
 
         private void UpdateVisuals()
         {
-            var uiBuilder = _uiBuilderFactory.Create();
+            var uiBuilder = _uiBuilderFactory.Create(new UiBuilderSetupKey { Id = UiBuilderSetupKey.UiBuilderId.Hierarchy });
 
             MakeHierarchyItemsRecursive(uiBuilder, 0, _sceneDirectoryState.CurrentScene!.EntitiesInSceneRoot);
 
             uiBuilder.Spacer(300);
 
-            uiBuilder.ClearAndMake(_content);
+            uiBuilder.Done();
         }
 
-        private void MakeHierarchyItemsRecursive(UiBuilder uiBuilder, int level, IEnumerable<DclEntity> entities)
+        private void MakeHierarchyItemsRecursive(UiBuilderSystem.UiBuilder uiBuilder, int level, IEnumerable<DclEntity> entities)
         {
             foreach (var entity in entities)
             {
@@ -64,18 +72,22 @@ namespace Assets.Scripts.Visuals
 
                 var style =
                     isPrimarySelection ?
-                        TextHandler.TextStyle.PrimarySelection :
+                        UiBuilderAtom.TextStyle.PrimarySelection :
                         isSecondarySelection ?
-                            TextHandler.TextStyle.SecondarySelection :
-                            TextHandler.TextStyle.Normal;
+                            UiBuilderAtom.TextStyle.SecondarySelection :
+                            UiBuilderAtom.TextStyle.Normal;
 
                 var isExpanded = _hierarchyChangeSystem.IsExpanded(entity);
 
-                uiBuilder.HierarchyItem(entity.ShownName, level, entity.Children.Any(), isExpanded, style, new HierarchyItemHandler.UiHierarchyItemActions
-                {
-                    OnArrowClick = () => { _hierarchyChangeSystem.ClickedOnEntityExpandArrow(entity); },
-                    OnNameClick = () => { _hierarchyChangeSystem.ClickedOnEntityInHierarchy(entity); }
-                });
+                uiBuilder.HierarchyItem(
+                    entity.ShownName,
+                    level,
+                    entity.Children.Any(),
+                    isExpanded,
+                    style,
+                    () => { _hierarchyChangeSystem.ClickedOnEntityExpandArrow(entity); },
+                    () => { _hierarchyChangeSystem.ClickedOnEntityInHierarchy(entity); }
+                    );
 
                 if (isExpanded)
                 {

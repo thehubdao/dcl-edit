@@ -102,5 +102,11 @@ public class DclEditorInstaller : MonoInstaller
         Container.Bind<ProjectSettingState>().To<ProjectSettingState>().AsSingle();
 
         Container.Bind<SceneSettingState>().To<SceneSettingState>().AsSingle();
+
+        Container.BindFactory<EventDependentTypes.UiBuilderSetupKey, UiBuilderSystem.UiBuilder, UiBuilderSystem.UiBuilder.Factory>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<UiBuilderState>().AsSingle();
+
+        Container.BindFactory<EventDependentTypes.UiBuilderSetupKey, GameObject, UiBuilderVisuals, UiBuilderVisuals.Factory>().AsSingle();
     }
 }

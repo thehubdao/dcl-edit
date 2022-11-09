@@ -71,7 +71,7 @@ namespace Assets.Scripts.Visuals
 
                     text.text = title;
 
-                    return new MakeGmReturn { go = go, height = 130 };
+                    return new MakeGmReturn {go = go, height = 130};
                 }
             });
 
@@ -91,7 +91,7 @@ namespace Assets.Scripts.Visuals
 
                     tmpText.text = text;
 
-                    return new MakeGmReturn { go = go, height = 50 };
+                    return new MakeGmReturn {go = go, height = 50};
                 }
             });
 
@@ -107,7 +107,7 @@ namespace Assets.Scripts.Visuals
                 {
                     var gameObject = new GameObject("Spacer");
                     gameObject.AddComponent<RectTransform>();
-                    return new MakeGmReturn { go = gameObject, height = height };
+                    return new MakeGmReturn {go = gameObject, height = height};
                 }
             });
 
@@ -127,7 +127,7 @@ namespace Assets.Scripts.Visuals
 
                     content.ClearAndMakePanel(handler.Content);
 
-                    return new MakeGmReturn { go = go, height = content.CurrentHeight + 40 };
+                    return new MakeGmReturn {go = go, height = content.CurrentHeight + 40};
                 }
             });
 
@@ -151,7 +151,7 @@ namespace Assets.Scripts.Visuals
                     var handler = go.GetComponent<PanelHeaderHandler>();
                     handler.Title.text = title;
 
-                    if(onClose != null)
+                    if (onClose != null)
                     {
                         handler.CloseButton.onClick.AddListener(onClose);
                     }
@@ -159,10 +159,10 @@ namespace Assets.Scripts.Visuals
                     {
                         handler.CloseButton.gameObject.SetActive(false);
                     }
-                    
-                    return new MakeGmReturn { go = go, height = 60 };
+
+                    return new MakeGmReturn {go = go, height = 60};
                 }
-            }); 
+            });
 
             return this;
         }
@@ -218,13 +218,13 @@ namespace Assets.Scripts.Visuals
                     // setup actions
                     stringProperty.SetActions(actions);
 
-                    return new MakeGmReturn { go = go, height = 50 };
+                    return new MakeGmReturn {go = go, height = 50};
                 }
             });
 
             return this;
         }
-        
+
         public UiBuilder NumberPropertyInput(string name, string placeholder, float currentContents, UiPropertyActions<float> actions)
         {
             _atoms.Add(new UiAtom
@@ -242,7 +242,7 @@ namespace Assets.Scripts.Visuals
 
                     numberProperty.SetActions(actions);
 
-                    return new MakeGmReturn { go = go, height = 50 };
+                    return new MakeGmReturn {go = go, height = 50};
                 }
             });
 
@@ -265,7 +265,7 @@ namespace Assets.Scripts.Visuals
 
                     booleanProperty.SetActions(actions);
 
-                    return new MakeGmReturn { go = go, height = 50 };
+                    return new MakeGmReturn {go = go, height = 50};
                 }
             });
 
@@ -296,7 +296,7 @@ namespace Assets.Scripts.Visuals
 
                     vector3PropertyHandler.SetActions(actions);
 
-                    return new MakeGmReturn { go = go, height = 50 };
+                    return new MakeGmReturn {go = go, height = 50};
                 }
             });
 
@@ -383,6 +383,8 @@ namespace Assets.Scripts.Visuals
             Object.Destroy(objects);
         }
 
-        public class Factory : PlaceholderFactory<UiBuilder> { }
+        public class Factory : PlaceholderFactory<UiBuilder>
+        {
+        }
     }
 }

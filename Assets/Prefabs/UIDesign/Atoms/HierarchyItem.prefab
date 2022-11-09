@@ -46,6 +46,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4572500443968408437}
   - component: {fileID: 7021667795846845239}
+  - component: {fileID: 7551357167596049371}
   m_Layer: 5
   m_Name: HierarchyItem
   m_TagString: Untagged
@@ -89,6 +90,18 @@ MonoBehaviour:
   Arrow: {fileID: 4611500091154730652}
   ArrowContainer: {fileID: 3812687420822348181}
   Indent: {fileID: 2265490378801644114}
+--- !u!114 &7551357167596049371
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2570515792709860737}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e809fde91554ef4392f83848a1a6bcb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3805850520352286205
 GameObject:
   m_ObjectHideFlags: 0
