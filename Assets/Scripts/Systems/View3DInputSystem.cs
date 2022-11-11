@@ -372,16 +372,19 @@ public class View3DInputSystem : MonoBehaviour
                 var selectedEntity = DclSceneManager.PrimarySelectedEntity;
                 if (selectedEntity != null)
                 {
-                    var childRenderers = selectedEntity.GetComponentsInChildren<Renderer>();
+                    var childRenderers = selectedEntity.componentsParent.GetComponentsInChildren<Renderer>();
+                    var startPoint = selectedEntity.transform.position;
                     var magnitude = 10f;
+                    
                     if (childRenderers.Length > 0)
                     {
-                        var bestRenderer = childRenderers.ElementAtOrDefault(selectedEntity.AllChildCount);
-                        if(bestRenderer != null) magnitude = bestRenderer.bounds.size.magnitude;
+                        var bestBounds = childRenderers.OrderByDescending(r => r.bounds.size.magnitude).First().bounds;
+                        magnitude = bestBounds.size.magnitude;
+                        startPoint = bestBounds.center;
                     }
                     
                     var newPos = CameraManager.Forward * (-1 * magnitude);
-                    CameraManager.Position = selectedEntity.transform.position + newPos;
+                    CameraManager.Position = startPoint + newPos;
                 }
             }
 
