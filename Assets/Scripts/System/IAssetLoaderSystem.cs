@@ -10,7 +10,7 @@ namespace Assets.Scripts.System
         void CacheAllAssetMetadata();
         IEnumerable<Guid> GetAllAssetIds();
         AssetMetadata GetMetadataById(Guid id);
-        Texture2D GetThumbnailById(Guid id);
+        AssetThumbnail GetThumbnailById(Guid id);
         AssetData GetDataById(Guid id);
     }
 
@@ -35,6 +35,14 @@ namespace Assets.Scripts.System
         public AssetType assetType { get; }
     }
 
+    public class AssetThumbnail
+    {
+        public Guid Id;
+
+        public AssetData.State State;
+
+        public Texture2D Texture;
+    }
 
     public class AssetData
     {

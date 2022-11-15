@@ -25,6 +25,10 @@ namespace Assets.Scripts.Events
         public void InvokeAssetDataUpdatedEvent(List<Guid> assetIds) => onAssetDataUpdatedEvent?.Invoke(assetIds);
 
 
+        public event Action<List<Guid>> onAssetThumbnailUpdatedEvent;
+        public void InvokeThumbnailDataUpdatedEvent(List<Guid> assetIds) => onAssetThumbnailUpdatedEvent?.Invoke(assetIds);
+
+
         public event Action onAssetMetadataCacheUpdatedEvent;
         public void InvokeAssetMetadataCacheUpdatedEvent() => onAssetMetadataCacheUpdatedEvent?.Invoke();
     }
