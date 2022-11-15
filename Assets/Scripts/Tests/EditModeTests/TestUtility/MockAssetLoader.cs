@@ -13,7 +13,7 @@ public class MockAssetLoader : IAssetLoaderSystem
     {
         public Guid id;
         public string filename;
-        public AssetMetadata.AssetType type;
+        public FileAssetMetadata.AssetType type;
     }
 
     public MockAssetLoader(params TestData[] testData)
@@ -25,7 +25,7 @@ public class MockAssetLoader : IAssetLoaderSystem
                 new AssetMetadataFile(
                     new AssetMetadataFile.Contents
                     {
-                        metadata = new AssetMetadata
+                        metadata = new FileAssetMetadata
                         {
                             assetFilename = t.filename,
                             assetId = t.id,
@@ -38,13 +38,13 @@ public class MockAssetLoader : IAssetLoaderSystem
 
             switch (t.type)
             {
-                case AssetMetadata.AssetType.Unknown:
+                case FileAssetMetadata.AssetType.Unknown:
                     break;
-                case AssetMetadata.AssetType.Model:
-                    loaderState.assetDataCache.Add(t.id, new ModelAssetData(t.id, new GameObject(t.filename)));
+                case FileAssetMetadata.AssetType.Model:
+                    loaderState.assetDataCache.Add(t.id, new ModelFileAssetData(t.id, new GameObject(t.filename)));
                     break;
-                case AssetMetadata.AssetType.Image:
-                    loaderState.assetDataCache.Add(t.id, new ImageAssetData(t.id, new Texture2D(2, 2)));
+                case FileAssetMetadata.AssetType.Image:
+                    loaderState.assetDataCache.Add(t.id, new ImageFileAssetData(t.id, new Texture2D(2, 2)));
                     break;
                 default:
                     break;
@@ -61,8 +61,15 @@ public class MockAssetLoader : IAssetLoaderSystem
 
     public AssetData GetDataById(Guid id)
     {
-        if (loaderState.assetDataCache.TryGetValue(id, out AssetData data))
+        if (loaderState.assetDataCache.TryGetValue(id, out FileAssetData fileData))
         {
+            AssetData data = fileData switch
+            {
+                ImageFileAssetData imageFileAssetData => new ImageAssetData(imageFileAssetData.id, imageFileAssetData.data),
+                ModelFileAssetData modelFileAssetData => new ModelAssetData(modelFileAssetData.id, modelFileAssetData.data),
+                _ => throw new ArgumentOutOfRangeException(nameof(fileData))
+            };
+
             return data;
         }
         return null;
@@ -72,7 +79,17 @@ public class MockAssetLoader : IAssetLoaderSystem
     {
         if (loaderState.assetMetadataCache.TryGetValue(id, out AssetMetadataFile file))
         {
-            return file.contents.metadata;
+            var fileAssetMetadata = file.contents.metadata;
+
+            var type = fileAssetMetadata.assetType switch
+            {
+                FileAssetMetadata.AssetType.Unknown => AssetMetadata.AssetType.Unknown,
+                FileAssetMetadata.AssetType.Model => AssetMetadata.AssetType.Model,
+                FileAssetMetadata.AssetType.Image => AssetMetadata.AssetType.Image,
+                _ => throw new ArgumentOutOfRangeException()
+            };
+
+            return new AssetMetadata(fileAssetMetadata.assetDisplayName, fileAssetMetadata.assetId, type);
         }
         return null;
     }
