@@ -17,22 +17,22 @@ namespace Assets.Scripts.System
     {
         // Dependencies
         private FileAssetLoaderState _loaderState;
-        private PathState _pathState;                           // TODO: Change this
+        private PathState _pathState; // TODO: Change this
         private EditorEvents _editorEvents;
-        private UnityState _unityState;
+        private LoadGltfFromFileSystem _loadGltfFromFileSystem;
 
-        private string relativePathInProject = "/assets";       // TODO: Change this, this is just for testing
+        private string relativePathInProject = "/assets"; // TODO: Change this, this is just for testing
 
         public Dictionary<Guid, AssetMetadataFile> AssetMetadataCache => _loaderState.assetMetadataCache;
-        public Dictionary<Guid, AssetData> AssetDataCache => _loaderState.assetDataCache;
+        public Dictionary<Guid, FileAssetData> AssetDataCache => _loaderState.assetDataCache;
 
         [Inject]
-        private void Construct(FileAssetLoaderState loaderState, PathState pathState, EditorEvents editorEvents, UnityState unityState)
+        private void Construct(FileAssetLoaderState loaderState, PathState pathState, EditorEvents editorEvents, LoadGltfFromFileSystem loadGltfFromFileSystem)
         {
             _loaderState = loaderState;
             _pathState = pathState;
             _editorEvents = editorEvents;
-            _unityState = unityState;
+            _loadGltfFromFileSystem = loadGltfFromFileSystem;
         }
 
 
@@ -73,7 +73,15 @@ namespace Assets.Scripts.System
         {
             if (AssetMetadataCache.TryGetValue(id, out AssetMetadataFile file))
             {
-                return file.contents.metadata;
+                var metadata = file.contents.metadata;
+                var assetType = metadata.assetType switch
+                {
+                    FileAssetMetadata.AssetType.Unknown => AssetMetadata.AssetType.Unknown,
+                    FileAssetMetadata.AssetType.Model => AssetMetadata.AssetType.Model,
+                    FileAssetMetadata.AssetType.Image => AssetMetadata.AssetType.Image,
+                    _ => throw new ArgumentOutOfRangeException()
+                };
+                return new AssetMetadata(metadata.assetDisplayName, metadata.assetId, assetType);
             }
             return null;
         }
@@ -85,9 +93,22 @@ namespace Assets.Scripts.System
 
         public AssetData GetDataById(Guid id)
         {
-            if (!AssetMetadataCache.ContainsKey(id)) { return null; }
-            return LoadAssetData(id);
+            if (!AssetMetadataCache.ContainsKey(id))
+            {
+                return null;
+            }
+
+            var fileAssetData = LoadAssetData(id);
+            AssetData assetData = fileAssetData switch
+            {
+                ImageFileAssetData imageFileAssetData => new ImageAssetData(imageFileAssetData.id, imageFileAssetData.data),
+                ModelFileAssetData modelFileAssetData => new ModelAssetData(modelFileAssetData.id, modelFileAssetData.data),
+                _ => throw new ArgumentOutOfRangeException(nameof(fileAssetData))
+            };
+
+            return assetData;
         }
+
         #endregion
 
 
@@ -97,7 +118,7 @@ namespace Assets.Scripts.System
         /// </summary>
         /// <param name="assetFilePath"></param>
         /// <returns></returns>
-        private AssetMetadata GenerateMetadataFromAsset(string assetFilePath)
+        private FileAssetMetadata GenerateMetadataFromAsset(string assetFilePath)
         {
             try
             {
@@ -105,24 +126,24 @@ namespace Assets.Scripts.System
                 var fileExtension = Path.GetExtension(assetFilePath);
                 Guid assetId = Guid.NewGuid();
 
-                AssetMetadata.AssetType assetType;
+                FileAssetMetadata.AssetType assetType;
                 switch (fileExtension)
                 {
                     case ".glb":
-                        assetType = AssetMetadata.AssetType.Model;
+                        assetType = FileAssetMetadata.AssetType.Model;
                         break;
                     case ".gltf":
-                        assetType = AssetMetadata.AssetType.Model;
+                        assetType = FileAssetMetadata.AssetType.Model;
                         break;
                     case ".png":
-                        assetType = AssetMetadata.AssetType.Image;
+                        assetType = FileAssetMetadata.AssetType.Image;
                         break;
                     default:
-                        assetType = AssetMetadata.AssetType.Unknown;
+                        assetType = FileAssetMetadata.AssetType.Unknown;
                         break;
                 }
 
-                return new AssetMetadata
+                return new FileAssetMetadata
                 {
                     assetFilename = assetFilename,
                     assetId = assetId,
@@ -142,7 +163,7 @@ namespace Assets.Scripts.System
         /// </summary>
         /// <param name="metadata"></param>
         /// <returns></returns>
-        private AssetMetadataFile WriteMetadataToFile(AssetMetadata metadata, string targetDirectoryPath)
+        private AssetMetadataFile WriteMetadataToFile(FileAssetMetadata metadata, string targetDirectoryPath)
         {
             try
             {
@@ -205,7 +226,7 @@ namespace Assets.Scripts.System
         /// </summary>
         /// <param name="id"></param>
         /// <param name="onLoadingComplete"></param>
-        private AssetData LoadAssetData(Guid id)
+        private FileAssetData LoadAssetData(Guid id)
         {
             try
             {
@@ -213,9 +234,9 @@ namespace Assets.Scripts.System
                 {
                     switch (file.contents.metadata.assetType)
                     {
-                        case AssetMetadata.AssetType.Image:
+                        case FileAssetMetadata.AssetType.Image:
                             return LoadAndCacheImage(id);
-                        case AssetMetadata.AssetType.Model:
+                        case FileAssetMetadata.AssetType.Model:
                             return LoadAndCacheModel(id);
                         default:
                             break;
@@ -234,11 +255,11 @@ namespace Assets.Scripts.System
         /// </summary>
         /// <param name="id"></param>
         /// <param name="onLoadingComplete"></param>
-        private AssetData LoadAndCacheImage(Guid id)
+        private FileAssetData LoadAndCacheImage(Guid id)
         {
             try
             {
-                if (AssetDataCache.TryGetValue(id, out AssetData cachedAssetData))
+                if (AssetDataCache.TryGetValue(id, out FileAssetData cachedAssetData))
                 {
                     return cachedAssetData;
                 }
@@ -248,7 +269,7 @@ namespace Assets.Scripts.System
                     var imageBytes = File.ReadAllBytes(value.AssetFilePath);        // TODO make loading async
                     Texture2D image = new Texture2D(2, 2);        // Texture gets resized when loading the image
                     ImageConversion.LoadImage(image, imageBytes);
-                    var assetData = new ImageAssetData(id, image);
+                    var assetData = new ImageFileAssetData(id, image);
 
                     // Add to cache
                     AssetDataCache[id] = assetData;
@@ -268,22 +289,22 @@ namespace Assets.Scripts.System
         /// </summary>
         /// <param name="id"></param>
         /// <param name="onLoadingComplete"></param>
-        private AssetData LoadAndCacheModel(Guid id)
+        private FileAssetData LoadAndCacheModel(Guid id)
         {
-            ModelAssetData CreateCopyOfCachedModel(ModelAssetData data)
+            ModelFileAssetData CreateCopyOfCachedModel(ModelFileAssetData data)
             {
                 GameObject copy = GameObject.Instantiate(data.data);
                 copy.SetActive(true);
                 copy.transform.SetParent(null);
-                return new ModelAssetData(id, copy);
+                return new ModelFileAssetData(id, copy);
             }
 
             try
             {
                 // Model already cached
-                if (AssetDataCache.TryGetValue(id, out AssetData cachedAssetData))
+                if (AssetDataCache.TryGetValue(id, out FileAssetData cachedAssetData))
                 {
-                    if (cachedAssetData is ModelAssetData modelData)
+                    if (cachedAssetData is ModelFileAssetData modelData)
                     {
                         return CreateCopyOfCachedModel(modelData);
                     }
@@ -292,89 +313,16 @@ namespace Assets.Scripts.System
                 // Model not yet cached
                 if (AssetMetadataCache.TryGetValue(id, out AssetMetadataFile metadata))
                 {
-                    var options = new ImportOptions()
+                    _loadGltfFromFileSystem.LoadGltfFromPath(metadata.AssetFilePath, go =>
                     {
-                        DataLoader = new FileLoader(URIHelper.GetDirectoryName(metadata.AssetFilePath)),
-                        AsyncCoroutineHelper = _unityState.AsyncCoroutineHelper
-                    };
+                        var assetData = new ModelFileAssetData(id, go);
+                        AssetDataCache[id] = assetData;
 
-                    var importer = new GLTFSceneImporter(metadata.AssetFilePath, options);
-                    importer.CustomShaderName = "Shader Graphs/GLTFShader";
+                        var updatedIds = new List<Guid> {id};
+                        _editorEvents.InvokeAssetDataUpdatedEvent(updatedIds);
+                    });
 
-                    _unityState.AsyncCoroutineHelper.StartCoroutine(importer.LoadScene(
-                        onLoadComplete: (o, info) =>
-                        {
-                            if (o == null)
-                            {
-                                Debug.LogError(info.SourceException.Message + "\n" + info.SourceException.StackTrace);
-                                return;
-                            }
-
-                            // Prepare loaded model
-                            // reset transform
-                            o.transform.localPosition = Vector3.zero;
-                            o.transform.localScale = Vector3.one;
-                            o.transform.localRotation = Quaternion.identity;
-
-                            var allTransforms = new List<Transform>(); // All loaded transforms including all children of any level
-
-                            // Fill the allTransforms List
-                            var stack = new Stack<Transform>();
-                            stack.Push(o.transform);
-                            while (stack.Any())
-                            {
-                                var next = stack.Pop();
-                                allTransforms.Add(next);
-
-                                foreach (var child in next.GetChildren())
-                                    stack.Push(child);
-                            }
-
-                            // Make all decentraland collider invisible
-                            allTransforms
-                                .Where(t => t.name.EndsWith("_collider"))
-                                .Where(t => t.TryGetComponent<MeshFilter>(out _))
-                                .ForAll(t => t.gameObject.SetActive(false));
-
-                            // Find all transforms of visible GameObjects
-                            var visibleChildren = allTransforms
-                                .Where(t => !t.name.EndsWith("_collider"))
-                                .Where(t => t.TryGetComponent<MeshFilter>(out _) || t.TryGetComponent<SkinnedMeshRenderer>(out _));
-
-
-                            // Add click collider to all visible GameObjects
-                            foreach (var child in visibleChildren)
-                            {
-                                var colliderGameObject = new GameObject("Collider");
-                                colliderGameObject.transform.parent = o.transform;
-                                colliderGameObject.transform.position = child.position;
-                                colliderGameObject.transform.rotation = child.rotation;
-                                colliderGameObject.transform.localScale = child.localScale;
-
-                                colliderGameObject.layer = 10; // Entity Click Layer
-                                var newCollider = colliderGameObject.AddComponent<MeshCollider>();
-
-                                if (child.TryGetComponent<MeshFilter>(out var meshFilter))
-                                    newCollider.sharedMesh = meshFilter.sharedMesh;
-
-                                if (child.TryGetComponent<SkinnedMeshRenderer>(out var skinnedMeshRenderer))
-                                    newCollider.sharedMesh = skinnedMeshRenderer.sharedMesh;
-                            }
-
-                            // Add the loaded model to cache. Copies of it will be created when the cache is used.
-                            GameObject parent = GameObject.Find("ModelCache") ?? new GameObject("ModelCache");
-                            parent.transform.position = new Vector3(0, -5000, 0);           // Place out of sight to avoid the user seeing objects get instantiated
-                            o.transform.SetParent(parent.transform);
-                            o.SetActive(false);
-                            var assetData = new ModelAssetData(id, o);
-                            AssetDataCache[id] = assetData;
-
-
-                            var updatedIds = new List<Guid>();
-                            updatedIds.Add(id);
-                            _editorEvents.InvokeAssetDataUpdatedEvent(updatedIds);
-                        }));
-                    return new AssetData(id, AssetData.State.IsLoading);
+                    return new FileAssetData(id, FileAssetData.State.IsLoading);
                 }
             }
             catch (Exception e)
