@@ -46,20 +46,20 @@ namespace Assets.Scripts.Tests.EditModeTests
             Debug.Log(enumerable.Length);
 
 
-            var signpostTreeId = Guid.Parse("ab743f36-176b-4e74-897e-19e28cc6e425");
+            var testObjectId = Guid.Parse("ab743f36-176b-4e74-897e-19e28cc6e425");
 
-            Assert.Contains(signpostTreeId, enumerable);
-
-
-            var signpostTreeMetaData = loaderSystem.GetMetadataById(signpostTreeId);
-
-            Assert.AreEqual("Signpost Tree", signpostTreeMetaData.assetDisplayName);
+            Assert.Contains(testObjectId, enumerable);
 
 
-            var signpostTreeData = loaderSystem.GetDataById(signpostTreeId);
+            var testObjectMetaData = loaderSystem.GetMetadataById(testObjectId);
 
-            Assert.IsNotNull(signpostTreeData);
-            Assert.AreEqual(AssetData.State.IsLoading, signpostTreeData.state);
+            Assert.AreEqual("Signpost Tree", testObjectMetaData.assetDisplayName);
+
+
+            var testObjectData = loaderSystem.GetDataById(testObjectId);
+
+            Assert.IsNotNull(testObjectData);
+            Assert.AreEqual(AssetData.State.IsLoading, testObjectData.state);
 
             yield return assetDataUpdatedEvent.WaitForActionCount(1);
 
@@ -67,15 +67,22 @@ namespace Assets.Scripts.Tests.EditModeTests
             var eventParam = eventParams.First();
 
             Assert.IsNotNull(eventParam);
-            Assert.AreEqual(signpostTreeId, eventParam);
+            Assert.AreEqual(testObjectId, eventParam);
 
-            signpostTreeData = loaderSystem.GetDataById(signpostTreeId);
+            testObjectData = loaderSystem.GetDataById(testObjectId);
 
-            Assert.IsInstanceOf<ModelAssetData>(signpostTreeData);
+            Assert.IsInstanceOf<ModelAssetData>(testObjectData);
 
-            var signpostTreeModelData = signpostTreeData as ModelAssetData;
+            var testObjectModelData = testObjectData as ModelAssetData;
 
-            Assert.IsNotNull(signpostTreeModelData);
+            Assert.IsNotNull(testObjectModelData);
+
+            var testObjectObject = testObjectModelData.data;
+            testObjectObject.SetActive(true);
+            testObjectObject.transform.position = Vector3.zero;
+
+
+            yield return WaitForSeconds.Wait(5);
         }
     }
 }
