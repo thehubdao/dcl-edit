@@ -38,4 +38,6 @@ public class PathState
             return _projectPath;
         }
     }
+
+    public string CachePath = null;
 }
