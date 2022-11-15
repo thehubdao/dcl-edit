@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEditor;
 using UnityEngine;
 
 namespace Assets.Scripts.Utility
@@ -56,5 +57,13 @@ namespace Assets.Scripts.Utility
 
             return builder.ToString();
         }
+
+#if UNITY_EDITOR
+        [MenuItem("Edit/Unlock Reload Assemblies")]
+        public static void UnlockAssemblies()
+        {
+            EditorApplication.UnlockReloadAssemblies();
+        }
+#endif // UNITY_EDITOR
     }
 }
