@@ -129,9 +129,70 @@ namespace Assets.Scripts.System
             return null;
         }
 
-        public Texture2D GetThumbnailById(Guid id)
+        public AssetThumbnail GetThumbnailById(Guid id)
         {
-            throw new NotImplementedException();
+            // check if id is a builder asset else return null
+            if (!_loaderState.Data.TryGetValue(id, out var data))
+            {
+                return null;
+            }
+
+            // get thumbnail hash from asset id
+            var hash = data.ThumbnailHash;
+
+            // check if hash is loaded
+            if (data.ThumbnailCacheState == BuilderAssetLoaderState.DataStorage.CacheState.Loaded)
+            {
+                // if hash is loaded, return the Thumbnail
+                var thumbnail = _loaderState.LoadedThumbnails[hash];
+                return new AssetThumbnail {Id = id, State = AssetData.State.IsAvailable, Texture = thumbnail};
+            }
+
+            // check if thumbnail is already loading
+            if (data.ThumbnailCacheState == BuilderAssetLoaderState.DataStorage.CacheState.Loading)
+            {
+                return new AssetThumbnail {Id = id, State = AssetData.State.IsLoading, Texture = null};
+            }
+
+            // check if thumbnail is downloaded
+            if (IsFileDownloaded(hash))
+            {
+                // if hash is downloaded, load model and return isLoading
+                data.ThumbnailCacheState = BuilderAssetLoaderState.DataStorage.CacheState.Loading;
+
+                var bytes = File.ReadAllBytes(MakeDownloadPath(hash));
+
+                var thumbnail = LoadBytesAsImage(bytes);
+
+                _loaderState.LoadedThumbnails.Add(hash, thumbnail);
+                data.ThumbnailCacheState = BuilderAssetLoaderState.DataStorage.CacheState.Loaded;
+
+                return new AssetThumbnail {Id = id, State = AssetData.State.IsAvailable, Texture = thumbnail};
+            }
+
+            // Download Thumbnail
+            data.ThumbnailCacheState = BuilderAssetLoaderState.DataStorage.CacheState.Loading;
+
+            DownloadFile(hash, bytes =>
+            {
+                var thumbnail = LoadBytesAsImage(bytes);
+
+                _loaderState.LoadedThumbnails.Add(hash, thumbnail);
+                data.ThumbnailCacheState = BuilderAssetLoaderState.DataStorage.CacheState.Loaded;
+
+                var ids = new List<Guid> {id};
+                _editorEvents.InvokeThumbnailDataUpdatedEvent(ids);
+            });
+
+            return new AssetThumbnail {Id = id, State = AssetData.State.IsLoading, Texture = null};
+        }
+
+        private Texture2D LoadBytesAsImage(byte[] bytes)
+        {
+            var texture = new Texture2D(2, 2);
+            texture.LoadImage(bytes);
+
+            return texture;
         }
 
         private readonly string _modelCachePath = Application.persistentDataPath + "/cache/models";
@@ -151,7 +212,7 @@ namespace Assets.Scripts.System
             if (data.DataCacheState == BuilderAssetLoaderState.DataStorage.CacheState.Loaded)
             {
                 // if hash is loaded, return instance of loaded model
-                var copy = Object.Instantiate(_loaderState.LoadedModels[data.ModelHash]);
+                var copy = Object.Instantiate(_loaderState.LoadedModels[hash]);
                 copy.SetActive(true);
                 copy.transform.SetParent(null);
                 return new ModelAssetData(id, copy);
@@ -163,13 +224,13 @@ namespace Assets.Scripts.System
                 return new AssetData(id, AssetData.State.IsLoading);
             }
 
-            // check if hash is cached
-            if (IsModelCached(hash))
+            // check if hash is downloaded
+            if (IsFileDownloaded(hash))
             {
-                // if hash is cached, load model and return isLoading
+                // if hash is downloaded, load model and return isLoading
                 data.DataCacheState = BuilderAssetLoaderState.DataStorage.CacheState.Loading;
 
-                _loadGltfFromFileSystem.LoadGltfFromPath(MakeCachedModelPath(hash), go =>
+                _loadGltfFromFileSystem.LoadGltfFromPath(MakeDownloadPath(hash), go =>
                 {
                     _loaderState.LoadedModels.Add(hash, go);
 
@@ -185,39 +246,47 @@ namespace Assets.Scripts.System
             // Download model
             data.DataCacheState = BuilderAssetLoaderState.DataStorage.CacheState.Loading;
 
-            _webRequestSystem.Get($"https://builder-api.decentraland.org/v1/storage/contents/{data.ModelHash}",
-                request =>
+            DownloadFile(hash, _ =>
+            {
+                _loadGltfFromFileSystem.LoadGltfFromPath(MakeDownloadPath(hash), go =>
                 {
-                    SaveBytes(data.ModelHash, request.webRequest.downloadHandler.data);
+                    _loaderState.LoadedModels.Add(hash, go);
 
-                    _loadGltfFromFileSystem.LoadGltfFromPath(MakeCachedModelPath(hash), go =>
-                    {
-                        _loaderState.LoadedModels.Add(hash, go);
+                    data.DataCacheState = BuilderAssetLoaderState.DataStorage.CacheState.Loaded;
 
-                        data.DataCacheState = BuilderAssetLoaderState.DataStorage.CacheState.Loaded;
-
-                        var updatedIds = new List<Guid> {id};
-                        _editorEvents.InvokeAssetDataUpdatedEvent(updatedIds);
-                    });
+                    var updatedIds = new List<Guid> {id};
+                    _editorEvents.InvokeAssetDataUpdatedEvent(updatedIds);
                 });
+            });
 
             return new AssetData(id, AssetData.State.IsLoading);
         }
 
-        private string MakeCachedModelPath(string hash)
+        private string MakeDownloadPath(string hash)
         {
-            return $"{_modelCachePath}/{hash}.glb";
+            return $"{_modelCachePath}/{hash}";
         }
 
-        private bool IsModelCached(string hash)
+        private bool IsFileDownloaded(string hash)
         {
-            return File.Exists(MakeCachedModelPath(hash));
+            return File.Exists(MakeDownloadPath(hash));
         }
 
         private void SaveBytes(string hash, byte[] bytes)
         {
             Directory.CreateDirectory(_modelCachePath);
-            File.WriteAllBytes(MakeCachedModelPath(hash), bytes);
+            File.WriteAllBytes(MakeDownloadPath(hash), bytes);
+        }
+
+        private void DownloadFile(string hash, Action<byte[]> then)
+        {
+            _webRequestSystem.Get($"https://builder-api.decentraland.org/v1/storage/contents/{hash}", request =>
+            {
+                var bytes = request.webRequest.downloadHandler.data;
+                SaveBytes(hash, bytes);
+
+                then(bytes);
+            });
         }
     }
 }

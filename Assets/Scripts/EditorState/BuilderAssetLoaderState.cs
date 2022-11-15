@@ -23,6 +23,7 @@ namespace Assets.Scripts.EditorState
 
             // Data
             public CacheState DataCacheState = CacheState.NotCached;
+            public CacheState ThumbnailCacheState = CacheState.NotCached;
             public GameObject Model;
         }
 
@@ -31,5 +32,8 @@ namespace Assets.Scripts.EditorState
 
         // loaded models with the Hash as key
         public Dictionary<string, GameObject> LoadedModels = new Dictionary<string, GameObject>();
+
+        // loaded thumbnails with the Hash as key
+        public Dictionary<string, Texture2D> LoadedThumbnails = new Dictionary<string, Texture2D>();
     }
 }

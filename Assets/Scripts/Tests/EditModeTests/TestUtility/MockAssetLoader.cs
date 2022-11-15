@@ -94,7 +94,7 @@ public class MockAssetLoader : IAssetLoaderSystem
         return null;
     }
 
-    public Texture2D GetThumbnailById(Guid id)
+    public AssetThumbnail GetThumbnailById(Guid id)
     {
         throw new NotImplementedException();
     }
