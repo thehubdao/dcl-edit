@@ -16,6 +16,16 @@ public class ContextMenuSystem
     {
         _editorEvents = editorEvents;
         _state = contextMenuState;
+
+        _editorEvents.onMouseButtonDownEvent += OnMouseButtonDownCallback;
+    }
+
+    void OnMouseButtonDownCallback(int button)
+    {
+        if (button == 0)
+        {
+            CloseIfMouseNotOverMenu();
+        }
     }
 
     public void OpenMenu(Vector3 position, List<ContextMenuItem> items)

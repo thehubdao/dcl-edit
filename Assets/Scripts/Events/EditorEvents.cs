@@ -26,5 +26,9 @@ namespace Assets.Scripts.Events
 
         public event Action onUpdateContextMenuEvent;
         public void InvokeUpdateContextMenuEvent() => onUpdateContextMenuEvent?.Invoke();
+
+
+        public event Action<int> onMouseButtonDownEvent;
+        public void InvokeOnMouseButtonDownEvent(int button) => onMouseButtonDownEvent?.Invoke(button);
     }
 }
