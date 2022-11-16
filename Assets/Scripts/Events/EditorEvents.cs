@@ -22,5 +22,9 @@ namespace Assets.Scripts.Events
 
         public event Action onSettingsChangedEvent;
         public void InvokeSettingsChangedEvent() => onSettingsChangedEvent?.Invoke();
+
+
+        public event Action onUpdateContextMenuEvent;
+        public void InvokeUpdateContextMenuEvent() => onUpdateContextMenuEvent?.Invoke();
     }
 }

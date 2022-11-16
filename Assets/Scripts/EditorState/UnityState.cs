@@ -1,7 +1,7 @@
+using DynamicPanels;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityGLTF;
-using DynamicPanels;
 
 namespace Assets.Scripts.EditorState
 {
@@ -46,7 +46,7 @@ namespace Assets.Scripts.EditorState
         [SerializeField]
         public Material DefaultMat;
 
-        [Header("Ui Atoms")] 
+        [Header("Ui Atoms")]
         [SerializeField]
         public GameObject TitleAtom;
 
@@ -55,7 +55,7 @@ namespace Assets.Scripts.EditorState
 
         [SerializeField]
         public GameObject PanelAtom;
-        
+
         [SerializeField]
         public GameObject PanelHeaderAtom;
 
@@ -73,5 +73,17 @@ namespace Assets.Scripts.EditorState
 
         [SerializeField]
         public GameObject Vector3InputAtom;
+
+        [SerializeField]
+        public GameObject ContextMenuAtom;
+
+        [SerializeField]
+        public GameObject ContextMenuItemAtom;
+
+        [SerializeField]
+        public GameObject ContextSubmenuItemAtom;
+
+        [SerializeField]
+        public GameObject ContextMenuSpacerItemAtom;
     }
 }
