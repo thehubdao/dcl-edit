@@ -2,12 +2,15 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 
-public class ContextMenuHoverHandler : MonoBehaviour, IPointerEnterHandler
+namespace Assets.Scripts.Visuals
 {
-    public UnityAction OnHoverAction;
-
-    public void OnPointerEnter(PointerEventData eventData)
+    public class ContextMenuHoverHandler : MonoBehaviour, IPointerEnterHandler
     {
-        OnHoverAction?.Invoke();
+        public UnityAction OnHoverAction;
+
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            OnHoverAction?.Invoke();
+        }
     }
 }
