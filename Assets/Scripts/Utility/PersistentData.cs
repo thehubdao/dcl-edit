@@ -71,8 +71,7 @@ public static class PersistentData
         set => _isSnappingData.Set(value);
         get => _isSnappingData.Get();
     }
-
-
+    
     private static Data<float> _uiScaleData = MakeNewFloatData("UiScale", 1f);
 
     public static float UiScale
@@ -81,7 +80,13 @@ public static class PersistentData
         get => _uiScaleData.Get();
     }
     
+    private static Data<int> _framerateCap = MakeNewIntData("FramerateCap", 0);
 
+    public static int FramerateCap
+    {
+        get => _framerateCap.Get();
+        set => _framerateCap.Set(value);
+    }
 
     private static Data<int> MakeNewIntData(string key, int defaultValue)
     {

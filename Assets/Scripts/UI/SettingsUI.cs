@@ -5,6 +5,7 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Assertions.Comparers;
+using UnityEngine.UI;
 
 public class SettingsUI : MonoBehaviour
 {
@@ -26,6 +27,10 @@ public class SettingsUI : MonoBehaviour
     [Header("Editor")]
     [SerializeField]
     private TMP_InputField _uiScaleText;
+    [SerializeField]
+    private TMP_InputField _framerateCap;
+    [SerializeField]
+    private Toggle _framerateCapToggle;
     
     
     [Header("Generator")]
@@ -63,8 +68,27 @@ public class SettingsUI : MonoBehaviour
         AddEndEditListener(ref _uiScaleText, value => CanvasManager.UiScale = float.Parse(value));
 
         AddEndEditListener(ref _scriptLocationText, value => ProjectData.generateScriptLocation = value);
+        
+        AddEndEditListener(ref _framerateCap, value => PersistentData.FramerateCap = int.Parse(value));
+        _framerateCap.onEndEdit.AddListener(delegate { SetFramerate(); });
+        _framerateCapToggle.onValueChanged.AddListener(delegate { FramerateCapToggleChanged(_framerateCapToggle); });
 
         CanvasManager.onUiChange.AddListener(SetDirty);
+    }
+
+    private void FramerateCapToggleChanged(Toggle framerateCapToggle)
+    {
+        Debug.Log($"State: {framerateCapToggle.isOn}");
+        if (PersistentData.FramerateCap == 0)
+        {
+            PersistentData.FramerateCap = Screen.currentResolution.refreshRate;
+        }
+        else
+        {
+            PersistentData.FramerateCap = 0;
+        }
+        SetFramerate();
+        SetDirty();
     }
 
     public void SetDirty()
@@ -99,6 +123,22 @@ public class SettingsUI : MonoBehaviour
 
         _uiScaleText.text = CanvasManager.UiScale.ToString("#0.###");
 
+        _framerateCap.text = PersistentData.FramerateCap.ToString();
+        _framerateCapToggle.SetIsOnWithoutNotify(PersistentData.FramerateCap > 0);
+        _framerateCap.enabled = PersistentData.FramerateCap > 0;
+        
         _scriptLocationText.text = ProjectData.generateScriptLocation;
+    }
+    
+    private void SetFramerate()
+    {
+        if (PersistentData.FramerateCap <= 0)
+        {
+            Application.targetFrameRate = -1;
+        }
+        else if (PersistentData.FramerateCap != Application.targetFrameRate)
+        {
+            Application.targetFrameRate = PersistentData.FramerateCap;
+        }
     }
 }
