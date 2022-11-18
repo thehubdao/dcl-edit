@@ -78,7 +78,6 @@ public class SettingsUI : MonoBehaviour
 
     private void FramerateCapToggleChanged(Toggle framerateCapToggle)
     {
-        Debug.Log($"State: {framerateCapToggle.isOn}");
         if (PersistentData.FramerateCap == 0)
         {
             PersistentData.FramerateCap = Screen.currentResolution.refreshRate;
