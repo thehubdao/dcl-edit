@@ -70,7 +70,7 @@ public class SettingsUI : MonoBehaviour
         AddEndEditListener(ref _scriptLocationText, value => ProjectData.generateScriptLocation = value);
         
         AddEndEditListener(ref _framerateCap, value => PersistentData.FramerateCap = int.Parse(value));
-        _framerateCap.onEndEdit.AddListener(delegate { SetFramerate(); });
+        _framerateCap.onEndEdit.AddListener(delegate { FramerateCap.SetFramerate(); });
         _framerateCapToggle.onValueChanged.AddListener(delegate { FramerateCapToggleChanged(_framerateCapToggle); });
 
         CanvasManager.onUiChange.AddListener(SetDirty);
@@ -87,7 +87,7 @@ public class SettingsUI : MonoBehaviour
         {
             PersistentData.FramerateCap = 0;
         }
-        SetFramerate();
+        FramerateCap.SetFramerate();
         SetDirty();
     }
 
@@ -128,17 +128,5 @@ public class SettingsUI : MonoBehaviour
         _framerateCap.enabled = PersistentData.FramerateCap > 0;
         
         _scriptLocationText.text = ProjectData.generateScriptLocation;
-    }
-    
-    private void SetFramerate()
-    {
-        if (PersistentData.FramerateCap <= 0)
-        {
-            Application.targetFrameRate = -1;
-        }
-        else if (PersistentData.FramerateCap != Application.targetFrameRate)
-        {
-            Application.targetFrameRate = PersistentData.FramerateCap;
-        }
     }
 }

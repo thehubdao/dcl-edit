@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -40,6 +41,8 @@ public class StartUpSystem : MonoBehaviour
 
     void Start()
     {
+        FramerateCap.SetFramerate();
+
         string[] args = System.Environment.GetCommandLineArgs();
         string projectPath = "";
         for (int i = 0; i < args.Length; i++)
@@ -94,5 +97,13 @@ public class StartUpSystem : MonoBehaviour
         //    );
         //AssetBrowserManager.OpenAssetBrowser();
 
+    }
+
+    private void OnApplicationFocus(bool hasFocus)
+    {
+        if (hasFocus)
+            FramerateCap.SetFramerate();
+        else
+            Application.targetFrameRate = 10;
     }
 }
