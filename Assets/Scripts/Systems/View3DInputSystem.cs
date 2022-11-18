@@ -365,7 +365,28 @@ public class View3DInputSystem : MonoBehaviour
 
                 DclSceneManager.SetSelectionRaw(null);
             }
-
+            
+            // Focus the Selected Entity
+            if (Input.GetKeyUp(KeyCode.F) && isMouseOverGameWindow && !CanvasManager.IsAnyInputFieldFocused)
+            {
+                var selectedEntity = DclSceneManager.PrimarySelectedEntity;
+                if (selectedEntity != null)
+                {
+                    var childRenderers = selectedEntity.componentsParent.GetComponentsInChildren<Renderer>();
+                    var startPoint = selectedEntity.transform.position;
+                    var magnitude = 10f;
+                    
+                    if (childRenderers.Length > 0)
+                    {
+                        var bestBounds = childRenderers.OrderByDescending(r => r.bounds.size.magnitude).First().bounds;
+                        magnitude = bestBounds.size.magnitude;
+                        startPoint = bestBounds.center;
+                    }
+                    
+                    var newPos = CameraManager.Forward * (-1 * magnitude);
+                    CameraManager.Position = startPoint + newPos;
+                }
+            }
 
         };
 
