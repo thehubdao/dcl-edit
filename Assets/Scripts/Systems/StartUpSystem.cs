@@ -104,6 +104,6 @@ public class StartUpSystem : MonoBehaviour
         if (hasFocus)
             FramerateCap.SetFramerate();
         else
-            Application.targetFrameRate = 10;
+            Application.targetFrameRate = 2;
     }
 }
