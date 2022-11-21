@@ -4,7 +4,12 @@ using UnityEngine.Networking;
 
 namespace Assets.Scripts.System
 {
-    public class WebRequestSystem
+    public interface IWebRequestSystem
+    {
+        void Get(string url, Action<UnityWebRequestAsyncOperation> then);
+    }
+
+    public class WebRequestSystem : IWebRequestSystem
     {
         public void Get(string url, Action<UnityWebRequestAsyncOperation> then)
         {

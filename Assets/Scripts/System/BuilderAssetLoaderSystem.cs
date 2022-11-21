@@ -77,10 +77,10 @@ namespace Assets.Scripts.System
         private BuilderAssetLoaderState _loaderState;
         private EditorEvents _editorEvents;
         private LoadGltfFromFileSystem _loadGltfFromFileSystem;
-        private WebRequestSystem _webRequestSystem;
+        private IWebRequestSystem _webRequestSystem;
 
         [Inject]
-        public void Construct(BuilderAssetLoaderState loaderState, EditorEvents editorEvents, LoadGltfFromFileSystem loadGltfFromFileSystem, WebRequestSystem webRequestSystem)
+        public void Construct(BuilderAssetLoaderState loaderState, EditorEvents editorEvents, LoadGltfFromFileSystem loadGltfFromFileSystem, IWebRequestSystem webRequestSystem)
         {
             _loaderState = loaderState;
             _editorEvents = editorEvents;
