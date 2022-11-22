@@ -20,7 +20,61 @@ namespace Assets.Scripts.SceneState
 
         public DclComponentProperty<Vector3> Scale => GetPropertyByName("scale")?.GetConcrete<Vector3>();
 
-        // gives the global fixed position
+        public Matrix4x4 GlobalTransformMatrix
+        {
+            get
+            {
+                if (Entity.Parent == null)
+                {
+                    Matrix4x4 transformMatrix = new Matrix4x4();
+                    transformMatrix.SetTRS(Position.Value, Rotation.Value, Scale.Value);
+                    return transformMatrix;
+                }
+                
+                var parentTransform = Entity.Parent.GetTransformComponent();
+                var parentMatrix = parentTransform.GlobalTransformMatrix;
+
+                Matrix4x4 localMatrix = new Matrix4x4();
+                localMatrix.SetTRS(Position.Value, Rotation.Value, Scale.Value);
+
+                var globalMatrix = parentMatrix * localMatrix;
+
+                return globalMatrix;
+            }
+        }
+
+        public Quaternion GlobalRotation
+        {
+            get
+            {
+                return GlobalTransformMatrix.rotation;
+            }
+        }
+
+        public Vector3 GlobalPosition
+        {
+            get
+            {
+                if (Entity.Parent == null)
+                {
+                    Vector3 transformPosition;
+                    transformPosition.x = GlobalTransformMatrix.m03;
+                    transformPosition.y = GlobalTransformMatrix.m13;
+                    transformPosition.z = GlobalTransformMatrix.m23;
+
+                    return transformPosition;
+                }
+
+                Vector3 position;
+                position.x = GlobalTransformMatrix.m03;
+                position.y = GlobalTransformMatrix.m13;
+                position.z = GlobalTransformMatrix.m23;
+                position /= GlobalTransformMatrix.m33;
+
+                return position;
+            }
+        }
+
         public Vector3 GlobalFixedPosition
         {
             get
@@ -38,23 +92,6 @@ namespace Assets.Scripts.SceneState
                 return globalPosition;
             }
         }
-        public Vector3 GlobalPosition
-        {
-            get
-            {
-                if (Entity.Parent == null)
-                {
-                    return Position.Value;
-                }
-
-                var parentTransform = Entity.Parent.GetTransformComponent();
-                var scaledLocalPosition = Position.Value;
-                scaledLocalPosition.Scale(parentTransform.Scale.Value);
-                var globalPosition = (parentTransform.GlobalPosition + (parentTransform.GlobalRotation * scaledLocalPosition));
-
-                return globalPosition;
-            }
-        }
 
         public Quaternion GlobalFixedRotation
         {
@@ -67,20 +104,6 @@ namespace Assets.Scripts.SceneState
 
                 var parentTransform = Entity.Parent.GetTransformComponent();
                 return parentTransform.GlobalFixedRotation * Rotation.FixedValue;
-            }
-        }
-
-        public Quaternion GlobalRotation
-        {
-            get
-            {
-                if (Entity.Parent == null)
-                {
-                    return Rotation.Value;
-                }
-
-                var parentTransform = Entity.Parent.GetTransformComponent();
-                return parentTransform.GlobalRotation * Rotation.Value;
             }
         }
 
