@@ -14,7 +14,7 @@ namespace Assets.Scripts.System
         ContextMenuState _state;
 
         [Inject]
-        void Construct(EditorEvents editorEvents, ContextMenuState contextMenuState)
+        private void Construct(EditorEvents editorEvents, ContextMenuState contextMenuState)
         {
             _editorEvents = editorEvents;
             _state = contextMenuState;
@@ -22,7 +22,7 @@ namespace Assets.Scripts.System
             _editorEvents.onMouseButtonDownEvent += OnMouseButtonDownCallback;
         }
 
-        void OnMouseButtonDownCallback(int button)
+        private void OnMouseButtonDownCallback(int button)
         {
             if (button == 0)
             {
@@ -76,7 +76,7 @@ namespace Assets.Scripts.System
             _editorEvents.InvokeUpdateContextMenuEvent();
         }
 
-        void CloseIfMouseNotOverMenu()
+        private void CloseIfMouseNotOverMenu()
         {
             bool mouseOverMenu = false;
             foreach (var item in _state.menuGameObjects)
