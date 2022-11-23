@@ -7,7 +7,6 @@ using Assets.Scripts.Events;
 using Assets.Scripts.System;
 using Assets.Scripts.Tests.EditModeTests.TestUtility;
 using NUnit.Framework;
-using UnityEditor.VersionControl;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Object = UnityEngine.Object;
@@ -78,16 +77,30 @@ namespace Assets.Scripts.Tests.EditModeTests
 
             Assert.IsNotNull(testObjectModelData);
 
-            var testObjectObject = testObjectModelData.data;
-            testObjectObject.SetActive(true);
-            testObjectObject.transform.position = Vector3.zero;
-
-            yield return WaitForSeconds.Wait(5);
+            //var testObjectObject = testObjectModelData.data;
+            //testObjectObject.SetActive(true);
+            //testObjectObject.transform.position = Vector3.zero;
+            //
+            //yield return WaitForSeconds.Wait(5);
 
             var testObjectThumbnailData = loaderSystem.GetThumbnailById(testObjectId);
 
             Assert.IsNotNull(testObjectThumbnailData);
         }
+
+        //[Test]
+        //public void TestPath()
+        //{
+        //    Debug.Log("Path.GetFullPath(<absolute path>): " + Path.GetFullPath("C:\\Users\\Jonathan\\AppData\\LocalLow\\mgh\\dcl-edit\\cache\\models\\Some.file"));
+        //    Debug.Log("Path.GetFullPath(<relative\\path>): " + Path.GetFullPath("mgh\\dcl-edit\\cache\\models\\Some.file"));
+        //    Debug.Log("Path.GetFullPath(<relative/path>): " + Path.GetFullPath("mgh/dcl-edit/cache/models/Some.file"));
+        //    Debug.Log("Path.GetDirectoryName(<absolute path>): " + Path.GetDirectoryName("C:\\Users\\Jonathan\\AppData\\LocalLow\\mgh\\dcl-edit\\cache\\models\\Some.file"));
+        //    Debug.Log("Path.GetDirectoryName(<relative\\path>): " + Path.GetDirectoryName("mgh\\dcl-edit\\cache\\models\\Some.file"));
+        //    Debug.Log("Path.GetDirectoryName(<relative/path>): " + Path.GetDirectoryName("mgh/dcl-edit/cache/models/Some.file"));
+        //    Debug.Log("Filename: " + Path.GetFileName("mgh\\dcl-edit\\cache\\models\\Some"));
+        //
+        //    Debug.Log("Path equals: " + (Path.GetDirectoryName("mgh\\dcl-edit\\cache\\models\\Some.file") == Path.GetDirectoryName("mgh/dcl-edit/cache/models/Some.file")));
+        //}
 
         [UnityTest]
         public IEnumerator GetAssetIds()
@@ -163,6 +176,46 @@ namespace Assets.Scripts.Tests.EditModeTests
             Assert.AreEqual(AssetMetadata.AssetType.Model, metaData2.assetType);
         }
 
+        [UnityTest]
+        public IEnumerator GetAssetThumbnail()
+        {
+            var loaderSystem = new BuilderAssetLoaderSystem();
+            var loaderState = new BuilderAssetLoaderState();
+            var editorEvent = new EditorEvents();
+            var loadGltf = new LoadGltfFromFileSystem();
+            var webRequest = new MockWebRequestSystem();
+
+            // Get Unity State
+            loadGltf.Construct(Object.FindObjectOfType<UnityState>());
+
+            var assetMetaDataCachedAction = new MockEventActionListener();
+            editorEvent.onAssetMetadataCacheUpdatedEvent += assetMetaDataCachedAction.Called;
+
+            var assetThumbnailCachedAction = new MockEventActionListener();
+            editorEvent.onAssetThumbnailUpdatedEvent += assetThumbnailCachedAction.Called;
+
+            loaderSystem.Construct(loaderState, editorEvent, loadGltf, webRequest);
+
+            loaderSystem.CacheAllAssetMetadata();
+
+            yield return assetMetaDataCachedAction.WaitForActionCount(1);
+
+            var thumbnail1 = loaderSystem.GetThumbnailById(Guid.Parse("0149cae5-9e33-48aa-a346-94f02091ec75"));
+            Assert.NotNull(thumbnail1);
+            Assert.AreEqual(AssetData.State.IsLoading, thumbnail1.State);
+            Assert.Null(thumbnail1.Texture);
+
+            yield return assetThumbnailCachedAction.WaitForActionCount(1);
+
+            var thumbnail2 = loaderSystem.GetThumbnailById(Guid.Parse("0149cae5-9e33-48aa-a346-94f02091ec75"));
+            Assert.NotNull(thumbnail2);
+            Assert.AreEqual(AssetData.State.IsAvailable, thumbnail2.State);
+            Assert.NotNull(thumbnail2.Texture);
+
+            Assert.AreEqual(512, thumbnail2.Texture.width);
+            Assert.AreEqual(512, thumbnail2.Texture.height);
+        }
+
 
         [UnityTest]
         public IEnumerator GetAssetData()
@@ -176,18 +229,43 @@ namespace Assets.Scripts.Tests.EditModeTests
             // Get Unity State
             loadGltf.Construct(Object.FindObjectOfType<UnityState>());
 
-            var assetCachedAction = new MockEventActionListener();
-            editorEvent.onAssetMetadataCacheUpdatedEvent += assetCachedAction.Called;
+            var assetMetaDataCachedAction = new MockEventActionListener();
+            editorEvent.onAssetMetadataCacheUpdatedEvent += assetMetaDataCachedAction.Called;
+
+            var assetDataCachedAction = new MockEventActionListener();
+            editorEvent.onAssetDataUpdatedEvent += assetDataCachedAction.Called;
 
             loaderSystem.Construct(loaderState, editorEvent, loadGltf, webRequest);
 
             loaderSystem.CacheAllAssetMetadata();
 
-            yield return assetCachedAction.WaitForActionCount(1);
+            yield return assetMetaDataCachedAction.WaitForActionCount(1);
 
-            var assetData1 = loaderSystem.GetDataById(Guid.Parse("9bcc6035-2fe6-4588-88d6-c06e6d4e9c45"));
+            var assetData1FirstRequest = loaderSystem.GetDataById(Guid.Parse("9bcc6035-2fe6-4588-88d6-c06e6d4e9c45"));
+            var assetData1SecondRequest = loaderSystem.GetDataById(Guid.Parse("9bcc6035-2fe6-4588-88d6-c06e6d4e9c45"));
 
-            Assert.AreEqual(AssetData.State.IsLoading, assetData1.state);
+            Assert.AreEqual(AssetData.State.IsLoading, assetData1FirstRequest.state);
+            Assert.AreEqual(AssetData.State.IsLoading, assetData1SecondRequest.state);
+
+            yield return assetDataCachedAction.WaitForActionCount(1);
+
+            var actionParam = assetDataCachedAction.LastParam<List<Guid>>();
+            Assert.AreEqual(1, actionParam.Count);
+            Assert.Contains(Guid.Parse("9bcc6035-2fe6-4588-88d6-c06e6d4e9c45"), actionParam);
+
+            var assetData1ThirdRequest = loaderSystem.GetDataById(Guid.Parse("9bcc6035-2fe6-4588-88d6-c06e6d4e9c45"));
+
+            Assert.AreEqual(AssetData.State.IsAvailable, assetData1ThirdRequest.state);
+
+            var assetModelData1ThirdRequest = assetData1ThirdRequest as ModelAssetData;
+            Assert.NotNull(assetModelData1ThirdRequest);
+            Assert.NotNull(assetModelData1ThirdRequest.data);
+
+            //var testObjectObject = assetModelData1ThirdRequest.data;
+            //testObjectObject.SetActive(true);
+            //testObjectObject.transform.position = Vector3.zero;
+            //
+            //yield return WaitForSeconds.Wait(5);
         }
     }
 }

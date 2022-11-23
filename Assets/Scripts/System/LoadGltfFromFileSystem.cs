@@ -21,13 +21,15 @@ namespace Assets.Scripts.System
             _unityState = unityState;
         }
 
-        public void LoadGltfFromPath(string gltfPath, Action<GameObject> then)
+        public void LoadGltfFromPath(string gltfPath, Action<GameObject> then, IDataLoader dataLoader = null)
         {
             try
             {
+                dataLoader ??= new FileLoader(URIHelper.GetDirectoryName(gltfPath));
+
                 var options = new ImportOptions()
                 {
-                    DataLoader = new FileLoader(URIHelper.GetDirectoryName(gltfPath)),
+                    DataLoader = dataLoader,
                     AsyncCoroutineHelper = _unityState.AsyncCoroutineHelper
                 };
 

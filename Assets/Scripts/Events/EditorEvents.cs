@@ -33,6 +33,7 @@ namespace Assets.Scripts.Events
         public void InvokeOnMouseButtonDownEvent(int button) => onMouseButtonDownEvent?.Invoke(button);
 
 
+        // Asset management
         public event Action<List<Guid>> onAssetDataUpdatedEvent;
         public void InvokeAssetDataUpdatedEvent(List<Guid> assetIds) => onAssetDataUpdatedEvent?.Invoke(assetIds);
 
