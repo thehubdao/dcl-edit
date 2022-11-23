@@ -29,7 +29,7 @@ namespace Assets.Scripts.Visuals
 
         public void UpdateVisuals()
         {
-            var entity = _sceneDirectoryState.CurrentScene?.GetEntityById(Id);
+            var entity = _sceneDirectoryState.CurrentScene?.GetEntityById(Id) ?? _sceneDirectoryState.CurrentScene?.GetFloatingEntityById(Id);
             if (entity == null)
                 return;
 
