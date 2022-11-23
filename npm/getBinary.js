@@ -6,7 +6,7 @@ function getBinary() {
     const type = os.type();
     const arch = os.arch();
  
-    const version = "0.4.3"
+    const version = "0.4.5"
     let platformName = ""
     let binaryName = ""
  
