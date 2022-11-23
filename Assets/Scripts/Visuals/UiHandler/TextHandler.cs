@@ -6,11 +6,40 @@ namespace Assets.Scripts.Visuals.UiHandler
 {
     public class TextHandler : MonoBehaviour
     {
-        public enum TextStyle
+        public enum TextColor
         {
             Normal,
             PrimarySelection,
-            SecondarySelection,
+            SecondarySelection
+        }
+
+        public struct TextStyle
+        {
+            public HorizontalAlignmentOptions horizontalAlignment;
+            public VerticalAlignmentOptions verticalAlignment;
+            public TextColor color;
+
+            // Text style presets
+            public static TextStyle NormalTextStyle => new TextStyle
+            {
+                horizontalAlignment = HorizontalAlignmentOptions.Left,
+                verticalAlignment = VerticalAlignmentOptions.Middle,
+                color = TextColor.Normal
+            };
+
+            public static TextStyle PrimarySelectionTextStyle => new TextStyle
+            {
+                horizontalAlignment = HorizontalAlignmentOptions.Left,
+                verticalAlignment = VerticalAlignmentOptions.Middle,
+                color = TextColor.PrimarySelection
+            };
+
+            public static TextStyle SecondarySelectionTextStyle => new TextStyle
+            {
+                horizontalAlignment = HorizontalAlignmentOptions.Left,
+                verticalAlignment = VerticalAlignmentOptions.Middle,
+                color = TextColor.SecondarySelection
+            };
         }
 
         [SerializeField]
@@ -34,13 +63,18 @@ namespace Assets.Scripts.Visuals.UiHandler
 
         public TextStyle textStyle
         {
-            set => TextComponent.colorGradientPreset = value switch
+            set
             {
-                TextStyle.Normal => NormalColorGradient,
-                TextStyle.PrimarySelection => PrimaryColorGradient,
-                TextStyle.SecondarySelection => SecondaryColorGradient,
-                _ => throw new ArgumentOutOfRangeException(nameof(value), value, null)
-            };
+                TextComponent.horizontalAlignment = value.horizontalAlignment;
+                TextComponent.verticalAlignment = value.verticalAlignment;
+                TextComponent.colorGradientPreset = value.color switch
+                {
+                    TextColor.Normal => NormalColorGradient,
+                    TextColor.PrimarySelection => PrimaryColorGradient,
+                    TextColor.SecondarySelection => SecondaryColorGradient,
+                    _ => throw new NotImplementedException(),
+                };
+            }
         }
     }
 }

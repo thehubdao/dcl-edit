@@ -106,5 +106,15 @@ public class DclEditorInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<ContextMenuSystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<ContextMenuState>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<AssetManagerSystem>().AsSingle();
+
+        Container.Bind<IAssetLoaderSystem>().To<FileAssetLoaderSystem>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<FileAssetLoaderState>().AsTransient();
+
+        Container.BindInterfacesAndSelfTo<AssetBrowserSystem>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<AssetBrowserState>().AsSingle();
     }
 }

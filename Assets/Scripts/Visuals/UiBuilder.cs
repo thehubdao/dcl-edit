@@ -18,6 +18,10 @@ namespace Assets.Scripts.Visuals
     {
         private enum AtomType
         {
+            Button,
+            AssetButton,
+            Grid,
+            Row,
             Title,
             Text,
             Spacer,
@@ -37,7 +41,7 @@ namespace Assets.Scripts.Visuals
         private struct UiAtom
         {
             public AtomType Type;
-            public Func<MakeGmReturn> MakeGameObject;
+            public Func<GameObject, MakeGmReturn> MakeGameObject;
         }
 
         private struct MakeGmReturn
@@ -64,12 +68,119 @@ namespace Assets.Scripts.Visuals
             _unityState = unityState;
         }
 
+        public UiBuilder Button(string text, TextHandler.TextStyle textStyle, UnityAction<GameObject> onClickActionWithAtomParam)
+        {
+            _atoms.Add(new UiAtom
+            {
+                Type = AtomType.Button,
+                MakeGameObject = (GameObject parent) =>
+                {
+                    var go = GetAtomObjectFromPool(AtomType.Button);
+
+                    var buttonHandler = go.GetComponent<ButtonHandler>();
+
+                    buttonHandler.text.text = text;
+                    buttonHandler.text.textStyle = textStyle;
+                    buttonHandler.button.onClick.AddListener(() => onClickActionWithAtomParam(go));
+
+                    return new MakeGmReturn { go = go, height = 130 };
+                }
+            });
+
+            return this;
+        }
+
+        public UiBuilder Button(string text, TextHandler.TextStyle textStyle, UnityAction onClickAction)
+        {
+            Button(text, textStyle, _ => onClickAction());
+            return this;
+        }
+
+        public UiBuilder AssetButton(string text, TextHandler.TextStyle textStyle, AssetMetadata assetMetadata, Texture2D assetTypeIndicator, Texture2D thumbnail = null)
+        {
+            _atoms.Add(new UiAtom
+            {
+                Type = AtomType.AssetButton,
+                MakeGameObject = (GameObject parent) =>
+                {
+                    var go = GetAtomObjectFromPool(AtomType.AssetButton);
+
+                    var buttonHandler = go.GetComponent<AssetButtonHandler>();
+
+                    buttonHandler.text.text = text;
+                    buttonHandler.text.textStyle = textStyle;
+                    buttonHandler.assetButtonInteraction.assetMetadata = assetMetadata;
+
+                    if (assetTypeIndicator != null)
+                    {
+                        buttonHandler.assetTypeIndicator.sprite = Sprite.Create(assetTypeIndicator, new Rect(0, 0, assetTypeIndicator.width, assetTypeIndicator.height), new Vector2(0.5f, 0.5f));
+                    }
+
+                    if (thumbnail != null)
+                    {
+                        var sprite = Sprite.Create(thumbnail, new Rect(0, 0, thumbnail.width, thumbnail.height), new Vector2(0.5f, 0.5f));
+                        buttonHandler.maskedImage.sprite = sprite;
+                    }
+
+                    return new MakeGmReturn { go = go, height = 130 };
+                }
+            });
+
+            return this;
+        }
+
+        public UiBuilder Grid(UiBuilder content)
+        {
+            _atoms.Add(new UiAtom
+            {
+                Type = AtomType.Grid,
+                MakeGameObject = (GameObject parent) =>
+                {
+                    var go = GetAtomObjectFromPool(AtomType.Grid);
+
+                    var parentRect = parent.GetComponent<RectTransform>();
+                    var grid = go.GetComponent<GridLayoutGroup>();
+                    var atomsCount = content._atoms.Count;
+
+                    var availableWidth = parentRect.rect.width - grid.padding.left - grid.padding.right;
+                    int itemsPerRow = 0;
+                    while (availableWidth >= grid.cellSize.x)
+                    {
+                        availableWidth -= grid.cellSize.x;
+                        itemsPerRow++;
+                        if (availableWidth >= grid.cellSize.x + grid.spacing.x)
+                        {
+                            availableWidth -= grid.spacing.x;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+
+                    int numRows = 1;
+                    if (atomsCount > itemsPerRow)
+                    {
+                        numRows = Mathf.CeilToInt(atomsCount / (float)itemsPerRow);
+                    }
+
+                    var totalHeight = Mathf.RoundToInt(numRows * grid.cellSize.y + (numRows - 1) * grid.spacing.y + grid.padding.top + grid.padding.bottom);
+
+                    content.ClearAndMake(go);
+
+                    return new MakeGmReturn { go = go, height = totalHeight }; //content.CurrentHeight + 40 };
+                }
+            });
+
+            return this;
+        }
+
         public UiBuilder Title(string title)
         {
             _atoms.Add(new UiAtom
             {
                 Type = AtomType.Title,
-                MakeGameObject = () =>
+                MakeGameObject = (GameObject parent) =>
                 {
                     var go = GetAtomObjectFromPool(AtomType.Title);
 
@@ -89,7 +200,7 @@ namespace Assets.Scripts.Visuals
             _atoms.Add(new UiAtom
             {
                 Type = AtomType.Title,
-                MakeGameObject = () =>
+                MakeGameObject = (GameObject parent) =>
                 {
                     var go = GetAtomObjectFromPool(AtomType.Text);
 
@@ -109,7 +220,7 @@ namespace Assets.Scripts.Visuals
             _atoms.Add(new UiAtom
             {
                 Type = AtomType.Spacer,
-                MakeGameObject = () =>
+                MakeGameObject = (GameObject parent) =>
                 {
                     var gameObject = new GameObject("Spacer");
                     gameObject.AddComponent<RectTransform>();
@@ -125,7 +236,7 @@ namespace Assets.Scripts.Visuals
             _atoms.Add(new UiAtom
             {
                 Type = AtomType.Panel,
-                MakeGameObject = () =>
+                MakeGameObject = (GameObject parent) =>
                 {
                     var go = GetAtomObjectFromPool(AtomType.Panel);
 
@@ -150,7 +261,7 @@ namespace Assets.Scripts.Visuals
             _atoms.Add(new UiAtom
             {
                 Type = AtomType.PanelHeader,
-                MakeGameObject = () =>
+                MakeGameObject = (GameObject parent) =>
                 {
                     var go = GetAtomObjectFromPool(AtomType.PanelHeader);
 
@@ -173,12 +284,55 @@ namespace Assets.Scripts.Visuals
             return this;
         }
 
+        public UiBuilder Row(UiBuilder content, Vector2? cellSize = null, Vector2? padding = null, bool centerContent = false)
+        {
+            _atoms.Add(new UiAtom
+            {
+                Type = AtomType.Row,
+                MakeGameObject = (GameObject parent) =>
+                {
+                    var go = GetAtomObjectFromPool(AtomType.Row);
+                    var gridLayout = go.GetComponent<GridLayoutGroup>();
+
+                    if (cellSize.HasValue)
+                    {
+                        gridLayout.cellSize = cellSize.Value;
+                    }
+
+                    if (padding.HasValue)
+                    {
+                        gridLayout.padding.left = (int)padding.Value.x;
+                        gridLayout.padding.right = (int)padding.Value.x;
+                        gridLayout.padding.top = (int)padding.Value.y;
+                        gridLayout.padding.bottom = (int)padding.Value.y;
+                    }
+
+                    if (centerContent)
+                    {
+                        gridLayout.childAlignment = TextAnchor.MiddleCenter;
+                    }
+                    else
+                    {
+                        gridLayout.childAlignment = TextAnchor.MiddleLeft;
+                    }
+
+                    content.ClearAndMake(go);
+
+                    var totalHeight = gridLayout.cellSize.y + gridLayout.padding.top + gridLayout.padding.bottom;
+
+                    return new MakeGmReturn { go = go, height = (int)totalHeight };
+                }
+            });
+
+            return this;
+        }
+
         public UiBuilder HierarchyItem(string name, int level, bool hasChildren, bool isExpanded, TextHandler.TextStyle textStyle, HierarchyItemHandler.UiHierarchyItemActions actions)
         {
             _atoms.Add(new UiAtom
             {
                 Type = AtomType.HierarchyItem,
-                MakeGameObject = () =>
+                MakeGameObject = (GameObject parent) =>
                 {
                     var go = GetAtomObjectFromPool(AtomType.HierarchyItem);
 
@@ -211,7 +365,7 @@ namespace Assets.Scripts.Visuals
             _atoms.Add(new UiAtom
             {
                 Type = AtomType.StringPropertyInput,
-                MakeGameObject = () =>
+                MakeGameObject = (GameObject parent) =>
                 {
                     var go = GetAtomObjectFromPool(AtomType.StringPropertyInput);
 
@@ -236,7 +390,7 @@ namespace Assets.Scripts.Visuals
             _atoms.Add(new UiAtom
             {
                 Type = AtomType.NumberPropertyInput,
-                MakeGameObject = () =>
+                MakeGameObject = (GameObject parent) =>
                 {
                     var go = GetAtomObjectFromPool(AtomType.NumberPropertyInput);
 
@@ -260,7 +414,7 @@ namespace Assets.Scripts.Visuals
             _atoms.Add(new UiAtom
             {
                 Type = AtomType.BooleanPropertyInput,
-                MakeGameObject = () =>
+                MakeGameObject = (GameObject parent) =>
                 {
                     var go = GetAtomObjectFromPool(AtomType.BooleanPropertyInput);
 
@@ -283,7 +437,7 @@ namespace Assets.Scripts.Visuals
             _atoms.Add(new UiAtom
             {
                 Type = AtomType.Vector3PropertyInput,
-                MakeGameObject = () =>
+                MakeGameObject = (GameObject parent) =>
                 {
                     var go = GetAtomObjectFromPool(AtomType.Vector3PropertyInput);
 
@@ -314,7 +468,7 @@ namespace Assets.Scripts.Visuals
             _atoms.Add(new UiAtom
             {
                 Type = AtomType.ContextMenu,
-                MakeGameObject = () =>
+                MakeGameObject = (GameObject parent) =>
                 {
                     var go = GetAtomObjectFromPool(AtomType.ContextMenu);
 
@@ -335,7 +489,7 @@ namespace Assets.Scripts.Visuals
             _atoms.Add(new UiAtom
             {
                 Type = AtomType.ContextMenuItem,
-                MakeGameObject = () =>
+                MakeGameObject = (GameObject parent) =>
                 {
                     var go = GetAtomObjectFromPool(AtomType.ContextMenuItem);
 
@@ -362,7 +516,7 @@ namespace Assets.Scripts.Visuals
             _atoms.Add(new UiAtom
             {
                 Type = AtomType.ContextSubmenuItem,
-                MakeGameObject = () =>
+                MakeGameObject = (GameObject parent) =>
                 {
                     var go = GetAtomObjectFromPool(AtomType.ContextSubmenuItem);
                     var rect = go.GetComponent<RectTransform>();
@@ -399,7 +553,7 @@ namespace Assets.Scripts.Visuals
             _atoms.Add(new UiAtom
             {
                 Type = AtomType.ContextMenuSpacerItem,
-                MakeGameObject = () =>
+                MakeGameObject = (GameObject parent) =>
                 {
                     var go = GetAtomObjectFromPool(AtomType.ContextMenuSpacerItem);
 
@@ -440,7 +594,7 @@ namespace Assets.Scripts.Visuals
             var heightCounter = 0;
             foreach (var atom in _atoms)
             {
-                var madeGameObject = atom.MakeGameObject();
+                var madeGameObject = atom.MakeGameObject(parent);
 
                 var tf = madeGameObject.go.GetComponent<RectTransform>();
 
@@ -475,6 +629,10 @@ namespace Assets.Scripts.Visuals
         {
             return type switch
             {
+                AtomType.Button => Object.Instantiate(_unityState.ButtonAtom),
+                AtomType.AssetButton => Object.Instantiate(_unityState.AssetButton),
+                AtomType.Grid => Object.Instantiate(_unityState.GridAtom),
+                AtomType.Row => Object.Instantiate(_unityState.RowAtom),
                 AtomType.Title => Object.Instantiate(_unityState.TitleAtom),
                 AtomType.Text => Object.Instantiate(_unityState.TextAtom),
                 AtomType.Panel => Object.Instantiate(_unityState.PanelAtom),

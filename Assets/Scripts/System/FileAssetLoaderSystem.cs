@@ -304,6 +304,10 @@ namespace Assets.Scripts.System
                 // Model already cached
                 if (AssetDataCache.TryGetValue(id, out FileAssetData cachedAssetData))
                 {
+                    if (cachedAssetData.state != AssetData.State.IsAvailable)
+                    {
+                        return cachedAssetData;
+                    }
                     if (cachedAssetData is ModelFileAssetData modelData)
                     {
                         return CreateCopyOfCachedModel(modelData);
@@ -313,6 +317,8 @@ namespace Assets.Scripts.System
                 // Model not yet cached
                 if (AssetMetadataCache.TryGetValue(id, out AssetMetadataFile metadata))
                 {
+                    AssetDataCache[id] = new AssetData(id, AssetData.State.IsLoading);
+                    
                     _loadGltfFromFileSystem.LoadGltfFromPath(metadata.AssetFilePath, go =>
                     {
                         var assetData = new ModelFileAssetData(id, go);
