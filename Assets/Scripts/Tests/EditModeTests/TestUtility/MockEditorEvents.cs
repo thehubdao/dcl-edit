@@ -42,9 +42,6 @@ namespace Assets.Scripts.Tests.EditModeTests.TestUtility
         {
             while (CalledCount < count)
             {
-                if (Input.GetKeyDown(KeyCode.L))
-                    yield break;
-
                 yield return null;
             }
         }
