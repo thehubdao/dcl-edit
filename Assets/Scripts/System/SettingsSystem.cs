@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Assets.Scripts.EditorState;
+using Assets.Scripts.Events;
 using UnityEngine;
 using Zenject;
 
@@ -7,6 +8,9 @@ namespace Assets.Scripts.System
 {
     public class SettingsSystem
     {
+        //Dependencies
+        EditorEvents _editorEvents;
+
         public enum SettingType
         {
             String,
@@ -35,8 +39,13 @@ namespace Assets.Scripts.System
 
         public abstract class UserSetting<T> : ISetting
         {
-            protected UserSetting(string name, T defaultValue)
+            // Dependencies
+            private SettingsSystem _settingsSystem;
+
+            protected UserSetting(SettingsSystem settingsSystem, string name, T defaultValue)
             {
+                _settingsSystem = settingsSystem;
+
                 this.name = name;
                 this.defaultValue = defaultValue;
 
@@ -49,12 +58,15 @@ namespace Assets.Scripts.System
             public SettingType type { get; protected set; }
             public SettingStage stage { get; }
             public abstract T Get();
-            public abstract void Set(T value);
+            public virtual void Set(T value)
+            {
+                _settingsSystem._editorEvents.InvokeSettingsChangedEvent();
+            }
         }
 
         public class StringUserSetting : UserSetting<string>
         {
-            public StringUserSetting(string name, string defaultValue) : base(name, defaultValue)
+            public StringUserSetting(SettingsSystem settingsSystem, string name, string defaultValue) : base(settingsSystem, name, defaultValue)
             {
                 type = SettingType.String;
             }
@@ -69,12 +81,13 @@ namespace Assets.Scripts.System
             public override void Set(string value)
             {
                 PlayerPrefs.SetString(name, value);
+                base.Set(value);
             }
         }
 
         public class IntUserSetting : UserSetting<int>
         {
-            public IntUserSetting(string name, int defaultValue) : base(name, defaultValue)
+            public IntUserSetting(SettingsSystem settingsSystem, string name, int defaultValue) : base(settingsSystem, name, defaultValue)
             {
                 type = SettingType.Integer;
             }
@@ -89,12 +102,13 @@ namespace Assets.Scripts.System
             public override void Set(int value)
             {
                 PlayerPrefs.SetInt(name, value);
+                base.Set(value);
             }
         }
 
         public class FloatUserSetting : UserSetting<float>
         {
-            public FloatUserSetting(string name, float defaultValue) : base(name, defaultValue)
+            public FloatUserSetting(SettingsSystem settingsSystem, string name, float defaultValue) : base(settingsSystem, name, defaultValue)
             {
                 type = SettingType.Float;
             }
@@ -109,13 +123,19 @@ namespace Assets.Scripts.System
             public override void Set(float value)
             {
                 PlayerPrefs.SetFloat(name, value);
+                base.Set(value);
             }
         }
 
         public abstract class JsonSetting<T, TSettingState> : ISetting where TSettingState : JsonSettingState
         {
-            protected JsonSetting(string name, T defaultValue, TSettingState tSettingState)
+            // Dependencies
+            private SettingsSystem _settingsSystem;
+
+            protected JsonSetting(SettingsSystem settingsSystem, string name, T defaultValue, TSettingState tSettingState)
             {
+                _settingsSystem = settingsSystem;
+
                 this.name = name;
                 this.defaultValue = defaultValue;
 
@@ -152,12 +172,13 @@ namespace Assets.Scripts.System
             public void Set(T value)
             {
                 SettingState.SetSetting(name, value);
+                _settingsSystem._editorEvents.InvokeSettingsChangedEvent();
             }
         }
 
         public class Vec3ProjectSetting : JsonSetting<Vector3, ProjectSettingState>
         {
-            public Vec3ProjectSetting(string name, Vector3 defaultValue, ProjectSettingState projectSettingsState) : base(name, defaultValue, projectSettingsState)
+            public Vec3ProjectSetting(SettingsSystem settingsSystem, string name, Vector3 defaultValue, ProjectSettingState projectSettingsState) : base(settingsSystem, name, defaultValue, projectSettingsState)
             {
                 type = SettingType.Vector3;
             }
@@ -166,7 +187,7 @@ namespace Assets.Scripts.System
 
         public class StringProjectSetting : JsonSetting<string, ProjectSettingState>
         {
-            public StringProjectSetting(string name, string defaultValue, ProjectSettingState projectSettingsState) : base(name, defaultValue, projectSettingsState)
+            public StringProjectSetting(SettingsSystem settingsSystem, string name, string defaultValue, ProjectSettingState projectSettingsState) : base(settingsSystem, name, defaultValue, projectSettingsState)
             {
                 type = SettingType.String;
             }
@@ -174,7 +195,7 @@ namespace Assets.Scripts.System
 
         public class Vec3SceneSetting : JsonSetting<Vector3, SceneSettingState>
         {
-            public Vec3SceneSetting(string name, Vector3 defaultValue, SceneSettingState projectSettingsState) : base(name, defaultValue, projectSettingsState)
+            public Vec3SceneSetting(SettingsSystem settingsSystem, string name, Vector3 defaultValue, SceneSettingState projectSettingsState) : base(settingsSystem, name, defaultValue, projectSettingsState)
             {
                 type = SettingType.Vector3;
             }
@@ -182,17 +203,19 @@ namespace Assets.Scripts.System
 
 
         [Inject]
-        public SettingsSystem(ProjectSettingState projectSettingsState, SceneSettingState sceneSettingState)
+        public SettingsSystem(ProjectSettingState projectSettingsState, SceneSettingState sceneSettingState, EditorEvents editorEvents)
         {
+            _editorEvents = editorEvents;
+
             var userSettings = new List<ISetting>();
 
-            TestNumber = new FloatUserSetting("Test number", 12.34f);
+            TestNumber = new FloatUserSetting(this, "Test number", 12.34f);
             userSettings.Add(TestNumber);
 
-            TestInteger = new IntUserSetting("Test integer", 123);
+            TestInteger = new IntUserSetting(this, "Test integer", 123);
             userSettings.Add(TestInteger);
 
-            TestString = new StringUserSetting("Test text", "Hello world!");
+            TestString = new StringUserSetting(this, "Test text", "Hello world!");
             userSettings.Add(TestString);
 
             ShownSettings.Add("User Settings", userSettings);
@@ -200,10 +223,10 @@ namespace Assets.Scripts.System
 
             var projectSettings = new List<ISetting>();
 
-            TestProjVec3 = new Vec3ProjectSetting("Test Vec3 Project", Vector3.one, projectSettingsState);
+            TestProjVec3 = new Vec3ProjectSetting(this, "Test Vec3 Project", Vector3.one, projectSettingsState);
             projectSettings.Add(TestProjVec3);
 
-            TestProjString = new StringProjectSetting("Test String Project", "some text", projectSettingsState);
+            TestProjString = new StringProjectSetting(this, "Test String Project", "some text", projectSettingsState);
             projectSettings.Add(TestProjString);
 
             ShownSettings.Add("Project Settings", projectSettings);
@@ -211,7 +234,7 @@ namespace Assets.Scripts.System
 
             var sceneSettings = new List<ISetting>();
 
-            TestSceneVec3 = new Vec3SceneSetting("Test Vec3 Scene", Vector3.one, sceneSettingState);
+            TestSceneVec3 = new Vec3SceneSetting(this, "Test Vec3 Scene", Vector3.one, sceneSettingState);
             sceneSettings.Add(TestSceneVec3);
 
             ShownSettings.Add("Scene Settings", sceneSettings);
