@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -7,6 +8,7 @@ namespace Assets.Scripts.System
     public interface IWebRequestSystem
     {
         void Get(string url, Action<UnityWebRequestAsyncOperation> then);
+        Task<UnityWebRequestAsyncOperation> GetAsync(string url);
     }
 
     public class WebRequestSystem : IWebRequestSystem
@@ -35,6 +37,18 @@ namespace Assets.Scripts.System
             {
                 request.completed += OnRequestComplete;
             }
+        }
+
+        public async Task<UnityWebRequestAsyncOperation> GetAsync(string url)
+        {
+            var request = UnityWebRequest.Get(url).SendWebRequest();
+
+            while (!request.isDone)
+            {
+                await Task.Delay(1);
+            }
+
+            return request;
         }
     }
 }

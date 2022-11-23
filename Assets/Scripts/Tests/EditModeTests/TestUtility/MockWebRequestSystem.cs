@@ -1,6 +1,6 @@
 using System;
 using System.IO;
-using System.Runtime.Remoting.Channels;
+using System.Threading.Tasks;
 using Assets.Scripts.System;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -23,6 +23,15 @@ namespace Assets.Scripts.Tests.EditModeTests.TestUtility
             {
                 throw new Exception($"url: {url} is not recognized and has no mock data associated");
             }
+        }
+
+        public async Task<UnityWebRequestAsyncOperation> GetAsync(string url)
+        {
+            var promise = new TaskCompletionSource<UnityWebRequestAsyncOperation>();
+
+            Get(url, result => promise.TrySetResult(result));
+
+            return await promise.Task;
         }
 
         private void GetAssetPacks(Action<UnityWebRequestAsyncOperation> then)

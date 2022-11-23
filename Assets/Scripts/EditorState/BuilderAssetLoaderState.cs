@@ -18,7 +18,10 @@ namespace Assets.Scripts.EditorState
 
             public Guid Id;
             public string Name;
-            public string ModelHash;
+
+            public string modelPath;
+            public Dictionary<string, string> contentsPathToHash;
+
             public string ThumbnailHash;
 
             // Data
@@ -30,8 +33,8 @@ namespace Assets.Scripts.EditorState
 
         public Dictionary<Guid, DataStorage> Data = new Dictionary<Guid, DataStorage>();
 
-        // loaded models with the Hash as key
-        public Dictionary<string, GameObject> LoadedModels = new Dictionary<string, GameObject>();
+        // loaded models with the id as key
+        public Dictionary<Guid, GameObject> loadedModels = new Dictionary<Guid, GameObject>();
 
         // loaded thumbnails with the Hash as key
         public Dictionary<string, Texture2D> LoadedThumbnails = new Dictionary<string, Texture2D>();

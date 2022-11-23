@@ -1,11 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
+using Assets.Scripts.Utility;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
+using UnityGLTF.Loader;
 using Zenject;
 using Object = UnityEngine.Object;
 
@@ -24,13 +28,19 @@ namespace Assets.Scripts.System
     {
         #region Response Json
 
-        struct AssetPacks
+        // Disabling some Compiler and Resharper/Rider warnings because the following block represents the data from an web resource
+        // Therefore we can't choose names, that follow our naming convention
+
+#pragma warning disable CS0649 // "Field is never assigned" The field will be assigned by `JsonConvert.DeserializeObject`
+
+        // ReSharper disable CollectionNeverUpdated.Local InconsistentNaming
+        private struct AssetPacks
         {
             public bool ok;
             public List<AssetPacksData> data;
         }
 
-        struct AssetPacksData
+        private struct AssetPacksData
         {
             public string id;
             public string title;
@@ -41,7 +51,7 @@ namespace Assets.Scripts.System
             public List<AssetPacksAsset> assets;
         }
 
-        struct AssetPacksAsset
+        private struct AssetPacksAsset
         {
             public string id;
             public string asset_pack_id;
@@ -60,7 +70,7 @@ namespace Assets.Scripts.System
             public string legacy_id;
         }
 
-        struct AssetPacksMetrics
+        private struct AssetPacksMetrics
         {
             public int triangles;
             public int materials;
@@ -70,14 +80,19 @@ namespace Assets.Scripts.System
             public int entities;
         }
 
-        #endregion
+        // ReSharper restore CollectionNeverUpdated.Local InconsistentNaming
 
+#pragma warning restore CS0649
+
+        #endregion
 
         // Dependencies
         private BuilderAssetLoaderState _loaderState;
         private EditorEvents _editorEvents;
         private LoadGltfFromFileSystem _loadGltfFromFileSystem;
         private IWebRequestSystem _webRequestSystem;
+
+        private BuilderAssetDownLoader assetDownLoader;
 
         [Inject]
         public void Construct(BuilderAssetLoaderState loaderState, EditorEvents editorEvents, LoadGltfFromFileSystem loadGltfFromFileSystem, IWebRequestSystem webRequestSystem)
@@ -86,6 +101,8 @@ namespace Assets.Scripts.System
             _editorEvents = editorEvents;
             _loadGltfFromFileSystem = loadGltfFromFileSystem;
             _webRequestSystem = webRequestSystem;
+
+            this.assetDownLoader = new BuilderAssetDownLoader(modelCachePath, webRequestSystem);
         }
 
         public void CacheAllAssetMetadata()
@@ -104,7 +121,9 @@ namespace Assets.Scripts.System
                         {
                             Id = id,
                             Name = asset.name,
-                            ModelHash = asset.contents[asset.model]?.Value<string>(),
+                            //modelHash = asset.contents[asset.Model]?.Value<string>(),
+                            modelPath = asset.model,
+                            contentsPathToHash = asset.contents.ToObject<Dictionary<string, string>>(),
                             ThumbnailHash = asset.thumbnail
                         });
                     }
@@ -154,48 +173,51 @@ namespace Assets.Scripts.System
                 return new AssetThumbnail {Id = id, State = AssetData.State.IsLoading, Texture = null};
             }
 
-            // check if thumbnail is downloaded
-            if (IsFileDownloaded(hash))
+            // Download and load thumbnail
             {
-                // if hash is downloaded, load model and return isLoading
-                data.ThumbnailCacheState = BuilderAssetLoaderState.DataStorage.CacheState.Loading;
+                _ = LoadThumbnailAsync(data);
 
-                var bytes = File.ReadAllBytes(MakeDownloadPath(hash));
-
-                var thumbnail = LoadBytesAsImage(bytes);
-
-                _loaderState.LoadedThumbnails.Add(hash, thumbnail);
-                data.ThumbnailCacheState = BuilderAssetLoaderState.DataStorage.CacheState.Loaded;
-
-                return new AssetThumbnail {Id = id, State = AssetData.State.IsAvailable, Texture = thumbnail};
+                return new AssetThumbnail {Id = id, State = AssetData.State.IsLoading, Texture = null};
             }
+        }
 
-            // Download Thumbnail
+        private async Task LoadThumbnailAsync(BuilderAssetLoaderState.DataStorage data)
+        {
+            // if hash is not loaded, load thumbnail and return isLoading
             data.ThumbnailCacheState = BuilderAssetLoaderState.DataStorage.CacheState.Loading;
 
-            DownloadFile(hash, bytes =>
-            {
-                var thumbnail = LoadBytesAsImage(bytes);
+            var path = await assetDownLoader.GetFileFromHash(data.ThumbnailHash);
 
-                _loaderState.LoadedThumbnails.Add(hash, thumbnail);
-                data.ThumbnailCacheState = BuilderAssetLoaderState.DataStorage.CacheState.Loaded;
+            var preCreatedTexture = new Texture2D(2, 2); // pre create Texture, because Textures might not be creatable in non Main-Threads
 
-                var ids = new List<Guid> {id};
-                _editorEvents.InvokeThumbnailDataUpdatedEvent(ids);
-            });
+            var stream = File.OpenRead(path);
 
-            return new AssetThumbnail {Id = id, State = AssetData.State.IsLoading, Texture = null};
+            var bytes = new byte[stream.Length];
+
+            var readByteCount = await stream.ReadAsync(bytes, 0, (int) stream.Length);
+            Debug.Assert(stream.Length == readByteCount);
+
+            var thumbnail = LoadBytesAsImage(bytes, preCreatedTexture);
+
+
+            // get thumbnail hash from asset id
+            var hash = data.ThumbnailHash;
+
+            _loaderState.LoadedThumbnails.Add(hash, thumbnail);
+            data.ThumbnailCacheState = BuilderAssetLoaderState.DataStorage.CacheState.Loaded;
+
+            _editorEvents.InvokeThumbnailDataUpdatedEvent(new List<Guid> {data.Id});
         }
 
-        private Texture2D LoadBytesAsImage(byte[] bytes)
+        private Texture2D LoadBytesAsImage(byte[] bytes, Texture2D inTexture = null)
         {
-            var texture = new Texture2D(2, 2);
-            texture.LoadImage(bytes);
+            inTexture ??= new Texture2D(2, 2);
+            inTexture.LoadImage(bytes);
 
-            return texture;
+            return inTexture;
         }
 
-        private readonly string _modelCachePath = Application.persistentDataPath + "/cache/models";
+        private readonly string modelCachePath = Application.persistentDataPath + "/cache/builder";
 
         public AssetData GetDataById(Guid id)
         {
@@ -205,14 +227,11 @@ namespace Assets.Scripts.System
                 return null;
             }
 
-            // get hash from asset id
-            var hash = data.ModelHash;
-
             // check if hash is loaded
             if (data.DataCacheState == BuilderAssetLoaderState.DataStorage.CacheState.Loaded)
             {
                 // if hash is loaded, return instance of loaded model
-                var copy = Object.Instantiate(_loaderState.LoadedModels[hash]);
+                var copy = Object.Instantiate(_loaderState.loadedModels[data.Id]);
                 copy.SetActive(true);
                 copy.transform.SetParent(null);
                 return new ModelAssetData(id, copy);
@@ -224,69 +243,115 @@ namespace Assets.Scripts.System
                 return new AssetData(id, AssetData.State.IsLoading);
             }
 
-            // check if hash is downloaded
-            if (IsFileDownloaded(hash))
-            {
-                // if hash is downloaded, load model and return isLoading
-                data.DataCacheState = BuilderAssetLoaderState.DataStorage.CacheState.Loading;
-
-                _loadGltfFromFileSystem.LoadGltfFromPath(MakeDownloadPath(hash), go =>
-                {
-                    _loaderState.LoadedModels.Add(hash, go);
-
-                    data.DataCacheState = BuilderAssetLoaderState.DataStorage.CacheState.Loaded;
-
-                    var updatedIds = new List<Guid> {id};
-                    _editorEvents.InvokeAssetDataUpdatedEvent(updatedIds);
-                });
-
-                return new AssetData(id, AssetData.State.IsLoading);
-            }
-
-            // Download model
+            // if model isn't loaded, load model and return isLoading
             data.DataCacheState = BuilderAssetLoaderState.DataStorage.CacheState.Loading;
 
-            DownloadFile(hash, _ =>
+            _loadGltfFromFileSystem.LoadGltfFromPath(Path.GetFileName(data.modelPath), go =>
             {
-                _loadGltfFromFileSystem.LoadGltfFromPath(MakeDownloadPath(hash), go =>
-                {
-                    _loaderState.LoadedModels.Add(hash, go);
+                _loaderState.loadedModels.Add(data.Id, go);
 
-                    data.DataCacheState = BuilderAssetLoaderState.DataStorage.CacheState.Loaded;
+                data.DataCacheState = BuilderAssetLoaderState.DataStorage.CacheState.Loaded;
 
-                    var updatedIds = new List<Guid> {id};
-                    _editorEvents.InvokeAssetDataUpdatedEvent(updatedIds);
-                });
-            });
+                var updatedIds = new List<Guid> {id};
+                _editorEvents.InvokeAssetDataUpdatedEvent(updatedIds);
+            }, new BuilderAssetGltfDataLoader(Path.GetDirectoryName(data.modelPath!), data.contentsPathToHash, assetDownLoader));
 
             return new AssetData(id, AssetData.State.IsLoading);
         }
+    }
 
-        private string MakeDownloadPath(string hash)
+    class BuilderAssetGltfDataLoader : IDataLoader
+    {
+        private readonly string directory;
+        private readonly Dictionary<string, string> contentsPathToHash;
+        private readonly BuilderAssetDownLoader assetDownLoader;
+
+        public BuilderAssetGltfDataLoader(string directory, Dictionary<string, string> contentsPathToHash, BuilderAssetDownLoader builderAssetDownLoader)
         {
-            return $"{_modelCachePath}/{hash}";
+            this.directory = directory;
+            this.contentsPathToHash = contentsPathToHash;
+            this.assetDownLoader = builderAssetDownLoader;
         }
 
-        private bool IsFileDownloaded(string hash)
+        public Task<Stream> LoadStreamAsync(string relativeFilePath)
         {
-            return File.Exists(MakeDownloadPath(hash));
+            return LoadStream(relativeFilePath);
         }
 
-        private void SaveBytes(string hash, byte[] bytes)
+        public async Task<Stream> LoadStream(string relativeFilePath)
         {
-            Directory.CreateDirectory(_modelCachePath);
-            File.WriteAllBytes(MakeDownloadPath(hash), bytes);
+            if (relativeFilePath == null)
+            {
+                throw new ArgumentNullException("relativeFilePath");
+            }
+
+            var fullPath = Path.Combine(directory, relativeFilePath);
+
+            var hash = contentsPathToHash.First(pair => pair.Key.PathEqual(fullPath)).Value;
+
+            //var hash = contentsPathToHash[fullPath];
+
+            var pathToLoad = await assetDownLoader.GetFileFromHash(hash);
+
+            if (!File.Exists(pathToLoad))
+            {
+                throw new FileNotFoundException("Buffer file not found", relativeFilePath);
+            }
+
+            return File.OpenRead(pathToLoad);
+        }
+    }
+
+    class BuilderAssetDownLoader
+    {
+        private readonly string cachePath;
+        private readonly IWebRequestSystem webRequestSystem;
+
+        public BuilderAssetDownLoader(string cachePath, IWebRequestSystem webRequestSystem)
+        {
+            this.cachePath = cachePath;
+            this.webRequestSystem = webRequestSystem;
+        }
+
+        public async Task<string> GetFileFromHash(string hash)
+        {
+            if (IsFileDownloaded(hash))
+            {
+                return MakeDownloadPath(hash);
+            }
+
+            var promise = new TaskCompletionSource<string>();
+
+            DownloadFile(hash, _ => promise.TrySetResult(MakeDownloadPath(hash)));
+
+            return await promise.Task;
         }
 
         private void DownloadFile(string hash, Action<byte[]> then)
         {
-            _webRequestSystem.Get($"https://builder-api.decentraland.org/v1/storage/contents/{hash}", request =>
+            webRequestSystem.Get($"https://builder-api.decentraland.org/v1/storage/contents/{hash}", request =>
             {
                 var bytes = request.webRequest.downloadHandler.data;
                 SaveBytes(hash, bytes);
 
                 then(bytes);
             });
+        }
+
+        private void SaveBytes(string hash, byte[] bytes)
+        {
+            Directory.CreateDirectory(cachePath);
+            File.WriteAllBytes(MakeDownloadPath(hash), bytes);
+        }
+
+        private string MakeDownloadPath(string hash)
+        {
+            return Path.Combine(cachePath, hash);
+        }
+
+        private bool IsFileDownloaded(string hash)
+        {
+            return File.Exists(MakeDownloadPath(hash));
         }
     }
 }
