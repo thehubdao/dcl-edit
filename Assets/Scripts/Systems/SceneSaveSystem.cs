@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using UnityEditor;
 using UnityEngine;
 
 public class SceneSaveSystem : MonoBehaviour
@@ -111,26 +110,26 @@ public class SceneSaveSystem : MonoBehaviour
             {
                 entity.doomed = true;
                 Destroy(entity.gameObject);
-            } 
+            }
 
-            var parentNumbers = new Dictionary<Entity, GUID>();
-            var uniqueNumbers = new Dictionary<GUID, Entity>();
-            var oldUniqueValues = new Dictionary<int, GUID>();
+            var parentNumbers = new Dictionary<Entity, Guid>();
+            var uniqueNumbers = new Dictionary<Guid, Entity>();
+            var oldUniqueValues = new Dictionary<int, Guid>();
             foreach (var entity in entities.entities)
             {
                 var newEntityGameObject = Instantiate(DclSceneManager.EntityTemplate, DclSceneManager.EntityParent);
                 var newEntity = newEntityGameObject.GetComponent<Entity>();
-                var uniqueIdDidParse = GUID.TryParse(entity.uniqueId, out var uniqueId);
-                var parentIdDidParse = GUID.TryParse(entity.parentId, out var parentId);
-                
+                var uniqueIdDidParse = Guid.TryParse(entity.uniqueId, out var uniqueId);
+                var parentIdDidParse = Guid.TryParse(entity.parentId, out var parentId);
+
                 if (!uniqueIdDidParse && !oldUniqueValues.ContainsKey(entity.uniqueNumber))
                 {
-                    oldUniqueValues.Add(entity.uniqueNumber, GUID.Generate());
+                    oldUniqueValues.Add(entity.uniqueNumber, Guid.NewGuid());
                 }
 
                 if (!parentIdDidParse && !oldUniqueValues.ContainsKey(entity.parent))
                 {
-                    oldUniqueValues.Add(entity.parent, entity.parent == -1 ? default : GUID.Generate());
+                    oldUniqueValues.Add(entity.parent, entity.parent == -1 ? default : Guid.NewGuid());
                 }
 
                 newEntity.HierarchyOrder = entity.hierarchyOrder;

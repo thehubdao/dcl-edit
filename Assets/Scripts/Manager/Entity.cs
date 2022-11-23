@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor;
 using UnityEngine;
 using static System.Char;
 
@@ -117,7 +116,7 @@ public class Entity : SceneTreeObject
 
     public static int uniqueNumberCounter = 1;
 
-    public GUID uniqueId;
+    public Guid uniqueId;
 
     [SerializeField]
     private bool _exposed = false;
@@ -206,8 +205,8 @@ public class Entity : SceneTreeObject
     void Start()
     {
         if (uniqueId == default)
-            uniqueId = GUID.Generate();
-        
+            uniqueId = Guid.NewGuid();
+
         if (uniqueNumber < 0)
             uniqueNumber = uniqueNumberCounter++;
     }
