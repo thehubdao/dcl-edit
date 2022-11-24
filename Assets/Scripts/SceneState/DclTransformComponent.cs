@@ -74,6 +74,28 @@ namespace Assets.Scripts.SceneState
                 return position;
             }
         }
+        public Matrix4x4 GlobalFixedTransformMatrix
+        {
+            get
+            {
+                if (Entity.Parent == null)
+                {
+                    Matrix4x4 transformMatrix = new Matrix4x4();
+                    transformMatrix.SetTRS(Position.FixedValue, Rotation.FixedValue, Scale.FixedValue);
+                    return transformMatrix;
+                }
+
+                var parentTransform = Entity.Parent.GetTransformComponent();
+                var parentMatrix = parentTransform.GlobalFixedTransformMatrix;
+
+                Matrix4x4 localMatrix = new Matrix4x4();
+                localMatrix.SetTRS(Position.FixedValue, Rotation.FixedValue, Scale.FixedValue);
+
+                var globalMatrix = parentMatrix * localMatrix;
+
+                return globalMatrix;
+            }
+        }
 
         public Vector3 GlobalFixedPosition
         {
@@ -81,15 +103,21 @@ namespace Assets.Scripts.SceneState
             {
                 if (Entity.Parent == null)
                 {
-                    return Position.FixedValue;
+                    Vector3 transformPosition;
+                    transformPosition.x = GlobalFixedTransformMatrix.m03;
+                    transformPosition.y = GlobalFixedTransformMatrix.m13;
+                    transformPosition.z = GlobalFixedTransformMatrix.m23;
+
+                    return transformPosition;
                 }
 
-                var parentTransform = Entity.Parent.GetTransformComponent();
-                var scaledLocalPosition = Position.FixedValue;
-                scaledLocalPosition.Scale(parentTransform.Scale.FixedValue);
-                var globalPosition = (parentTransform.GlobalFixedPosition + (parentTransform.GlobalFixedRotation * scaledLocalPosition));
+                Vector3 position;
+                position.x = GlobalFixedTransformMatrix.m03;
+                position.y = GlobalFixedTransformMatrix.m13;
+                position.z = GlobalFixedTransformMatrix.m23;
+                position /= GlobalFixedTransformMatrix.m33;
 
-                return globalPosition;
+                return position;
             }
         }
 
@@ -97,13 +125,7 @@ namespace Assets.Scripts.SceneState
         {
             get
             {
-                if (Entity.Parent == null)
-                {
-                    return Rotation.FixedValue;
-                }
-
-                var parentTransform = Entity.Parent.GetTransformComponent();
-                return parentTransform.GlobalFixedRotation * Rotation.FixedValue;
+                return GlobalFixedTransformMatrix.rotation;
             }
         }
 
