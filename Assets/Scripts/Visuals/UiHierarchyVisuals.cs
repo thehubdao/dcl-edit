@@ -47,7 +47,7 @@ namespace Assets.Scripts.Visuals
         {
             var uiBuilder = _uiBuilderFactory.Create();
 
-            ExpandParents(_sceneDirectoryState.CurrentScene!.EntitiesInSceneRoot);
+            ExpandParents();
             MakeHierarchyItemsRecursive(uiBuilder, 0, _sceneDirectoryState.CurrentScene!.EntitiesInSceneRoot);
 
             uiBuilder.Spacer(300);
@@ -85,35 +85,19 @@ namespace Assets.Scripts.Visuals
             }
         }
         
-        private void ExpandParents(IEnumerable<DclEntity> entities)
+        private void ExpandParents()
         {   
             var selectedEntity = _sceneDirectoryState.CurrentScene?.SelectionState.PrimarySelectedEntity;
             if (selectedEntity == null) return;
 
-            var foundChild = false;
-            
-            foreach (var entity in entities)
+            var selectedParent = selectedEntity.Parent;
+            while (selectedParent != null)
             {
-                if(foundChild) continue;
+                if (!_hierarchyChangeSystem.IsExpanded(selectedParent))
+                    _hierarchyChangeSystem.ToggleExpand(selectedParent);
 
-                var selectedChild = FindIfSelectedChildren(selectedEntity.Parent, entity);
-                if (!selectedChild) continue;
-                
-                // Debug.Log("Doing stuffz!");
-                if (!_hierarchyChangeSystem.IsExpanded(entity))
-                    _hierarchyChangeSystem.ClickedOnEntityExpandArrow(entity);
-                
-                ExpandParents(entity.Children);
-                foundChild = true;
+                selectedParent = selectedParent.Parent;
             }
-        }
-
-        private bool FindIfSelectedChildren(DclEntity parent, DclEntity wannaBe)
-        {
-            if (parent == null) return false;
-            
-            var isSelectedChildren = parent.Id == wannaBe.Id;
-            return isSelectedChildren || FindIfSelectedChildren(parent.Parent, wannaBe);
         }
     }
 }

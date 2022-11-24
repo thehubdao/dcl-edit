@@ -34,5 +34,10 @@ namespace Assets.Scripts.System
         {
             return _hierarchyExpansionState.IsExpanded(entity.Id);
         }
+
+        public void ToggleExpand(DclEntity entity)
+        {
+            _hierarchyExpansionState.ToggleExpanded(entity.Id);
+        }
     }
 }
