@@ -47,6 +47,7 @@ namespace Assets.Scripts.Visuals
         {
             var uiBuilder = _uiBuilderFactory.Create();
 
+            ExpandParents(_sceneDirectoryState.CurrentScene!.EntitiesInSceneRoot);
             MakeHierarchyItemsRecursive(uiBuilder, 0, _sceneDirectoryState.CurrentScene!.EntitiesInSceneRoot);
 
             uiBuilder.Spacer(300);
@@ -82,6 +83,37 @@ namespace Assets.Scripts.Visuals
                     MakeHierarchyItemsRecursive(uiBuilder, level + 1, entity.Children);
                 }
             }
+        }
+        
+        private void ExpandParents(IEnumerable<DclEntity> entities)
+        {   
+            var selectedEntity = _sceneDirectoryState.CurrentScene?.SelectionState.PrimarySelectedEntity;
+            if (selectedEntity == null) return;
+
+            var foundChild = false;
+            
+            foreach (var entity in entities)
+            {
+                if(foundChild) continue;
+
+                var selectedChild = FindIfSelectedChildren(selectedEntity.Parent, entity);
+                if (!selectedChild) continue;
+                
+                // Debug.Log("Doing stuffz!");
+                if (!_hierarchyChangeSystem.IsExpanded(entity))
+                    _hierarchyChangeSystem.ClickedOnEntityExpandArrow(entity);
+                
+                ExpandParents(entity.Children);
+                foundChild = true;
+            }
+        }
+
+        private bool FindIfSelectedChildren(DclEntity parent, DclEntity wannaBe)
+        {
+            if (parent == null) return false;
+            
+            var isSelectedChildren = parent.Id == wannaBe.Id;
+            return isSelectedChildren || FindIfSelectedChildren(parent.Parent, wannaBe);
         }
     }
 }
