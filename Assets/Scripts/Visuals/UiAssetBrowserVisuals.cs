@@ -128,8 +128,14 @@ namespace Assets.Scripts.Visuals
 
             if (assets != null)
             {
+                var i = 0;
                 foreach (var a in assets)
                 {
+                    if (i++ > 100)
+                    {
+                        break;
+                    }
+
                     Texture2D typeIndicator = null;
                     switch (a.assetType)
                     {
