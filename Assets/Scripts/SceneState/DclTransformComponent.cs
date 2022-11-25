@@ -43,28 +43,10 @@ namespace Assets.Scripts.SceneState
             }
         }
 
-        public Quaternion GlobalRotation
-        {
-            get
-            {
-                return GlobalTransformMatrix.rotation;
-            }
-        }
-
         public Vector3 GlobalPosition
         {
             get
             {
-                if (Entity.Parent == null)
-                {
-                    Vector3 transformPosition;
-                    transformPosition.x = GlobalTransformMatrix.m03;
-                    transformPosition.y = GlobalTransformMatrix.m13;
-                    transformPosition.z = GlobalTransformMatrix.m23;
-
-                    return transformPosition;
-                }
-
                 Vector3 position;
                 position.x = GlobalTransformMatrix.m03;
                 position.y = GlobalTransformMatrix.m13;
@@ -72,6 +54,13 @@ namespace Assets.Scripts.SceneState
                 position /= GlobalTransformMatrix.m33;
 
                 return position;
+            }
+        }
+        public Quaternion GlobalRotation
+        {
+            get
+            {
+                return GlobalTransformMatrix.rotation;
             }
         }
         public Matrix4x4 GlobalFixedTransformMatrix
@@ -101,16 +90,6 @@ namespace Assets.Scripts.SceneState
         {
             get
             {
-                if (Entity.Parent == null)
-                {
-                    Vector3 transformPosition;
-                    transformPosition.x = GlobalFixedTransformMatrix.m03;
-                    transformPosition.y = GlobalFixedTransformMatrix.m13;
-                    transformPosition.z = GlobalFixedTransformMatrix.m23;
-
-                    return transformPosition;
-                }
-
                 Vector3 position;
                 position.x = GlobalFixedTransformMatrix.m03;
                 position.y = GlobalFixedTransformMatrix.m13;
