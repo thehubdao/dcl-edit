@@ -1,15 +1,12 @@
 using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
-using Assets.Scripts.Utility;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using UnityEngine;
-using UnityGLTF;
-using UnityGLTF.Loader;
 using Zenject;
+using Object = UnityEngine.Object;
 
 namespace Assets.Scripts.System
 {
@@ -24,7 +21,7 @@ namespace Assets.Scripts.System
         private string relativePathInProject = "/assets"; // TODO: Change this, this is just for testing
 
         public Dictionary<Guid, AssetMetadataFile> AssetMetadataCache => _loaderState.assetMetadataCache;
-        public Dictionary<Guid, FileAssetData> AssetDataCache => _loaderState.assetDataCache;
+        public Dictionary<Guid, AssetData> AssetDataCache => _loaderState.assetDataCache;
 
         [Inject]
         private void Construct(FileAssetLoaderState loaderState, PathState pathState, EditorEvents editorEvents, LoadGltfFromFileSystem loadGltfFromFileSystem)
@@ -50,13 +47,14 @@ namespace Assets.Scripts.System
                     if (IsMetadataFile(assetFile)) { continue; }
 
                     AssetMetadataFile metadataFile = ReadExistingMetadataFile(assetFile);
+
                     if (metadataFile == null)
                     {
-                        var metadata = GenerateMetadataFromAsset(assetFile);
-                        metadataFile = WriteMetadataToFile(metadata, Path.GetDirectoryName(assetFile));
+                        metadataFile = GenerateMetadataFromAsset(assetFile);
+                        WriteMetadataToFile(metadataFile);
                     }
 
-                    AssetMetadataCache[metadataFile.contents.metadata.assetId] = metadataFile;
+                    AssetMetadataCache[metadataFile.assetMetadata.assetId] = metadataFile;
                 }
 
                 _editorEvents.InvokeAssetMetadataCacheUpdatedEvent();
@@ -73,15 +71,7 @@ namespace Assets.Scripts.System
         {
             if (AssetMetadataCache.TryGetValue(id, out AssetMetadataFile file))
             {
-                var metadata = file.contents.metadata;
-                var assetType = metadata.assetType switch
-                {
-                    FileAssetMetadata.AssetType.Unknown => AssetMetadata.AssetType.Unknown,
-                    FileAssetMetadata.AssetType.Model => AssetMetadata.AssetType.Model,
-                    FileAssetMetadata.AssetType.Image => AssetMetadata.AssetType.Image,
-                    _ => throw new ArgumentOutOfRangeException()
-                };
-                return new AssetMetadata(metadata.assetDisplayName, metadata.assetId, assetType);
+                return file.assetMetadata;
             }
             return null;
         }
@@ -98,27 +88,20 @@ namespace Assets.Scripts.System
                 return null;
             }
 
-            var fileAssetData = LoadAssetData(id);
-            AssetData assetData = fileAssetData switch
-            {
-                ImageFileAssetData imageFileAssetData => new ImageAssetData(imageFileAssetData.id, imageFileAssetData.data),
-                ModelFileAssetData modelFileAssetData => new ModelAssetData(modelFileAssetData.id, modelFileAssetData.data),
-                _ => throw new ArgumentOutOfRangeException(nameof(fileAssetData))
-            };
-
-            return assetData;
+            return LoadAssetData(id);
         }
 
         #endregion
 
 
         #region Metadata related methods
+
         /// <summary>
         /// Generates a new metadata object (with a new Guid) for the given asset.
         /// </summary>
         /// <param name="assetFilePath"></param>
         /// <returns></returns>
-        private FileAssetMetadata GenerateMetadataFromAsset(string assetFilePath)
+        private AssetMetadataFile GenerateMetadataFromAsset(string assetFilePath)
         {
             try
             {
@@ -126,30 +109,32 @@ namespace Assets.Scripts.System
                 var fileExtension = Path.GetExtension(assetFilePath);
                 Guid assetId = Guid.NewGuid();
 
-                FileAssetMetadata.AssetType assetType;
+                AssetMetadata.AssetType assetType;
                 switch (fileExtension)
                 {
                     case ".glb":
-                        assetType = FileAssetMetadata.AssetType.Model;
+                        assetType = AssetMetadata.AssetType.Model;
                         break;
                     case ".gltf":
-                        assetType = FileAssetMetadata.AssetType.Model;
+                        assetType = AssetMetadata.AssetType.Model;
                         break;
                     case ".png":
-                        assetType = FileAssetMetadata.AssetType.Image;
+                        assetType = AssetMetadata.AssetType.Image;
                         break;
                     default:
-                        assetType = FileAssetMetadata.AssetType.Unknown;
+                        assetType = AssetMetadata.AssetType.Unknown;
                         break;
                 }
 
-                return new FileAssetMetadata
-                {
-                    assetFilename = assetFilename,
-                    assetId = assetId,
-                    assetType = assetType
+                return new AssetMetadataFile(
+                    Path.ChangeExtension(assetFilePath, ".dclasset"),
+                    assetFilename,
+                    new AssetMetadata(
+                        Path.GetFileNameWithoutExtension(assetFilename),
+                        assetId,
+                        assetType)
                     // Thumbnail will be added later by the thumbnail generator
-                };
+                );
             }
             catch (Exception e)
             {
@@ -159,32 +144,30 @@ namespace Assets.Scripts.System
         }
 
         /// <summary>
-        /// Writes the given metadata to a .dclasset file in the given directory.
+        /// Writes the given metadata to a .dclasset file.
         /// </summary>
         /// <param name="metadata"></param>
-        /// <returns></returns>
-        private AssetMetadataFile WriteMetadataToFile(FileAssetMetadata metadata, string targetDirectoryPath)
+        private void WriteMetadataToFile(AssetMetadataFile metadata)
         {
             try
             {
-                // Make sure this path points to a directory and not a file
-                if (!Directory.Exists(targetDirectoryPath))
-                {
-                    targetDirectoryPath = Path.GetDirectoryName(targetDirectoryPath);
-                }
+                var contents = new AssetMetadataFile.Contents(
+                    new AssetMetadataFile.MetaContents(
+                        metadata.assetFilename,
+                        metadata.assetMetadata.assetId,
+                        metadata.assetMetadata.assetType,
+                        metadata.assetMetadata.assetDisplayName
+                    ),
+                    null);
 
-                var filename = Path.ChangeExtension(metadata.assetFilename, ".dclasset");
-                var fullFilePath = Path.Combine(targetDirectoryPath, filename);
-                var contents = new AssetMetadataFile.Contents { metadata = metadata };
                 string json = JsonConvert.SerializeObject(contents);
-                File.WriteAllText(fullFilePath, json);
-                return new AssetMetadataFile(contents, fullFilePath);
+
+                File.WriteAllText(metadata.metadataFilePath, json);
             }
             catch (Exception e)
             {
                 Debug.LogError($"Error while writing metadata to file: {e}");
             }
-            return null;
         }
 
         /// <summary>
@@ -221,22 +204,23 @@ namespace Assets.Scripts.System
 
 
         #region Asset Data related methods
+
         /// <summary>
         /// Provides the data of the asset with the given id.
         /// </summary>
         /// <param name="id"></param>
         /// <param name="onLoadingComplete"></param>
-        private FileAssetData LoadAssetData(Guid id)
+        private AssetData LoadAssetData(Guid id)
         {
             try
             {
                 if (AssetMetadataCache.TryGetValue(id, out AssetMetadataFile file))
                 {
-                    switch (file.contents.metadata.assetType)
+                    switch (file.assetMetadata.assetType)
                     {
-                        case FileAssetMetadata.AssetType.Image:
+                        case AssetMetadata.AssetType.Image:
                             return LoadAndCacheImage(id);
-                        case FileAssetMetadata.AssetType.Model:
+                        case AssetMetadata.AssetType.Model:
                             return LoadAndCacheModel(id);
                         default:
                             break;
@@ -254,22 +238,21 @@ namespace Assets.Scripts.System
         /// Loads cached image data. If the cache doesn't contain the data yet, it gets cached.
         /// </summary>
         /// <param name="id"></param>
-        /// <param name="onLoadingComplete"></param>
-        private FileAssetData LoadAndCacheImage(Guid id)
+        private AssetData LoadAndCacheImage(Guid id)
         {
             try
             {
-                if (AssetDataCache.TryGetValue(id, out FileAssetData cachedAssetData))
+                if (AssetDataCache.TryGetValue(id, out AssetData cachedAssetData))
                 {
                     return cachedAssetData;
                 }
 
                 if (AssetMetadataCache.TryGetValue(id, out AssetMetadataFile value))
                 {
-                    var imageBytes = File.ReadAllBytes(value.AssetFilePath);        // TODO make loading async
+                    var imageBytes = File.ReadAllBytes(value.assetFilePath); // TODO make loading async
                     Texture2D image = new Texture2D(2, 2);        // Texture gets resized when loading the image
                     ImageConversion.LoadImage(image, imageBytes);
-                    var assetData = new ImageFileAssetData(id, image);
+                    var assetData = new ImageAssetData(id, image);
 
                     // Add to cache
                     AssetDataCache[id] = assetData;
@@ -288,27 +271,27 @@ namespace Assets.Scripts.System
         /// Creates a copy of a cached model. If the cache doesn't contain the model yet, it gets cached.
         /// </summary>
         /// <param name="id"></param>
-        /// <param name="onLoadingComplete"></param>
-        private FileAssetData LoadAndCacheModel(Guid id)
+        private AssetData LoadAndCacheModel(Guid id)
         {
-            ModelFileAssetData CreateCopyOfCachedModel(ModelFileAssetData data)
+            ModelAssetData CreateCopyOfCachedModel(ModelAssetData data)
             {
-                GameObject copy = GameObject.Instantiate(data.data);
+                GameObject copy = Object.Instantiate(data.data);
                 copy.SetActive(true);
                 copy.transform.SetParent(null);
-                return new ModelFileAssetData(id, copy);
+                return new ModelAssetData(id, copy);
             }
 
             try
             {
                 // Model already cached
-                if (AssetDataCache.TryGetValue(id, out FileAssetData cachedAssetData))
+                if (AssetDataCache.TryGetValue(id, out AssetData cachedAssetData))
                 {
                     if (cachedAssetData.state != AssetData.State.IsAvailable)
                     {
                         return cachedAssetData;
                     }
-                    if (cachedAssetData is ModelFileAssetData modelData)
+
+                    if (cachedAssetData is ModelAssetData modelData)
                     {
                         return CreateCopyOfCachedModel(modelData);
                     }
@@ -318,17 +301,17 @@ namespace Assets.Scripts.System
                 if (AssetMetadataCache.TryGetValue(id, out AssetMetadataFile metadata))
                 {
                     AssetDataCache[id] = new AssetData(id, AssetData.State.IsLoading);
-                    
-                    _loadGltfFromFileSystem.LoadGltfFromPath(metadata.AssetFilePath, go =>
+
+                    _loadGltfFromFileSystem.LoadGltfFromPath(metadata.assetFilePath, go =>
                     {
-                        var assetData = new ModelFileAssetData(id, go);
+                        var assetData = new ModelAssetData(id, go);
                         AssetDataCache[id] = assetData;
 
                         var updatedIds = new List<Guid> {id};
                         _editorEvents.InvokeAssetDataUpdatedEvent(updatedIds);
                     });
 
-                    return new FileAssetData(id, FileAssetData.State.IsLoading);
+                    return new AssetData(id, AssetData.State.IsLoading);
                 }
             }
             catch (Exception e)

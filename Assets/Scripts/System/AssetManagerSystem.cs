@@ -48,7 +48,8 @@ namespace Assets.Scripts.System
                     return result;
                 }
             }
-            return null;
+
+            return new AssetData(id, AssetData.State.IsError);
         }
 
         public IEnumerable<Guid> GetAllAssetIds()

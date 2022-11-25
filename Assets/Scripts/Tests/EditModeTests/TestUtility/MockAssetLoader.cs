@@ -1,101 +1,96 @@
-using Assets.Scripts.EditorState;
-using Assets.Scripts.System;
 using System;
 using System.Collections.Generic;
+using Assets.Scripts.EditorState;
+using Assets.Scripts.System;
 using UnityEngine;
 
-public class MockAssetLoader : IAssetLoaderSystem
+namespace Assets.Scripts.Tests.EditModeTests.TestUtility
 {
-    private FileAssetLoaderState loaderState = new FileAssetLoaderState();
-    public bool allAssetsCached = false;
-
-    public struct TestData
+    public class MockAssetLoader : IAssetLoaderSystem
     {
-        public Guid id;
-        public string filename;
-        public FileAssetMetadata.AssetType type;
-    }
+        private FileAssetLoaderState loaderState = new FileAssetLoaderState();
+        public bool allAssetsCached = false;
 
-    public MockAssetLoader(params TestData[] testData)
-    {
-        foreach (var t in testData)
+        public struct TestData
         {
-            loaderState.assetMetadataCache.Add(
-                t.id,
-                new AssetMetadataFile(
-                    new AssetMetadataFile.Contents
-                    {
-                        metadata = new FileAssetMetadata
-                        {
-                            assetFilename = t.filename,
-                            assetId = t.id,
-                            assetType = t.type
-                        }
-                    },
-                    $"/{t.filename}"
-                )
-            );
+            public Guid id;
+            public string filename;
+            public AssetMetadata.AssetType type;
+        }
 
-            switch (t.type)
+        public MockAssetLoader(params TestData[] testData)
+        {
+            foreach (var t in testData)
             {
-                case FileAssetMetadata.AssetType.Unknown:
-                    break;
-                case FileAssetMetadata.AssetType.Model:
-                    loaderState.assetDataCache.Add(t.id, new ModelFileAssetData(t.id, new GameObject(t.filename)));
-                    break;
-                case FileAssetMetadata.AssetType.Image:
-                    loaderState.assetDataCache.Add(t.id, new ImageFileAssetData(t.id, new Texture2D(2, 2)));
-                    break;
-                default:
-                    break;
+                loaderState.assetMetadataCache.Add(
+                    t.id,
+                    new AssetMetadataFile(
+                        new AssetMetadataFile.Contents
+                        {
+                            metadata = new AssetMetadataFile.MetaContents()
+                            {
+                                assetFilename = t.filename,
+                                assetId = t.id,
+                                assetType = t.type
+                            }
+                        },
+                        $"/{t.filename}"
+                    )
+                );
+
+                switch (t.type)
+                {
+                    case AssetMetadata.AssetType.Unknown:
+                        break;
+                    case AssetMetadata.AssetType.Model:
+                        loaderState.assetDataCache.Add(t.id, new ModelAssetData(t.id, new GameObject(t.filename)));
+                        break;
+                    case AssetMetadata.AssetType.Image:
+                        loaderState.assetDataCache.Add(t.id, new ImageAssetData(t.id, new Texture2D(2, 2)));
+                        break;
+                    default:
+                        break;
+                }
             }
         }
-    }
 
-    public void CacheAllAssetMetadata()
-    {
-        allAssetsCached = true;
-    }
-
-    public IEnumerable<Guid> GetAllAssetIds() => loaderState.assetMetadataCache.Keys;
-
-    public AssetData GetDataById(Guid id)
-    {
-        if (loaderState.assetDataCache.TryGetValue(id, out FileAssetData fileData))
+        public void CacheAllAssetMetadata()
         {
-            AssetData data = fileData switch
-            {
-                ImageFileAssetData imageFileAssetData => new ImageAssetData(imageFileAssetData.id, imageFileAssetData.data),
-                ModelFileAssetData modelFileAssetData => new ModelAssetData(modelFileAssetData.id, modelFileAssetData.data),
-                _ => throw new ArgumentOutOfRangeException(nameof(fileData))
-            };
-
-            return data;
+            allAssetsCached = true;
         }
-        return null;
-    }
 
-    public AssetMetadata GetMetadataById(Guid id)
-    {
-        if (loaderState.assetMetadataCache.TryGetValue(id, out AssetMetadataFile file))
+        public IEnumerable<Guid> GetAllAssetIds() => loaderState.assetMetadataCache.Keys;
+
+        public AssetData GetDataById(Guid id)
         {
-            var fileAssetMetadata = file.contents.metadata;
-
-            var type = fileAssetMetadata.assetType switch
+            if (loaderState.assetDataCache.TryGetValue(id, out AssetData fileData))
             {
-                FileAssetMetadata.AssetType.Unknown => AssetMetadata.AssetType.Unknown,
-                FileAssetMetadata.AssetType.Model => AssetMetadata.AssetType.Model,
-                FileAssetMetadata.AssetType.Image => AssetMetadata.AssetType.Image,
-                _ => throw new ArgumentOutOfRangeException()
-            };
+                AssetData data = fileData switch
+                {
+                    ImageAssetData imageFileAssetData => new ImageAssetData(imageFileAssetData.id, imageFileAssetData.data),
+                    ModelAssetData modelFileAssetData => new ModelAssetData(modelFileAssetData.id, modelFileAssetData.data),
+                    _ => throw new ArgumentOutOfRangeException(nameof(fileData))
+                };
 
-            return new AssetMetadata(fileAssetMetadata.assetDisplayName, fileAssetMetadata.assetId, type);
+                return data;
+            }
+
+            return null;
         }
-        return null;
-    }
 
-    public AssetThumbnail GetThumbnailById(Guid id)
-    {
-        throw new NotImplementedException();
+        public AssetMetadata GetMetadataById(Guid id)
+        {
+            if (loaderState.assetMetadataCache.TryGetValue(id, out AssetMetadataFile file))
+            {
+                return file.assetMetadata;
+            }
+
+            return null;
+        }
+
+        public AssetThumbnail GetThumbnailById(Guid id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
