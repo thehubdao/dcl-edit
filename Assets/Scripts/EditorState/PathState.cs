@@ -39,4 +39,6 @@ namespace Assets.Scripts.EditorState
             }
         }
     }
+
+    public string CachePath = null;
 }

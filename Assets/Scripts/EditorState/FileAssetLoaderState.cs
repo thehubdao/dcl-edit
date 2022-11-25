@@ -11,7 +11,7 @@ namespace Assets.Scripts.EditorState
         public Dictionary<Guid, AssetMetadataFile> assetMetadataCache = new Dictionary<Guid, AssetMetadataFile>();
 
         // Contains all asset data that is already cached.
-        public Dictionary<Guid, AssetData> assetDataCache = new Dictionary<Guid, AssetData>();
+        public Dictionary<Guid, FileAssetData> assetDataCache = new Dictionary<Guid, FileAssetData>();
     }
 
 
@@ -22,7 +22,7 @@ namespace Assets.Scripts.EditorState
     {
         public struct Contents
         {
-            public AssetMetadata metadata;
+            public FileAssetMetadata metadata;
             public Texture2D thumbnail;
         }
 
@@ -37,7 +37,7 @@ namespace Assets.Scripts.EditorState
         public string AssetFilePath => Path.Combine(Path.GetDirectoryName(metadataFilePath), contents.metadata.assetFilename);
     }
 
-    public class AssetMetadata
+    public class FileAssetMetadata
     {
         public enum AssetType
         {
@@ -55,7 +55,7 @@ namespace Assets.Scripts.EditorState
         new public string ToString() => $"{assetId}; {assetFilename}; {assetType}";
     }
 
-    public class AssetData
+    public class FileAssetData
     {
         public Guid id;
 
@@ -67,26 +67,28 @@ namespace Assets.Scripts.EditorState
         }
         public State state;
 
-        public AssetData(Guid id, State state)
+        public FileAssetData(Guid id, State state)
         {
             this.id = id;
             this.state = state;
         }
     }
-    public class ModelAssetData : AssetData
+
+    public class ModelFileAssetData : FileAssetData
     {
         public GameObject data;
 
-        public ModelAssetData(Guid id, GameObject data) : base(id, State.IsAvailable)
+        public ModelFileAssetData(Guid id, GameObject data) : base(id, State.IsAvailable)
         {
             this.data = data;
         }
     }
-    public class ImageAssetData : AssetData
+
+    public class ImageFileAssetData : FileAssetData
     {
         public Texture2D data;
 
-        public ImageAssetData(Guid id, Texture2D data) : base(id, State.IsAvailable)
+        public ImageFileAssetData(Guid id, Texture2D data) : base(id, State.IsAvailable)
         {
             this.data = data;
         }

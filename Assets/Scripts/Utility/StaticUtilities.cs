@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
+using UnityEditor;
 using UnityEngine;
 
 namespace Assets.Scripts.Utility
@@ -56,5 +58,21 @@ namespace Assets.Scripts.Utility
 
             return builder.ToString();
         }
+
+        public static bool PathEqual(this string self, string other)
+        {
+            var selfPath = Path.GetDirectoryName(self) + Path.DirectorySeparatorChar + Path.GetFileName(self);
+            var otherPath = Path.GetDirectoryName(other) + Path.DirectorySeparatorChar + Path.GetFileName(other);
+
+            return selfPath.Equals(otherPath);
+        }
+
+#if UNITY_EDITOR
+        [MenuItem("Edit/Unlock Reload Assemblies")]
+        public static void UnlockAssemblies()
+        {
+            EditorApplication.UnlockReloadAssemblies();
+        }
+#endif // UNITY_EDITOR
     }
 }
