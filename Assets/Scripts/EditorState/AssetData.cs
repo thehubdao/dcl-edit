@@ -28,11 +28,18 @@ namespace Assets.Scripts.EditorState
 
     public class AssetThumbnail
     {
-        public Guid Id;
+        public AssetThumbnail(Guid id, AssetData.State state, Texture2D texture)
+        {
+            this.id = id;
+            this.state = state;
+            this.texture = texture;
+        }
 
-        public AssetData.State State;
+        public Guid id;
 
-        public Texture2D Texture;
+        public AssetData.State state;
+
+        public Texture2D texture;
     }
 
     public class AssetData

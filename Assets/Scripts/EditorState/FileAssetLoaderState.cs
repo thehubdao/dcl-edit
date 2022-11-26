@@ -26,7 +26,11 @@ namespace Assets.Scripts.EditorState
             public Contents(MetaContents metadata, [CanBeNull] Texture2D thumbnail)
             {
                 this.metadata = metadata;
-                this.thumbnail = ""; // TODO: save thumbnail as base64
+
+                this.thumbnail =
+                    thumbnail == null ?
+                        "" :
+                        Convert.ToBase64String(thumbnail.EncodeToPNG());
             }
 
             public MetaContents metadata;
@@ -49,6 +53,7 @@ namespace Assets.Scripts.EditorState
             public string assetDisplayName;
         }
 
+        [CanBeNull]
         public Texture2D thumbnail;
 
         public string metadataFilePath;

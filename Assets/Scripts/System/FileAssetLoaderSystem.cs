@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using UnityEngine;
 using Zenject;
 using Object = UnityEngine.Object;
@@ -13,23 +14,30 @@ namespace Assets.Scripts.System
     public class FileAssetLoaderSystem : IAssetLoaderSystem
     {
         // Dependencies
-        private FileAssetLoaderState _loaderState;
-        private PathState _pathState; // TODO: Change this
-        private EditorEvents _editorEvents;
-        private LoadGltfFromFileSystem _loadGltfFromFileSystem;
+        private FileAssetLoaderState loaderState;
+        private PathState pathState; // TODO: Change this
+        private EditorEvents editorEvents;
+        private LoadGltfFromFileSystem loadGltfFromFileSystem;
+        private AssetThumbnailGeneratorSystem assetThumbnailGeneratorSystem;
 
         private string relativePathInProject = "/assets"; // TODO: Change this, this is just for testing
 
-        public Dictionary<Guid, AssetMetadataFile> AssetMetadataCache => _loaderState.assetMetadataCache;
-        public Dictionary<Guid, AssetData> AssetDataCache => _loaderState.assetDataCache;
+        public Dictionary<Guid, AssetMetadataFile> assetMetadataCache => loaderState.assetMetadataCache;
+        public Dictionary<Guid, AssetData> assetDataCache => loaderState.assetDataCache;
 
         [Inject]
-        private void Construct(FileAssetLoaderState loaderState, PathState pathState, EditorEvents editorEvents, LoadGltfFromFileSystem loadGltfFromFileSystem)
+        private void Construct(
+            FileAssetLoaderState loaderState,
+            PathState pathState,
+            EditorEvents editorEvents,
+            LoadGltfFromFileSystem loadGltfFromFileSystem,
+            AssetThumbnailGeneratorSystem assetThumbnailGeneratorSystem)
         {
-            _loaderState = loaderState;
-            _pathState = pathState;
-            _editorEvents = editorEvents;
-            _loadGltfFromFileSystem = loadGltfFromFileSystem;
+            this.loaderState = loaderState;
+            this.pathState = pathState;
+            this.editorEvents = editorEvents;
+            this.loadGltfFromFileSystem = loadGltfFromFileSystem;
+            this.assetThumbnailGeneratorSystem = assetThumbnailGeneratorSystem;
         }
 
 
@@ -38,7 +46,7 @@ namespace Assets.Scripts.System
         {
             try
             {
-                string directoryPath = _pathState.ProjectPath + relativePathInProject;
+                string directoryPath = pathState.ProjectPath + relativePathInProject;
                 string[] allFiles = Directory.GetFiles(directoryPath, "*.*", SearchOption.AllDirectories);  // Also search all child directories
 
                 // Populate caches. Assets and their corresponding metadata files get added using their Guid as key.
@@ -54,10 +62,10 @@ namespace Assets.Scripts.System
                         WriteMetadataToFile(metadataFile);
                     }
 
-                    AssetMetadataCache[metadataFile.assetMetadata.assetId] = metadataFile;
+                    assetMetadataCache[metadataFile.assetMetadata.assetId] = metadataFile;
                 }
 
-                _editorEvents.InvokeAssetMetadataCacheUpdatedEvent();
+                editorEvents.InvokeAssetMetadataCacheUpdatedEvent();
             }
             catch (Exception e)
             {
@@ -65,22 +73,44 @@ namespace Assets.Scripts.System
             }
         }
 
-        public IEnumerable<Guid> GetAllAssetIds() => AssetMetadataCache.Keys;
+        public IEnumerable<Guid> GetAllAssetIds() => assetMetadataCache.Keys;
 
         public AssetMetadata GetMetadataById(Guid id)
         {
-            if (AssetMetadataCache.TryGetValue(id, out AssetMetadataFile file))
+            if (assetMetadataCache.TryGetValue(id, out var file))
             {
                 return file.assetMetadata;
             }
             return null;
         }
 
-        public Texture2D GetThumbnailById(Guid id) => AssetMetadataCache[id]?.contents.Thumbnail;
+        public AssetThumbnail GetThumbnailById(Guid id)
+        {
+            if (assetMetadataCache.TryGetValue(id, out var metadata))
+            {
+                if (metadata.thumbnail == null)
+                {
+                    //assetThumbnailGeneratorSystem.Enqueue(id);
+
+                    assetThumbnailGeneratorSystem.Generate(id, thumbnail =>
+                    {
+                        metadata.thumbnail = thumbnail;
+
+                        editorEvents.InvokeThumbnailDataUpdatedEvent(new List<Guid> {id});
+                    });
+
+                    return new AssetThumbnail(id, AssetData.State.IsLoading, null); // Thumbnail needs to be generated
+                }
+
+                return new AssetThumbnail(id, AssetData.State.IsAvailable, metadata.thumbnail); // Thumbnail is available
+            }
+
+            return null; // sorry but this id is in another loader system. Mamma Mia!
+        }
 
         public AssetData GetDataById(Guid id)
         {
-            if (!AssetMetadataCache.ContainsKey(id))
+            if (!assetMetadataCache.ContainsKey(id))
             {
                 return null;
             }
@@ -92,11 +122,11 @@ namespace Assets.Scripts.System
         {
             if (newThumbnail == null) return false;
 
-            if (AssetMetadataCache.TryGetValue(id, out AssetMetadataFile metaFile))
+            if (assetMetadataCache.TryGetValue(id, out AssetMetadataFile metaFile))
             {
-                metaFile.contents.Thumbnail = newThumbnail;
-                WriteMetadataToFile(Path.GetDirectoryName(metaFile.metadataFilePath), metaFile.contents.Metadata, newThumbnail);
-                _editorEvents.InvokeAssetMetadataCacheUpdatedEvent();
+                metaFile.thumbnail = newThumbnail;
+                WriteMetadataToFile(metaFile);
+                editorEvents.InvokeAssetMetadataCacheUpdatedEvent();
                 return true;
             }
             return false;
@@ -167,7 +197,7 @@ namespace Assets.Scripts.System
                         metadata.assetMetadata.assetType,
                         metadata.assetMetadata.assetDisplayName
                     ),
-                    null);
+                    metadata.thumbnail);
 
                 string json = JsonConvert.SerializeObject(contents);
 
@@ -223,7 +253,7 @@ namespace Assets.Scripts.System
         {
             try
             {
-                if (AssetMetadataCache.TryGetValue(id, out AssetMetadataFile file))
+                if (assetMetadataCache.TryGetValue(id, out AssetMetadataFile file))
                 {
                     switch (file.assetMetadata.assetType)
                     {
@@ -251,20 +281,20 @@ namespace Assets.Scripts.System
         {
             try
             {
-                if (AssetDataCache.TryGetValue(id, out AssetData cachedAssetData))
+                if (assetDataCache.TryGetValue(id, out AssetData cachedAssetData))
                 {
                     return cachedAssetData;
                 }
 
-                if (AssetMetadataCache.TryGetValue(id, out AssetMetadataFile value))
+                if (assetMetadataCache.TryGetValue(id, out AssetMetadataFile value))
                 {
                     var imageBytes = File.ReadAllBytes(value.assetFilePath); // TODO make loading async
-                    Texture2D image = new Texture2D(2, 2);        // Texture gets resized when loading the image
+                    Texture2D image = new Texture2D(2, 2); // Texture gets resized when loading the image
                     ImageConversion.LoadImage(image, imageBytes);
                     var assetData = new ImageAssetData(id, image);
 
                     // Add to cache
-                    AssetDataCache[id] = assetData;
+                    assetDataCache[id] = assetData;
 
                     return assetData;
                 }
@@ -293,7 +323,7 @@ namespace Assets.Scripts.System
             try
             {
                 // Model already cached
-                if (AssetDataCache.TryGetValue(id, out AssetData cachedAssetData))
+                if (assetDataCache.TryGetValue(id, out AssetData cachedAssetData))
                 {
                     if (cachedAssetData.state != AssetData.State.IsAvailable)
                     {
@@ -307,17 +337,17 @@ namespace Assets.Scripts.System
                 }
 
                 // Model not yet cached
-                if (AssetMetadataCache.TryGetValue(id, out AssetMetadataFile metadata))
+                if (assetMetadataCache.TryGetValue(id, out AssetMetadataFile metadata))
                 {
-                    AssetDataCache[id] = new AssetData(id, AssetData.State.IsLoading);
+                    assetDataCache[id] = new AssetData(id, AssetData.State.IsLoading);
 
-                    _loadGltfFromFileSystem.LoadGltfFromPath(metadata.assetFilePath, go =>
+                    loadGltfFromFileSystem.LoadGltfFromPath(metadata.assetFilePath, go =>
                     {
                         var assetData = new ModelAssetData(id, go);
-                        AssetDataCache[id] = assetData;
+                        assetDataCache[id] = assetData;
 
                         var updatedIds = new List<Guid> {id};
-                        _editorEvents.InvokeAssetDataUpdatedEvent(updatedIds);
+                        editorEvents.InvokeAssetDataUpdatedEvent(updatedIds);
                     });
 
                     return new AssetData(id, AssetData.State.IsLoading);

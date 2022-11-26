@@ -5,8 +5,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 using Zenject;
+using static AssetThumbnailGeneratorState;
 
 public class AssetThumbnailGeneratorSystem : MonoBehaviour
 {
@@ -27,33 +29,35 @@ public class AssetThumbnailGeneratorSystem : MonoBehaviour
     private Vector3 cameraAngle;
 
     // Dependencies
-    AssetThumbnailGeneratorState _state;
-    AssetManagerSystem _assetManagerSystem;
-    AssetThumbnailManagerSystem _assetThumbnailManagerSystem;
-    EditorEvents _editorEvents;
+    AssetThumbnailGeneratorState state;
+    AssetManagerSystem assetManagerSystem;
+    AssetThumbnailManagerSystem assetThumbnailManagerSystem;
+    EditorEvents editorEvents;
 
     private bool generatorRunning = false;
 
     [Inject]
     private void Construct(AssetThumbnailGeneratorState assetThumbnailGeneratorState, AssetManagerSystem assetManagerSystem, AssetThumbnailManagerSystem assetThumbnailManagerSystem, EditorEvents editorEvents)
     {
-        _state = assetThumbnailGeneratorState;
-        _assetManagerSystem = assetManagerSystem;
-        _assetThumbnailManagerSystem = assetThumbnailManagerSystem;
-        _editorEvents = editorEvents;
+        state = assetThumbnailGeneratorState;
+        this.assetManagerSystem = assetManagerSystem;
+        this.assetThumbnailManagerSystem = assetThumbnailManagerSystem;
+        this.editorEvents = editorEvents;
 
-        _editorEvents.onAssetDataUpdatedEvent += OnAssetDataUpdatedCallback;
+        this.editorEvents.onAssetDataUpdatedEvent += OnAssetDataUpdatedCallback;
 
         DisableComponents();
     }
-    public void Enqueue(Guid id)
+
+    public void Generate(Guid id, Action<Texture2D> then)
     {
-        if (_state.queuedAssets.Contains(id) || _state.waitingForAssetData.Contains(id))
+        if (state.queuedAssets.Any(qa => qa.id == id) ||
+            state.waitingForAssetData.Any(qa => qa.id == id))
         {
             return;
         }
 
-        _state.queuedAssets.Enqueue(id);
+        state.queuedAssets.Enqueue(new QueuedAsset(id, then));
 
         if (!generatorRunning)
         {
@@ -64,19 +68,21 @@ public class AssetThumbnailGeneratorSystem : MonoBehaviour
     IEnumerator ThumbnailGeneratorCoroutine()
     {
         generatorRunning = true;
-        while (_state.queuedAssets.Count > 0)
+        while (state.queuedAssets.Count > 0)
         {
-            Guid id = _state.queuedAssets.Dequeue();
+            QueuedAsset qa = state.queuedAssets.Dequeue();
 
-            AssetData data = _assetManagerSystem.GetDataById(id);
+            AssetData data = assetManagerSystem.GetDataById(qa.id);
             if (data.state == AssetData.State.IsLoading)
             {
-                _state.waitingForAssetData.Add(id);
+                state.waitingForAssetData.Add(qa);
             }
             else
             {
-                GenerateThumbnail(data);
+                var thumbnail = GenerateThumbnail(data);
+                qa.then(thumbnail);
             }
+
             yield return null;
         }
         generatorRunning = false;
@@ -86,10 +92,12 @@ public class AssetThumbnailGeneratorSystem : MonoBehaviour
     {
         foreach (Guid id in ids)
         {
-            if (_state.waitingForAssetData.Contains(id))
+            if (state.waitingForAssetData.Any(qa => qa.id == id))
             {
-                _state.queuedAssets.Enqueue(id);
-                _state.waitingForAssetData.Remove(id);
+                var qa = state.waitingForAssetData.Find(qa => qa.id == id);
+                state.waitingForAssetData.Remove(qa);
+
+                state.queuedAssets.Enqueue(qa);
 
                 if (!generatorRunning)
                 {
@@ -99,8 +107,9 @@ public class AssetThumbnailGeneratorSystem : MonoBehaviour
         }
     }
 
-    void GenerateThumbnail(AssetData data)
+    private Texture2D GenerateThumbnail(AssetData data)
     {
+        Debug.Log($"Generating Thumbnail: {data.id}");
         if (data is ModelAssetData modelData)
         {
             var go = modelData.data.gameObject;
@@ -131,19 +140,27 @@ public class AssetThumbnailGeneratorSystem : MonoBehaviour
             camera.Render();
             Texture2D texture = new Texture2D(rt.width, rt.height, TextureFormat.ARGB32, false);
             texture.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
+            texture.Apply();
             RenderTexture.active = null;
             DisableComponents();
 
             Destroy(go);
 
-            _assetThumbnailManagerSystem.SetThumbnailById(data.id, texture);
+            return texture;
+            //assetThumbnailManagerSystem.SetThumbnailById(data.id, texture);
         }
         else if (data is ImageAssetData imageData)
         {
             // Just return the texture
             Texture2D thumbnail = imageData.data;
-            _assetThumbnailManagerSystem.SetThumbnailById(data.id, thumbnail);
+
+            // TODO: make texture fixed size and square
+
+            return thumbnail;
+            //assetThumbnailManagerSystem.SetThumbnailById(data.id, thumbnail);
         }
+
+        return new Texture2D(2, 2);
     }
 
     Bounds? GetTotalBoundsOfChildren()

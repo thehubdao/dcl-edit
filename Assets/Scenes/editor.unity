@@ -518,9 +518,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41ee57d2e008083439f269c45ea6f6c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _scrollViewContent: {fileID: 410899221}
-  _headerContent: {fileID: 1016226806}
-  _footerContent: {fileID: 681052891}
+  scrollViewContent: {fileID: 410899221}
+  headerContent: {fileID: 1016226806}
+  footerContent: {fileID: 681052891}
 --- !u!114 &316218530
 MonoBehaviour:
   m_ObjectHideFlags: 0

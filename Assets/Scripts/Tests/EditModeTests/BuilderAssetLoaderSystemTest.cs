@@ -202,18 +202,18 @@ namespace Assets.Scripts.Tests.EditModeTests
 
             var thumbnail1 = loaderSystem.GetThumbnailById(Guid.Parse("0149cae5-9e33-48aa-a346-94f02091ec75"));
             Assert.NotNull(thumbnail1);
-            Assert.AreEqual(AssetData.State.IsLoading, thumbnail1.State);
-            Assert.Null(thumbnail1.Texture);
+            Assert.AreEqual(AssetData.State.IsLoading, thumbnail1.state);
+            Assert.Null(thumbnail1.texture);
 
             yield return assetThumbnailCachedAction.WaitForActionCount(1);
 
             var thumbnail2 = loaderSystem.GetThumbnailById(Guid.Parse("0149cae5-9e33-48aa-a346-94f02091ec75"));
             Assert.NotNull(thumbnail2);
-            Assert.AreEqual(AssetData.State.IsAvailable, thumbnail2.State);
-            Assert.NotNull(thumbnail2.Texture);
+            Assert.AreEqual(AssetData.State.IsAvailable, thumbnail2.state);
+            Assert.NotNull(thumbnail2.texture);
 
-            Assert.AreEqual(512, thumbnail2.Texture.width);
-            Assert.AreEqual(512, thumbnail2.Texture.height);
+            Assert.AreEqual(512, thumbnail2.texture.width);
+            Assert.AreEqual(512, thumbnail2.texture.height);
         }
 
 

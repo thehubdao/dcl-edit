@@ -164,20 +164,20 @@ namespace Assets.Scripts.System
             {
                 // if hash is loaded, return the Thumbnail
                 var thumbnail = _loaderState.LoadedThumbnails[hash];
-                return new AssetThumbnail {Id = id, State = AssetData.State.IsAvailable, Texture = thumbnail};
+                return new AssetThumbnail(id, AssetData.State.IsAvailable, thumbnail);
             }
 
             // check if thumbnail is already loading
             if (data.ThumbnailCacheState == BuilderAssetLoaderState.DataStorage.CacheState.Loading)
             {
-                return new AssetThumbnail {Id = id, State = AssetData.State.IsLoading, Texture = null};
+                return new AssetThumbnail(id, AssetData.State.IsLoading, null);
             }
 
             // Download and load thumbnail
             {
                 _ = LoadThumbnailAsync(data);
 
-                return new AssetThumbnail {Id = id, State = AssetData.State.IsLoading, Texture = null};
+                return new AssetThumbnail(id, AssetData.State.IsLoading, null);
             }
         }
 

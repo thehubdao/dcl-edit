@@ -5,53 +5,40 @@ using Zenject;
 
 namespace Assets.Scripts.System
 {
-    public class AssetThumbnailData : AssetData
-    {
-        public Texture2D thumbnail;
-
-        public AssetThumbnailData(Guid id, State state, Texture2D thumbnail) : base(id, state)
-        {
-            this.thumbnail = thumbnail;
-        }
-    }
-
     public class AssetThumbnailManagerSystem
     {
         // Dependencies
-        private AssetThumbnailGeneratorSystem _assetThumbnailGeneratorSystem;
-        private IAssetLoaderSystem[] _assetLoaderSystems;
+        //private AssetThumbnailGeneratorSystem _assetThumbnailGeneratorSystem;
+        private IAssetLoaderSystem[] assetLoaderSystems;
 
         [Inject]
-        public void Construct(AssetThumbnailGeneratorSystem assetThumbnailGeneratorSystem, params IAssetLoaderSystem[] assetLoaderSystems)
+        public void Construct( /*AssetThumbnailGeneratorSystem assetThumbnailGeneratorSystem,*/ params IAssetLoaderSystem[] assetLoaderSystems)
         {
-            _assetThumbnailGeneratorSystem = assetThumbnailGeneratorSystem;
-            _assetLoaderSystems = assetLoaderSystems;
+            //_assetThumbnailGeneratorSystem = assetThumbnailGeneratorSystem;
+            this.assetLoaderSystems = assetLoaderSystems;
         }
 
-        public AssetThumbnailData GetThumbnailById(Guid id)
+        public AssetThumbnail GetThumbnailById(Guid id)
         {
-            Texture2D thumbnail = null;
-            foreach (var loader in _assetLoaderSystems)
+            foreach (var loader in assetLoaderSystems)
             {
-                thumbnail = loader.GetThumbnailById(id);
-                if (thumbnail != null) break;
+                var thumbnail = loader.GetThumbnailById(id);
+                if (thumbnail != null)
+                {
+                    return thumbnail;
+                }
             }
 
-            if (thumbnail != null)
-            {
-                return new AssetThumbnailData(id, AssetData.State.IsAvailable, thumbnail);
-            }
-
-            _assetThumbnailGeneratorSystem.Enqueue(id);
-            return new AssetThumbnailData(id, AssetData.State.IsLoading, null);
+            return new AssetThumbnail(id, AssetData.State.IsError, null);
+            //_assetThumbnailGeneratorSystem.Enqueue(id);
         }
 
-        public void SetThumbnailById(Guid id, Texture2D newThumbnail)
-        {
-            foreach (IAssetLoaderSystem loaderSystem in _assetLoaderSystems)
-            {
-                loaderSystem.SetThumbnailById(id, newThumbnail);
-            }
-        }
+        //public void SetThumbnailById(Guid id, Texture2D newThumbnail)
+        //{
+        //    foreach (IAssetLoaderSystem loaderSystem in _assetLoaderSystems)
+        //    {
+        //        loaderSystem.SetThumbnailById(id, newThumbnail);
+        //    }
+        //}
     }
 }

@@ -113,7 +113,7 @@ public class DclEditorInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<AssetManagerSystem>().AsSingle();
 
         Container.Bind<IAssetLoaderSystem>().To<FileAssetLoaderSystem>().AsSingle();
-        Container.Bind<IAssetLoaderSystem>().To<BuilderAssetLoaderSystem>().AsSingle();
+        //Container.Bind<IAssetLoaderSystem>().To<BuilderAssetLoaderSystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<FileAssetLoaderState>().AsTransient();
 

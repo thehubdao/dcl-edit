@@ -12,31 +12,40 @@ namespace Assets.Scripts.Visuals
     public class UiAssetBrowserVisuals : MonoBehaviour, ISetupSceneEventListeners
     {
         [SerializeField]
-        private GameObject _scrollViewContent;
+        private GameObject scrollViewContent;
+
         [SerializeField]
-        private GameObject _headerContent;
+        private GameObject headerContent;
+
         [SerializeField]
-        private GameObject _footerContent;
+        private GameObject footerContent;
 
         // Dependencies
-        private UiBuilder.Factory _uiBuilderFactory;
-        private EditorEvents _editorEvents;
-        private AssetBrowserSystem _assetBrowserSystem;
-        private AssetManagerSystem _assetManagerSystem;
-        private UnityState _unityState;
-        private ContextMenuSystem _contextMenuSystem;
-        private AssetThumbnailManagerSystem _assetThumbnailManagerSystem;
+        private UiBuilder.Factory uiBuilderFactory;
+        private EditorEvents editorEvents;
+        private AssetBrowserSystem assetBrowserSystem;
+        private AssetManagerSystem assetManagerSystem;
+        private UnityState unityState;
+        private ContextMenuSystem contextMenuSystem;
+        private AssetThumbnailManagerSystem assetThumbnailManagerSystem;
 
         [Inject]
-        private void Construct(UiBuilder.Factory uiBuilderFactory, EditorEvents editorEvents, AssetBrowserSystem assetBrowserSystem, AssetThumbnailManagerSystem assetThumbnailManagerSystem, AssetManagerSystem assetManagerSystem, UnityState unityState, ContextMenuSystem contextMenuSystem)
+        private void Construct(
+            UiBuilder.Factory uiBuilderFactory,
+            EditorEvents editorEvents,
+            AssetBrowserSystem assetBrowserSystem,
+            AssetThumbnailManagerSystem assetThumbnailManagerSystem,
+            AssetManagerSystem assetManagerSystem,
+            UnityState unityState,
+            ContextMenuSystem contextMenuSystem)
         {
-            _uiBuilderFactory = uiBuilderFactory;
-            _editorEvents = editorEvents;
-            _assetBrowserSystem = assetBrowserSystem;
-            _assetManagerSystem = assetManagerSystem;
-            _unityState = unityState;
-            _contextMenuSystem = contextMenuSystem;
-            _assetThumbnailManagerSystem = assetThumbnailManagerSystem;
+            this.uiBuilderFactory = uiBuilderFactory;
+            this.editorEvents = editorEvents;
+            this.assetBrowserSystem = assetBrowserSystem;
+            this.assetManagerSystem = assetManagerSystem;
+            this.unityState = unityState;
+            this.contextMenuSystem = contextMenuSystem;
+            this.assetThumbnailManagerSystem = assetThumbnailManagerSystem;
         }
 
 
@@ -49,25 +58,27 @@ namespace Assets.Scripts.Visuals
         IEnumerator LateStart()
         {
             yield return null;
-            _assetBrowserSystem.ChangeSorting(new AssetNameSorting(true));
+            assetBrowserSystem.ChangeSorting(new AssetNameSorting(true));
             UpdateVisuals();
         }
 
 
         public void SetupSceneEventListeners()
         {
-            _editorEvents.onAssetMetadataCacheUpdatedEvent += UpdateVisuals;
-            _editorEvents.onUiChangedEvent += UpdateVisuals;
+            editorEvents.onAssetMetadataCacheUpdatedEvent += UpdateVisuals;
+            editorEvents.onUiChangedEvent += UpdateVisuals;
+            editorEvents.onAssetThumbnailUpdatedEvent += _ => UpdateVisuals();
         }
 
         private void UpdateVisuals()
         {
-            var assets = _assetBrowserSystem.GetFilteredMetadata();
-            var rectTransform = _scrollViewContent.GetComponent<RectTransform>();
+            Debug.Log("Update Asset Browser Visuals");
+            var assets = assetBrowserSystem.GetFilteredMetadata();
+            //var rectTransform = scrollViewContent.GetComponent<RectTransform>();
 
             // Build header
-            var headerBuilder = _uiBuilderFactory.Create();
-            var rowBuilder = _uiBuilderFactory.Create();
+            var headerBuilder = uiBuilderFactory.Create();
+            var rowBuilder = uiBuilderFactory.Create();
             rowBuilder.Text("Filter:");
             var headerButtonStyle = new TextHandler.TextStyle
             {
@@ -75,15 +86,15 @@ namespace Assets.Scripts.Visuals
                 horizontalAlignment = TMPro.HorizontalAlignmentOptions.Center,
                 verticalAlignment = TMPro.VerticalAlignmentOptions.Middle,
             };
-            foreach (var f in _assetBrowserSystem.Filters)
+            foreach (var f in assetBrowserSystem.Filters)
             {
                 switch (f)
                 {
                     case AssetTypeFilter typeFilter:
                         rowBuilder.Button($"{typeFilter.GetName()} x", headerButtonStyle, () =>
                         {
-                            _assetBrowserSystem.RemoveFilter(typeFilter);
-                            _editorEvents.InvokeAssetMetadataCacheUpdatedEvent();
+                            assetBrowserSystem.RemoveFilter(typeFilter);
+                            editorEvents.InvokeAssetMetadataCacheUpdatedEvent();
                         });
                         break;
                     default:
@@ -93,34 +104,34 @@ namespace Assets.Scripts.Visuals
             rowBuilder.Button("+", headerButtonStyle, (GameObject atom) =>
             {
                 var rect = atom.GetComponent<RectTransform>();
-                _contextMenuSystem.OpenMenu(new List<ContextMenuState.Placement>
+                contextMenuSystem.OpenMenu(new List<ContextMenuState.Placement>
                 {
                     new ContextMenuState.Placement
                     {
-                        position = rect.position + new Vector3(-rect.sizeDelta.x/2,-rect.sizeDelta.y,0),
+                        position = rect.position + new Vector3(-rect.sizeDelta.x / 2, -rect.sizeDelta.y, 0),
                         expandDirection = ContextMenuState.Placement.Direction.Right,
                     },
-                    new ContextMenuState.Placement{
-                        position = rect.position + new Vector3(rect.sizeDelta.x/2,-rect.sizeDelta.y,0),
+                    new ContextMenuState.Placement
+                    {
+                        position = rect.position + new Vector3(rect.sizeDelta.x / 2, -rect.sizeDelta.y, 0),
                         expandDirection = ContextMenuState.Placement.Direction.Left,
                     }
                 }, new List<ContextMenuItem>
                 {
-                    new ContextMenuTextItem("Add model filter",() => _assetBrowserSystem.AddFilter(new AssetTypeFilter(AssetMetadata.AssetType.Model))),
-                    new ContextMenuTextItem("Add image filter",() => _assetBrowserSystem.AddFilter(new AssetTypeFilter(AssetMetadata.AssetType.Image))),
-                    new ContextMenuTextItem("Sort by name (A-Z)",() => _assetBrowserSystem.ChangeSorting(new AssetNameSorting(true))),
-                    new ContextMenuTextItem("Sort by name (Z-A)",() => _assetBrowserSystem.ChangeSorting(new AssetNameSorting(false))),
+                    new ContextMenuTextItem("Add model filter", () => assetBrowserSystem.AddFilter(new AssetTypeFilter(AssetMetadata.AssetType.Model))),
+                    new ContextMenuTextItem("Add image filter", () => assetBrowserSystem.AddFilter(new AssetTypeFilter(AssetMetadata.AssetType.Image))),
+                    new ContextMenuTextItem("Sort by name (A-Z)", () => assetBrowserSystem.ChangeSorting(new AssetNameSorting(true))),
+                    new ContextMenuTextItem("Sort by name (Z-A)", () => assetBrowserSystem.ChangeSorting(new AssetNameSorting(false))),
                 });
             });
 
             headerBuilder.Row(rowBuilder);
-            headerBuilder.ClearAndMake(_headerContent);
-
+            headerBuilder.ClearAndMake(headerContent);
 
 
             // Build asset library grid
-            var scrollViewBuilder = _uiBuilderFactory.Create();
-            var gridBuilder = _uiBuilderFactory.Create();
+            var scrollViewBuilder = uiBuilderFactory.Create();
+            var gridBuilder = uiBuilderFactory.Create();
             var buttonTextStyle = new TextHandler.TextStyle
             {
                 horizontalAlignment = TMPro.HorizontalAlignmentOptions.Center,
@@ -144,35 +155,35 @@ namespace Assets.Scripts.Visuals
                         case AssetMetadata.AssetType.Unknown:
                             break;
                         case AssetMetadata.AssetType.Model:
-                            typeIndicator = _unityState.AssetTypeModelIcon;
+                            typeIndicator = unityState.AssetTypeModelIcon;
                             break;
                         case AssetMetadata.AssetType.Image:
-                            typeIndicator = _unityState.AssetTypeImageIcon;
+                            typeIndicator = unityState.AssetTypeImageIcon;
                             break;
                         default:
                             break;
                     }
 
-                    var thumbnail = _assetThumbnailManagerSystem.GetThumbnailById(a.assetId);
+                    var thumbnail = assetThumbnailManagerSystem.GetThumbnailById(a.assetId);
                     gridBuilder.AssetButton(
                         text: a.assetDisplayName,
                         textStyle: buttonTextStyle,
                         assetTypeIndicator: typeIndicator,
-                        thumbnail: thumbnail,
+                        thumbnail: thumbnail.texture,
                         assetMetadata: a
                     );
                 }
             }
             scrollViewBuilder.Grid(gridBuilder);
-            scrollViewBuilder.ClearAndMake(_scrollViewContent);
+            scrollViewBuilder.ClearAndMake(scrollViewContent);
 
 
             // Build footer
-            var footerBuilder = _uiBuilderFactory.Create();
-            var footerRowBuilder = _uiBuilderFactory.Create();
-            footerRowBuilder.Button("Refresh", headerButtonStyle, () => _assetManagerSystem.CacheAllAssetMetadata());
+            var footerBuilder = uiBuilderFactory.Create();
+            var footerRowBuilder = uiBuilderFactory.Create();
+            footerRowBuilder.Button("Refresh", headerButtonStyle, () => assetManagerSystem.CacheAllAssetMetadata());
             footerBuilder.Row(footerRowBuilder);
-            footerBuilder.ClearAndMake(_footerContent);
+            footerBuilder.ClearAndMake(footerContent);
         }
     }
 }
