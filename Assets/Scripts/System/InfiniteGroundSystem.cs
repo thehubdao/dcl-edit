@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using Assets.Scripts.EditorState;
 using Assets.Scripts.System.Utility;
+using Newtonsoft.Json;
 using UnityEngine;
 using Zenject;
 
@@ -10,6 +12,9 @@ namespace Assets.Scripts.System
     public class InfiniteGroundSystem : MonoBehaviour
     {
         //public new Camera camera;
+
+        //Used to change the position of the tiles in the "update()"
+        const int tilePositionChange = 16;
 
         [SerializeField]
         private GameObject _groundTemplate;
@@ -27,11 +32,13 @@ namespace Assets.Scripts.System
 
         // Dependencies
         private CameraState _cameraState;
+        private IPathState _pathState;
 
         [Inject]
-        private void Construct(CameraState cameraState)
+        private void Construct(IPathState pathState, CameraState cameraState)
         {
             _cameraState = cameraState;
+            _pathState = pathState;
         }
 
 
@@ -60,7 +67,7 @@ namespace Assets.Scripts.System
         // Update is called once per frame
         void Update()
         {
-            var downScaledCameraPosition = _cameraState.Position / 16;
+            var downScaledCameraPosition = _cameraState.Position / tilePositionChange;
             var campos = new Vector2Int((int)downScaledCameraPosition.x, (int)downScaledCameraPosition.z);
 
             // Create new Ground Tile
@@ -72,7 +79,10 @@ namespace Assets.Scripts.System
                     var currentPos = startPos + new Vector2Int(i, j);
                     if (!_tiles.ContainsKey(currentPos))
                     {
-                        var newTile = Instantiate(_groundTemplate, new Vector3(currentPos.x * 16, 0, currentPos.y * 16), Quaternion.identity, transform).GetComponent<InfiniteGroundTile>();
+                        //Where the tile is located in relationship to the other tiles; 16 because the tile has the size of 16, so that they are not overlapping; +0.5 so that the tile is aligned to the white grid
+                        Vector3 tilePosition = new Vector3((currentPos.x + 0.5f) * tilePositionChange, 0, (currentPos.y + 0.5f) * tilePositionChange);
+
+                        var newTile = Instantiate(_groundTemplate, tilePosition, Quaternion.identity, transform).GetComponent<InfiniteGroundTile>();
                         newTile.ShowDefaultGrass = !noGrassTiles.Contains(currentPos);
                         _tiles.Add(currentPos, newTile);
 
@@ -80,6 +90,7 @@ namespace Assets.Scripts.System
                     }
                 }
             }
+
             //endCreateLoop:
 
 
