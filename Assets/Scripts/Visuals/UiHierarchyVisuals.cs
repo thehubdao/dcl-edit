@@ -39,6 +39,7 @@ namespace Assets.Scripts.Visuals
         public void SetupSceneEventListeners()
         {
             _events.onHierarchyChangedEvent += UpdateVisuals;
+            _events.onSelectionChangedEvent += ExpandParents;
             _events.onSelectionChangedEvent += UpdateVisuals;
             UpdateVisuals();
         }
@@ -47,7 +48,6 @@ namespace Assets.Scripts.Visuals
         {
             var uiBuilder = _uiBuilderFactory.Create();
 
-            ExpandParents();
             MakeHierarchyItemsRecursive(uiBuilder, 0, _sceneDirectoryState.CurrentScene!.EntitiesInSceneRoot);
 
             uiBuilder.Spacer(300);
@@ -88,16 +88,7 @@ namespace Assets.Scripts.Visuals
         private void ExpandParents()
         {   
             var selectedEntity = _sceneDirectoryState.CurrentScene?.SelectionState.PrimarySelectedEntity;
-            if (selectedEntity == null) return;
-
-            var selectedParent = selectedEntity.Parent;
-            while (selectedParent != null)
-            {
-                if (!_hierarchyChangeSystem.IsExpanded(selectedParent))
-                    _hierarchyChangeSystem.ToggleExpand(selectedParent);
-
-                selectedParent = selectedParent.Parent;
-            }
+            _hierarchyChangeSystem.ExpandParents(selectedEntity);
         }
     }
 }
