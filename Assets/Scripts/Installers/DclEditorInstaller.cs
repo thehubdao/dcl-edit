@@ -102,5 +102,7 @@ public class DclEditorInstaller : MonoInstaller
         Container.Bind<ProjectSettingState>().To<ProjectSettingState>().AsSingle();
 
         Container.Bind<SceneSettingState>().To<SceneSettingState>().AsSingle();
+        
+        Container.BindInterfacesAndSelfTo<NumberInputSystem>().AsSingle();
     }
 }
