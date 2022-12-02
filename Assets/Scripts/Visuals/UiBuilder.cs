@@ -43,6 +43,7 @@ namespace Assets.Scripts.Visuals
         public struct UiPropertyActions<T>
         {
             public Action<T> OnChange;
+            [CanBeNull] public Action OnInvalid;
             public Action<T> OnSubmit;
             public Action<T> OnAbort;
         }

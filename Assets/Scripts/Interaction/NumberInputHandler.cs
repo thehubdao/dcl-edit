@@ -1,48 +1,77 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Globalization;
-using TMPro;
+using Assets.Scripts.System;
 using UnityEngine;
+using Zenject;
 
 public class NumberInputHandler : MonoBehaviour
 {
+    // Dependencies
     [SerializeField]
     public TextInputHandler TextInputHandler;
+    private NumberInputSystem _numberInputSystem;
 
-
+    [Inject]
+    private void Construct(NumberInputSystem numberInputSystem)
+    {
+        _numberInputSystem = numberInputSystem;
+    }
     public void SetCurrentNumber(float currentContents)
     {
         TextInputHandler.SetCurrentText(NumberToString(currentContents));
     }
 
-    public float GetCurrentNumber()
+    public float? GetCurrentNumber()
     {
-        return StringToNumber(TextInputHandler.GetCurrentText());
+        return _numberInputSystem.ValidateNumberInput(TextInputHandler.GetCurrentText());
     }
 
-    public void SetActions(Action<float> onChange, Action<float> onSubmit, Action<float> onAbort)
+    public void SetActions(Action<float> onChange,  Action onInvalid, Action<float> onSubmit, Action<float> onAbort)
     {
         TextInputHandler.SetActions(
-                (value) => onChange(StringToNumber(value)),
-                (value) => onSubmit(StringToNumber(value)),
-                (value) => onAbort(StringToNumber(value))
-            );
+                (value) =>
+                {
+                    var numberValue = _numberInputSystem.ValidateNumberInput(value);
+                    if (numberValue == null)
+                    {
+                        onInvalid();
+                        TextInputHandler.SetBorderColorValid(false);
+                    }
+                    else
+                    {
+                        onChange(numberValue.Value);
+                        TextInputHandler.SetBorderColorValid(true);
+                    }
+                },
+                (value) =>
+                {
+                    var numberValue = _numberInputSystem.ValidateNumberInput(value);
+                    if (numberValue == null)
+                    {
+                        onAbort(0);
+                    }
+                    else
+                    {
+                        onSubmit(numberValue.Value);
+                    }
+                },
+                (value) =>
+                {
+                    var numberValue = _numberInputSystem.ValidateNumberInput(value);
+                    if (numberValue == null)
+                    {
+                        onAbort(0);
+                    }
+                    else
+                    {
+                        onAbort(numberValue.Value);
+                    }
+                });
     }
 
     private string NumberToString(float value)
     {
         return value.ToString(CultureInfo.InvariantCulture);
     }
-
-    private float StringToNumber(string value)
-    {
-        if (float.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out var result))
-        {
-            return result;
-        }
-
-        // todo return error
-        return 0;
-    }
 }
+
