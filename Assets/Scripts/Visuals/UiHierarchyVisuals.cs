@@ -24,20 +24,20 @@ namespace Assets.Scripts.Visuals
             // Print UiBuilder Stats
             if (Input.GetKeyDown(KeyCode.L))
             {
-                NewUiBuilder.Stats.Dump();
+                NewUiBuilder.NewUiBuilder.Stats.Dump();
             }
         }
 
         // Dependencies
         private EditorEvents _events;
         private UiBuilder.Factory _uiBuilderFactory;
-        private NewUiBuilder newUiBuilder;
+        private NewUiBuilder.NewUiBuilder newUiBuilder;
         private SceneDirectoryState _sceneDirectoryState;
         private CommandSystem _commandSystem;
         private HierarchyChangeSystem _hierarchyChangeSystem;
 
         [Inject]
-        private void Construct(EditorEvents events, UiBuilder.Factory uiBuilderFactory, NewUiBuilder.Factory newUiBuilderFactory, SceneDirectoryState scene, CommandSystem commandSystem, HierarchyChangeSystem hierarchyChangeSystem)
+        private void Construct(EditorEvents events, UiBuilder.Factory uiBuilderFactory, NewUiBuilder.NewUiBuilder.Factory newUiBuilderFactory, SceneDirectoryState scene, CommandSystem commandSystem, HierarchyChangeSystem hierarchyChangeSystem)
         {
             _events = events;
             _uiBuilderFactory = uiBuilderFactory;

@@ -4,6 +4,7 @@ using Assets.Scripts.Interaction;
 using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
 using Assets.Scripts.Visuals;
+using Assets.Scripts.Visuals.NewUiBuilder;
 using UnityEngine;
 using Zenject;
 
