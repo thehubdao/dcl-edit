@@ -18,8 +18,6 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
 
         public List<Atom> childAtoms = new List<Atom>();
 
-        private GameObject content = null;
-
         public override bool Update(Atom.Data newData, int newPosition)
         {
             NewUiBuilder.Stats.atomsUpdatedCount++;
@@ -112,6 +110,7 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
         {
             return childData switch
             {
+                TitleAtom.Data _ => new TitleAtom(uiBuilder),
                 TextAtom.Data _ => new TextAtom(uiBuilder),
                 PanelAtom.Data _ => new PanelAtom(uiBuilder),
                 _ => throw new ArgumentException()

@@ -25,28 +25,24 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
             }
         }
 
-        private Data data;
+        protected Data data;
 
         public override bool Update(Atom.Data newData, int newPosition)
         {
             NewUiBuilder.Stats.atomsUpdatedCount++;
 
-            var hasChanged = false;
+            var posHeightHasChanged = false;
             var newTextData = (Data) newData;
 
+            // Stage 1: Check for a GameObject and make one, if it doesn't exist
             if (gameObject == null)
             {
                 // Make new game object
-                gameObject = new AtomGameObject
-                {
-                    gameObject = uiBuilder.GetAtomObjectFromPool(NewUiBuilder.AtomType.Text),
-                    height = 50,
-                    position = -1
-                };
-
-                hasChanged = true;
+                gameObject = MakeNewGameObject();
+                posHeightHasChanged = true;
             }
 
+            // Stage 2: Check for updated data and update, if data was changed
             if (!newTextData.Equals(data))
             {
                 // Update data
@@ -55,21 +51,24 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
                 data = newTextData;
             }
 
-            if (newPosition != gameObject.position /* or height has changed */)
+            // Stage 3: Check for changes in Position and Height and update, if it has changed
+            if (newPosition != gameObject.position)
             {
-                // Update position and size
-                var tf = gameObject.gameObject.gameObject.GetComponent<RectTransform>();
-
-                tf.offsetMin = Vector2.zero;
-                tf.offsetMax = Vector2.zero;
-
-                tf.anchoredPosition = new Vector3(0, -newPosition, 0);
-                tf.sizeDelta = new Vector2(tf.sizeDelta.x, gameObject.height);
-
-                hasChanged = true;
+                UpdatePositionAndSize(newPosition, gameObject.height);
+                posHeightHasChanged = true;
             }
 
-            return hasChanged;
+            return posHeightHasChanged;
+        }
+
+        protected virtual AtomGameObject MakeNewGameObject()
+        {
+            return new AtomGameObject
+            {
+                gameObject = uiBuilder.GetAtomObjectFromPool(NewUiBuilder.AtomType.Text),
+                height = 50,
+                position = -1
+            };
         }
 
 

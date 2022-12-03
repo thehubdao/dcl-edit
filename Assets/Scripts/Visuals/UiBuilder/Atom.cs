@@ -24,6 +24,12 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
             this.uiBuilder = uiBuilder;
         }
 
+        /// <summary>
+        /// Update the Atom given new Data
+        /// </summary>
+        /// <param name="newData">the data, that the atom should represent now</param>
+        /// <param name="newPosition">the position of the top corner with int its parent GameObject</param>
+        /// <returns>when the Position or Height has changed, return true. This can also happen, when a different Position was given in the newPosition parameter</returns>
         public abstract bool Update([NotNull] Data newData, int newPosition);
 
         public virtual void Remove()

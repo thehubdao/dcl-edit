@@ -59,16 +59,16 @@ namespace Assets.Scripts.Visuals
             var dates = new List<NewUiBuilder.Atom.Data>
             {
                 new NewUiBuilder.TextAtom.Data {text = "Test Text 1"},
-                new NewUiBuilder.TextAtom.Data {text = "Test Text 2"},
+                new NewUiBuilder.TitleAtom.Data {text = "Test Text 2"},
                 new NewUiBuilder.PanelAtom.Data
                 {
                     childDates = new List<NewUiBuilder.Atom.Data>
                     {
                         new NewUiBuilder.TextAtom.Data {text = "Test Text inner 3"},
-                        new NewUiBuilder.TextAtom.Data {text = "Test Text inner 4"},
+                        new NewUiBuilder.TitleAtom.Data {text = "Test Text inner 4"},
                     }
                 },
-                new NewUiBuilder.TextAtom.Data {text = "Test Text 5"},
+                new NewUiBuilder.TitleAtom.Data {text = "Test Text 5"},
                 new NewUiBuilder.TextAtom.Data {text = "Test Text 6"},
             };
 
