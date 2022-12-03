@@ -75,32 +75,71 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
         {
             hasChanged = false;
 
-            // Update contents // TODO: Check, if an atom needs rebuilding
-            foreach (var childAtom in childAtoms)
+            var lastPos = 0;
+
+            var atomIndex = 0;
+            var dataIndex = 0;
+            while (dataIndex < newPanelData.childDates.Count)
             {
-                childAtom.Remove();
+                var childData = newPanelData.childDates[dataIndex];
+
+                // case 1: atom and data match
+                if (atomIndex < childAtoms.Count && childAtoms[atomIndex].DoesDataTypeMatch(childData))
+                {
+                    // Update the atom to represent the new data
+                    var changed = childAtoms[atomIndex].Update(childData, lastPos);
+
+                    if (changed)
+                    {
+                        hasChanged = true;
+                    }
+
+                    childAtoms[atomIndex].gameObject.gameObject.gameObject.transform.SetParent(
+                        gameObject.gameObject.gameObject.GetComponent<PanelHandler>().Content.transform, false);
+
+                    lastPos += childAtoms[atomIndex].gameObject.height;
+                    // advance both atom index and data index
+                    atomIndex++;
+                    dataIndex++;
+                }
+                // case 2: atom and data don't match but there are still some child atoms to search for a match
+                else if (atomIndex < childAtoms.Count && !childAtoms[atomIndex].DoesDataTypeMatch(childData))
+                {
+                    // remove the current atom
+                    childAtoms[atomIndex].Remove();
+                    childAtoms.RemoveAt(atomIndex);
+                }
+                // case 3: there is no atom left to mach against
+                else
+                {
+                    // create new atom and populate with data
+                    var childAtom = MakeChildAtom(childData);
+
+                    var changed = childAtom.Update(childData, lastPos);
+
+                    if (changed)
+                    {
+                        hasChanged = true;
+                    }
+
+                    childAtom.gameObject.gameObject.gameObject.transform.SetParent(
+                        gameObject.gameObject.gameObject.GetComponent<PanelHandler>().Content.transform, false);
+
+                    lastPos += childAtom.gameObject.height;
+
+                    childAtoms.Add(childAtom);
+
+                    atomIndex++;
+                    dataIndex++;
+                }
             }
 
-            childAtoms.Clear();
-
-            var lastPos = 0;
-            foreach (var childData in newPanelData.childDates)
+            // case 4: data is fully integrated but there are still some atoms left
+            while (atomIndex < childAtoms.Count)
             {
-                var childAtom = MakeChildAtom(childData);
-
-                var changed = childAtom.Update(childData, lastPos);
-
-                if (changed)
-                {
-                    hasChanged = true;
-                }
-
-                childAtom.gameObject.gameObject.gameObject.transform.SetParent(
-                    gameObject.gameObject.gameObject.GetComponent<PanelHandler>().Content.transform, false);
-
-                lastPos += childAtom.gameObject.height;
-
-                childAtoms.Add(childAtom);
+                // remove the remaining atoms
+                childAtoms[atomIndex].Remove();
+                childAtoms.RemoveAt(atomIndex);
             }
 
             endHeight = lastPos;

@@ -55,5 +55,21 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
             gameObject.position = position;
             gameObject.height = height;
         }
+
+        /// <summary>
+        /// Check if Atom Type and Data Type match
+        /// </summary>
+        /// <param name="data">the data to check</param>
+        /// <returns>Returns true, if the data is from the same type as this Atom</returns>
+        public bool DoesDataTypeMatch(Data data)
+        {
+            return this switch
+            {
+                PanelAtom _ => typeof(PanelAtom.Data) == data.GetType(),
+                TitleAtom _ => typeof(TitleAtom.Data) == data.GetType(),
+                TextAtom _ => typeof(TextAtom.Data) == data.GetType(),
+                _ => false
+            };
+        }
     }
 }

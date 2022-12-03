@@ -26,6 +26,13 @@ namespace Assets.Scripts.Visuals
             {
                 NewUiBuilder.NewUiBuilder.Stats.Dump();
             }
+
+            if (Input.GetKeyDown(KeyCode.K))
+            {
+                dateIndex++;
+                dateIndex %= datess.Count;
+                UpdateVisuals();
+            }
         }
 
         // Dependencies
@@ -54,24 +61,53 @@ namespace Assets.Scripts.Visuals
             UpdateVisuals();
         }
 
-        private void UpdateVisuals()
+        private List<List<NewUiBuilder.Atom.Data>> datess = new List<List<NewUiBuilder.Atom.Data>>
         {
-            var dates = new List<NewUiBuilder.Atom.Data>
+            new List<NewUiBuilder.Atom.Data>
             {
-                new NewUiBuilder.TextAtom.Data {text = "Test Text 1"},
-                new NewUiBuilder.TitleAtom.Data {text = "Test Text 2"},
+                new NewUiBuilder.TextAtom.Data {text = "a Test Text 1"},
+                new NewUiBuilder.TitleAtom.Data {text = "a Test Text 2"},
+                new NewUiBuilder.PanelAtom.Data
+                {
+                    childDates = new List<NewUiBuilder.Atom.Data>
+                    {
+                        new NewUiBuilder.TextAtom.Data {text = "a Test Text inner 3"},
+                        new NewUiBuilder.TitleAtom.Data {text = "a Test Text inner 4"},
+                    }
+                },
+                new NewUiBuilder.TitleAtom.Data {text = "a Test Text 5"},
+                new NewUiBuilder.TextAtom.Data {text = "a Test Text 6"},
+            },
+            new List<NewUiBuilder.Atom.Data>
+            {
+                new NewUiBuilder.TextAtom.Data {text = "a Test Text 1"},
+                new NewUiBuilder.TitleAtom.Data {text = "a Test Text 2"},
+                new NewUiBuilder.TextAtom.Data {text = "a Test Text not inner 3"},
+                new NewUiBuilder.TitleAtom.Data {text = "b Test Text not inner 4"},
+                new NewUiBuilder.TitleAtom.Data {text = "b Test Text 5"},
+                new NewUiBuilder.TextAtom.Data {text = "b Test Text 6"},
+                new NewUiBuilder.TextAtom.Data {text = "b Test Text 7"},
+            },
+            new List<NewUiBuilder.Atom.Data>
+            {
+                new NewUiBuilder.TitleAtom.Data {text = "a Test Text 1"},
+                new NewUiBuilder.TextAtom.Data {text = "Test Text 2"},
                 new NewUiBuilder.PanelAtom.Data
                 {
                     childDates = new List<NewUiBuilder.Atom.Data>
                     {
                         new NewUiBuilder.TextAtom.Data {text = "Test Text inner 3"},
-                        new NewUiBuilder.TitleAtom.Data {text = "Test Text inner 4"},
+                        new NewUiBuilder.TitleAtom.Data {text = "b Test Text inner 4"},
                     }
                 },
-                new NewUiBuilder.TitleAtom.Data {text = "Test Text 5"},
-                new NewUiBuilder.TextAtom.Data {text = "Test Text 6"},
-            };
+            },
+        };
 
+        private int dateIndex = 0;
+
+        private void UpdateVisuals()
+        {
+            var dates = datess[dateIndex];
             newUiBuilder.Update(new NewUiBuilder.PanelAtom.Data {childDates = dates});
         }
 
