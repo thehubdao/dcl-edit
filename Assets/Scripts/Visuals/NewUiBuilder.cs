@@ -12,6 +12,19 @@ namespace Assets.Scripts.Visuals
 {
     public class NewUiBuilder
     {
+        // Statistics
+        public static class Stats
+        {
+            public static int instantiateCount = 0;
+            public static int destroyCount = 0;
+            public static int atomsUpdatedCount = 0;
+
+            public static void Dump()
+            {
+                Debug.Log($"Ui Builder stats: Instantiate count: {instantiateCount}, Destroy count: {destroyCount}, Atoms Updated count: {atomsUpdatedCount}");
+            }
+        }
+
         private enum AtomType
         {
             Title,
@@ -43,6 +56,7 @@ namespace Assets.Scripts.Visuals
 
         private GameObject GetAtomObjectFromPool(AtomType type)
         {
+            Stats.instantiateCount++;
             return type switch
             {
                 AtomType.Title => Object.Instantiate(unityState.TitleAtom),
@@ -65,6 +79,7 @@ namespace Assets.Scripts.Visuals
         private void ReturnAtomsToPool([CanBeNull] GameObject objects)
         {
             Object.Destroy(objects);
+            Stats.destroyCount++;
         }
 
         #endregion
@@ -128,6 +143,8 @@ namespace Assets.Scripts.Visuals
 
             public override bool Update(Atom.Data newData, int newPosition)
             {
+                Stats.atomsUpdatedCount++;
+
                 var hasChanged = false;
                 var newPanelData = (Data) newData;
 
@@ -238,6 +255,8 @@ namespace Assets.Scripts.Visuals
 
             public override bool Update(Atom.Data newData, int newPosition)
             {
+                Stats.atomsUpdatedCount++;
+
                 var hasChanged = false;
                 var newTextData = (Data) newData;
 

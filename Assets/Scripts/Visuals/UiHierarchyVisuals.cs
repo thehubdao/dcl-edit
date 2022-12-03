@@ -19,6 +19,15 @@ namespace Assets.Scripts.Visuals
 
 #pragma warning restore CS0649
 
+        void Update()
+        {
+            // Print UiBuilder Stats
+            if (Input.GetKeyDown(KeyCode.L))
+            {
+                NewUiBuilder.Stats.Dump();
+            }
+        }
+
         // Dependencies
         private EditorEvents _events;
         private UiBuilder.Factory _uiBuilderFactory;
