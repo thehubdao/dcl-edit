@@ -12,20 +12,25 @@ namespace Assets.Scripts.Visuals
 {
     public class NewUiBuilder
     {
-        // Statistics
+        #region Statistics
+
         public static class Stats
         {
             public static int instantiateCount = 0;
             public static int destroyCount = 0;
+            public static int getFromPoolCount = 0;
+            public static int returnToPoolCount = 0;
             public static int atomsUpdatedCount = 0;
 
             public static void Dump()
             {
-                Debug.Log($"Ui Builder stats: Instantiate count: {instantiateCount}, Destroy count: {destroyCount}, Atoms Updated count: {atomsUpdatedCount}");
+                Debug.Log($"Ui Builder stats: Instantiate count: {instantiateCount}, Destroy count: {destroyCount}, Get from Pool count: {getFromPoolCount}, Return to Pool count: {returnToPoolCount}, Atoms Updated count: {atomsUpdatedCount}");
             }
         }
 
-        private enum AtomType
+        #endregion
+
+        public enum AtomType
         {
             Title,
             Text,
@@ -43,10 +48,9 @@ namespace Assets.Scripts.Visuals
             ContextMenuSpacerItem
         }
 
-        #region Object Pool
 
         // Dependencies
-        UnityState unityState;
+        private UnityState unityState;
 
         [Inject]
         private void Constructor(UnityState unityState)
@@ -54,9 +58,41 @@ namespace Assets.Scripts.Visuals
             this.unityState = unityState;
         }
 
-        private GameObject GetAtomObjectFromPool(AtomType type)
+        #region Object Pool
+
+        public struct PooledObject
+        {
+            public GameObject gameObject;
+            public AtomType atomType;
+        }
+
+        private Dictionary<AtomType, List<GameObject>> atomPool = new Dictionary<AtomType, List<GameObject>>();
+
+        private PooledObject GetAtomObjectFromPool(AtomType type)
+        {
+            // check for available object
+            if (atomPool.TryGetValue(type, out var objectList))
+            {
+                if (objectList.Count > 0)
+                {
+                    Stats.getFromPoolCount++;
+
+                    var go = objectList[objectList.Count - 1];
+                    objectList.RemoveAt(objectList.Count - 1);
+
+                    go.SetActive(true);
+
+                    return new PooledObject {atomType = type, gameObject = go};
+                }
+            }
+
+            return new PooledObject {atomType = type, gameObject = InstantiateObject(type)};
+        }
+
+        private GameObject InstantiateObject(AtomType type)
         {
             Stats.instantiateCount++;
+
             return type switch
             {
                 AtomType.Title => Object.Instantiate(unityState.TitleAtom),
@@ -76,17 +112,26 @@ namespace Assets.Scripts.Visuals
             };
         }
 
-        private void ReturnAtomsToPool([CanBeNull] GameObject objects)
+        private void ReturnAtomsToPool([CanBeNull] PooledObject objects)
         {
-            Object.Destroy(objects);
-            Stats.destroyCount++;
+            Stats.returnToPoolCount++;
+
+            objects.gameObject.SetActive(false);
+            objects.gameObject.transform.SetParent(GameObject.Find("SceneContext").transform);
+
+            if (!atomPool.ContainsKey(objects.atomType))
+            {
+                atomPool[objects.atomType] = new List<GameObject>();
+            }
+
+            atomPool[objects.atomType].Add(objects.gameObject);
         }
 
-        #endregion
+        #endregion // Object Pool
 
         public class AtomGameObject
         {
-            public GameObject gameObject;
+            public PooledObject gameObject;
             public int height;
             public int position;
         }
@@ -103,7 +148,7 @@ namespace Assets.Scripts.Visuals
 
             public abstract bool Update([NotNull] Data newData, int newPosition);
 
-            public void Remove()
+            public virtual void Remove()
             {
                 uiBuilder.ReturnAtomsToPool(gameObject.gameObject);
             }
@@ -115,7 +160,7 @@ namespace Assets.Scripts.Visuals
             protected void UpdatePositionAndSize(int position, int height)
             {
                 // Update position and size
-                var tf = gameObject.gameObject.GetComponent<RectTransform>();
+                var tf = gameObject.gameObject.gameObject.GetComponent<RectTransform>();
 
                 tf.offsetMin = Vector2.zero;
                 tf.offsetMax = Vector2.zero;
@@ -173,6 +218,16 @@ namespace Assets.Scripts.Visuals
                 return hasChanged;
             }
 
+            public override void Remove()
+            {
+                foreach (var childAtom in childAtoms)
+                {
+                    childAtom.Remove();
+                }
+
+                base.Remove();
+            }
+
             protected virtual void MakeNewAtomGameObject()
             {
                 // Make new AtomGameObject
@@ -208,8 +263,8 @@ namespace Assets.Scripts.Visuals
                         hasChanged = true;
                     }
 
-                    childAtom.gameObject.gameObject.transform.SetParent(
-                        gameObject.gameObject.GetComponent<PanelHandler>().Content.transform, false);
+                    childAtom.gameObject.gameObject.gameObject.transform.SetParent(
+                        gameObject.gameObject.gameObject.GetComponent<PanelHandler>().Content.transform, false);
 
                     lastPos += childAtom.gameObject.height;
 
@@ -276,7 +331,7 @@ namespace Assets.Scripts.Visuals
                 if (!newTextData.Equals(data))
                 {
                     // Update data
-                    var textHandler = gameObject.gameObject.GetComponent<TextHandler>();
+                    var textHandler = gameObject.gameObject.gameObject.GetComponent<TextHandler>();
                     textHandler.text = newTextData.text;
                     data = newTextData;
                 }
@@ -284,7 +339,7 @@ namespace Assets.Scripts.Visuals
                 if (newPosition != gameObject.position /* or height has changed */)
                 {
                     // Update position and size
-                    var tf = gameObject.gameObject.GetComponent<RectTransform>();
+                    var tf = gameObject.gameObject.gameObject.GetComponent<RectTransform>();
 
                     tf.offsetMin = Vector2.zero;
                     tf.offsetMax = Vector2.zero;
@@ -322,7 +377,7 @@ namespace Assets.Scripts.Visuals
             currentRootAtom ??= new PanelAtom(this);
 
             currentRootAtom.Update(newData, 0);
-            currentRootAtom.gameObject.gameObject.transform.parent = parentObject.transform;
+            currentRootAtom.gameObject.gameObject.gameObject.transform.SetParent(parentObject.transform);
         }
 
         public class Factory : PlaceholderFactory<GameObject, NewUiBuilder>
