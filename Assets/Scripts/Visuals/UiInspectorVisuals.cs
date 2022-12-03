@@ -44,6 +44,8 @@ namespace Assets.Scripts.Visuals
 
         private void UpdateVisuals()
         {
+            return;
+
             if (_inputState.InState == InputState.InStateType.UiInput)
             {
                 return;

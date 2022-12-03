@@ -41,6 +41,8 @@ namespace Assets.Scripts.Visuals
 
         private void UpdateVisuals()
         {
+            return;
+
             var uiBuilder = _uiBuilderFactory.Create();
 
             foreach (var settingsPair in _settingsSystem.ShownSettings)

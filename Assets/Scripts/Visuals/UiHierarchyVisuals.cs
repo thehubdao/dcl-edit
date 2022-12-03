@@ -22,15 +22,17 @@ namespace Assets.Scripts.Visuals
         // Dependencies
         private EditorEvents _events;
         private UiBuilder.Factory _uiBuilderFactory;
+        private NewUiBuilder newUiBuilder;
         private SceneDirectoryState _sceneDirectoryState;
         private CommandSystem _commandSystem;
         private HierarchyChangeSystem _hierarchyChangeSystem;
 
         [Inject]
-        private void Construct(EditorEvents events, UiBuilder.Factory uiBuilderFactory, SceneDirectoryState scene, CommandSystem commandSystem, HierarchyChangeSystem hierarchyChangeSystem)
+        private void Construct(EditorEvents events, UiBuilder.Factory uiBuilderFactory, NewUiBuilder.Factory newUiBuilderFactory, SceneDirectoryState scene, CommandSystem commandSystem, HierarchyChangeSystem hierarchyChangeSystem)
         {
             _events = events;
             _uiBuilderFactory = uiBuilderFactory;
+            newUiBuilder = newUiBuilderFactory.Create(_content);
             _sceneDirectoryState = scene;
             _commandSystem = commandSystem;
             _hierarchyChangeSystem = hierarchyChangeSystem;
@@ -45,43 +47,62 @@ namespace Assets.Scripts.Visuals
 
         private void UpdateVisuals()
         {
-            var uiBuilder = _uiBuilderFactory.Create();
-
-            MakeHierarchyItemsRecursive(uiBuilder, 0, _sceneDirectoryState.CurrentScene!.EntitiesInSceneRoot);
-
-            uiBuilder.Spacer(300);
-
-            uiBuilder.ClearAndMake(_content);
-        }
-
-        private void MakeHierarchyItemsRecursive(UiBuilder uiBuilder, int level, IEnumerable<DclEntity> entities)
-        {
-            foreach (var entity in entities)
+            var dates = new List<NewUiBuilder.Atom.Data>
             {
-                var isPrimarySelection = _sceneDirectoryState.CurrentScene!.SelectionState.PrimarySelectedEntity == entity;
-
-                var isSecondarySelection = _sceneDirectoryState.CurrentScene!.SelectionState.SecondarySelectedEntities.Contains(entity);
-
-                var style =
-                    isPrimarySelection ?
-                        TextHandler.TextStyle.PrimarySelection :
-                        isSecondarySelection ?
-                            TextHandler.TextStyle.SecondarySelection :
-                            TextHandler.TextStyle.Normal;
-
-                var isExpanded = _hierarchyChangeSystem.IsExpanded(entity);
-
-                uiBuilder.HierarchyItem(entity.ShownName, level, entity.Children.Any(), isExpanded, style, new HierarchyItemHandler.UiHierarchyItemActions
+                new NewUiBuilder.TextAtom.Data {text = "Test Text 1"},
+                new NewUiBuilder.TextAtom.Data {text = "Test Text 2"},
+                new NewUiBuilder.PanelAtom.Data
                 {
-                    OnArrowClick = () => { _hierarchyChangeSystem.ClickedOnEntityExpandArrow(entity); },
-                    OnNameClick = () => { _hierarchyChangeSystem.ClickedOnEntityInHierarchy(entity); }
-                });
+                    childDates = new List<NewUiBuilder.Atom.Data>
+                    {
+                        new NewUiBuilder.TextAtom.Data {text = "Test Text inner 3"},
+                        new NewUiBuilder.TextAtom.Data {text = "Test Text inner 4"},
+                    }
+                },
+                new NewUiBuilder.TextAtom.Data {text = "Test Text 5"},
+                new NewUiBuilder.TextAtom.Data {text = "Test Text 6"},
+            };
 
-                if (isExpanded)
-                {
-                    MakeHierarchyItemsRecursive(uiBuilder, level + 1, entity.Children);
-                }
-            }
+            newUiBuilder.Update(new NewUiBuilder.PanelAtom.Data {childDates = dates});
         }
+
+        //private void UpdateVisuals()
+        //{
+        //    MakeHierarchyItemsRecursive(0, _sceneDirectoryState.CurrentScene!.EntitiesInSceneRoot);
+        //
+        //    uiBuilder.Spacer(300);
+        //
+        //    uiBuilder.ClearAndMake(_content);
+        //}
+        //
+        //private void MakeHierarchyItemsRecursive(int level, IEnumerable<DclEntity> entities)
+        //{
+        //    foreach (var entity in entities)
+        //    {
+        //        var isPrimarySelection = _sceneDirectoryState.CurrentScene!.SelectionState.PrimarySelectedEntity == entity;
+        //
+        //        var isSecondarySelection = _sceneDirectoryState.CurrentScene!.SelectionState.SecondarySelectedEntities.Contains(entity);
+        //
+        //        var style =
+        //            isPrimarySelection ?
+        //                TextHandler.TextStyle.PrimarySelection :
+        //                isSecondarySelection ?
+        //                    TextHandler.TextStyle.SecondarySelection :
+        //                    TextHandler.TextStyle.Normal;
+        //
+        //        var isExpanded = _hierarchyChangeSystem.IsExpanded(entity);
+        //
+        //        uiBuilder.HierarchyItem(entity.ShownName, level, entity.Children.Any(), isExpanded, style, new HierarchyItemHandler.UiHierarchyItemActions
+        //        {
+        //            OnArrowClick = () => { _hierarchyChangeSystem.ClickedOnEntityExpandArrow(entity); },
+        //            OnNameClick = () => { _hierarchyChangeSystem.ClickedOnEntityInHierarchy(entity); }
+        //        });
+        //
+        //        if (isExpanded)
+        //        {
+        //            MakeHierarchyItemsRecursive(level + 1, entity.Children);
+        //        }
+        //    }
+        //}
     }
 }
