@@ -238,6 +238,10 @@ namespace Assets.Scripts.System
             sceneSettings.Add(TestSceneVec3);
 
             ShownSettings.Add("Scene Settings", sceneSettings);
+            
+            //Hidden Settings
+            //Saves Panel Size
+            panelSize = new StringUserSetting(this, "Panel Size","");
         }
 
         public Dictionary<string, List<ISetting>> ShownSettings = new Dictionary<string, List<ISetting>>();
@@ -250,5 +254,7 @@ namespace Assets.Scripts.System
         public StringProjectSetting TestProjString;
 
         public Vec3SceneSetting TestSceneVec3;
+
+        public StringUserSetting panelSize;
     }
 }
