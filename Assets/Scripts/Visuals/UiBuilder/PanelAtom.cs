@@ -1,9 +1,5 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using Assets.Scripts.Visuals.NewUiBuilder;
-using JetBrains.Annotations;
-using UnityEngine;
 
 namespace Assets.Scripts.Visuals.NewUiBuilder
 {
@@ -12,6 +8,29 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
         public new class Data : Atom.Data
         {
             public List<Atom.Data> childDates;
+
+            public override bool Equals(Atom.Data other)
+            {
+                if (!(other is PanelAtom.Data otherPanel))
+                {
+                    return false;
+                }
+
+                if (childDates.Count != otherPanel.childDates.Count)
+                {
+                    return false;
+                }
+
+                for (var i = 0; i < childDates.Count; i++)
+                {
+                    if (!childDates[i].Equals(otherPanel.childDates[i]))
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
         }
 
         public Data data;
@@ -27,8 +46,7 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
 
             if (gameObject == null)
             {
-                MakeNewAtomGameObject();
-
+                gameObject = MakeNewAtomGameObject();
                 hasChanged = true;
             }
 
@@ -60,15 +78,12 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
             base.Remove();
         }
 
-        protected virtual void MakeNewAtomGameObject()
+        protected virtual AtomGameObject MakeNewAtomGameObject()
         {
-            // Make new AtomGameObject
-            gameObject = new AtomGameObject()
-            {
-                gameObject = uiBuilder.GetAtomObjectFromPool(NewUiBuilder.AtomType.Panel),
-                height = 40,
-                position = -1
-            };
+            var atomObject = uiBuilder.GetAtomObjectFromPool(NewUiBuilder.AtomType.Panel);
+            atomObject.height = 40;
+            atomObject.position = -1;
+            return atomObject;
         }
 
         protected void UpdateData(Data newPanelData, out bool hasChanged, out int endHeight)

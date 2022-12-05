@@ -59,15 +59,10 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
 
         #region Object Pool
 
-        public struct PooledObject
-        {
-            public GameObject gameObject;
-            public AtomType atomType;
-        }
 
         private Dictionary<AtomType, List<GameObject>> atomPool = new Dictionary<AtomType, List<GameObject>>();
 
-        public PooledObject GetAtomObjectFromPool(AtomType type)
+        public AtomGameObject GetAtomObjectFromPool(AtomType type)
         {
             // check for available object
             if (atomPool.TryGetValue(type, out var objectList))
@@ -81,11 +76,11 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
 
                     go.SetActive(true);
 
-                    return new PooledObject {atomType = type, gameObject = go};
+                    return new AtomGameObject {atomType = type, gameObject = go};
                 }
             }
 
-            return new PooledObject {atomType = type, gameObject = InstantiateObject(type)};
+            return new AtomGameObject {atomType = type, gameObject = InstantiateObject(type)};
         }
 
         private GameObject InstantiateObject(AtomType type)
@@ -111,19 +106,22 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
             };
         }
 
-        public void ReturnAtomsToPool([CanBeNull] PooledObject objects)
+        public void ReturnAtomsToPool([CanBeNull] AtomGameObject atomGameObject)
         {
+            if (atomGameObject == null)
+                return;
+
             Stats.returnToPoolCount++;
 
-            objects.gameObject.SetActive(false);
-            objects.gameObject.transform.SetParent(GameObject.Find("SceneContext").transform);
+            atomGameObject.gameObject.SetActive(false);
+            atomGameObject.gameObject.transform.SetParent(GameObject.Find("SceneContext").transform);
 
-            if (!atomPool.ContainsKey(objects.atomType))
+            if (!atomPool.ContainsKey(atomGameObject.atomType))
             {
-                atomPool[objects.atomType] = new List<GameObject>();
+                atomPool[atomGameObject.atomType] = new List<GameObject>();
             }
 
-            atomPool[objects.atomType].Add(objects.gameObject);
+            atomPool[atomGameObject.atomType].Add(atomGameObject.gameObject);
         }
 
         #endregion // Object Pool

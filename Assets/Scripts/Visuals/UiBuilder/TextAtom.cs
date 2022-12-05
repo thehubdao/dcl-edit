@@ -14,14 +14,14 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
         {
             public string text;
 
-            public bool Equals(Data other)
+            public override bool Equals(Atom.Data other)
             {
-                if (other == null)
+                if (!(other is TextAtom.Data otherText))
                 {
                     return false;
                 }
 
-                return text == other.text;
+                return text == otherText.text;
             }
         }
 
@@ -63,12 +63,10 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
 
         protected virtual AtomGameObject MakeNewGameObject()
         {
-            return new AtomGameObject
-            {
-                gameObject = uiBuilder.GetAtomObjectFromPool(NewUiBuilder.AtomType.Text),
-                height = 50,
-                position = -1
-            };
+            var atomObject = uiBuilder.GetAtomObjectFromPool(NewUiBuilder.AtomType.Text);
+            atomObject.height = 50;
+            atomObject.position = -1;
+            return atomObject;
         }
 
 

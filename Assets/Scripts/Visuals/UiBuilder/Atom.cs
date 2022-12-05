@@ -8,9 +8,10 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
 {
     public class AtomGameObject
     {
-        public NewUiBuilder.PooledObject gameObject;
-        public int height;
-        public int position;
+        public GameObject gameObject;
+        public NewUiBuilder.AtomType atomType;
+        public int height = -1;
+        public int position = -1;
     }
 
 
@@ -28,17 +29,18 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
         /// Update the Atom given new Data
         /// </summary>
         /// <param name="newData">the data, that the atom should represent now</param>
-        /// <param name="newPosition">the position of the top corner with int its parent GameObject</param>
+        /// <param name="newPosition">the position of the top corner with in its parent GameObject</param>
         /// <returns>when the Position or Height has changed, return true. This can also happen, when a different Position was given in the newPosition parameter</returns>
         public abstract bool Update([NotNull] Data newData, int newPosition);
 
         public virtual void Remove()
         {
-            uiBuilder.ReturnAtomsToPool(gameObject.gameObject);
+            uiBuilder.ReturnAtomsToPool(gameObject);
         }
 
         public abstract class Data
         {
+            public abstract bool Equals(Data other);
         }
 
         protected void UpdatePositionAndSize(int position, int height)

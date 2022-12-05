@@ -1,11 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using Assets.Scripts.Visuals.NewUiBuilder;
-using Assets.Scripts.Visuals.UiHandler;
-using JetBrains.Annotations;
-using UnityEngine;
-
 namespace Assets.Scripts.Visuals.NewUiBuilder
 {
     public class TitleAtom : TextAtom
@@ -16,14 +8,11 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
 
         protected override AtomGameObject MakeNewGameObject()
         {
-            return new AtomGameObject
-            {
-                gameObject = uiBuilder.GetAtomObjectFromPool(NewUiBuilder.AtomType.Title),
-                height = 130,
-                position = -1
-            };
+            var atomObject = uiBuilder.GetAtomObjectFromPool(NewUiBuilder.AtomType.Title);
+            atomObject.height = 130;
+            atomObject.position = -1;
+            return atomObject;
         }
-
 
         public TitleAtom(NewUiBuilder uiBuilder) : base(uiBuilder)
         {
