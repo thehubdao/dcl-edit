@@ -153,6 +153,9 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
 
             currentRootAtom.Update(newData, 0);
             currentRootAtom.gameObject.gameObject.transform.SetParent(parentObject.transform);
+
+            var parentTransform = parentObject.GetComponent<RectTransform>();
+            parentTransform.sizeDelta = new Vector2(parentTransform.sizeDelta.x, currentRootAtom.gameObject.height);
         }
 
         public class Factory : PlaceholderFactory<GameObject, NewUiBuilder>
