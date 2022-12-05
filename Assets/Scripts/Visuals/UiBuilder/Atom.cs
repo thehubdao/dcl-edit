@@ -46,7 +46,7 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
         protected void UpdatePositionAndSize(int position, int height)
         {
             // Update position and size
-            var tf = gameObject.gameObject.gameObject.GetComponent<RectTransform>();
+            var tf = gameObject.gameObject.GetComponent<RectTransform>();
 
             tf.offsetMin = Vector2.zero;
             tf.offsetMax = Vector2.zero;

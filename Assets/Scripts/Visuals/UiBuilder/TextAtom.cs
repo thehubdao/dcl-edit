@@ -46,7 +46,7 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
             if (!newTextData.Equals(data))
             {
                 // Update data
-                var textHandler = gameObject.gameObject.gameObject.GetComponent<TextHandler>();
+                var textHandler = gameObject.gameObject.GetComponent<TextHandler>();
                 textHandler.text = newTextData.text;
                 data = newTextData;
             }

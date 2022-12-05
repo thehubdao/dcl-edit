@@ -20,10 +20,17 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
             public static int getFromPoolCount = 0;
             public static int returnToPoolCount = 0;
             public static int atomsUpdatedCount = 0;
+            public static int uiBuilderUpdatedCount = 0;
 
             public static void Dump()
             {
-                Debug.Log($"Ui Builder stats: Instantiate count: {instantiateCount}, Destroy count: {destroyCount}, Get from Pool count: {getFromPoolCount}, Return to Pool count: {returnToPoolCount}, Atoms Updated count: {atomsUpdatedCount}");
+                Debug.Log(
+                    $"Ui Builder stats: Instantiate count: {instantiateCount}," +
+                    $" Destroy count: {destroyCount}," +
+                    $" Get from Pool count: {getFromPoolCount}," +
+                    $" Return to Pool count: {returnToPoolCount}," +
+                    $" Atoms Updated count: {atomsUpdatedCount}," +
+                    $" Ui Builder Updated count: {uiBuilderUpdatedCount}");
             }
         }
 
@@ -58,7 +65,6 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
         }
 
         #region Object Pool
-
 
         private Dictionary<AtomType, List<GameObject>> atomPool = new Dictionary<AtomType, List<GameObject>>();
 
@@ -140,11 +146,13 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
 
         public void Update(PanelAtom.Data newData)
         {
+            Stats.uiBuilderUpdatedCount++;
+
             // Create new root atom if not exists
             currentRootAtom ??= new PanelAtom(this);
 
             currentRootAtom.Update(newData, 0);
-            currentRootAtom.gameObject.gameObject.gameObject.transform.SetParent(parentObject.transform);
+            currentRootAtom.gameObject.gameObject.transform.SetParent(parentObject.transform);
         }
 
         public class Factory : PlaceholderFactory<GameObject, NewUiBuilder>

@@ -4,6 +4,7 @@ using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
 using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
+using Assets.Scripts.Visuals.NewUiBuilder;
 using Assets.Scripts.Visuals.UiHandler;
 using UnityEngine;
 using Zenject;
@@ -35,6 +36,26 @@ namespace Assets.Scripts.Visuals
             }
         }
 
+        #region Mark for update
+
+        private bool shouldUpdate = false;
+
+        void LateUpdate()
+        {
+            if (shouldUpdate)
+            {
+                UpdateVisuals();
+                shouldUpdate = false;
+            }
+        }
+
+        private void MarkForUpdate()
+        {
+            shouldUpdate = true;
+        }
+
+        #endregion
+
         // Dependencies
         private EditorEvents _events;
         private UiBuilder.Factory _uiBuilderFactory;
@@ -56,9 +77,9 @@ namespace Assets.Scripts.Visuals
 
         public void SetupSceneEventListeners()
         {
-            _events.onHierarchyChangedEvent += UpdateVisuals;
-            _events.onSelectionChangedEvent += UpdateVisuals;
-            UpdateVisuals();
+            _events.onHierarchyChangedEvent += MarkForUpdate;
+            _events.onSelectionChangedEvent += MarkForUpdate;
+            MarkForUpdate();
         }
 
         private List<List<NewUiBuilder.Atom.Data>> datess = new List<List<NewUiBuilder.Atom.Data>>
@@ -105,49 +126,52 @@ namespace Assets.Scripts.Visuals
 
         private int dateIndex = 0;
 
-        private void UpdateVisuals()
-        {
-            var dates = datess[dateIndex];
-            newUiBuilder.Update(new NewUiBuilder.PanelAtom.Data {childDates = dates});
-        }
-
         //private void UpdateVisuals()
         //{
-        //    MakeHierarchyItemsRecursive(0, _sceneDirectoryState.CurrentScene!.EntitiesInSceneRoot);
-        //
-        //    uiBuilder.Spacer(300);
-        //
-        //    uiBuilder.ClearAndMake(_content);
+        //    var dates = datess[dateIndex];
+        //    newUiBuilder.Update(new NewUiBuilder.PanelAtom.Data {childDates = dates});
         //}
-        //
-        //private void MakeHierarchyItemsRecursive(int level, IEnumerable<DclEntity> entities)
-        //{
-        //    foreach (var entity in entities)
-        //    {
-        //        var isPrimarySelection = _sceneDirectoryState.CurrentScene!.SelectionState.PrimarySelectedEntity == entity;
-        //
-        //        var isSecondarySelection = _sceneDirectoryState.CurrentScene!.SelectionState.SecondarySelectedEntities.Contains(entity);
-        //
-        //        var style =
-        //            isPrimarySelection ?
-        //                TextHandler.TextStyle.PrimarySelection :
-        //                isSecondarySelection ?
-        //                    TextHandler.TextStyle.SecondarySelection :
-        //                    TextHandler.TextStyle.Normal;
-        //
-        //        var isExpanded = _hierarchyChangeSystem.IsExpanded(entity);
-        //
-        //        uiBuilder.HierarchyItem(entity.ShownName, level, entity.Children.Any(), isExpanded, style, new HierarchyItemHandler.UiHierarchyItemActions
-        //        {
-        //            OnArrowClick = () => { _hierarchyChangeSystem.ClickedOnEntityExpandArrow(entity); },
-        //            OnNameClick = () => { _hierarchyChangeSystem.ClickedOnEntityInHierarchy(entity); }
-        //        });
-        //
-        //        if (isExpanded)
-        //        {
-        //            MakeHierarchyItemsRecursive(level + 1, entity.Children);
-        //        }
-        //    }
-        //}
+
+        private void UpdateVisuals()
+        {
+            var mainPanelData = new PanelAtom.Data();
+
+            MakeHierarchyItemsRecursive(0, _sceneDirectoryState.CurrentScene!.EntitiesInSceneRoot, ref mainPanelData);
+
+            newUiBuilder.Update(mainPanelData);
+
+            //uiBuilder.Spacer(300);
+            //uiBuilder.ClearAndMake(_content);
+        }
+
+        private void MakeHierarchyItemsRecursive(int level, IEnumerable<DclEntity> entities, ref PanelAtom.Data mainPanelData)
+        {
+            foreach (var entity in entities)
+            {
+                var isPrimarySelection = _sceneDirectoryState.CurrentScene!.SelectionState.PrimarySelectedEntity == entity;
+
+                var isSecondarySelection = _sceneDirectoryState.CurrentScene!.SelectionState.SecondarySelectedEntities.Contains(entity);
+
+                var style =
+                    isPrimarySelection ?
+                        TextHandler.TextStyle.PrimarySelection :
+                        isSecondarySelection ?
+                            TextHandler.TextStyle.SecondarySelection :
+                            TextHandler.TextStyle.Normal;
+
+                var isExpanded = _hierarchyChangeSystem.IsExpanded(entity);
+
+                mainPanelData.AddHierarchyItem(entity.ShownName, level, entity.Children.Any(), isExpanded, style, new HierarchyItemHandler.UiHierarchyItemActions
+                {
+                    OnArrowClick = () => { _hierarchyChangeSystem.ClickedOnEntityExpandArrow(entity); },
+                    OnNameClick = () => { _hierarchyChangeSystem.ClickedOnEntityInHierarchy(entity); }
+                });
+
+                if (isExpanded)
+                {
+                    MakeHierarchyItemsRecursive(level + 1, entity.Children, ref mainPanelData);
+                }
+            }
+        }
     }
 }

@@ -28,6 +28,9 @@ namespace Assets.Scripts.Visuals.UiHandler
         {
             set
             {
+                Arrow.GetComponent<Toggle>().onValueChanged.RemoveAllListeners();
+                Text.GetComponent<Button>().onClick.RemoveAllListeners();
+
                 Arrow.GetComponent<Toggle>().onValueChanged.AddListener(_ => value.OnArrowClick());
                 Text.GetComponent<Button>().onClick.AddListener(() => value.OnNameClick());
             }

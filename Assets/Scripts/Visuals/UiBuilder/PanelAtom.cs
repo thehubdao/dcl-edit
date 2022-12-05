@@ -7,7 +7,7 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
     {
         public new class Data : Atom.Data
         {
-            public List<Atom.Data> childDates;
+            public List<Atom.Data> childDates = new List<Atom.Data>();
 
             public override bool Equals(Atom.Data other)
             {
@@ -167,6 +167,7 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
                 TitleAtom.Data _ => new TitleAtom(uiBuilder),
                 TextAtom.Data _ => new TextAtom(uiBuilder),
                 PanelAtom.Data _ => new PanelAtom(uiBuilder),
+                HierarchyItemAtom.Data _ => new HierarchyItemAtom(uiBuilder),
                 _ => throw new ArgumentException()
             };
         }
