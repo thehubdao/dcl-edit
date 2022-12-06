@@ -560,7 +560,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 296cbdb83d4ec484881d88184fc3027a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _content: {fileID: 978391267}
+  content: {fileID: 978391267}
 --- !u!1001 &626484195
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -590,6 +590,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7716862978035860914, guid: 969af96d88b4e0149aad8d63dc2b5057, type: 3}
       propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7716862978035860914, guid: 969af96d88b4e0149aad8d63dc2b5057, type: 3}
+      propertyPath: m_AnchorMin.x
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7716862978679610912, guid: 969af96d88b4e0149aad8d63dc2b5057, type: 3}
