@@ -98,6 +98,7 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
             {
                 AtomType.Title => Object.Instantiate(unityState.TitleAtom),
                 AtomType.Text => Object.Instantiate(unityState.TextAtom),
+                AtomType.Spacer => InstantiateSpacerObject(),
                 AtomType.Panel => Object.Instantiate(unityState.PanelAtom),
                 AtomType.PanelWithBorder => Object.Instantiate(unityState.PanelWithBorderAtom),
                 AtomType.PanelHeader => Object.Instantiate(unityState.PanelHeaderAtom),
@@ -112,6 +113,13 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
                 AtomType.ContextMenuSpacerItem => Object.Instantiate(unityState.ContextMenuSpacerItemAtom),
                 _ => null
             };
+        }
+
+        private GameObject InstantiateSpacerObject()
+        {
+            var spacer = new GameObject("Spacer");
+            spacer.AddComponent<RectTransform>();
+            return spacer;
         }
 
         public void ReturnAtomsToPool([CanBeNull] AtomGameObject atomGameObject)

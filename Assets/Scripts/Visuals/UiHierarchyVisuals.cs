@@ -136,52 +136,10 @@ namespace Assets.Scripts.Visuals
         {
             var mainPanelData = new PanelAtom.Data();
 
-            var borderPanel = new PanelWithBorderAtom.Data();
-            borderPanel.AddPanelHeader("Some Header");
-            borderPanel.AddPanelHeader("Closable Header", () => Debug.Log("Close pressed"));
-            borderPanel.AddStringProperty(
-                "Some string property",
-                "This is a placeholder",
-                "current contents",
-                new StringPropertyAtom.UiPropertyActions<string>
-                {
-                    OnChange = s => Debug.Log($"Changed to: {s}"),
-                    OnAbort = s => Debug.Log("Aborted"),
-                    OnSubmit = s => Debug.Log($"Submitted: {s}")
-                });
-            borderPanel.AddNumberProperty(
-                "Some number property",
-                "This is a placeholder",
-                40,
-                new StringPropertyAtom.UiPropertyActions<float>
-                {
-                    OnChange = f => Debug.Log($"Changed to: {f}"),
-                    OnAbort = f => Debug.Log("Aborted"),
-                    OnSubmit = f => Debug.Log($"Submitted: {f}")
-                });
-            borderPanel.AddBooleanProperty(
-                "Some boolean property",
-                true,
-                new StringPropertyAtom.UiPropertyActions<bool>
-                {
-                    OnChange = b => Debug.Log($"Changed to: {b}"),
-                    OnAbort = b => Debug.Log("Aborted"),
-                    OnSubmit = b => Debug.Log($"Submitted: {b}")
-                });
-            borderPanel.AddVector3Property(
-                "Some vec3 property",
-                new List<string> {"x", "y", "z"},
-                new Vector3(4, 8, 12),
-                new StringPropertyAtom.UiPropertyActions<Vector3>
-                {
-                    OnChange = v => Debug.Log($"Changed to: {v}"),
-                    OnAbort = v => Debug.Log("Aborted"),
-                    OnSubmit = v => Debug.Log($"Submitted: {v}")
-                });
 
-            MakeHierarchyItemsRecursive(0, _sceneDirectoryState.CurrentScene!.EntitiesInSceneRoot, borderPanel);
+            MakeHierarchyItemsRecursive(0, _sceneDirectoryState.CurrentScene!.EntitiesInSceneRoot, mainPanelData);
 
-            mainPanelData.childDates.Add(borderPanel);
+            mainPanelData.AddSpacer(300);
 
             newUiBuilder.Update(mainPanelData);
 

@@ -169,6 +169,7 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
             {
                 TitleAtom.Data _ => new TitleAtom(uiBuilder),
                 TextAtom.Data _ => new TextAtom(uiBuilder),
+                SpacerAtom.Data _ => new SpacerAtom(uiBuilder),
                 PanelWithBorderAtom.Data _ => new PanelWithBorderAtom(uiBuilder),
                 PanelAtom.Data _ => new PanelAtom(uiBuilder),
                 PanelHeaderAtom.Data _ => new PanelHeaderAtom(uiBuilder),
