@@ -21,5 +21,10 @@ namespace Assets.Scripts.Visuals.PropertyHandler
         {
             stringInput.SetActions(actions.OnChange, actions.OnSubmit, actions.OnAbort);
         }
+
+        public void ResetActions()
+        {
+            stringInput.ResetActions();
+        }
     }
 }

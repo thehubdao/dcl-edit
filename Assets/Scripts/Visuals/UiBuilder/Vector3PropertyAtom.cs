@@ -53,6 +53,8 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
                 // Update data
                 var vector3PropertyHandler = gameObject.gameObject.GetComponent<Vector3PropertyHandler>();
 
+                vector3PropertyHandler.ResetActions(); // Actions need to be reset, before changing values
+
                 vector3PropertyHandler.propertyNameText.text = newVector3PropertyData.name;
 
                 vector3PropertyHandler.numberInputX.SetCurrentNumber(newVector3PropertyData.currentContents.x);

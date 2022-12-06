@@ -2,6 +2,7 @@ using Assets.Scripts.Visuals.NewUiBuilder;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using NotImplementedException = System.NotImplementedException;
 
 namespace Assets.Scripts.Visuals.UiHandler
 {
@@ -22,9 +23,14 @@ namespace Assets.Scripts.Visuals.UiHandler
 
         public void SetActions(StringPropertyAtom.UiPropertyActions<bool> actions)
         {
-            CheckBoxInput.onValueChanged.RemoveAllListeners();
+            ResetActions();
 
             CheckBoxInput.onValueChanged.AddListener(value => actions.OnSubmit(value));
+        }
+
+        public void ResetActions()
+        {
+            CheckBoxInput.onValueChanged.RemoveAllListeners();
         }
     }
 }

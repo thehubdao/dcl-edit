@@ -50,6 +50,8 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
                 // Update data
                 var booleanPropertyHandler = gameObject.gameObject.GetComponent<BooleanPropertyHandler>();
 
+                booleanPropertyHandler.ResetActions();
+
                 booleanPropertyHandler.PropertyNameText.text = newBooleanPropertyData.name;
                 booleanPropertyHandler.CheckBoxInput.isOn = newBooleanPropertyData.currentContents;
 

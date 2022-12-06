@@ -39,6 +39,13 @@ namespace Assets.Scripts.Visuals.PropertyHandler
                 );
         }
 
+        public void ResetActions()
+        {
+            numberInputX.ResetActions();
+            numberInputY.ResetActions();
+            numberInputZ.ResetActions();
+        }
+
         public void SetActions(StringPropertyAtom.UiPropertyActions<Vector3> actions)
         {
             numberInputX.SetActions(

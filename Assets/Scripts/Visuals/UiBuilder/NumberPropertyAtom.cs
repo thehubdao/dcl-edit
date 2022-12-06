@@ -51,6 +51,8 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
                 // Update data
                 var numberPropertyHandler = gameObject.gameObject.GetComponent<NumberPropertyHandler>();
 
+                numberPropertyHandler.ResetActions();
+
                 numberPropertyHandler.propertyNameText.text = newNumberPropertyData.name;
                 numberPropertyHandler.numberInput.SetCurrentNumber(newNumberPropertyData.currentContents);
                 numberPropertyHandler.numberInput.TextInputHandler.SetPlaceHolder(newNumberPropertyData.placeholder);

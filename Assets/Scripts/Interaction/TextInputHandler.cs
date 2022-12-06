@@ -39,12 +39,17 @@ public class TextInputHandler : MonoBehaviour
         placeHolderText.text = placeHolder;
     }
 
-    public void SetActions(Action<string> onChange, Action<string> onSubmit, Action<string> onAbort)
+    public void ResetActions()
     {
         // remove old listeners. This is necessary, because the input field is pooled and might be reused
         inputField.onSelect.RemoveAllListeners();
         inputField.onValueChanged.RemoveAllListeners();
         inputField.onEndEdit.RemoveAllListeners();
+    }
+
+    public void SetActions(Action<string> onChange, Action<string> onSubmit, Action<string> onAbort)
+    {
+        ResetActions();
 
         inputField.onSelect.AddListener(_ => _inputState.InState = InputState.InStateType.UiInput);
         inputField.onValueChanged.AddListener(value => onChange(value));

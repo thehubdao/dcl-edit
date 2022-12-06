@@ -66,6 +66,8 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
                 // Update data
                 var stringPropertyHandler = gameObject.gameObject.GetComponent<StringPropertyHandler>();
 
+                stringPropertyHandler.ResetActions();
+
                 stringPropertyHandler.propertyNameText.text = newStringPropertyData.name;
                 stringPropertyHandler.stringInput.SetCurrentText(newStringPropertyData.currentContents);
                 stringPropertyHandler.stringInput.SetPlaceHolder(newStringPropertyData.placeholder);

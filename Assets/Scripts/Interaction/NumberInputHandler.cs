@@ -21,6 +21,11 @@ public class NumberInputHandler : MonoBehaviour
         return StringToNumber(TextInputHandler.GetCurrentText());
     }
 
+    public void ResetActions()
+    {
+        TextInputHandler.ResetActions();
+    }
+
     public void SetActions(Action<float> onChange, Action<float> onSubmit, Action<float> onAbort)
     {
         TextInputHandler.SetActions(
