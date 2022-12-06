@@ -1,3 +1,4 @@
+using Assets.Scripts.Visuals.NewUiBuilder;
 using TMPro;
 using UnityEngine;
 
@@ -12,6 +13,11 @@ namespace Assets.Scripts.Visuals.PropertyHandler
         public NumberInputHandler numberInput;
 
         public void SetActions(UiBuilder.UiPropertyActions<float> actions)
+        {
+            numberInput.SetActions(actions.OnChange, actions.OnSubmit, actions.OnAbort);
+        }
+
+        public void SetActions(StringPropertyAtom.UiPropertyActions<float> actions)
         {
             numberInput.SetActions(actions.OnChange, actions.OnSubmit, actions.OnAbort);
         }

@@ -149,6 +149,16 @@ namespace Assets.Scripts.Visuals
                     OnAbort = s => Debug.Log("Aborted"),
                     OnSubmit = s => Debug.Log($"Submitted: {s}")
                 });
+            borderPanel.AddNumberProperty(
+                "Some number property",
+                "This is a placeholder",
+                40,
+                new StringPropertyAtom.UiPropertyActions<float>
+                {
+                    OnChange = f => Debug.Log($"Changed to: {f}"),
+                    OnAbort = f => Debug.Log("Aborted"),
+                    OnSubmit = f => Debug.Log($"Submitted: {f}")
+                });
 
             MakeHierarchyItemsRecursive(0, _sceneDirectoryState.CurrentScene!.EntitiesInSceneRoot, borderPanel);
 

@@ -174,6 +174,7 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
                 PanelHeaderAtom.Data _ => new PanelHeaderAtom(uiBuilder),
                 HierarchyItemAtom.Data _ => new HierarchyItemAtom(uiBuilder),
                 StringPropertyAtom.Data _ => new StringPropertyAtom(uiBuilder),
+                NumberPropertyAtom.Data _ => new NumberPropertyAtom(uiBuilder),
                 _ => throw new ArgumentException()
             };
         }
