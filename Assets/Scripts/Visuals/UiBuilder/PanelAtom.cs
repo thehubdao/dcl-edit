@@ -175,6 +175,7 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
                 HierarchyItemAtom.Data _ => new HierarchyItemAtom(uiBuilder),
                 StringPropertyAtom.Data _ => new StringPropertyAtom(uiBuilder),
                 NumberPropertyAtom.Data _ => new NumberPropertyAtom(uiBuilder),
+                Vector3PropertyAtom.Data _ => new Vector3PropertyAtom(uiBuilder),
                 _ => throw new ArgumentException()
             };
         }

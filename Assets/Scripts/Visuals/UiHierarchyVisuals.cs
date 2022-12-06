@@ -159,6 +159,16 @@ namespace Assets.Scripts.Visuals
                     OnAbort = f => Debug.Log("Aborted"),
                     OnSubmit = f => Debug.Log($"Submitted: {f}")
                 });
+            borderPanel.AddVector3Property(
+                "Some Vec3 property",
+                new List<string> {"x", "y", "z"},
+                new Vector3(4, 8, 12),
+                new StringPropertyAtom.UiPropertyActions<Vector3>
+                {
+                    OnChange = v => Debug.Log($"Changed to: {v}"),
+                    OnAbort = v => Debug.Log("Aborted"),
+                    OnSubmit = v => Debug.Log($"Submitted: {v}")
+                });
 
             MakeHierarchyItemsRecursive(0, _sceneDirectoryState.CurrentScene!.EntitiesInSceneRoot, borderPanel);
 

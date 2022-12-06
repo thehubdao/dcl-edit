@@ -1,3 +1,4 @@
+using Assets.Scripts.Visuals.NewUiBuilder;
 using TMPro;
 using UnityEngine;
 
@@ -36,6 +37,27 @@ namespace Assets.Scripts.Visuals.PropertyHandler
                 _ => actions.OnSubmit(GetCurrentValue()),
                 _ => actions.OnAbort(GetCurrentValue())
                 );
+        }
+
+        public void SetActions(StringPropertyAtom.UiPropertyActions<Vector3> actions)
+        {
+            numberInputX.SetActions(
+                _ => actions.OnChange(GetCurrentValue()),
+                _ => actions.OnSubmit(GetCurrentValue()),
+                _ => actions.OnAbort(GetCurrentValue())
+            );
+
+            numberInputY.SetActions(
+                _ => actions.OnChange(GetCurrentValue()),
+                _ => actions.OnSubmit(GetCurrentValue()),
+                _ => actions.OnAbort(GetCurrentValue())
+            );
+
+            numberInputZ.SetActions(
+                _ => actions.OnChange(GetCurrentValue()),
+                _ => actions.OnSubmit(GetCurrentValue()),
+                _ => actions.OnAbort(GetCurrentValue())
+            );
         }
 
         public Vector3 GetCurrentValue()
