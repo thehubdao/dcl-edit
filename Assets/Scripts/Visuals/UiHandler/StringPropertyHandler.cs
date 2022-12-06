@@ -1,3 +1,4 @@
+using Assets.Scripts.Visuals.NewUiBuilder;
 using TMPro;
 using UnityEngine;
 
@@ -14,6 +15,11 @@ namespace Assets.Scripts.Visuals.PropertyHandler
         public void SetActions(UiBuilder.UiPropertyActions<string> actions)
         {
             stringInput.SetActions(actions.OnChange,actions.OnSubmit,actions.OnAbort);
+        }
+
+        public void SetActions(StringPropertyAtom.UiPropertyActions<string> actions)
+        {
+            stringInput.SetActions(actions.OnChange, actions.OnSubmit, actions.OnAbort);
         }
     }
 }

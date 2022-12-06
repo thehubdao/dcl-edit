@@ -139,6 +139,16 @@ namespace Assets.Scripts.Visuals
             var borderPanel = new PanelWithBorderAtom.Data();
             borderPanel.AddPanelHeader("Some Header");
             borderPanel.AddPanelHeader("Closable Header", () => Debug.Log("Close pressed"));
+            borderPanel.AddStringProperty(
+                "Some string property",
+                "This is a placeholder",
+                "current contents",
+                new StringPropertyAtom.UiPropertyActions<string>
+                {
+                    OnChange = s => Debug.Log($"Changed to: {s}"),
+                    OnAbort = s => Debug.Log("Aborted"),
+                    OnSubmit = s => Debug.Log($"Submitted: {s}")
+                });
 
             MakeHierarchyItemsRecursive(0, _sceneDirectoryState.CurrentScene!.EntitiesInSceneRoot, borderPanel);
 
