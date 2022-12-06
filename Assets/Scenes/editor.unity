@@ -2164,11 +2164,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 7716862978679610915, guid: 969af96d88b4e0149aad8d63dc2b5057, type: 3}
   m_PrefabInstance: {fileID: 1664473589}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1664473591 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7716862978317634566, guid: 969af96d88b4e0149aad8d63dc2b5057, type: 3}
-  m_PrefabInstance: {fileID: 1664473589}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1696477854
 GameObject:
   m_ObjectHideFlags: 0
@@ -2258,7 +2253,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a49ea58358e7e9a4b80e488f920c9f5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _content: {fileID: 1664473591}
+  content: {fileID: 2050740836}
 --- !u!1 &1774098891
 GameObject:
   m_ObjectHideFlags: 0
@@ -2379,6 +2374,11 @@ MonoBehaviour:
   ContextMenuItemAtom: {fileID: 7252716371144921517, guid: f3e20cb956778e94b84cf06eb3365b7d, type: 3}
   ContextSubmenuItemAtom: {fileID: 7092327081975487917, guid: 64a24d68977842740b7c550a18b8b6c9, type: 3}
   ContextMenuSpacerItemAtom: {fileID: 1012576247357608871, guid: 395030571d765984c8e17050dab03b59, type: 3}
+--- !u!1 &2050740836 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7716862978317634566, guid: 969af96d88b4e0149aad8d63dc2b5057, type: 3}
+  m_PrefabInstance: {fileID: 1664473589}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2140157806
 GameObject:
   m_ObjectHideFlags: 0

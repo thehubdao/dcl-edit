@@ -184,9 +184,9 @@ namespace Assets.Scripts.Visuals
 
                     var hierarchyItem = go.GetComponent<HierarchyItemHandler>();
 
-                    hierarchyItem.Text.text = name;
-                    hierarchyItem.Indent.offsetMin = new Vector2(20 * level, 0);
-                    hierarchyItem.Text.textStyle = textStyle;
+                    hierarchyItem.text.text = name;
+                    hierarchyItem.indent.offsetMin = new Vector2(20 * level, 0);
+                    hierarchyItem.text.textStyle = textStyle;
                     hierarchyItem.actions = actions;
 
                     if (hasChildren)

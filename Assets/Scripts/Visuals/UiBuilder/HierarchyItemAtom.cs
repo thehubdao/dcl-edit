@@ -5,6 +5,7 @@ using Assets.Scripts.Visuals.NewUiBuilder;
 using Assets.Scripts.Visuals.UiHandler;
 using JetBrains.Annotations;
 using UnityEngine;
+using UnityEngine.PlayerLoop;
 
 namespace Assets.Scripts.Visuals.NewUiBuilder
 {
@@ -18,6 +19,7 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
             public bool isExpanded;
             public TextHandler.TextStyle style;
             public HierarchyItemHandler.UiHierarchyItemActions actions;
+            public Action<Vector3> rightClickAction;
 
             public override bool Equals(Atom.Data other)
             {
@@ -32,7 +34,8 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
                     hasChildren.Equals(otherHierarchyItem.hasChildren) &&
                     isExpanded.Equals(otherHierarchyItem.isExpanded) &&
                     style.Equals(otherHierarchyItem.style) &&
-                    actions.Equals(otherHierarchyItem.actions);
+                    actions.Equals(otherHierarchyItem.actions) &&
+                    rightClickAction.Equals(otherHierarchyItem.rightClickAction);
             }
         }
 
@@ -59,10 +62,11 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
                 // Update data
                 var hierarchyItemHandler = gameObject.gameObject.GetComponent<HierarchyItemHandler>();
 
-                hierarchyItemHandler.Text.text = newHierarchyItemData.name;
-                hierarchyItemHandler.Indent.offsetMin = new Vector2(20 * newHierarchyItemData.level, 0);
-                hierarchyItemHandler.Text.textStyle = newHierarchyItemData.style;
+                hierarchyItemHandler.text.text = newHierarchyItemData.name;
+                hierarchyItemHandler.indent.offsetMin = new Vector2(20 * newHierarchyItemData.level, 0);
+                hierarchyItemHandler.text.textStyle = newHierarchyItemData.style;
                 hierarchyItemHandler.actions = newHierarchyItemData.actions;
+                hierarchyItemHandler.rightClickHandler.rightClick = newHierarchyItemData.rightClickAction;
 
                 if (newHierarchyItemData.hasChildren)
                 {
@@ -103,7 +107,7 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
 
     public static class HierarchyItemPanelHelper
     {
-        public static HierarchyItemAtom.Data AddHierarchyItem(this PanelAtom.Data panelAtomData, string name, int level, bool hasChildren, bool isExpanded, TextHandler.TextStyle textStyle, HierarchyItemHandler.UiHierarchyItemActions actions)
+        public static HierarchyItemAtom.Data AddHierarchyItem(this PanelAtom.Data panelAtomData, string name, int level, bool hasChildren, bool isExpanded, TextHandler.TextStyle textStyle, HierarchyItemHandler.UiHierarchyItemActions actions, Action<Vector3> rightClickAction)
         {
             var data = new HierarchyItemAtom.Data
             {
@@ -112,7 +116,8 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
                 hasChildren = hasChildren,
                 isExpanded = isExpanded,
                 style = textStyle,
-                actions = actions
+                actions = actions,
+                rightClickAction = rightClickAction
             };
 
             panelAtomData.childDates.Add(data);
