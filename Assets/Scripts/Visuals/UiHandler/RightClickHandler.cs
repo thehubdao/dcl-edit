@@ -6,13 +6,13 @@ namespace Assets.Scripts.Visuals.UiHandler
 {
     public class RightClickHandler : MonoBehaviour, IPointerDownHandler
     {
-        public Action<Vector3> rightClick;
+        public Action<Vector3> onRightClick;
 
         public void OnPointerDown(PointerEventData eventData)
         {
             if (eventData.button == PointerEventData.InputButton.Right)
             {
-                rightClick(new Vector3(eventData.position.x, eventData.position.y));
+                onRightClick(new Vector3(eventData.position.x, eventData.position.y));
             }
         }
     }

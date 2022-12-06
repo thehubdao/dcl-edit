@@ -61,7 +61,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
                 hierarchyItemHandler.indent.offsetMin = new Vector2(20 * newHierarchyItemData.level, 0);
                 hierarchyItemHandler.text.textStyle = newHierarchyItemData.style;
                 hierarchyItemHandler.actions = newHierarchyItemData.actions;
-                hierarchyItemHandler.rightClickHandler.rightClick = newHierarchyItemData.rightClickAction;
+                hierarchyItemHandler.rightClickHandler.onRightClick = newHierarchyItemData.rightClickAction;
 
                 if (newHierarchyItemData.hasChildren)
                 {

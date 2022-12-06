@@ -81,7 +81,7 @@ namespace Assets.Scripts.Visuals
 
         void CreateSingleMenu(ContextMenuState.Data menuData)
         {
-            var menuRect = CreateMenuParent(menuData.menuId.ToString());
+            var menuRect = CreateMenuParent();
             state.menuGameObjects.Add(menuData.menuId, menuRect.gameObject);
             menuRect.SetAsLastSibling();
 
@@ -159,9 +159,8 @@ namespace Assets.Scripts.Visuals
             }
         }
 
-        RectTransform CreateMenuParent(string name = "ContextMenu")
+        RectTransform CreateMenuParent()
         {
-            //var menu = new GameObject(name, typeof(RectTransform)).GetComponent<RectTransform>();
             var menu = Instantiate(unityState.ContextMenuAtom).GetComponent<RectTransform>();
             menu.SetParent(transform);
             menu.pivot = new Vector2(0, 1);

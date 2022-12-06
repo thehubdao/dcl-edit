@@ -162,7 +162,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
             currentRootAtom ??= new PanelAtom(this);
 
             currentRootAtom.Update(newData, 0);
-            currentRootAtom.gameObject.gameObject.transform.SetParent(parentObject.transform);
+            currentRootAtom.gameObject.gameObject.transform.SetParent(parentObject.transform, false);
 
             var parentTransform = parentObject.GetComponent<RectTransform>();
             parentTransform.sizeDelta = new Vector2(parentTransform.sizeDelta.x, currentRootAtom.gameObject.height);
