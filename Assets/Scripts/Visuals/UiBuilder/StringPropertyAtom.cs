@@ -1,5 +1,6 @@
 using System;
 using Assets.Scripts.Visuals.PropertyHandler;
+using JetBrains.Annotations;
 
 namespace Assets.Scripts.Visuals.UiBuilder
 {
@@ -8,6 +9,10 @@ namespace Assets.Scripts.Visuals.UiBuilder
         public struct UiPropertyActions<T>
         {
             public Action<T> OnChange;
+
+            [CanBeNull]
+            public Action OnInvalid;
+
             public Action<T> OnSubmit;
             public Action<T> OnAbort;
 
@@ -15,6 +20,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
             {
                 return
                     OnChange == other.OnChange &&
+                    OnInvalid == other.OnInvalid &&
                     OnSubmit == other.OnSubmit &&
                     OnAbort == other.OnAbort;
             }

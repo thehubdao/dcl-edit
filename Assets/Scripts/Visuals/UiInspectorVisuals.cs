@@ -115,6 +115,7 @@ namespace Assets.Scripts.Visuals
                             var intActions = new StringPropertyAtom.UiPropertyActions<float> // number property requires float actions
                             {
                                 OnChange = (value) => updatePropertiesSystem.UpdateFloatingProperty(propertyIdentifier, (int) value),
+                                OnInvalid = () => updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier),
                                 OnSubmit = (value) => updatePropertiesSystem.UpdateFixedProperty(propertyIdentifier, (int) value),
                                 OnAbort = (value) => updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier)
                             };
@@ -132,6 +133,7 @@ namespace Assets.Scripts.Visuals
                             var floatActions = new StringPropertyAtom.UiPropertyActions<float>
                             {
                                 OnChange = (value) => updatePropertiesSystem.UpdateFloatingProperty(propertyIdentifier, value),
+                                OnInvalid = () => updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier),
                                 OnSubmit = (value) => updatePropertiesSystem.UpdateFixedProperty(propertyIdentifier, value),
                                 OnAbort = (value) => updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier)
                             };
@@ -154,6 +156,7 @@ namespace Assets.Scripts.Visuals
                             var vec3Actions = new StringPropertyAtom.UiPropertyActions<Vector3>
                             {
                                 OnChange = (value) => updatePropertiesSystem.UpdateFloatingProperty(propertyIdentifier, value),
+                                OnInvalid = () => updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier),
                                 OnSubmit = (value) => updatePropertiesSystem.UpdateFixedProperty(propertyIdentifier, value),
                                 OnAbort = (value) => updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier)
                             };
@@ -171,6 +174,7 @@ namespace Assets.Scripts.Visuals
                             var vec3Actions = new StringPropertyAtom.UiPropertyActions<Vector3>
                             {
                                 OnChange = (value) => updatePropertiesSystem.UpdateFloatingProperty(propertyIdentifier, Quaternion.Euler(value)),
+                                OnInvalid = () => updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier),
                                 OnSubmit = (value) => updatePropertiesSystem.UpdateFixedProperty(propertyIdentifier, Quaternion.Euler(value)),
                                 OnAbort = (value) => updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier)
                             };

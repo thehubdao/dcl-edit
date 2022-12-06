@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Assets.Scripts.Visuals.PropertyHandler;
+using Assets.Scripts.Visuals.UiHandler;
 using UnityEngine;
 
 namespace Assets.Scripts.Visuals.UiBuilder
