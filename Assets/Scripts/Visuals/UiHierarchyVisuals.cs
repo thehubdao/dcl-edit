@@ -159,8 +159,17 @@ namespace Assets.Scripts.Visuals
                     OnAbort = f => Debug.Log("Aborted"),
                     OnSubmit = f => Debug.Log($"Submitted: {f}")
                 });
+            borderPanel.AddBooleanProperty(
+                "Some boolean property",
+                true,
+                new StringPropertyAtom.UiPropertyActions<bool>
+                {
+                    OnChange = b => Debug.Log($"Changed to: {b}"),
+                    OnAbort = b => Debug.Log("Aborted"),
+                    OnSubmit = b => Debug.Log($"Submitted: {b}")
+                });
             borderPanel.AddVector3Property(
-                "Some Vec3 property",
+                "Some vec3 property",
                 new List<string> {"x", "y", "z"},
                 new Vector3(4, 8, 12),
                 new StringPropertyAtom.UiPropertyActions<Vector3>
