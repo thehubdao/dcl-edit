@@ -47,6 +47,7 @@ namespace Assets.Scripts.Visuals
         private UiBuilder.UiBuilder uiBuilder;
         private HierarchyChangeSystem hierarchyChangeSystem;
         private ContextMenuSystem contextMenuSystem;
+        private AddEntitySystem addEntitySystem;
         private SceneManagerSystem sceneManagerSystem;
 
         [Inject]
@@ -55,13 +56,15 @@ namespace Assets.Scripts.Visuals
             Factory uiBuilderFactory,
             HierarchyChangeSystem hierarchyChangeSystem,
             ContextMenuSystem contextMenuSystem,
-            SceneManagerSystem sceneManagerSystem)
+            SceneManagerSystem sceneManagerSystem,
+            AddEntitySystem addEntitySystem)
         {
             this.events = events;
             this.uiBuilder = uiBuilderFactory.Create(content);
             this.hierarchyChangeSystem = hierarchyChangeSystem;
             this.contextMenuSystem = contextMenuSystem;
             this.sceneManagerSystem = sceneManagerSystem;
+            this.addEntitySystem = addEntitySystem;
 
             SetupEventListeners();
         }
@@ -121,9 +124,9 @@ namespace Assets.Scripts.Visuals
                         {
                             new ContextSubmenuItem("Add entity...", new List<ContextMenuItem>
                             {
-                                new ContextMenuTextItem("Empty Entity", () => Debug.Log("Add empty Entity")),
+                                new ContextMenuTextItem("Empty Entity", () => addEntitySystem.AddEmptyEntity(entity)),
                                 new ContextMenuSpacerItem(),
-                                new ContextMenuTextItem("Gltf Entity", () => Debug.Log("Add Gltf Entity")),
+                                new ContextMenuTextItem("Gltf Entity", () => Debug.Log("Add Gltf Entity"), true),
                                 new ContextMenuSpacerItem(),
                                 new ContextMenuTextItem("Cube", () => Debug.Log("Add empty ")),
                                 new ContextMenuTextItem("Sphere", () => Debug.Log("Add empty ")),

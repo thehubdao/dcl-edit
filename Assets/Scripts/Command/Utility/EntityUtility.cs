@@ -7,7 +7,7 @@ namespace Assets.Scripts.Command.Utility
     {
         public static DclEntity AddEntity(DclScene scene, Guid id, string name, DclEntity parent = null)
         {
-            DclEntity entity = new DclEntity(id, name, parent?.Id ?? Guid.Empty);
+            var entity = new DclEntity(id, name, parent?.Id ?? Guid.Empty);
 
             scene.AddEntity(entity);
 
@@ -17,6 +17,12 @@ namespace Assets.Scripts.Command.Utility
         public static void DeleteEntity(DclScene scene, Guid id)
         {
             scene.RemoveEntity(id);
+        }
+
+        public static void AddDefaultTransformComponent(DclEntity entity)
+        {
+            var transformComponent = new DclTransformComponent();
+            entity.AddComponent(transformComponent);
         }
     }
 }

@@ -62,4 +62,9 @@ public class CommandFactorySystem
     {
         return new RemoveComponent(entityId, component);
     }
+
+    public AddEntity CreateAddEntity(string name, Guid? parent, Guid oldPrimarySelection, IEnumerable<Guid> oldSecondarySelection)
+    {
+        return new AddEntity(oldPrimarySelection, oldSecondarySelection, name, parent);
+    }
 }

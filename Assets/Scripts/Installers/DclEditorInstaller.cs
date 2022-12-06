@@ -148,5 +148,7 @@ public class DclEditorInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<MenuBarSystem>().AsSingle();
         
         Container.BindInterfacesAndSelfTo<CheckVersionSystem>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<AddEntitySystem>().AsSingle();
     }
 }
