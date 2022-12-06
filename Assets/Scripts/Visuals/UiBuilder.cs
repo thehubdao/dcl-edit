@@ -1,12 +1,14 @@
-using System;
-using System.Collections.Generic;
 using Assets.Scripts.EditorState;
+using Assets.Scripts.System;
 using Assets.Scripts.Visuals.PropertyHandler;
 using Assets.Scripts.Visuals.UiHandler;
 using JetBrains.Annotations;
+using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.UI;
 using Zenject;
 using Object = UnityEngine.Object;
 
@@ -25,7 +27,11 @@ namespace Assets.Scripts.Visuals
             StringPropertyInput,
             NumberPropertyInput,
             BooleanPropertyInput,
-            Vector3PropertyInput
+            Vector3PropertyInput,
+            ContextMenu,
+            ContextMenuItem,
+            ContextSubmenuItem,
+            ContextMenuSpacerItem
         }
 
         private struct UiAtom
@@ -152,7 +158,7 @@ namespace Assets.Scripts.Visuals
                     var handler = go.GetComponent<PanelHeaderHandler>();
                     handler.Title.text = title;
 
-                    if(onClose != null)
+                    if (onClose != null)
                     {
                         handler.CloseButton.onClick.AddListener(onClose);
                     }
@@ -160,10 +166,10 @@ namespace Assets.Scripts.Visuals
                     {
                         handler.CloseButton.gameObject.SetActive(false);
                     }
-                    
+
                     return new MakeGmReturn { go = go, height = 60 };
                 }
-            }); 
+            });
 
             return this;
         }
@@ -194,7 +200,7 @@ namespace Assets.Scripts.Visuals
                         hierarchyItem.showArrow = false;
                     }
 
-                    return new MakeGmReturn {go = go, height = 30};
+                    return new MakeGmReturn { go = go, height = 30 };
                 }
             });
 
@@ -225,7 +231,7 @@ namespace Assets.Scripts.Visuals
 
             return this;
         }
-        
+
         public UiBuilder NumberPropertyInput(string name, string placeholder, float currentContents, UiPropertyActions<float> actions)
         {
             _atoms.Add(new UiAtom
@@ -304,6 +310,110 @@ namespace Assets.Scripts.Visuals
             return this;
         }
 
+        public UiBuilder ContextMenu(UiBuilder content)
+        {
+            _atoms.Add(new UiAtom
+            {
+                Type = AtomType.ContextMenu,
+                MakeGameObject = () =>
+                {
+                    var go = GetAtomObjectFromPool(AtomType.ContextMenu);
+
+                    var panelHandler = go.GetComponent<PanelHandler>();
+                    content.ClearAndMake(panelHandler.Content);
+
+                    // Use height required by content but not more than screen height
+                    var height = Mathf.Min(Screen.height, content.CurrentHeight);
+                    return new MakeGmReturn { go = go, height = height };
+                }
+            });
+
+            return this;
+        }
+
+        public UiBuilder ContextMenuTextItem(Guid menuId, string title, UnityAction onClick, bool isDisabled, ContextMenuSystem contextMenuSystem)
+        {
+            _atoms.Add(new UiAtom
+            {
+                Type = AtomType.ContextMenuItem,
+                MakeGameObject = () =>
+                {
+                    var go = GetAtomObjectFromPool(AtomType.ContextMenuItem);
+
+                    var text = go.GetComponentInChildren<TextMeshProUGUI>();
+                    text.text = title;
+
+                    var button = go.GetComponent<Button>();
+                    button.onClick.AddListener(onClick);
+                    button.onClick.AddListener(contextMenuSystem.CloseMenu);
+                    if (isDisabled) button.interactable = false;
+
+                    var hoverHandler = go.GetComponent<ContextMenuHoverHandler>();
+                    hoverHandler.OnHoverAction = () => contextMenuSystem.CloseMenusUntil(menuId);
+
+                    return new MakeGmReturn { go = go, height = 30 };
+                }
+            });
+
+            return this;
+        }
+
+        public UiBuilder ContextSubmenuItem(Guid menuId, Guid submenuId, string title, List<ContextMenuItem> submenuItems, float menuWidth, ContextMenuSystem contextMenuSystem)
+        {
+            _atoms.Add(new UiAtom
+            {
+                Type = AtomType.ContextSubmenuItem,
+                MakeGameObject = () =>
+                {
+                    var go = GetAtomObjectFromPool(AtomType.ContextSubmenuItem);
+                    var rect = go.GetComponent<RectTransform>();
+
+                    var text = go.GetComponentInChildren<TextMeshProUGUI>();
+                    text.text = title;
+
+                    var hoverHandler = go.GetComponent<ContextMenuHoverHandler>();
+                    hoverHandler.OnHoverAction = () =>
+                    {
+                        contextMenuSystem.CloseMenusUntil(menuId);
+
+                        Vector3 rightExpandPosition = new Vector3(rect.position.x + menuWidth, rect.position.y, rect.position.z);
+                        Vector3 leftExpandPosition = new Vector3(rect.position.x, rect.position.y, rect.position.z);
+                        contextMenuSystem.OpenSubmenu(
+                            submenuId,
+                            new List<ContextMenuState.Placement>{
+                                new ContextMenuState.Placement{position = rightExpandPosition, expandDirection = ContextMenuState.Placement.Direction.Right},
+                                new ContextMenuState.Placement{position = leftExpandPosition, expandDirection = ContextMenuState.Placement.Direction.Left}
+                            },
+                            submenuItems
+                        );
+                    };
+
+                    return new MakeGmReturn { go = go, height = 30 };
+                }
+            });
+
+            return this;
+        }
+
+        public UiBuilder ContextMenuSpacerItem(Guid menuId, ContextMenuSystem contextMenuSystem)
+        {
+            _atoms.Add(new UiAtom
+            {
+                Type = AtomType.ContextMenuSpacerItem,
+                MakeGameObject = () =>
+                {
+                    var go = GetAtomObjectFromPool(AtomType.ContextMenuSpacerItem);
+
+                    var hoverHandler = go.GetComponent<ContextMenuHoverHandler>();
+                    hoverHandler.OnHoverAction = () => contextMenuSystem.CloseMenusUntil(menuId);
+
+                    return new MakeGmReturn { go = go, height = 15 };
+                }
+            });
+
+            return this;
+        }
+
         public void ClearAndMake(GameObject parent)
         {
             Clear(parent);
@@ -375,6 +485,10 @@ namespace Assets.Scripts.Visuals
                 AtomType.NumberPropertyInput => Object.Instantiate(_unityState.NumberInputAtom),
                 AtomType.BooleanPropertyInput => Object.Instantiate(_unityState.BooleanInputAtom),
                 AtomType.Vector3PropertyInput => Object.Instantiate(_unityState.Vector3InputAtom),
+                AtomType.ContextMenu => Object.Instantiate(_unityState.ContextMenuAtom),
+                AtomType.ContextMenuItem => Object.Instantiate(_unityState.ContextMenuItemAtom),
+                AtomType.ContextSubmenuItem => Object.Instantiate(_unityState.ContextSubmenuItemAtom),
+                AtomType.ContextMenuSpacerItem => Object.Instantiate(_unityState.ContextMenuSpacerItemAtom),
                 _ => null
             };
         }
