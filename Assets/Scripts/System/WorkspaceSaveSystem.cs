@@ -5,7 +5,6 @@ using Zenject;
 
 namespace Assets.Scripts.System
 {
-
     public class WorkspaceSaveSystem
     {
         //Dependency
@@ -32,9 +31,9 @@ namespace Assets.Scripts.System
                 Debug.Log("Layout save is empty");
                 return;
             }
+
             byte[] data = Convert.FromBase64String(settingSystem.panelSize.Get());
             PanelSerialization.DeserializeCanvasFromArray(canvas, data);
-
         }
     }
 }
