@@ -1,8 +1,7 @@
-using Assets.Scripts.Visuals.NewUiBuilder;
+using Assets.Scripts.Visuals.UiBuilder;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using NotImplementedException = System.NotImplementedException;
 
 namespace Assets.Scripts.Visuals.UiHandler
 {
@@ -13,13 +12,6 @@ namespace Assets.Scripts.Visuals.UiHandler
 
         [SerializeField]
         public Toggle CheckBoxInput;
-
-        public void SetActions(UiBuilder.UiPropertyActions<bool> actions)
-        {
-            CheckBoxInput.onValueChanged.RemoveAllListeners();
-
-            CheckBoxInput.onValueChanged.AddListener(value => actions.OnSubmit(value));
-        }
 
         public void SetActions(StringPropertyAtom.UiPropertyActions<bool> actions)
         {

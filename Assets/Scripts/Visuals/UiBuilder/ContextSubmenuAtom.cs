@@ -4,10 +4,8 @@ using Assets.Scripts.EditorState;
 using Assets.Scripts.System;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.UI;
 
-namespace Assets.Scripts.Visuals.NewUiBuilder
+namespace Assets.Scripts.Visuals.UiBuilder
 {
     public class ContextSubmenuAtom : Atom
     {
@@ -41,7 +39,7 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
 
         public override bool Update(Atom.Data newData, int newPosition)
         {
-            NewUiBuilder.Stats.atomsUpdatedCount++;
+            UiBuilder.Stats.atomsUpdatedCount++;
 
             var posHeightHasChanged = false;
             var newContextMenuTextData = (Data) newData;
@@ -95,14 +93,14 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
 
         protected virtual AtomGameObject MakeNewGameObject()
         {
-            var atomObject = uiBuilder.GetAtomObjectFromPool(NewUiBuilder.AtomType.ContextSubmenuItem);
+            var atomObject = uiBuilder.GetAtomObjectFromPool(UiBuilder.AtomType.ContextSubmenuItem);
             atomObject.height = 30;
             atomObject.position = -1;
             return atomObject;
         }
 
 
-        public ContextSubmenuAtom(NewUiBuilder uiBuilder) : base(uiBuilder)
+        public ContextSubmenuAtom(UiBuilder uiBuilder) : base(uiBuilder)
         {
         }
     }

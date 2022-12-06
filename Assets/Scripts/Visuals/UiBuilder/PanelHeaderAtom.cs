@@ -1,13 +1,8 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using Assets.Scripts.Visuals.NewUiBuilder;
 using Assets.Scripts.Visuals.UiHandler;
 using JetBrains.Annotations;
-using UnityEngine;
 using UnityEngine.Events;
 
-namespace Assets.Scripts.Visuals.NewUiBuilder
+namespace Assets.Scripts.Visuals.UiBuilder
 {
     public class PanelHeaderAtom : Atom
     {
@@ -35,7 +30,7 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
 
         public override bool Update(Atom.Data newData, int newPosition)
         {
-            NewUiBuilder.Stats.atomsUpdatedCount++;
+            UiBuilder.Stats.atomsUpdatedCount++;
 
             var posHeightHasChanged = false;
             var newHeaderData = (Data) newData;
@@ -80,14 +75,14 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
 
         protected virtual AtomGameObject MakeNewGameObject()
         {
-            var atomObject = uiBuilder.GetAtomObjectFromPool(NewUiBuilder.AtomType.PanelHeader);
+            var atomObject = uiBuilder.GetAtomObjectFromPool(UiBuilder.AtomType.PanelHeader);
             atomObject.height = 60;
             atomObject.position = -1;
             return atomObject;
         }
 
 
-        public PanelHeaderAtom(NewUiBuilder uiBuilder) : base(uiBuilder)
+        public PanelHeaderAtom(UiBuilder uiBuilder) : base(uiBuilder)
         {
         }
     }

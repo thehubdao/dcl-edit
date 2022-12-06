@@ -1,15 +1,13 @@
-using System;
 using System.Collections.Generic;
 using Assets.Scripts.EditorState;
-using Assets.Scripts.Visuals.UiHandler;
 using JetBrains.Annotations;
 using UnityEngine;
 using Zenject;
 using Object = UnityEngine.Object;
 
-namespace Assets.Scripts.Visuals.NewUiBuilder
+namespace Assets.Scripts.Visuals.UiBuilder
 {
-    public class NewUiBuilder
+    public class UiBuilder
     {
         #region Statistics
 
@@ -150,7 +148,7 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
 
         public int height => currentRootAtom.gameObject.height;
 
-        public NewUiBuilder(GameObject parent)
+        public UiBuilder(GameObject parent)
         {
             parentObject = parent;
         }
@@ -170,7 +168,7 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
             parentTransform.sizeDelta = new Vector2(parentTransform.sizeDelta.x, currentRootAtom.gameObject.height);
         }
 
-        public class Factory : PlaceholderFactory<GameObject, NewUiBuilder>
+        public class Factory : PlaceholderFactory<GameObject, UiBuilder>
         {
         }
     }

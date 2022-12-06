@@ -1,13 +1,8 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using Assets.Scripts.Visuals.NewUiBuilder;
 using Assets.Scripts.Visuals.UiHandler;
-using JetBrains.Annotations;
 using UnityEngine;
-using UnityEngine.PlayerLoop;
 
-namespace Assets.Scripts.Visuals.NewUiBuilder
+namespace Assets.Scripts.Visuals.UiBuilder
 {
     public class HierarchyItemAtom : Atom
     {
@@ -43,7 +38,7 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
 
         public override bool Update(Atom.Data newData, int newPosition)
         {
-            NewUiBuilder.Stats.atomsUpdatedCount++;
+            UiBuilder.Stats.atomsUpdatedCount++;
 
             var posHeightHasChanged = false;
             var newHierarchyItemData = (Data) newData;
@@ -93,14 +88,14 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
 
         private AtomGameObject MakeNewGameObject()
         {
-            var atomObject = uiBuilder.GetAtomObjectFromPool(NewUiBuilder.AtomType.HierarchyItem);
+            var atomObject = uiBuilder.GetAtomObjectFromPool(UiBuilder.AtomType.HierarchyItem);
             atomObject.height = 30;
             atomObject.position = -1;
             return atomObject;
         }
 
 
-        public HierarchyItemAtom(NewUiBuilder uiBuilder) : base(uiBuilder)
+        public HierarchyItemAtom(UiBuilder uiBuilder) : base(uiBuilder)
         {
         }
     }

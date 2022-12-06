@@ -4,7 +4,7 @@ using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
 using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
-using Assets.Scripts.Visuals.NewUiBuilder;
+using Assets.Scripts.Visuals.UiBuilder;
 using UnityEngine;
 using Zenject;
 
@@ -18,7 +18,7 @@ namespace Assets.Scripts.Visuals
         // Dependencies
         private InputState inputState;
         private UpdatePropertiesFromUiSystem updatePropertiesSystem;
-        private NewUiBuilder.NewUiBuilder uiBuilder;
+        private UiBuilder.UiBuilder uiBuilder;
         private SceneDirectoryState sceneDirectoryState;
         private EditorEvents editorEvents;
 
@@ -26,7 +26,7 @@ namespace Assets.Scripts.Visuals
         private void Construct(
             InputState inputState,
             UpdatePropertiesFromUiSystem updatePropertiesSystem,
-            NewUiBuilder.NewUiBuilder.Factory uiBuilderFactory,
+            UiBuilder.UiBuilder.Factory uiBuilderFactory,
             SceneDirectoryState sceneDirectoryState,
             EditorEvents editorEvents)
         {

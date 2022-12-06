@@ -1,4 +1,4 @@
-using Assets.Scripts.Visuals.NewUiBuilder;
+using Assets.Scripts.Visuals.UiBuilder;
 using TMPro;
 using UnityEngine;
 
@@ -17,27 +17,6 @@ namespace Assets.Scripts.Visuals.PropertyHandler
 
         [SerializeField]
         public NumberInputHandler numberInputZ;
-
-        public void SetActions(UiBuilder.UiPropertyActions<Vector3> actions)
-        {
-            numberInputX.SetActions(
-                _ => actions.OnChange(GetCurrentValue()),
-                _ => actions.OnSubmit(GetCurrentValue()),
-                _ => actions.OnAbort(GetCurrentValue())
-                );
-
-            numberInputY.SetActions(
-                _ => actions.OnChange(GetCurrentValue()),
-                _ => actions.OnSubmit(GetCurrentValue()),
-                _ => actions.OnAbort(GetCurrentValue())
-                );
-
-            numberInputZ.SetActions(
-                _ => actions.OnChange(GetCurrentValue()),
-                _ => actions.OnSubmit(GetCurrentValue()),
-                _ => actions.OnAbort(GetCurrentValue())
-                );
-        }
 
         public void ResetActions()
         {

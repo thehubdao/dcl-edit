@@ -1,15 +1,13 @@
-using System.Collections;
 using System.Collections.Generic;
-using Assets.Scripts.Visuals.NewUiBuilder;
 using JetBrains.Annotations;
 using UnityEngine;
 
-namespace Assets.Scripts.Visuals.NewUiBuilder
+namespace Assets.Scripts.Visuals.UiBuilder
 {
     public class AtomGameObject
     {
         public GameObject gameObject;
-        public NewUiBuilder.AtomType atomType;
+        public UiBuilder.AtomType atomType;
         public int height = -1;
         public int position = -1;
     }
@@ -17,10 +15,10 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
 
     public abstract class Atom
     {
-        public NewUiBuilder uiBuilder;
+        public UiBuilder uiBuilder;
         public AtomGameObject gameObject;
 
-        protected Atom(NewUiBuilder uiBuilder)
+        protected Atom(UiBuilder uiBuilder)
         {
             this.uiBuilder = uiBuilder;
         }

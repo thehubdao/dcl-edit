@@ -1,9 +1,8 @@
-using System;
 using System.Collections.Generic;
 using Assets.Scripts.Visuals.PropertyHandler;
 using UnityEngine;
 
-namespace Assets.Scripts.Visuals.NewUiBuilder
+namespace Assets.Scripts.Visuals.UiBuilder
 {
     public class Vector3PropertyAtom : Atom
     {
@@ -34,7 +33,7 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
 
         public override bool Update(Atom.Data newData, int newPosition)
         {
-            NewUiBuilder.Stats.atomsUpdatedCount++;
+            UiBuilder.Stats.atomsUpdatedCount++;
 
             var posHeightHasChanged = false;
             var newVector3PropertyData = (Data) newData;
@@ -82,14 +81,14 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
 
         protected virtual AtomGameObject MakeNewGameObject()
         {
-            var atomObject = uiBuilder.GetAtomObjectFromPool(NewUiBuilder.AtomType.Vector3PropertyInput);
+            var atomObject = uiBuilder.GetAtomObjectFromPool(UiBuilder.AtomType.Vector3PropertyInput);
             atomObject.height = 50;
             atomObject.position = -1;
             return atomObject;
         }
 
 
-        public Vector3PropertyAtom(NewUiBuilder uiBuilder) : base(uiBuilder)
+        public Vector3PropertyAtom(UiBuilder uiBuilder) : base(uiBuilder)
         {
         }
     }

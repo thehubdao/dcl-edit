@@ -1,7 +1,6 @@
-using System;
 using Assets.Scripts.Visuals.PropertyHandler;
 
-namespace Assets.Scripts.Visuals.NewUiBuilder
+namespace Assets.Scripts.Visuals.UiBuilder
 {
     public class NumberPropertyAtom : Atom
     {
@@ -32,7 +31,7 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
 
         public override bool Update(Atom.Data newData, int newPosition)
         {
-            NewUiBuilder.Stats.atomsUpdatedCount++;
+            UiBuilder.Stats.atomsUpdatedCount++;
 
             var posHeightHasChanged = false;
             var newNumberPropertyData = (Data) newData;
@@ -73,14 +72,14 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
 
         protected virtual AtomGameObject MakeNewGameObject()
         {
-            var atomObject = uiBuilder.GetAtomObjectFromPool(NewUiBuilder.AtomType.NumberPropertyInput);
+            var atomObject = uiBuilder.GetAtomObjectFromPool(UiBuilder.AtomType.NumberPropertyInput);
             atomObject.height = 50;
             atomObject.position = -1;
             return atomObject;
         }
 
 
-        public NumberPropertyAtom(NewUiBuilder uiBuilder) : base(uiBuilder)
+        public NumberPropertyAtom(UiBuilder uiBuilder) : base(uiBuilder)
         {
         }
     }

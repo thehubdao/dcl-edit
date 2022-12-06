@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 
-namespace Assets.Scripts.Visuals.NewUiBuilder
+namespace Assets.Scripts.Visuals.UiBuilder
 {
     public class PanelAtom : Atom
     {
@@ -40,7 +40,7 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
 
         public override bool Update(Atom.Data newData, int newPosition)
         {
-            NewUiBuilder.Stats.atomsUpdatedCount++;
+            UiBuilder.Stats.atomsUpdatedCount++;
 
             var hasChanged = false;
             var newPanelData = (Data) newData;
@@ -81,7 +81,7 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
 
         protected virtual AtomGameObject MakeNewAtomGameObject()
         {
-            var atomObject = uiBuilder.GetAtomObjectFromPool(NewUiBuilder.AtomType.Panel);
+            var atomObject = uiBuilder.GetAtomObjectFromPool(UiBuilder.AtomType.Panel);
             atomObject.height = 40;
             atomObject.position = -1;
             return atomObject;
@@ -185,7 +185,7 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
             };
         }
 
-        public PanelAtom(NewUiBuilder uiBuilder) : base(uiBuilder)
+        public PanelAtom(UiBuilder uiBuilder) : base(uiBuilder)
         {
         }
     }

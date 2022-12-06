@@ -1,4 +1,4 @@
-namespace Assets.Scripts.Visuals.NewUiBuilder
+namespace Assets.Scripts.Visuals.UiBuilder
 {
     public class TitleAtom : TextAtom
     {
@@ -8,13 +8,13 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
 
         protected override AtomGameObject MakeNewGameObject()
         {
-            var atomObject = uiBuilder.GetAtomObjectFromPool(NewUiBuilder.AtomType.Title);
+            var atomObject = uiBuilder.GetAtomObjectFromPool(UiBuilder.AtomType.Title);
             atomObject.height = 130;
             atomObject.position = -1;
             return atomObject;
         }
 
-        public TitleAtom(NewUiBuilder uiBuilder) : base(uiBuilder)
+        public TitleAtom(UiBuilder uiBuilder) : base(uiBuilder)
         {
         }
     }

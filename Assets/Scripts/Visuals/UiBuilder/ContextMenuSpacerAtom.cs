@@ -1,16 +1,7 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using Assets.Scripts.System;
-using Assets.Scripts.Visuals.NewUiBuilder;
-using Assets.Scripts.Visuals.UiHandler;
-using JetBrains.Annotations;
-using TMPro;
-using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.UI;
 
-namespace Assets.Scripts.Visuals.NewUiBuilder
+namespace Assets.Scripts.Visuals.UiBuilder
 {
     public class ContextMenuSpacerAtom : Atom
     {
@@ -36,7 +27,7 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
 
         public override bool Update(Atom.Data newData, int newPosition)
         {
-            NewUiBuilder.Stats.atomsUpdatedCount++;
+            UiBuilder.Stats.atomsUpdatedCount++;
 
             var posHeightHasChanged = false;
             var newContextMenuSpacerData = (Data) newData;
@@ -71,14 +62,14 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
 
         protected virtual AtomGameObject MakeNewGameObject()
         {
-            var atomObject = uiBuilder.GetAtomObjectFromPool(NewUiBuilder.AtomType.ContextMenuSpacerItem);
+            var atomObject = uiBuilder.GetAtomObjectFromPool(UiBuilder.AtomType.ContextMenuSpacerItem);
             atomObject.height = 15;
             atomObject.position = -1;
             return atomObject;
         }
 
 
-        public ContextMenuSpacerAtom(NewUiBuilder uiBuilder) : base(uiBuilder)
+        public ContextMenuSpacerAtom(UiBuilder uiBuilder) : base(uiBuilder)
         {
         }
     }

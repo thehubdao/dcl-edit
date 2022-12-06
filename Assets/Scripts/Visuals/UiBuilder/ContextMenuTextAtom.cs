@@ -1,16 +1,10 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using Assets.Scripts.System;
-using Assets.Scripts.Visuals.NewUiBuilder;
-using Assets.Scripts.Visuals.UiHandler;
-using JetBrains.Annotations;
 using TMPro;
-using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-namespace Assets.Scripts.Visuals.NewUiBuilder
+namespace Assets.Scripts.Visuals.UiBuilder
 {
     public class ContextMenuTextAtom : Atom
     {
@@ -42,7 +36,7 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
 
         public override bool Update(Atom.Data newData, int newPosition)
         {
-            NewUiBuilder.Stats.atomsUpdatedCount++;
+            UiBuilder.Stats.atomsUpdatedCount++;
 
             var posHeightHasChanged = false;
             var newContextMenuTextData = (Data) newData;
@@ -86,14 +80,14 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
 
         protected virtual AtomGameObject MakeNewGameObject()
         {
-            var atomObject = uiBuilder.GetAtomObjectFromPool(NewUiBuilder.AtomType.ContextMenuItem);
+            var atomObject = uiBuilder.GetAtomObjectFromPool(UiBuilder.AtomType.ContextMenuItem);
             atomObject.height = 30;
             atomObject.position = -1;
             return atomObject;
         }
 
 
-        public ContextMenuTextAtom(NewUiBuilder uiBuilder) : base(uiBuilder)
+        public ContextMenuTextAtom(UiBuilder uiBuilder) : base(uiBuilder)
         {
         }
     }

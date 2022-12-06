@@ -1,8 +1,6 @@
-using System;
-using System.Collections.Generic;
 using JetBrains.Annotations;
 
-namespace Assets.Scripts.Visuals.NewUiBuilder
+namespace Assets.Scripts.Visuals.UiBuilder
 {
     public class PanelWithBorderAtom : PanelAtom
     {
@@ -12,7 +10,7 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
 
         protected override AtomGameObject MakeNewAtomGameObject()
         {
-            var atomObject = uiBuilder.GetAtomObjectFromPool(NewUiBuilder.AtomType.PanelWithBorder);
+            var atomObject = uiBuilder.GetAtomObjectFromPool(UiBuilder.AtomType.PanelWithBorder);
             atomObject.height = 40;
             atomObject.position = -1;
             return atomObject;
@@ -20,7 +18,7 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
 
         protected override int totalBorderHeight { get; set; } = 40;
 
-        public PanelWithBorderAtom(NewUiBuilder uiBuilder) : base(uiBuilder)
+        public PanelWithBorderAtom(UiBuilder uiBuilder) : base(uiBuilder)
         {
         }
     }

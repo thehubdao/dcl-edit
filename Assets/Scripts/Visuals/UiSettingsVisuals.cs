@@ -4,8 +4,7 @@ using System.Collections.Generic;
 using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
 using Assets.Scripts.System;
-using Assets.Scripts.Visuals.NewUiBuilder;
-using UnityEditor.SearchService;
+using Assets.Scripts.Visuals.UiBuilder;
 using UnityEngine;
 using Zenject;
 
@@ -19,11 +18,11 @@ namespace Assets.Scripts.Visuals
         // Dependencies
         private EditorEvents editorEvents;
         private SettingsSystem settingsSystem;
-        private NewUiBuilder.NewUiBuilder uiBuilder;
+        private UiBuilder.UiBuilder uiBuilder;
         private UnityState unityState;
 
         [Inject]
-        private void Construct(EditorEvents editorEvents, SettingsSystem settingsSystem, NewUiBuilder.NewUiBuilder.Factory uiBuilderFactory, UnityState unityState)
+        private void Construct(EditorEvents editorEvents, SettingsSystem settingsSystem, UiBuilder.UiBuilder.Factory uiBuilderFactory, UnityState unityState)
         {
             this.editorEvents = editorEvents;
             this.settingsSystem = settingsSystem;

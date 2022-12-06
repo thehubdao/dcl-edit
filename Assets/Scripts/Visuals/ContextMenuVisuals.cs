@@ -2,7 +2,7 @@ using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
 using Assets.Scripts.System;
 using System.Linq;
-using Assets.Scripts.Visuals.NewUiBuilder;
+using Assets.Scripts.Visuals.UiBuilder;
 using UnityEngine;
 using Zenject;
 
@@ -17,7 +17,7 @@ namespace Assets.Scripts.Visuals
         ContextMenuState state;
         EditorEvents editorEvents;
         ContextMenuSystem contextMenuSystem;
-        NewUiBuilder.NewUiBuilder.Factory newUiBuilderFactory;
+        UiBuilder.UiBuilder.Factory uiBuilderFactory;
         UnityState unityState;
 
         [Inject]
@@ -25,13 +25,13 @@ namespace Assets.Scripts.Visuals
             ContextMenuState contextMenuState,
             EditorEvents editorEvents,
             ContextMenuSystem contextMenuSystem,
-            NewUiBuilder.NewUiBuilder.Factory newUiBuilderFactory,
+            UiBuilder.UiBuilder.Factory uiBuilderFactory,
             UnityState unityState)
         {
             this.state = contextMenuState;
             this.editorEvents = editorEvents;
             this.contextMenuSystem = contextMenuSystem;
-            this.newUiBuilderFactory = newUiBuilderFactory;
+            this.uiBuilderFactory = uiBuilderFactory;
             this.unityState = unityState;
         }
 
@@ -86,7 +86,7 @@ namespace Assets.Scripts.Visuals
             menuRect.SetAsLastSibling();
 
             var mainContent = menuRect.GetComponent<PanelHandler>().Content;
-            var itemsBuilder = newUiBuilderFactory.Create(mainContent);
+            var itemsBuilder = uiBuilderFactory.Create(mainContent);
 
             var menuPanel = new PanelAtom.Data();
 

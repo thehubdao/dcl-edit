@@ -4,7 +4,7 @@ using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
 using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
-using Assets.Scripts.Visuals.NewUiBuilder;
+using Assets.Scripts.Visuals.UiBuilder;
 using Assets.Scripts.Visuals.UiHandler;
 using UnityEngine;
 using Zenject;
@@ -19,15 +19,6 @@ namespace Assets.Scripts.Visuals
         private GameObject content;
 
 #pragma warning restore CS0649
-
-        void Update()
-        {
-            // Print UiBuilder Stats
-            if (Input.GetKeyDown(KeyCode.L))
-            {
-                NewUiBuilder.NewUiBuilder.Stats.Dump();
-            }
-        }
 
         #region Mark for update
 
@@ -51,8 +42,7 @@ namespace Assets.Scripts.Visuals
 
         // Dependencies
         private EditorEvents events;
-        private UiBuilder.Factory uiBuilderFactory;
-        private NewUiBuilder.NewUiBuilder newUiBuilder;
+        private UiBuilder.UiBuilder uiBuilder;
         private SceneDirectoryState sceneDirectoryState;
         private CommandSystem commandSystem;
         private HierarchyChangeSystem hierarchyChangeSystem;
@@ -61,15 +51,13 @@ namespace Assets.Scripts.Visuals
         [Inject]
         private void Construct(
             EditorEvents events,
-            UiBuilder.Factory uiBuilderFactory,
-            NewUiBuilder.NewUiBuilder.Factory newUiBuilderFactory,
+            UiBuilder.UiBuilder.Factory uiBuilderFactory,
             SceneDirectoryState scene, CommandSystem commandSystem,
             HierarchyChangeSystem hierarchyChangeSystem,
             ContextMenuSystem contextMenuSystem)
         {
             this.events = events;
-            this.uiBuilderFactory = uiBuilderFactory;
-            newUiBuilder = newUiBuilderFactory.Create(content);
+            uiBuilder = uiBuilderFactory.Create(content);
             sceneDirectoryState = scene;
             this.commandSystem = commandSystem;
             this.hierarchyChangeSystem = hierarchyChangeSystem;
@@ -92,7 +80,7 @@ namespace Assets.Scripts.Visuals
 
             mainPanelData.AddSpacer(300);
 
-            newUiBuilder.Update(mainPanelData);
+            uiBuilder.Update(mainPanelData);
         }
 
         private void MakeHierarchyItemsRecursive(int level, IEnumerable<DclEntity> entities, PanelAtom.Data mainPanelData)

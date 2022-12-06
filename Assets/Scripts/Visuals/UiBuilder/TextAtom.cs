@@ -1,12 +1,6 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using Assets.Scripts.Visuals.NewUiBuilder;
 using Assets.Scripts.Visuals.UiHandler;
-using JetBrains.Annotations;
-using UnityEngine;
 
-namespace Assets.Scripts.Visuals.NewUiBuilder
+namespace Assets.Scripts.Visuals.UiBuilder
 {
     public class TextAtom : Atom
     {
@@ -29,7 +23,7 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
 
         public override bool Update(Atom.Data newData, int newPosition)
         {
-            NewUiBuilder.Stats.atomsUpdatedCount++;
+            UiBuilder.Stats.atomsUpdatedCount++;
 
             var posHeightHasChanged = false;
             var newTextData = (Data) newData;
@@ -63,14 +57,14 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
 
         protected virtual AtomGameObject MakeNewGameObject()
         {
-            var atomObject = uiBuilder.GetAtomObjectFromPool(NewUiBuilder.AtomType.Text);
+            var atomObject = uiBuilder.GetAtomObjectFromPool(UiBuilder.AtomType.Text);
             atomObject.height = 50;
             atomObject.position = -1;
             return atomObject;
         }
 
 
-        public TextAtom(NewUiBuilder uiBuilder) : base(uiBuilder)
+        public TextAtom(UiBuilder uiBuilder) : base(uiBuilder)
         {
         }
     }
