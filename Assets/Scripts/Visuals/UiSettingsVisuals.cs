@@ -71,6 +71,7 @@ namespace Assets.Scripts.Visuals
                             var actions = new UiBuilder.UiPropertyActions<float>
                             {
                                 OnChange = _ => { },
+                                OnInvalid = () => { },
                                 OnAbort = _ => { },
                                 OnSubmit = value => { concreteSetting.Set(value); }
                             };
@@ -83,6 +84,7 @@ namespace Assets.Scripts.Visuals
                             var actions = new UiBuilder.UiPropertyActions<float>
                             {
                                 OnChange = _ => { },
+                                OnInvalid = () => { },
                                 OnAbort = _ => { },
                                 OnSubmit = value => { concreteSetting.Set((int) value); }
                             };
@@ -107,6 +109,7 @@ namespace Assets.Scripts.Visuals
                             var actions = new UiBuilder.UiPropertyActions<Vector3>
                             {
                                 OnChange = _ => { },
+                                OnInvalid = () => { },
                                 OnAbort = _ => { },
                                 OnSubmit = value => { concreteSetting.Set(value); }
                             };
@@ -120,6 +123,7 @@ namespace Assets.Scripts.Visuals
                             var actions = new UiBuilder.UiPropertyActions<Vector3>
                             {
                                 OnChange = _ => { },
+                                OnInvalid = () => { },
                                 OnAbort = _ => { },
                                 OnSubmit = value => { concreteSetting.Set(value); }
                             };
