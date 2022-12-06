@@ -24,7 +24,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
         }
 
         /// <summary>
-        /// Update the Atom given new Data
+        /// Update the atom with the given data
         /// </summary>
         /// <param name="newData">the data, that the atom should represent now</param>
         /// <param name="newPosition">the position of the top corner with in its parent GameObject</param>
