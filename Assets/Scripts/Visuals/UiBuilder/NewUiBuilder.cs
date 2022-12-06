@@ -148,6 +148,8 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
         private PanelAtom currentRootAtom = null;
         private GameObject parentObject;
 
+        public int height => currentRootAtom.gameObject.height;
+
         public NewUiBuilder(GameObject parent)
         {
             parentObject = parent;

@@ -158,10 +158,10 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
                 childAtoms.RemoveAt(atomIndex);
             }
 
-            endHeight = lastPos + totalBoarderHeight;
+            endHeight = lastPos + totalBorderHeight;
         }
 
-        protected virtual int totalBoarderHeight { get; set; } = 0;
+        protected virtual int totalBorderHeight { get; set; } = 0;
 
         private Atom MakeChildAtom(Atom.Data childData)
         {
@@ -178,6 +178,9 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
                 NumberPropertyAtom.Data _ => new NumberPropertyAtom(uiBuilder),
                 BooleanPropertyAtom.Data _ => new BooleanPropertyAtom(uiBuilder),
                 Vector3PropertyAtom.Data _ => new Vector3PropertyAtom(uiBuilder),
+                ContextMenuTextAtom.Data _ => new ContextMenuTextAtom(uiBuilder),
+                ContextSubmenuAtom.Data _ => new ContextSubmenuAtom(uiBuilder),
+                ContextMenuSpacerAtom.Data _ => new ContextMenuSpacerAtom(uiBuilder),
                 _ => throw new ArgumentException()
             };
         }

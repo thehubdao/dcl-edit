@@ -18,7 +18,7 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
             return atomObject;
         }
 
-        protected override int totalBoarderHeight { get; set; } = 40;
+        protected override int totalBorderHeight { get; set; } = 40;
 
         public PanelWithBorderAtom(NewUiBuilder uiBuilder) : base(uiBuilder)
         {

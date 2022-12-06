@@ -14,8 +14,6 @@ namespace Assets.Scripts.Visuals.UiHandler
             {
                 rightClick(new Vector3(eventData.position.x, eventData.position.y));
             }
-
-            int i;
         }
     }
 }
