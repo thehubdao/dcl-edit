@@ -167,7 +167,8 @@ namespace Assets.Scripts.Visuals
             return this;
         }
 
-        public UiBuilder HierarchyItem(string name, int level, bool hasChildren, bool isExpanded, TextHandler.TextStyle textStyle, HierarchyItemHandler.UiHierarchyItemActions actions)
+        public UiBuilder HierarchyItem(string name, int level, bool hasChildren, bool isExpanded,
+            TextHandler.TextStyle textStyle, HierarchyItemHandler.UiHierarchyItemActions actions, bool primarySelection)
         {
             _atoms.Add(new UiAtom
             {
@@ -182,6 +183,7 @@ namespace Assets.Scripts.Visuals
                     hierarchyItem.Indent.offsetMin = new Vector2(20 * level, 0);
                     hierarchyItem.Text.textStyle = textStyle;
                     hierarchyItem.actions = actions;
+                    hierarchyItem.primarySelection = primarySelection;
 
                     if (hasChildren)
                     {

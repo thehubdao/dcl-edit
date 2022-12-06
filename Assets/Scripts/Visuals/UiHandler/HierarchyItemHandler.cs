@@ -18,6 +18,8 @@ namespace Assets.Scripts.Visuals.UiHandler
         [SerializeField]
         public RectTransform Indent;
 
+        public bool primarySelection { get; set; }
+
         public struct UiHierarchyItemActions
         {
             public Action OnArrowClick;
