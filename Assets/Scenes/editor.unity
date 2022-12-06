@@ -2364,6 +2364,7 @@ MonoBehaviour:
   TitleAtom: {fileID: 8443903582673140652, guid: 3c23a0bcc4d4d3c4dabf00112e429b5d, type: 3}
   TextAtom: {fileID: 8024071907148859791, guid: 940a8e80e3325354b9baed45c93a96f0, type: 3}
   PanelAtom: {fileID: 1138364758976655925, guid: fc9c78ab342848c41a8eb0f0fbf743a4, type: 3}
+  PanelWithBorderAtom: {fileID: 6816324997461196824, guid: 1a51be3438ffe5d4bbf089575c9a15b4, type: 3}
   PanelHeaderAtom: {fileID: 4942444080743460815, guid: 6dd91d2dbf061364e9f634b760961132, type: 3}
   HierarchyItemAtom: {fileID: 2570515792709860737, guid: d20919d9bd0446241b0386c5fc0f78cf, type: 3}
   StringInputAtom: {fileID: 5233136792266491960, guid: 92d0ff83c1f6d274cbb15847895e5a23, type: 3}

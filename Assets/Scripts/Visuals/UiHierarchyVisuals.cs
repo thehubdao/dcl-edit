@@ -136,7 +136,11 @@ namespace Assets.Scripts.Visuals
         {
             var mainPanelData = new PanelAtom.Data();
 
-            MakeHierarchyItemsRecursive(0, _sceneDirectoryState.CurrentScene!.EntitiesInSceneRoot, ref mainPanelData);
+            var borderPanel = new PanelWithBorderAtom.Data();
+
+            MakeHierarchyItemsRecursive(0, _sceneDirectoryState.CurrentScene!.EntitiesInSceneRoot, borderPanel);
+
+            mainPanelData.childDates.Add(borderPanel);
 
             newUiBuilder.Update(mainPanelData);
 
@@ -144,7 +148,7 @@ namespace Assets.Scripts.Visuals
             //uiBuilder.ClearAndMake(_content);
         }
 
-        private void MakeHierarchyItemsRecursive(int level, IEnumerable<DclEntity> entities, ref PanelAtom.Data mainPanelData)
+        private void MakeHierarchyItemsRecursive(int level, IEnumerable<DclEntity> entities, PanelAtom.Data mainPanelData)
         {
             foreach (var entity in entities)
             {
@@ -169,7 +173,7 @@ namespace Assets.Scripts.Visuals
 
                 if (isExpanded)
                 {
-                    MakeHierarchyItemsRecursive(level + 1, entity.Children, ref mainPanelData);
+                    MakeHierarchyItemsRecursive(level + 1, entity.Children, mainPanelData);
                 }
             }
         }

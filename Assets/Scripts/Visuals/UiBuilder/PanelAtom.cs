@@ -157,8 +157,10 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
                 childAtoms.RemoveAt(atomIndex);
             }
 
-            endHeight = lastPos;
+            endHeight = lastPos + totalBoarderHeight;
         }
+
+        protected virtual int totalBoarderHeight { get; set; } = 0;
 
         private Atom MakeChildAtom(Atom.Data childData)
         {
@@ -166,6 +168,7 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
             {
                 TitleAtom.Data _ => new TitleAtom(uiBuilder),
                 TextAtom.Data _ => new TextAtom(uiBuilder),
+                PanelWithBorderAtom.Data _ => new PanelWithBorderAtom(uiBuilder),
                 PanelAtom.Data _ => new PanelAtom(uiBuilder),
                 HierarchyItemAtom.Data _ => new HierarchyItemAtom(uiBuilder),
                 _ => throw new ArgumentException()
