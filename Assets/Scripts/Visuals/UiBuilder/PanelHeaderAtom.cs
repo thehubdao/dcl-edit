@@ -5,23 +5,29 @@ using Assets.Scripts.Visuals.NewUiBuilder;
 using Assets.Scripts.Visuals.UiHandler;
 using JetBrains.Annotations;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Assets.Scripts.Visuals.NewUiBuilder
 {
-    public class TextAtom : Atom
+    public class PanelHeaderAtom : Atom
     {
         public new class Data : Atom.Data
         {
-            public string text;
+            public string title;
+
+            [CanBeNull]
+            public UnityAction onClose = null;
 
             public override bool Equals(Atom.Data other)
             {
-                if (!(other is TextAtom.Data otherText))
+                if (!(other is PanelHeaderAtom.Data otherPanelHeader))
                 {
                     return false;
                 }
 
-                return text == otherText.text;
+                return
+                    title.Equals(otherPanelHeader.title) &&
+                    onClose == otherPanelHeader.onClose;
             }
         }
 
@@ -32,7 +38,7 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
             NewUiBuilder.Stats.atomsUpdatedCount++;
 
             var posHeightHasChanged = false;
-            var newTextData = (Data) newData;
+            var newHeaderData = (Data) newData;
 
             // Stage 1: Check for a GameObject and make one, if it doesn't exist
             if (gameObject == null)
@@ -43,12 +49,23 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
             }
 
             // Stage 2: Check for updated data and update, if data was changed
-            if (!newTextData.Equals(data))
+            if (!newHeaderData.Equals(data))
             {
                 // Update data
-                var textHandler = gameObject.gameObject.GetComponent<TextHandler>();
-                textHandler.text = newTextData.text;
-                data = newTextData;
+                var headerHandler = gameObject.gameObject.GetComponent<PanelHeaderHandler>();
+                headerHandler.Title.text = newHeaderData.title;
+
+                if (newHeaderData.onClose != null)
+                {
+                    headerHandler.CloseButton.gameObject.SetActive(true);
+                    headerHandler.CloseButton.onClick.RemoveAllListeners();
+                    headerHandler.CloseButton.onClick.AddListener(newHeaderData.onClose);
+                }
+                else
+                {
+                    headerHandler.CloseButton.gameObject.SetActive(false);
+                    headerHandler.CloseButton.onClick.RemoveAllListeners();
+                }
             }
 
             // Stage 3: Check for changes in Position and Height and update, if it has changed
@@ -63,25 +80,26 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
 
         protected virtual AtomGameObject MakeNewGameObject()
         {
-            var atomObject = uiBuilder.GetAtomObjectFromPool(NewUiBuilder.AtomType.Text);
-            atomObject.height = 50;
+            var atomObject = uiBuilder.GetAtomObjectFromPool(NewUiBuilder.AtomType.PanelHeader);
+            atomObject.height = 60;
             atomObject.position = -1;
             return atomObject;
         }
 
 
-        public TextAtom(NewUiBuilder uiBuilder) : base(uiBuilder)
+        public PanelHeaderAtom(NewUiBuilder uiBuilder) : base(uiBuilder)
         {
         }
     }
 
-    public static class TextPanelHelper
+    public static class PanelHeaderPanelHelper
     {
-        public static TextAtom.Data AddText(this PanelAtom.Data panelAtomData, string text)
+        public static PanelHeaderAtom.Data AddPanelHeader(this PanelAtom.Data panelAtomData, string title, [CanBeNull] UnityAction onClose = null)
         {
-            var data = new TextAtom.Data
+            var data = new PanelHeaderAtom.Data
             {
-                text = text
+                title = title,
+                onClose = onClose
             };
 
             panelAtomData.childDates.Add(data);

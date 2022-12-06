@@ -74,4 +74,8 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
             };
         }
     }
+
+    public class AtomDataList : List<Atom.Data>
+    {
+    }
 }

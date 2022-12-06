@@ -18,4 +18,18 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
         {
         }
     }
+
+    public static class TitlePanelHelper
+    {
+        public static TitleAtom.Data AddTitle(this PanelAtom.Data panelAtomData, string title)
+        {
+            var data = new TitleAtom.Data
+            {
+                text = title
+            };
+
+            panelAtomData.childDates.Add(data);
+            return data;
+        }
+    }
 }

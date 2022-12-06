@@ -82,15 +82,15 @@ namespace Assets.Scripts.Visuals
             MarkForUpdate();
         }
 
-        private List<List<NewUiBuilder.Atom.Data>> datess = new List<List<NewUiBuilder.Atom.Data>>
+        private List<AtomDataList> datess = new List<AtomDataList>
         {
-            new List<NewUiBuilder.Atom.Data>
+            new AtomDataList
             {
                 new NewUiBuilder.TextAtom.Data {text = "a Test Text 1"},
                 new NewUiBuilder.TitleAtom.Data {text = "a Test Text 2"},
                 new NewUiBuilder.PanelAtom.Data
                 {
-                    childDates = new List<NewUiBuilder.Atom.Data>
+                    childDates = new AtomDataList
                     {
                         new NewUiBuilder.TextAtom.Data {text = "a Test Text inner 3"},
                         new NewUiBuilder.TitleAtom.Data {text = "a Test Text inner 4"},
@@ -99,7 +99,7 @@ namespace Assets.Scripts.Visuals
                 new NewUiBuilder.TitleAtom.Data {text = "a Test Text 5"},
                 new NewUiBuilder.TextAtom.Data {text = "a Test Text 6"},
             },
-            new List<NewUiBuilder.Atom.Data>
+            new AtomDataList
             {
                 new NewUiBuilder.TextAtom.Data {text = "a Test Text 1"},
                 new NewUiBuilder.TitleAtom.Data {text = "a Test Text 2"},
@@ -109,13 +109,13 @@ namespace Assets.Scripts.Visuals
                 new NewUiBuilder.TextAtom.Data {text = "b Test Text 6"},
                 new NewUiBuilder.TextAtom.Data {text = "b Test Text 7"},
             },
-            new List<NewUiBuilder.Atom.Data>
+            new AtomDataList
             {
                 new NewUiBuilder.TitleAtom.Data {text = "a Test Text 1"},
                 new NewUiBuilder.TextAtom.Data {text = "Test Text 2"},
                 new NewUiBuilder.PanelAtom.Data
                 {
-                    childDates = new List<NewUiBuilder.Atom.Data>
+                    childDates = new AtomDataList
                     {
                         new NewUiBuilder.TextAtom.Data {text = "Test Text inner 3"},
                         new NewUiBuilder.TitleAtom.Data {text = "b Test Text inner 4"},
@@ -137,6 +137,8 @@ namespace Assets.Scripts.Visuals
             var mainPanelData = new PanelAtom.Data();
 
             var borderPanel = new PanelWithBorderAtom.Data();
+            borderPanel.AddPanelHeader("Some Header");
+            borderPanel.AddPanelHeader("Closable Header", () => Debug.Log("Close pressed"));
 
             MakeHierarchyItemsRecursive(0, _sceneDirectoryState.CurrentScene!.EntitiesInSceneRoot, borderPanel);
 

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 
 namespace Assets.Scripts.Visuals.NewUiBuilder
 {
@@ -7,7 +8,7 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
     {
         public new class Data : Atom.Data
         {
-            public List<Atom.Data> childDates = new List<Atom.Data>();
+            public AtomDataList childDates = new AtomDataList();
 
             public override bool Equals(Atom.Data other)
             {
@@ -170,6 +171,7 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
                 TextAtom.Data _ => new TextAtom(uiBuilder),
                 PanelWithBorderAtom.Data _ => new PanelWithBorderAtom(uiBuilder),
                 PanelAtom.Data _ => new PanelAtom(uiBuilder),
+                PanelHeaderAtom.Data _ => new PanelHeaderAtom(uiBuilder),
                 HierarchyItemAtom.Data _ => new HierarchyItemAtom(uiBuilder),
                 _ => throw new ArgumentException()
             };
@@ -177,6 +179,20 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
 
         public PanelAtom(NewUiBuilder uiBuilder) : base(uiBuilder)
         {
+        }
+    }
+
+    public static class PanelPanelHelper
+    {
+        public static PanelAtom.Data AddPanel(this PanelAtom.Data panelAtomData, [CanBeNull] AtomDataList childDates = null)
+        {
+            var data = new PanelAtom.Data
+            {
+                childDates = childDates ?? new AtomDataList()
+            };
+
+            panelAtomData.childDates.Add(data);
+            return data;
         }
     }
 }

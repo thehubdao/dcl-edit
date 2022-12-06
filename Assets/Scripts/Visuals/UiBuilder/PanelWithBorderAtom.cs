@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 
 namespace Assets.Scripts.Visuals.NewUiBuilder
 {
@@ -21,6 +22,20 @@ namespace Assets.Scripts.Visuals.NewUiBuilder
 
         public PanelWithBorderAtom(NewUiBuilder uiBuilder) : base(uiBuilder)
         {
+        }
+    }
+
+    public static class PanelWithBorderPanelHelper
+    {
+        public static PanelWithBorderAtom.Data AddPanelWithBorder(this PanelAtom.Data panelAtomData, [CanBeNull] AtomDataList childDates = null)
+        {
+            var data = new PanelWithBorderAtom.Data
+            {
+                childDates = childDates ?? new AtomDataList()
+            };
+
+            panelAtomData.childDates.Add(data);
+            return data;
         }
     }
 }
