@@ -4,6 +4,7 @@ using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
 using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
+using Assets.Scripts.Visuals.UiBuilder;
 using UnityEngine;
 using Zenject;
 
@@ -12,80 +13,77 @@ namespace Assets.Scripts.Visuals
     public class UiInspectorVisuals : MonoBehaviour, ISetupSceneEventListeners
     {
         [SerializeField]
-        private GameObject _content;
+        private GameObject content;
 
         // Dependencies
-        private InputState _inputState;
-        private UpdatePropertiesFromUiSystem _updatePropertiesSystem;
-        private UiBuilder.Factory _uiBuilderFactory;
-        private SceneDirectoryState _sceneDirectoryState;
-        private EditorEvents _editorEvents;
+        private InputState inputState;
+        private UpdatePropertiesFromUiSystem updatePropertiesSystem;
+        private UiBuilder.UiBuilder uiBuilder;
+        private SceneDirectoryState sceneDirectoryState;
+        private EditorEvents editorEvents;
 
         [Inject]
         private void Construct(
             InputState inputState,
             UpdatePropertiesFromUiSystem updatePropertiesSystem,
-            UiBuilder.Factory uiBuilderFactory,
+            UiBuilder.UiBuilder.Factory uiBuilderFactory,
             SceneDirectoryState sceneDirectoryState,
             EditorEvents editorEvents)
         {
-            _inputState = inputState;
-            _updatePropertiesSystem = updatePropertiesSystem;
-            _uiBuilderFactory = uiBuilderFactory;
-            _sceneDirectoryState = sceneDirectoryState;
-            _editorEvents = editorEvents;
+            this.inputState = inputState;
+            this.updatePropertiesSystem = updatePropertiesSystem;
+            uiBuilder = uiBuilderFactory.Create(content);
+            this.sceneDirectoryState = sceneDirectoryState;
+            this.editorEvents = editorEvents;
         }
 
         public void SetupSceneEventListeners()
         {
-            _editorEvents.onSelectionChangedEvent += UpdateVisuals;
+            editorEvents.onSelectionChangedEvent += UpdateVisuals;
             UpdateVisuals();
         }
 
         private void UpdateVisuals()
         {
-            if (_inputState.InState == InputState.InStateType.UiInput)
+            if (inputState.InState == InputState.InStateType.UiInput)
             {
                 return;
             }
 
-            var inspectorBuilder = _uiBuilderFactory.Create();
+            var inspectorPanel = new PanelAtom.Data();
 
-            var selectedEntity = _sceneDirectoryState.CurrentScene?.SelectionState.PrimarySelectedEntity;
+            var selectedEntity = sceneDirectoryState.CurrentScene?.SelectionState.PrimarySelectedEntity;
 
             if (selectedEntity == null)
             {
-                inspectorBuilder
-                    .Title("No Entity selected")
-                    .ClearAndMake(_content);
+                inspectorPanel.AddTitle("No Entity selected");
+
+                uiBuilder.Update(inspectorPanel);
                 return;
             }
 
-            var nameInputActions = new UiBuilder.UiPropertyActions<string>
+            var nameInputActions = new StringPropertyAtom.UiPropertyActions<string>
             {
                 OnChange = _ => { },
-                OnSubmit = value => _updatePropertiesSystem.SetNewName(selectedEntity, value),
+                OnSubmit = value => updatePropertiesSystem.SetNewName(selectedEntity, value),
                 OnAbort = _ => { }
             };
 
-            var exposedInputActions = new UiBuilder.UiPropertyActions<bool>
+            var exposedInputActions = new StringPropertyAtom.UiPropertyActions<bool>
             {
                 OnChange = _ => { },
-                OnSubmit = value => _updatePropertiesSystem.SetIsExposed(selectedEntity, value),
+                OnSubmit = value => updatePropertiesSystem.SetIsExposed(selectedEntity, value),
                 OnAbort = _ => { }
             };
 
-
-            var entityHeadBuilder = _uiBuilderFactory.Create()
-                .StringPropertyInput("Name", "Name", selectedEntity.CustomName ?? "", nameInputActions)
-                .BooleanPropertyInput("Is Exposed", selectedEntity.IsExposed, exposedInputActions);
-
-            inspectorBuilder.Panel(entityHeadBuilder);
+            var entityHeadPanel = inspectorPanel.AddPanelWithBorder();
+            entityHeadPanel.AddStringProperty("Name", "Name", selectedEntity.CustomName ?? "", nameInputActions);
+            entityHeadPanel.AddBooleanProperty("Is Exposed", selectedEntity.IsExposed, exposedInputActions);
 
             foreach (var component in selectedEntity.Components ?? new List<DclComponent>())
             {
-                var componentBuilder = _uiBuilderFactory.Create()
-                    .PanelHeader(component.NameInCode, null);
+                var componentPanel = inspectorPanel.AddPanelWithBorder();
+                componentPanel.AddPanelHeader(component.NameInCode, null);
 
                 foreach (var property in component.Properties)
                 {
@@ -93,18 +91,18 @@ namespace Assets.Scripts.Visuals
                     switch (property.Type)
                     {
                         case DclComponent.DclComponentProperty.PropertyType.None: // not supported
-                            componentBuilder.Text("None property not supported");
+                            componentPanel.AddText("None property not supported");
                             break;
                         case DclComponent.DclComponentProperty.PropertyType.String:
                         {
-                            var stringActions = new UiBuilder.UiPropertyActions<string>
+                            var stringActions = new StringPropertyAtom.UiPropertyActions<string>
                             {
-                                OnChange = (value) => _updatePropertiesSystem.UpdateFloatingProperty(propertyIdentifier, value),
-                                OnSubmit = (value) => _updatePropertiesSystem.UpdateFixedProperty(propertyIdentifier, value),
-                                OnAbort = (_) => _updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier)
+                                OnChange = (value) => updatePropertiesSystem.UpdateFloatingProperty(propertyIdentifier, value),
+                                OnSubmit = (value) => updatePropertiesSystem.UpdateFixedProperty(propertyIdentifier, value),
+                                OnAbort = (_) => updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier)
                             };
 
-                            componentBuilder.StringPropertyInput(
+                            componentPanel.AddStringProperty(
                                 property.PropertyName,
                                 property.PropertyName,
                                 property.GetConcrete<string>().Value,
@@ -114,15 +112,15 @@ namespace Assets.Scripts.Visuals
                         }
                         case DclComponent.DclComponentProperty.PropertyType.Int:
                         {
-                            var intActions = new UiBuilder.UiPropertyActions<float> // number property requires float actions
+                            var intActions = new StringPropertyAtom.UiPropertyActions<float> // number property requires float actions
                             {
-                                OnChange = (value) => _updatePropertiesSystem.UpdateFloatingProperty(propertyIdentifier, (int) value),
-                                OnInvalid = () => _updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier),
-                                OnSubmit = (value) => _updatePropertiesSystem.UpdateFixedProperty(propertyIdentifier, (int) value),
-                                OnAbort = (value) => _updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier)
+                                OnChange = (value) => updatePropertiesSystem.UpdateFloatingProperty(propertyIdentifier, (int) value),
+                                OnInvalid = () => updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier),
+                                OnSubmit = (value) => updatePropertiesSystem.UpdateFixedProperty(propertyIdentifier, (int) value),
+                                OnAbort = (value) => updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier)
                             };
 
-                            componentBuilder.NumberPropertyInput(
+                            componentPanel.AddNumberProperty(
                                 property.PropertyName,
                                 property.PropertyName,
                                 property.GetConcrete<int>().Value,
@@ -132,15 +130,15 @@ namespace Assets.Scripts.Visuals
                         }
                         case DclComponent.DclComponentProperty.PropertyType.Float:
                         {
-                            var floatActions = new UiBuilder.UiPropertyActions<float>
+                            var floatActions = new StringPropertyAtom.UiPropertyActions<float>
                             {
-                                OnChange = (value) => _updatePropertiesSystem.UpdateFloatingProperty(propertyIdentifier, value),
-                                OnInvalid = () => _updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier),
-                                OnSubmit = (value) => _updatePropertiesSystem.UpdateFixedProperty(propertyIdentifier, value),
-                                OnAbort = (value) => _updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier)
+                                OnChange = (value) => updatePropertiesSystem.UpdateFloatingProperty(propertyIdentifier, value),
+                                OnInvalid = () => updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier),
+                                OnSubmit = (value) => updatePropertiesSystem.UpdateFixedProperty(propertyIdentifier, value),
+                                OnAbort = (value) => updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier)
                             };
 
-                            componentBuilder.NumberPropertyInput(
+                            componentPanel.AddNumberProperty(
                                 property.PropertyName,
                                 property.PropertyName,
                                 property.GetConcrete<float>().Value,
@@ -150,23 +148,22 @@ namespace Assets.Scripts.Visuals
                         }
                         case DclComponent.DclComponentProperty.PropertyType.Boolean: // not supported yet
                         {
-                            componentBuilder.Text("Boolean property not supported yet");
+                            componentPanel.AddText("Boolean property not supported yet");
                             break;
                         }
                         case DclComponent.DclComponentProperty.PropertyType.Vector3:
                         {
-                            var vec3Actions = new UiBuilder.UiPropertyActions<Vector3>
+                            var vec3Actions = new StringPropertyAtom.UiPropertyActions<Vector3>
                             {
-                                OnChange = (value) => _updatePropertiesSystem.UpdateFloatingProperty(propertyIdentifier, value),
-                                OnInvalid = () => _updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier),
-                                OnSubmit = (value) => _updatePropertiesSystem.UpdateFixedProperty(propertyIdentifier, value),
-                                OnAbort = (value) => _updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier)
+                                OnChange = (value) => updatePropertiesSystem.UpdateFloatingProperty(propertyIdentifier, value),
+                                OnInvalid = () => updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier),
+                                OnSubmit = (value) => updatePropertiesSystem.UpdateFixedProperty(propertyIdentifier, value),
+                                OnAbort = (value) => updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier)
                             };
 
-                            string[] xyzString = {"x", "y", "z"};
-                            componentBuilder.Vector3PropertyInput(
+                            componentPanel.AddVector3Property(
                                 property.PropertyName,
-                                xyzString,
+                                new List<string> {"x", "y", "z"},
                                 property.GetConcrete<Vector3>().Value,
                                 vec3Actions);
 
@@ -174,18 +171,17 @@ namespace Assets.Scripts.Visuals
                         }
                         case DclComponent.DclComponentProperty.PropertyType.Quaternion: // Shows quaternions in euler angles
                         {
-                            var vec3Actions = new UiBuilder.UiPropertyActions<Vector3>
+                            var vec3Actions = new StringPropertyAtom.UiPropertyActions<Vector3>
                             {
-                                OnChange = (value) => _updatePropertiesSystem.UpdateFloatingProperty(propertyIdentifier, Quaternion.Euler(value)),
-                                OnInvalid = () => _updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier),
-                                OnSubmit = (value) => _updatePropertiesSystem.UpdateFixedProperty(propertyIdentifier, Quaternion.Euler(value)),
-                                OnAbort = (value) => _updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier)
+                                OnChange = (value) => updatePropertiesSystem.UpdateFloatingProperty(propertyIdentifier, Quaternion.Euler(value)),
+                                OnInvalid = () => updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier),
+                                OnSubmit = (value) => updatePropertiesSystem.UpdateFixedProperty(propertyIdentifier, Quaternion.Euler(value)),
+                                OnAbort = (value) => updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier)
                             };
 
-                            string[] pyrString = {"pitch", "yaw", "roll"};
-                            componentBuilder.Vector3PropertyInput(
+                            componentPanel.AddVector3Property(
                                 property.PropertyName,
-                                pyrString,
+                                new List<string> {"pitch", "yaw", "roll"},
                                 property.GetConcrete<Quaternion>().Value.eulerAngles,
                                 vec3Actions);
 
@@ -193,18 +189,16 @@ namespace Assets.Scripts.Visuals
                         }
                         case DclComponent.DclComponentProperty.PropertyType.Asset: // not supported yet
                         {
-                            componentBuilder.Text("Asset property not supported yet");
+                            componentPanel.AddText("Asset property not supported yet");
                             break;
                         }
                         default:
                             throw new ArgumentOutOfRangeException();
                     }
                 }
-
-                inspectorBuilder.Panel(componentBuilder);
             }
 
-            inspectorBuilder.ClearAndMake(_content);
+            uiBuilder.Update(inspectorPanel);
         }
     }
 }

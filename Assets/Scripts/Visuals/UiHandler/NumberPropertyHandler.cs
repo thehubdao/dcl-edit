@@ -1,3 +1,4 @@
+using Assets.Scripts.Visuals.UiBuilder;
 using TMPro;
 using UnityEngine;
 
@@ -11,9 +12,14 @@ namespace Assets.Scripts.Visuals.PropertyHandler
         [SerializeField]
         public NumberInputHandler numberInput;
 
-        public void SetActions(UiBuilder.UiPropertyActions<float> actions)
+        public void SetActions(StringPropertyAtom.UiPropertyActions<float> actions)
         {
             numberInput.SetActions(actions.OnChange, actions.OnInvalid, actions.OnSubmit, actions.OnAbort);
+        }
+
+        public void ResetActions()
+        {
+            numberInput.ResetActions();
         }
     }
 }

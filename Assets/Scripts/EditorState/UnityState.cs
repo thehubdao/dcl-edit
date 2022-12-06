@@ -46,6 +46,12 @@ namespace Assets.Scripts.EditorState
         [SerializeField]
         public Material DefaultMat;
 
+
+        [Header("Context Menu Prefab")]
+        [SerializeField]
+        public GameObject ContextMenuAtom;
+
+
         [Header("Ui Atoms")]
         [SerializeField]
         public GameObject TitleAtom;
@@ -55,6 +61,9 @@ namespace Assets.Scripts.EditorState
 
         [SerializeField]
         public GameObject PanelAtom;
+
+        [SerializeField]
+        public GameObject PanelWithBorderAtom;
 
         [SerializeField]
         public GameObject PanelHeaderAtom;
@@ -73,9 +82,6 @@ namespace Assets.Scripts.EditorState
 
         [SerializeField]
         public GameObject Vector3InputAtom;
-
-        [SerializeField]
-        public GameObject ContextMenuAtom;
 
         [SerializeField]
         public GameObject ContextMenuItemAtom;

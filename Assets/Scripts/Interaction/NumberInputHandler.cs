@@ -26,6 +26,11 @@ public class NumberInputHandler : MonoBehaviour
         return _numberInputSystem.ValidateNumberInput(TextInputHandler.GetCurrentText());
     }
 
+    public void ResetActions()
+    {
+        TextInputHandler.ResetActions();
+    }
+
     public void SetActions(Action<float> onChange,  Action onInvalid, Action<float> onSubmit, Action<float> onAbort)
     {
         TextInputHandler.SetActions(

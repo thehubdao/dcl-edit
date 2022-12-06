@@ -1,7 +1,8 @@
+using Assets.Scripts.Visuals.UiBuilder;
 using TMPro;
 using UnityEngine;
 
-namespace Assets.Scripts.Visuals.PropertyHandler
+namespace Assets.Scripts.Visuals.UiHandler
 {
     public class Vector3PropertyHandler : MonoBehaviour
     {
@@ -17,7 +18,14 @@ namespace Assets.Scripts.Visuals.PropertyHandler
         [SerializeField]
         public NumberInputHandler numberInputZ;
 
-        public void SetActions(UiBuilder.UiPropertyActions<Vector3> actions)
+        public void ResetActions()
+        {
+            numberInputX.ResetActions();
+            numberInputY.ResetActions();
+            numberInputZ.ResetActions();
+        }
+
+        public void SetActions(StringPropertyAtom.UiPropertyActions<Vector3> actions)
         {
             SetActionsHelper(numberInputX, actions);
             SetActionsHelper(numberInputY, actions);
@@ -36,7 +44,7 @@ namespace Assets.Scripts.Visuals.PropertyHandler
             return new Vector3(xInput.Value, yInput.Value, zInput.Value);
         }
 
-        private void SetActionsHelper(NumberInputHandler numberInput, UiBuilder.UiPropertyActions<Vector3> actions)
+        private void SetActionsHelper(NumberInputHandler numberInput, StringPropertyAtom.UiPropertyActions<Vector3> actions)
         {
             numberInput.SetActions(
                 _ =>
