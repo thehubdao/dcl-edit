@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Assets.Scripts.EditorState;
 using Assets.Scripts.SceneState;
@@ -26,7 +27,7 @@ namespace Assets.Scripts.System
             var command = commandSystem.CommandFactory.CreateAddEntity(
                 "Empty Entity",
                 parent.Id,
-                selectionState.PrimarySelectedEntity.Id,
+                selectionState.PrimarySelectedEntity?.Id ?? Guid.Empty,
                 selectionState.SecondarySelectedEntities.Select(e => e.Id));
             commandSystem.ExecuteCommand(command);
         }
