@@ -7,14 +7,16 @@ using Zenject;
 
 namespace Assets.Scripts.System
 {
-    public class AddEntitySystem
+    public class HierarchyContextMenuSystem
     {
         // Dependencies
         private CommandSystem commandSystem;
         private SceneDirectoryState sceneState;
 
         [Inject]
-        public void Construct(CommandSystem commandSystem, SceneDirectoryState sceneState)
+        public void Construct(
+            CommandSystem commandSystem,
+            SceneDirectoryState sceneState)
         {
             this.commandSystem = commandSystem;
             this.sceneState = sceneState;
