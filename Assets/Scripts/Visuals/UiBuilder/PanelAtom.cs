@@ -42,35 +42,21 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
         public List<Atom> childAtoms = new List<Atom>();
 
-        public override bool Update(Atom.Data newData, int newPosition)
+        public override void Update(Atom.Data newData)
         {
             UiBuilder.Stats.atomsUpdatedCount++;
 
-            var hasChanged = false;
             var newPanelData = (Data) newData;
 
             if (gameObject == null)
             {
                 gameObject = MakeNewAtomGameObject();
-                hasChanged = true;
             }
-
-            var newHeight = -1;
 
             if (!newPanelData.Equals(data))
             {
-                UpdateData(newPanelData, out var changed, out newHeight);
-
-                hasChanged = hasChanged || changed;
+                UpdateData(newPanelData);
             }
-
-            if (newPosition != gameObject.position || (newHeight > 0 && newHeight != gameObject.height))
-            {
-                UpdatePositionAndSize(newPosition, newHeight);
-                hasChanged = true;
-            }
-
-            return hasChanged;
         }
 
         public override void Remove()
@@ -86,19 +72,13 @@ namespace Assets.Scripts.Visuals.UiBuilder
         protected virtual AtomGameObject MakeNewAtomGameObject()
         {
             var atomObject = uiBuilder.GetAtomObjectFromPool(UiBuilder.AtomType.Panel);
-            atomObject.height = 40;
-            atomObject.position = -1;
             return atomObject;
         }
 
-        protected void UpdateData(Data newPanelData, out bool hasChanged, out int endHeight)
+        protected void UpdateData(Data newPanelData)
         {
-            hasChanged = false;
-
             // make layout group
             gameObject.gameObject.GetComponent<PanelHandler>().SetLayoutDirection(newPanelData.layoutDirection);
-
-            var lastPos = 0;
 
             var atomIndex = 0;
             var dataIndex = 0;
@@ -110,19 +90,13 @@ namespace Assets.Scripts.Visuals.UiBuilder
                 if (atomIndex < childAtoms.Count && childAtoms[atomIndex].DoesDataTypeMatch(childData))
                 {
                     // Update the atom to represent the new data
-                    var changed = childAtoms[atomIndex].Update(childData, lastPos);
-
-                    if (changed)
-                    {
-                        hasChanged = true;
-                    }
+                    childAtoms[atomIndex].Update(childData);
 
                     childAtoms[atomIndex].gameObject.gameObject.transform.SetParent(
                         gameObject.gameObject.GetComponent<PanelHandler>().content.transform, false);
 
                     childAtoms[atomIndex].gameObject.gameObject.transform.localScale = Vector3.one;
 
-                    lastPos += childAtoms[atomIndex].gameObject.height;
                     // advance both atom index and data index
                     atomIndex++;
                     dataIndex++;
@@ -140,19 +114,12 @@ namespace Assets.Scripts.Visuals.UiBuilder
                     // create new atom and populate with data
                     var childAtom = MakeChildAtom(childData);
 
-                    var changed = childAtom.Update(childData, lastPos);
-
-                    if (changed)
-                    {
-                        hasChanged = true;
-                    }
+                    childAtom.Update(childData);
 
                     childAtom.gameObject.gameObject.transform.SetParent(
                         gameObject.gameObject.GetComponent<PanelHandler>().content.transform, false);
 
                     childAtom.gameObject.gameObject.transform.localScale = Vector3.one;
-
-                    lastPos += childAtom.gameObject.height;
 
                     childAtoms.Add(childAtom);
 
@@ -168,8 +135,6 @@ namespace Assets.Scripts.Visuals.UiBuilder
                 childAtoms[atomIndex].Remove();
                 childAtoms.RemoveAt(atomIndex);
             }
-
-            endHeight = lastPos + totalBorderHeight;
         }
 
         protected virtual int totalBorderHeight { get; set; } = 0;

@@ -25,11 +25,10 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
         protected Data data;
 
-        public override bool Update(Atom.Data newData, int newPosition)
+        public override void Update(Atom.Data newData)
         {
             UiBuilder.Stats.atomsUpdatedCount++;
 
-            var posHeightHasChanged = false;
             var newContextMenuSpacerData = (Data) newData;
 
             // Stage 1: Check for a GameObject and make one, if it doesn't exist
@@ -37,7 +36,6 @@ namespace Assets.Scripts.Visuals.UiBuilder
             {
                 // Make new game object
                 gameObject = MakeNewGameObject();
-                posHeightHasChanged = true;
             }
 
             // Stage 2: Check for updated data and update, if data was changed
@@ -49,22 +47,11 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
                 data = newContextMenuSpacerData;
             }
-
-            // Stage 3: Check for changes in Position and Height and update, if it has changed
-            if (newPosition != gameObject.position)
-            {
-                UpdatePositionAndSize(newPosition, gameObject.height);
-                posHeightHasChanged = true;
-            }
-
-            return posHeightHasChanged;
         }
 
         protected virtual AtomGameObject MakeNewGameObject()
         {
             var atomObject = uiBuilder.GetAtomObjectFromPool(UiBuilder.AtomType.ContextMenuSpacerItem);
-            atomObject.height = 15;
-            atomObject.position = -1;
             return atomObject;
         }
 
