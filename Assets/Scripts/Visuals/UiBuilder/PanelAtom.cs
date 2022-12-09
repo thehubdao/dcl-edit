@@ -168,10 +168,11 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
     public static class PanelPanelHelper
     {
-        public static PanelAtom.Data AddPanel(this PanelAtom.Data panelAtomData, [CanBeNull] AtomDataList childDates = null)
+        public static PanelAtom.Data AddPanel(this PanelAtom.Data panelAtomData, PanelHandler.LayoutDirection layoutDirection = PanelHandler.LayoutDirection.Vertical, [CanBeNull] AtomDataList childDates = null)
         {
             var data = new PanelAtom.Data
             {
+                layoutDirection = layoutDirection,
                 childDates = childDates ?? new AtomDataList()
             };
 
