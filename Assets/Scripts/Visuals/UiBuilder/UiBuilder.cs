@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Assets.Scripts.EditorState;
 using JetBrains.Annotations;
 using UnityEngine;
+using UnityEngine.UI;
 using Zenject;
 using Object = UnityEngine.Object;
 
@@ -85,7 +86,8 @@ namespace Assets.Scripts.Visuals.UiBuilder
                 }
             }
 
-            return new AtomGameObject {atomType = type, gameObject = InstantiateObject(type)};
+            var instantiatedObject = InstantiateObject(type);
+            return new AtomGameObject {atomType = type, gameObject = instantiatedObject};
         }
 
         private GameObject InstantiateObject(AtomType type)
@@ -117,6 +119,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
         {
             var spacer = new GameObject("Spacer");
             spacer.AddComponent<RectTransform>();
+            spacer.AddComponent<LayoutElement>();
             return spacer;
         }
 

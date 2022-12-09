@@ -45,6 +45,9 @@ namespace Assets.Scripts.Tests.PlayModeTests.UiTests
         public IEnumerator ShowComplexSetup()
         {
             var testerPrompt = UiTester.instance.uiTesterPrompt;
+
+            var centerUiBuilder = UiTester.instance.MakeNewUiBuilder(UiTester.PanelToUse.Center);
+
             var mainPanel = UiBuilder.NewPanelData();
 
             mainPanel.AddTitle("A Title");
@@ -63,12 +66,14 @@ namespace Assets.Scripts.Tests.PlayModeTests.UiTests
             mainPanel.AddSpacer(100);
             mainPanel.AddHierarchyItem("Hierarchy Item", 0, false, false, TextHandler.TextStyle.Normal, new HierarchyItemHandler.UiHierarchyItemActions(), null);
 
-            uiBuilder.Update(mainPanel);
+            centerUiBuilder.Update(mainPanel);
 
             yield return testerPrompt.WaitForQuestionPrompt("Do you see the ui with the following setup? A title, a text," +
                                                             " a panel (with a header, a vector property, and a number property)," +
                                                             " another panel (with a header, a string property, and a bool property)," +
                                                             " then a space, and as last element a hierarchy item ", Yes);
+
+            UiTester.instance.DisposeUiBuilder(centerUiBuilder);
         }
 
         [UnityTest]

@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using Assets.Scripts.Visuals.UiHandler;
 using JetBrains.Annotations;
+using UnityEngine;
 
 namespace Assets.Scripts.Visuals.UiBuilder
 {
@@ -8,6 +10,8 @@ namespace Assets.Scripts.Visuals.UiBuilder
     {
         public new class Data : Atom.Data
         {
+            public PanelHandler.LayoutDirection layoutDirection = PanelHandler.LayoutDirection.Vertical;
+
             public AtomDataList childDates = new AtomDataList();
 
             public override bool Equals(Atom.Data other)
@@ -91,6 +95,9 @@ namespace Assets.Scripts.Visuals.UiBuilder
         {
             hasChanged = false;
 
+            // make layout group
+            gameObject.gameObject.GetComponent<PanelHandler>().SetLayoutDirection(newPanelData.layoutDirection);
+
             var lastPos = 0;
 
             var atomIndex = 0;
@@ -110,8 +117,10 @@ namespace Assets.Scripts.Visuals.UiBuilder
                         hasChanged = true;
                     }
 
-                    childAtoms[atomIndex].gameObject.gameObject.gameObject.transform.SetParent(
-                        gameObject.gameObject.gameObject.GetComponent<PanelHandler>().Content.transform, false);
+                    childAtoms[atomIndex].gameObject.gameObject.transform.SetParent(
+                        gameObject.gameObject.GetComponent<PanelHandler>().content.transform, false);
+
+                    childAtoms[atomIndex].gameObject.gameObject.transform.localScale = Vector3.one;
 
                     lastPos += childAtoms[atomIndex].gameObject.height;
                     // advance both atom index and data index
@@ -138,8 +147,10 @@ namespace Assets.Scripts.Visuals.UiBuilder
                         hasChanged = true;
                     }
 
-                    childAtom.gameObject.gameObject.gameObject.transform.SetParent(
-                        gameObject.gameObject.gameObject.GetComponent<PanelHandler>().Content.transform, false);
+                    childAtom.gameObject.gameObject.transform.SetParent(
+                        gameObject.gameObject.GetComponent<PanelHandler>().content.transform, false);
+
+                    childAtom.gameObject.gameObject.transform.localScale = Vector3.one;
 
                     lastPos += childAtom.gameObject.height;
 

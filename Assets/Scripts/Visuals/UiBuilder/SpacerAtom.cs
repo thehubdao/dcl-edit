@@ -1,3 +1,5 @@
+using UnityEngine.UI;
+
 namespace Assets.Scripts.Visuals.UiBuilder
 {
     public class SpacerAtom : Atom
@@ -35,10 +37,13 @@ namespace Assets.Scripts.Visuals.UiBuilder
             }
 
             // Stage 2: Check for updated data and update, if data was changed
-            //if (!newSpacerData.Equals(data))
-            //{
-            //    // No data to update
-            //}
+            if (!newSpacerData.Equals(data))
+            {
+                var le = gameObject.gameObject.GetComponent<LayoutElement>();
+                le.minHeight = newSpacerData.height;
+
+                data = newSpacerData;
+            }
 
             // Stage 3: Check for changes in Position and Height and update, if it has changed
             if (newPosition != gameObject.position || !newSpacerData.Equals(data))
