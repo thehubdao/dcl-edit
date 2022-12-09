@@ -149,7 +149,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
         private PanelAtom currentRootAtom = null;
         public GameObject parentObject;
 
-        public int height => currentRootAtom.gameObject.height;
+        public int height => Mathf.FloorToInt(parentObject.GetComponent<RectTransform>().sizeDelta.y);
 
         public UiBuilder(GameObject parent)
         {
