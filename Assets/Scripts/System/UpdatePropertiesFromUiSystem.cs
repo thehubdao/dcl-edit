@@ -73,6 +73,8 @@ namespace Assets.Scripts.System
             }
 
             scene.GetPropertyFromIdentifier(property).ResetFloating();
+            
+            _editorEvents.InvokeSelectionChangedEvent();
         }
 
         public void UpdateFixedProperty<T>(DclPropertyIdentifier property, T value)

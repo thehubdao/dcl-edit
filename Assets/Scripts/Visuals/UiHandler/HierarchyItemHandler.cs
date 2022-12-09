@@ -7,31 +7,37 @@ namespace Assets.Scripts.Visuals.UiHandler
     public class HierarchyItemHandler : MonoBehaviour
     {
         [SerializeField]
-        public TextHandler Text;
+        public TextHandler text;
 
         [SerializeField]
-        private RectTransform Arrow;
+        private RectTransform arrow;
 
         [SerializeField]
-        private RectTransform ArrowContainer;
+        private RectTransform arrowContainer;
 
         [SerializeField]
-        public RectTransform Indent;
+        public RectTransform indent;
+
+        [SerializeField]
+        public RightClickHandler rightClickHandler;
 
         public bool primarySelection { get; set; }
 
         public struct UiHierarchyItemActions
         {
-            public Action OnArrowClick;
-            public Action OnNameClick;
+            public Action onArrowClick;
+            public Action onNameClick;
         }
 
         public UiHierarchyItemActions actions
         {
             set
             {
-                Arrow.GetComponent<Toggle>().onValueChanged.AddListener(_ => value.OnArrowClick());
-                Text.GetComponent<Button>().onClick.AddListener(() => value.OnNameClick());
+                arrow.GetComponent<Toggle>().onValueChanged.RemoveAllListeners();
+                text.GetComponent<Button>().onClick.RemoveAllListeners();
+
+                arrow.GetComponent<Toggle>().onValueChanged.AddListener(_ => value.onArrowClick());
+                text.GetComponent<Button>().onClick.AddListener(() => value.onNameClick());
             }
         }
 
@@ -41,20 +47,20 @@ namespace Assets.Scripts.Visuals.UiHandler
             {
                 if (value)
                 {
-                    ArrowContainer.rotation = Quaternion.Euler(0, 0, 0);
-                    ArrowContainer.localScale = new Vector3(1, 1, 1);
+                    arrowContainer.rotation = Quaternion.Euler(0, 0, 0);
+                    arrowContainer.localScale = new Vector3(1, 1, 1);
                 }
                 else
                 {
-                    ArrowContainer.rotation = Quaternion.Euler(0, 0, 90);
-                    ArrowContainer.localScale = new Vector3(-1, 1, 1);
+                    arrowContainer.rotation = Quaternion.Euler(0, 0, 90);
+                    arrowContainer.localScale = new Vector3(-1, 1, 1);
                 }
             }
         }
 
         public bool showArrow
         {
-            set => ArrowContainer.gameObject.SetActive(value);
+            set => arrowContainer.gameObject.SetActive(value);
         }
     }
 }

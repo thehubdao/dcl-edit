@@ -1,9 +1,7 @@
-using Assets.Scripts.Command;
 using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
 using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
-using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Zenject;
@@ -74,6 +72,8 @@ namespace Assets.Scripts.Interaction
         {
             ProcessHotKeys();
 
+            InvokeMouseButtonDownEvent();
+
             switch (_inputState.InState)
             {
                 case InputState.InStateType.NoInput:
@@ -107,6 +107,17 @@ namespace Assets.Scripts.Interaction
             }
         }
 
+        private void InvokeMouseButtonDownEvent()
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                _editorEvents.InvokeOnMouseButtonDownEvent(0);
+            }
+            if (Input.GetMouseButtonDown(1))
+            {
+                _editorEvents.InvokeOnMouseButtonDownEvent(1);
+            }
+        }
 
         private void UpdateNoInput()
         {

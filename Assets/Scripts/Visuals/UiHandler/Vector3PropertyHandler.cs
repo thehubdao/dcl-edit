@@ -1,7 +1,8 @@
+using Assets.Scripts.Visuals.UiBuilder;
 using TMPro;
 using UnityEngine;
 
-namespace Assets.Scripts.Visuals.PropertyHandler
+namespace Assets.Scripts.Visuals.UiHandler
 {
     public class Vector3PropertyHandler : MonoBehaviour
     {
@@ -17,30 +18,75 @@ namespace Assets.Scripts.Visuals.PropertyHandler
         [SerializeField]
         public NumberInputHandler numberInputZ;
 
-        public void SetActions(UiBuilder.UiPropertyActions<Vector3> actions)
+        public void ResetActions()
         {
-            numberInputX.SetActions(
-                _ => actions.OnChange(GetCurrentValue()),
-                _ => actions.OnSubmit(GetCurrentValue()),
-                _ => actions.OnAbort(GetCurrentValue())
-                );
-
-            numberInputY.SetActions(
-                _ => actions.OnChange(GetCurrentValue()),
-                _ => actions.OnSubmit(GetCurrentValue()),
-                _ => actions.OnAbort(GetCurrentValue())
-                );
-
-            numberInputZ.SetActions(
-                _ => actions.OnChange(GetCurrentValue()),
-                _ => actions.OnSubmit(GetCurrentValue()),
-                _ => actions.OnAbort(GetCurrentValue())
-                );
+            numberInputX.ResetActions();
+            numberInputY.ResetActions();
+            numberInputZ.ResetActions();
         }
 
-        public Vector3 GetCurrentValue()
+        public void SetActions(StringPropertyAtom.UiPropertyActions<Vector3> actions)
         {
-            return new Vector3(numberInputX.GetCurrentNumber(), numberInputY.GetCurrentNumber(), numberInputZ.GetCurrentNumber());
+            SetActionsHelper(numberInputX, actions);
+            SetActionsHelper(numberInputY, actions);
+            SetActionsHelper(numberInputZ, actions);
+        }
+
+        private Vector3? GetCurrentValue()
+        {
+            var xInput = numberInputX.GetCurrentNumber();
+            var yInput = numberInputY.GetCurrentNumber();
+            var zInput = numberInputZ.GetCurrentNumber();
+            if (xInput == null  || yInput == null || zInput == null)
+            {
+                return null;
+            }
+            return new Vector3(xInput.Value, yInput.Value, zInput.Value);
+        }
+
+        private void SetActionsHelper(NumberInputHandler numberInput, StringPropertyAtom.UiPropertyActions<Vector3> actions)
+        {
+            numberInput.SetActions(
+                _ =>
+                {
+                    var currentValue = GetCurrentValue();
+                    if (currentValue == null)
+                    {
+                        actions.OnInvalid?.Invoke();
+                    }
+                    else
+                    {
+                        actions.OnChange(currentValue.Value);
+                    }
+                },
+                () =>
+                {
+                    actions.OnInvalid?.Invoke();
+                },
+                _ =>
+                {
+                    var currentValue = GetCurrentValue();
+                    if (currentValue == null)
+                    {
+                        actions.OnAbort(Vector3.zero);
+                    }
+                    else
+                    {
+                        actions.OnSubmit(currentValue.Value);
+                    }
+                },
+                _ =>
+                {
+                    var currentValue = GetCurrentValue();
+                    if (currentValue == null)
+                    {
+                        actions.OnAbort(Vector3.zero);
+                    }
+                    else
+                    {
+                        actions.OnAbort(currentValue.Value);
+                    }
+                });
         }
     }
 }

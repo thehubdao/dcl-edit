@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: LoadingLogoStripes
+  m_Shader: {fileID: -6465566751694194690, guid: 5a716d55f3f998d4284186fe70dbb152, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - unity_Lightmaps:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_LightmapsInd:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_ShadowMasks:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - Vector1_1bf55ae386fc48c2b16ab8bfa9ddb523: 0
+    - Vector1_45db67aa0379428ca729ac82aa9ccc23: 0.025
+    - Vector1_5d7435a1812d47a88d100e62556ddbf8: 0.2026
+    - Vector1_6be9d0a75b8f4d96a952f9fd9e44c225: 0.5
+    - Vector1_8dfb78b7f2d545b4880eb80e5795ec08: 0
+    - Vector1_a9b86095ae8f47df91748e9a61b0f597: 4
+    - Vector1_f5d43a11c3f14ecf97267b69a627dd32: 0.15
+    m_Colors:
+    - Color_0d418af0df0e4c3092461fc3aaf9a47e: {r: 0.74509805, g: 0.09411765, b: 0.3647059, a: 0}
+    - Color_f6ff50a7aad64cd4aa8b1f11d7458c0f: {r: 0.23921569, g: 0.5019608, b: 0.95686275, a: 0}
+    - Vector3_332009d26a9f4dca87b8c5a6956f2a24: {r: 1, g: 0, b: 0, a: 0}
+  m_BuildTextureStacks: []
