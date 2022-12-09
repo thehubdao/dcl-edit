@@ -46,6 +46,8 @@ namespace Assets.Scripts.Visuals.UiBuilder
             // Update position and size
             var tf = gameObject.gameObject.GetComponent<RectTransform>();
 
+            tf.localScale = Vector3.one;
+
             tf.offsetMin = Vector2.zero;
             tf.offsetMax = Vector2.zero;
 

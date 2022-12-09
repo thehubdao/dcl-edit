@@ -8,12 +8,16 @@ namespace Assets.Scripts.Visuals.UiBuilder
     {
         public struct UiPropertyActions<T>
         {
+            [CanBeNull]
             public Action<T> OnChange;
 
             [CanBeNull]
             public Action OnInvalid;
 
+            [CanBeNull]
             public Action<T> OnSubmit;
+
+            [CanBeNull]
             public Action<T> OnAbort;
 
             public bool Equals(UiPropertyActions<T> other)
