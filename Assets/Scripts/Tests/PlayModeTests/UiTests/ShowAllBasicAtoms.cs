@@ -58,10 +58,17 @@ namespace Assets.Scripts.Tests.PlayModeTests.UiTests
             firstPanel.AddVector3Property("Vector property", new List<string> {"x", "y", "z"}, Vector3.zero, new StringPropertyAtom.UiPropertyActions<Vector3>());
             firstPanel.AddNumberProperty("Number property", "only takes numbers", 100, new StringPropertyAtom.UiPropertyActions<float>());
 
-            var secondPanel = mainPanel.AddPanelWithBorder();
+            var horPanel = mainPanel.AddPanel(PanelHandler.LayoutDirection.Horizontal);
+
+            var secondPanel = horPanel.AddPanelWithBorder();
             secondPanel.AddPanelHeader("Second panel", () => { });
             secondPanel.AddStringProperty("String property", "write a string here", "", new StringPropertyAtom.UiPropertyActions<string>());
             secondPanel.AddBooleanProperty("Bool property", true, new StringPropertyAtom.UiPropertyActions<bool>());
+
+            var thirdPanel = horPanel.AddPanelWithBorder();
+            thirdPanel.AddPanelHeader("Second panel", () => { });
+            thirdPanel.AddStringProperty("String property", "write a string here", "", new StringPropertyAtom.UiPropertyActions<string>());
+            thirdPanel.AddBooleanProperty("Bool property", true, new StringPropertyAtom.UiPropertyActions<bool>());
 
             mainPanel.AddSpacer(100);
             mainPanel.AddHierarchyItem("Hierarchy Item", 0, false, false, TextHandler.TextStyle.Normal, new HierarchyItemHandler.UiHierarchyItemActions(), null);

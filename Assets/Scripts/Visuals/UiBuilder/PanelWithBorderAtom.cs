@@ -1,3 +1,4 @@
+using Assets.Scripts.Visuals.UiHandler;
 using JetBrains.Annotations;
 
 namespace Assets.Scripts.Visuals.UiBuilder
@@ -23,10 +24,11 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
     public static class PanelWithBorderPanelHelper
     {
-        public static PanelWithBorderAtom.Data AddPanelWithBorder(this PanelAtom.Data panelAtomData, [CanBeNull] AtomDataList childDates = null)
+        public static PanelWithBorderAtom.Data AddPanelWithBorder(this PanelAtom.Data panelAtomData, PanelHandler.LayoutDirection layoutDirection = PanelHandler.LayoutDirection.Vertical, [CanBeNull] AtomDataList childDates = null)
         {
             var data = new PanelWithBorderAtom.Data
             {
+                layoutDirection = layoutDirection,
                 childDates = childDates ?? new AtomDataList()
             };
 
