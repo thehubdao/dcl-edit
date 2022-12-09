@@ -168,11 +168,8 @@ namespace Assets.Scripts.Visuals.UiBuilder
             // Create new root atom if not exists
             currentRootAtom ??= new PanelAtom(this);
 
-            currentRootAtom.Update(newData, 0);
+            currentRootAtom.Update(newData);
             currentRootAtom.gameObject.gameObject.transform.SetParent(parentObject.transform, false);
-
-            var parentTransform = parentObject.GetComponent<RectTransform>();
-            parentTransform.sizeDelta = new Vector2(parentTransform.sizeDelta.x, currentRootAtom.gameObject.height);
         }
 
         public class Factory : PlaceholderFactory<GameObject, UiBuilder>

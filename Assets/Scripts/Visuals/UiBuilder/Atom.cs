@@ -8,8 +8,6 @@ namespace Assets.Scripts.Visuals.UiBuilder
     {
         public GameObject gameObject;
         public UiBuilder.AtomType atomType;
-        public int height = -1;
-        public int position = -1;
     }
 
 
@@ -27,9 +25,8 @@ namespace Assets.Scripts.Visuals.UiBuilder
         /// Update the atom with the given data
         /// </summary>
         /// <param name="newData">the data, that the atom should represent now</param>
-        /// <param name="newPosition">the position of the top corner with in its parent GameObject</param>
         /// <returns>when the Position or Height has changed, return true. This can also happen, when a different Position was given in the newPosition parameter</returns>
-        public abstract bool Update([NotNull] Data newData, int newPosition);
+        public abstract void Update([NotNull] Data newData);
 
         public virtual void Remove()
         {
@@ -39,23 +36,6 @@ namespace Assets.Scripts.Visuals.UiBuilder
         public abstract class Data
         {
             public abstract bool Equals(Data other);
-        }
-
-        protected void UpdatePositionAndSize(int position, int height)
-        {
-            // Update position and size
-            //var tf = gameObject.gameObject.GetComponent<RectTransform>();
-            //
-            //tf.localScale = Vector3.one;
-
-            //tf.offsetMin = Vector2.zero;
-            //tf.offsetMax = Vector2.zero;
-            //
-            //tf.anchoredPosition = new Vector3(0, -position, 0);
-            //tf.sizeDelta = new Vector2(tf.sizeDelta.x, height);
-            //
-            //gameObject.position = position;
-            //gameObject.height = height;
         }
 
         /// <summary>

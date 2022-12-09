@@ -11,8 +11,6 @@ namespace Assets.Scripts.Visuals.UiBuilder
         protected override AtomGameObject MakeNewAtomGameObject()
         {
             var atomObject = uiBuilder.GetAtomObjectFromPool(UiBuilder.AtomType.PanelWithBorder);
-            atomObject.height = 40;
-            atomObject.position = -1;
             return atomObject;
         }
 
