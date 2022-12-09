@@ -60,7 +60,9 @@ namespace Assets.Scripts.SceneState
         {
             get
             {
-                return GlobalTransformMatrix.rotation;
+                return Entity.Parent == null
+                    ? Rotation.Value
+                    : Entity.Parent.GetTransformComponent().GlobalRotation * Rotation.Value;
             }
         }
         public Matrix4x4 GlobalFixedTransformMatrix
