@@ -5,6 +5,7 @@ using System.Linq;
 using Assets.Scripts.Visuals.UiBuilder;
 using Assets.Scripts.Visuals.UiHandler;
 using UnityEngine;
+using UnityEngine.UI;
 using Zenject;
 
 namespace Assets.Scripts.Visuals
@@ -108,6 +109,8 @@ namespace Assets.Scripts.Visuals
             }
 
             itemsBuilder.Update(menuPanel);
+
+            LayoutRebuilder.ForceRebuildLayoutImmediate(itemsBuilder.parentObject.GetComponent<RectTransform>());
 
             menuRect.sizeDelta = new Vector2(width, Mathf.Min(Screen.height, itemsBuilder.height));
 

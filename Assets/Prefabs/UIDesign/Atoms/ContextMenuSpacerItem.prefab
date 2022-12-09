@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 6977794339417965469}
   - component: {fileID: 569043637030580647}
   - component: {fileID: 3878051140281399531}
+  - component: {fileID: 8993682016091224602}
   m_Layer: 5
   m_Name: ContextMenuSpacerItem
   m_TagString: Untagged
@@ -134,6 +135,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4da5ec0ffc84d844aefcc2219eba46c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &8993682016091224602
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1012576247357608871}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: -1
+  m_MinHeight: 15
+  m_PreferredWidth: -1
+  m_PreferredHeight: -1
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
 --- !u!1 &7161894589560420485
 GameObject:
   m_ObjectHideFlags: 0
