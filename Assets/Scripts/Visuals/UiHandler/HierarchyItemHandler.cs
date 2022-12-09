@@ -1,4 +1,5 @@
 using System;
+using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -23,7 +24,10 @@ namespace Assets.Scripts.Visuals.UiHandler
 
         public struct UiHierarchyItemActions
         {
+            [CanBeNull]
             public Action onArrowClick;
+
+            [CanBeNull]
             public Action onNameClick;
         }
 
@@ -34,8 +38,8 @@ namespace Assets.Scripts.Visuals.UiHandler
                 arrow.GetComponent<Toggle>().onValueChanged.RemoveAllListeners();
                 text.GetComponent<Button>().onClick.RemoveAllListeners();
 
-                arrow.GetComponent<Toggle>().onValueChanged.AddListener(_ => value.onArrowClick());
-                text.GetComponent<Button>().onClick.AddListener(() => value.onNameClick());
+                arrow.GetComponent<Toggle>().onValueChanged.AddListener(_ => value.onArrowClick?.Invoke());
+                text.GetComponent<Button>().onClick.AddListener(() => value.onNameClick?.Invoke());
             }
         }
 

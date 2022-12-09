@@ -27,6 +27,9 @@ public class DclEditorInstaller : MonoInstaller
     [SerializeField]
     private GameObject _scaleGizmoPrefab;
 
+    [SerializeField]
+    private GameObject unityStateObject;
+
 
     public override void InstallBindings()
     {
@@ -72,7 +75,7 @@ public class DclEditorInstaller : MonoInstaller
 
         Container.BindInterfacesAndSelfTo<GizmoState>().AsSingle();
 
-        Container.BindInterfacesAndSelfTo<UnityState>().FromComponentOn(gameObject).AsSingle();
+        Container.BindInterfacesAndSelfTo<UnityState>().FromComponentOn(unityStateObject).AsSingle();
 
         Container.BindInterfacesAndSelfTo<InputHelper>().AsSingle();
 

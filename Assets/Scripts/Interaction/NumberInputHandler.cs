@@ -39,12 +39,13 @@ public class NumberInputHandler : MonoBehaviour
                     var numberValue = _numberInputSystem.ValidateNumberInput(value);
                     if (numberValue == null)
                     {
-                        onInvalid();
+                        onInvalid?.Invoke();
+
                         TextInputHandler.SetBorderColorValid(false);
                     }
                     else
                     {
-                        onChange(numberValue.Value);
+                        onChange?.Invoke(numberValue.Value);
                         TextInputHandler.SetBorderColorValid(true);
                     }
                 },
@@ -53,11 +54,11 @@ public class NumberInputHandler : MonoBehaviour
                     var numberValue = _numberInputSystem.ValidateNumberInput(value);
                     if (numberValue == null)
                     {
-                        onAbort(0);
+                        onAbort?.Invoke(0);
                     }
                     else
                     {
-                        onSubmit(numberValue.Value);
+                        onSubmit?.Invoke(numberValue.Value);
                     }
                 },
                 (value) =>
@@ -65,11 +66,11 @@ public class NumberInputHandler : MonoBehaviour
                     var numberValue = _numberInputSystem.ValidateNumberInput(value);
                     if (numberValue == null)
                     {
-                        onAbort(0);
+                        onAbort?.Invoke(0);
                     }
                     else
                     {
-                        onAbort(numberValue.Value);
+                        onAbort?.Invoke(numberValue.Value);
                     }
                 });
     }

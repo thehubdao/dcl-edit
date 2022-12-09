@@ -12,7 +12,7 @@ namespace Assets.Scripts.Visuals.UiHandler
         {
             if (eventData.button == PointerEventData.InputButton.Right)
             {
-                onRightClick(new Vector3(eventData.position.x, eventData.position.y));
+                onRightClick?.Invoke(new Vector3(eventData.position.x, eventData.position.y));
             }
         }
     }

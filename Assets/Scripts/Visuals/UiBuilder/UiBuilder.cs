@@ -58,7 +58,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
         private UnityState unityState;
 
         [Inject]
-        private void Constructor(UnityState unityState)
+        public void Constructor(UnityState unityState)
         {
             this.unityState = unityState;
         }
@@ -144,7 +144,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
         // ----------------------------
 
         private PanelAtom currentRootAtom = null;
-        private GameObject parentObject;
+        public GameObject parentObject;
 
         public int height => currentRootAtom.gameObject.height;
 
@@ -153,6 +153,10 @@ namespace Assets.Scripts.Visuals.UiBuilder
             parentObject = parent;
         }
 
+        public static PanelAtom.Data NewPanelData()
+        {
+            return new PanelAtom.Data();
+        }
 
         public void Update(PanelAtom.Data newData)
         {
