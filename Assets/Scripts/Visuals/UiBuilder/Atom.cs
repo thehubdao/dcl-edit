@@ -44,18 +44,18 @@ namespace Assets.Scripts.Visuals.UiBuilder
         protected void UpdatePositionAndSize(int position, int height)
         {
             // Update position and size
-            var tf = gameObject.gameObject.GetComponent<RectTransform>();
+            //var tf = gameObject.gameObject.GetComponent<RectTransform>();
+            //
+            //tf.localScale = Vector3.one;
 
-            tf.localScale = Vector3.one;
-
-            tf.offsetMin = Vector2.zero;
-            tf.offsetMax = Vector2.zero;
-
-            tf.anchoredPosition = new Vector3(0, -position, 0);
-            tf.sizeDelta = new Vector2(tf.sizeDelta.x, height);
-
-            gameObject.position = position;
-            gameObject.height = height;
+            //tf.offsetMin = Vector2.zero;
+            //tf.offsetMax = Vector2.zero;
+            //
+            //tf.anchoredPosition = new Vector3(0, -position, 0);
+            //tf.sizeDelta = new Vector2(tf.sizeDelta.x, height);
+            //
+            //gameObject.position = position;
+            //gameObject.height = height;
         }
 
         /// <summary>
