@@ -52,6 +52,8 @@ public class DclEditorInstaller : MonoInstaller
 
         Container.BindInterfacesAndSelfTo<SetupSceneSystem>().AsSingle();
 
+        Container.BindInterfacesAndSelfTo<FrameTimeSystem>().AsSingle();
+
         Container.BindInterfacesAndSelfTo<CameraSystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<ExposeEntitySystem>().AsSingle();

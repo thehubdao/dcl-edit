@@ -17,18 +17,21 @@ namespace Assets.Scripts.System
         private WorkspaceSaveSystem _workspaceSaveSystem;
         private UnityState _unityState;
         private IPathState _pathState;
+        private FrameTimeSystem _frameTimeSystem;
 
         [Inject]
         private void Construct(
             SetupSceneSystem setupSceneSystem,
             WorkspaceSaveSystem workspaceSaveSystem,
             UnityState unityState,
-            IPathState pathState)
+            IPathState pathState,
+            FrameTimeSystem frameTimeSystem)
         {
             _setupSceneSystem = setupSceneSystem;
             _workspaceSaveSystem = workspaceSaveSystem;
             _unityState = unityState;
             _pathState = pathState;
+            _frameTimeSystem = frameTimeSystem;
         }
 
         void Awake()
@@ -42,6 +45,8 @@ namespace Assets.Scripts.System
         void Start()
         {
             _workspaceSaveSystem.Load(_unityState.dynamicPanelsCanvas);
+
+            _frameTimeSystem.SetApplicationTargetFramerate();
         }
     }
 }
