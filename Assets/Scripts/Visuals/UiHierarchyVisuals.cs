@@ -4,6 +4,7 @@ using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
 using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
+using Assets.Scripts.Visuals.UiBuilder;
 using Assets.Scripts.Visuals.UiHandler;
 using UnityEngine;
 using Zenject;
@@ -15,52 +16,80 @@ namespace Assets.Scripts.Visuals
 #pragma warning disable CS0649 // Warning: Uninitialized filed. Serialized fields will be initialized by Unity
 
         [SerializeField]
-        private GameObject _content;
+        private GameObject content;
 
 #pragma warning restore CS0649
 
+        #region Mark for update
+
+        private bool shouldUpdate = false;
+
+        void LateUpdate()
+        {
+            if (shouldUpdate)
+            {
+                UpdateVisuals();
+                shouldUpdate = false;
+            }
+        }
+
+        private void MarkForUpdate()
+        {
+            shouldUpdate = true;
+        }
+
+        #endregion
+
         // Dependencies
-        private EditorEvents _events;
-        private UiBuilder.Factory _uiBuilderFactory;
-        private SceneDirectoryState _sceneDirectoryState;
-        private CommandSystem _commandSystem;
-        private HierarchyChangeSystem _hierarchyChangeSystem;
+        private EditorEvents events;
+        private UiBuilder.UiBuilder uiBuilder;
+        private SceneDirectoryState sceneDirectoryState;
+        private CommandSystem commandSystem;
+        private HierarchyChangeSystem hierarchyChangeSystem;
+        private ContextMenuSystem contextMenuSystem;
 
         [Inject]
-        private void Construct(EditorEvents events, UiBuilder.Factory uiBuilderFactory, SceneDirectoryState scene, CommandSystem commandSystem, HierarchyChangeSystem hierarchyChangeSystem)
+        private void Construct(
+            EditorEvents events,
+            UiBuilder.UiBuilder.Factory uiBuilderFactory,
+            SceneDirectoryState scene, CommandSystem commandSystem,
+            HierarchyChangeSystem hierarchyChangeSystem,
+            ContextMenuSystem contextMenuSystem)
         {
-            _events = events;
-            _uiBuilderFactory = uiBuilderFactory;
-            _sceneDirectoryState = scene;
-            _commandSystem = commandSystem;
-            _hierarchyChangeSystem = hierarchyChangeSystem;
+            this.events = events;
+            uiBuilder = uiBuilderFactory.Create(content);
+            sceneDirectoryState = scene;
+            this.commandSystem = commandSystem;
+            this.hierarchyChangeSystem = hierarchyChangeSystem;
+            this.contextMenuSystem = contextMenuSystem;
         }
 
         public void SetupSceneEventListeners()
         {
-            _events.onHierarchyChangedEvent += UpdateVisuals;
-            _events.onSelectionChangedEvent += UpdateVisuals;
-            UpdateVisuals();
+            events.onHierarchyChangedEvent += MarkForUpdate;
+            events.onSelectionChangedEvent += MarkForUpdate;
+            MarkForUpdate();
         }
 
         private void UpdateVisuals()
         {
-            var uiBuilder = _uiBuilderFactory.Create();
+            var mainPanelData = new PanelAtom.Data();
 
-            MakeHierarchyItemsRecursive(uiBuilder, 0, _sceneDirectoryState.CurrentScene!.EntitiesInSceneRoot);
 
-            uiBuilder.Spacer(300);
+            MakeHierarchyItemsRecursive(0, sceneDirectoryState.CurrentScene!.EntitiesInSceneRoot, mainPanelData);
 
-            uiBuilder.ClearAndMake(_content);
+            mainPanelData.AddSpacer(300);
+
+            uiBuilder.Update(mainPanelData);
         }
 
-        private void MakeHierarchyItemsRecursive(UiBuilder uiBuilder, int level, IEnumerable<DclEntity> entities)
+        private void MakeHierarchyItemsRecursive(int level, IEnumerable<DclEntity> entities, PanelAtom.Data mainPanelData)
         {
             foreach (var entity in entities)
             {
-                var isPrimarySelection = _sceneDirectoryState.CurrentScene!.SelectionState.PrimarySelectedEntity == entity;
+                var isPrimarySelection = sceneDirectoryState.CurrentScene!.SelectionState.PrimarySelectedEntity == entity;
 
-                var isSecondarySelection = _sceneDirectoryState.CurrentScene!.SelectionState.SecondarySelectedEntities.Contains(entity);
+                var isSecondarySelection = sceneDirectoryState.CurrentScene!.SelectionState.SecondarySelectedEntities.Contains(entity);
 
                 var style =
                     isPrimarySelection ?
@@ -69,17 +98,36 @@ namespace Assets.Scripts.Visuals
                             TextHandler.TextStyle.SecondarySelection :
                             TextHandler.TextStyle.Normal;
 
-                var isExpanded = _hierarchyChangeSystem.IsExpanded(entity);
+                var isExpanded = hierarchyChangeSystem.IsExpanded(entity);
 
-                uiBuilder.HierarchyItem(entity.ShownName, level, entity.Children.Any(), isExpanded, style, new HierarchyItemHandler.UiHierarchyItemActions
-                {
-                    OnArrowClick = () => { _hierarchyChangeSystem.ClickedOnEntityExpandArrow(entity); },
-                    OnNameClick = () => { _hierarchyChangeSystem.ClickedOnEntityInHierarchy(entity); }
-                });
+                mainPanelData.AddHierarchyItem(entity.ShownName, level, entity.Children.Any(), isExpanded, style, new HierarchyItemHandler.UiHierarchyItemActions
+                    {
+                        onArrowClick = () => { hierarchyChangeSystem.ClickedOnEntityExpandArrow(entity); },
+                        onNameClick = () => { hierarchyChangeSystem.ClickedOnEntityInHierarchy(entity); }
+                    },
+                    clickPosition =>
+                    {
+                        contextMenuSystem.OpenMenu(clickPosition, new List<ContextMenuItem>
+                        {
+                            new ContextSubmenuItem("Add entity...", new List<ContextMenuItem>
+                            {
+                                new ContextMenuTextItem("Empty Entity", () => Debug.Log("Add empty Entity")),
+                                new ContextMenuSpacerItem(),
+                                new ContextMenuTextItem("Gltf Entity", () => Debug.Log("Add Gltf Entity")),
+                                new ContextMenuSpacerItem(),
+                                new ContextMenuTextItem("Cube", () => Debug.Log("Add empty ")),
+                                new ContextMenuTextItem("Sphere", () => Debug.Log("Add empty ")),
+                                new ContextMenuTextItem("Cylinder", () => Debug.Log("Add empty ")),
+                                new ContextMenuTextItem("Cone", () => Debug.Log("Add empty ")),
+                            }),
+                            new ContextMenuTextItem("Duplicate", () => Debug.Log("Duplicate entity")),
+                            new ContextMenuTextItem("Delete", () => Debug.Log("Delete entity"))
+                        });
+                    });
 
                 if (isExpanded)
                 {
-                    MakeHierarchyItemsRecursive(uiBuilder, level + 1, entity.Children);
+                    MakeHierarchyItemsRecursive(level + 1, entity.Children, mainPanelData);
                 }
             }
         }

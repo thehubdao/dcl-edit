@@ -4,6 +4,7 @@ using Assets.Scripts.Interaction;
 using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
 using Assets.Scripts.Visuals;
+using Assets.Scripts.Visuals.UiBuilder;
 using UnityEngine;
 using Zenject;
 
@@ -75,7 +76,7 @@ public class DclEditorInstaller : MonoInstaller
 
         Container.BindInterfacesAndSelfTo<InputHelper>().AsSingle();
 
-        Container.BindFactory<UiBuilder, UiBuilder.Factory>().AsSingle();
+        Container.BindFactory<GameObject, UiBuilder, UiBuilder.Factory>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<ProjectState>().AsSingle();
 
@@ -108,5 +109,7 @@ public class DclEditorInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<ContextMenuSystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<ContextMenuState>().AsSingle();
+        
+        Container.BindInterfacesAndSelfTo<NumberInputSystem>().AsSingle();
     }
 }
