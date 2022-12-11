@@ -1,3 +1,4 @@
+using Assets.Scripts.Visuals.UiHandler;
 using JetBrains.Annotations;
 
 namespace Assets.Scripts.Visuals.UiBuilder
@@ -11,8 +12,6 @@ namespace Assets.Scripts.Visuals.UiBuilder
         protected override AtomGameObject MakeNewAtomGameObject()
         {
             var atomObject = uiBuilder.GetAtomObjectFromPool(UiBuilder.AtomType.PanelWithBorder);
-            atomObject.height = 40;
-            atomObject.position = -1;
             return atomObject;
         }
 
@@ -25,10 +24,11 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
     public static class PanelWithBorderPanelHelper
     {
-        public static PanelWithBorderAtom.Data AddPanelWithBorder(this PanelAtom.Data panelAtomData, [CanBeNull] AtomDataList childDates = null)
+        public static PanelWithBorderAtom.Data AddPanelWithBorder(this PanelAtom.Data panelAtomData, PanelHandler.LayoutDirection layoutDirection = PanelHandler.LayoutDirection.Vertical, [CanBeNull] AtomDataList childDates = null)
         {
             var data = new PanelWithBorderAtom.Data
             {
+                layoutDirection = layoutDirection,
                 childDates = childDates ?? new AtomDataList()
             };
 

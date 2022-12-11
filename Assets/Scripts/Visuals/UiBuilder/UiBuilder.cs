@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Assets.Scripts.EditorState;
 using JetBrains.Annotations;
 using UnityEngine;
+using UnityEngine.UI;
 using Zenject;
 using Object = UnityEngine.Object;
 
@@ -58,7 +59,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
         private UnityState unityState;
 
         [Inject]
-        private void Constructor(UnityState unityState)
+        public void Constructor(UnityState unityState)
         {
             this.unityState = unityState;
         }
@@ -85,7 +86,8 @@ namespace Assets.Scripts.Visuals.UiBuilder
                 }
             }
 
-            return new AtomGameObject {atomType = type, gameObject = InstantiateObject(type)};
+            var instantiatedObject = InstantiateObject(type);
+            return new AtomGameObject {atomType = type, gameObject = instantiatedObject};
         }
 
         private GameObject InstantiateObject(AtomType type)
@@ -117,6 +119,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
         {
             var spacer = new GameObject("Spacer");
             spacer.AddComponent<RectTransform>();
+            spacer.AddComponent<LayoutElement>();
             return spacer;
         }
 
@@ -144,15 +147,19 @@ namespace Assets.Scripts.Visuals.UiBuilder
         // ----------------------------
 
         private PanelAtom currentRootAtom = null;
-        private GameObject parentObject;
+        public GameObject parentObject;
 
-        public int height => currentRootAtom.gameObject.height;
+        public int height => Mathf.FloorToInt(parentObject.GetComponent<RectTransform>().sizeDelta.y);
 
         public UiBuilder(GameObject parent)
         {
             parentObject = parent;
         }
 
+        public static PanelAtom.Data NewPanelData()
+        {
+            return new PanelAtom.Data();
+        }
 
         public void Update(PanelAtom.Data newData)
         {
@@ -161,11 +168,8 @@ namespace Assets.Scripts.Visuals.UiBuilder
             // Create new root atom if not exists
             currentRootAtom ??= new PanelAtom(this);
 
-            currentRootAtom.Update(newData, 0);
+            currentRootAtom.Update(newData);
             currentRootAtom.gameObject.gameObject.transform.SetParent(parentObject.transform, false);
-
-            var parentTransform = parentObject.GetComponent<RectTransform>();
-            parentTransform.sizeDelta = new Vector2(parentTransform.sizeDelta.x, currentRootAtom.gameObject.height);
         }
 
         public class Factory : PlaceholderFactory<GameObject, UiBuilder>
