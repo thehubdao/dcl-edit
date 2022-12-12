@@ -10,23 +10,23 @@ namespace Assets.Scripts.Interaction
 {
     public class GeneralInputInteraction : MonoBehaviour
     {
-        private InputSystemAsset _inputSystemAsset;
+        private InputSystemAsset inputSystemAsset;
 
         // Dependencies
-        private ISceneSaveSystem _sceneSaveSystem;
-        private ICommandSystem _commandSystem;
-        private InputState _inputState;
-        private Interface3DState _interface3DState;
-        private WorkspaceSaveSystem _workspaceSaveSystem;
-        private GizmoState _gizmoState;
-        private UnityState _unityState;
-        private InputHelper _inputHelper;
-        private EditorState.SceneDirectoryState _sceneDirectoryState;
-        private CameraState _cameraState;
-        private EditorEvents _editorEvents;
-        private TypeScriptGenerationSystem _typeScriptGenerationSystem;
-        private EntitySelectSystem _entitySelectSystem;
-        private ContextMenuSystem _contextMenuSystem;
+        private ISceneSaveSystem sceneSaveSystem;
+        private ICommandSystem commandSystem;
+        private InputState inputState;
+        private Interface3DState interface3DState;
+        private WorkspaceSaveSystem workspaceSaveSystem;
+        private GizmoState gizmoState;
+        private UnityState unityState;
+        private InputHelper inputHelper;
+        private EditorState.SceneDirectoryState sceneDirectoryState;
+        private CameraState cameraState;
+        private EditorEvents editorEvents;
+        private TypeScriptGenerationSystem typeScriptGenerationSystem;
+        private EntitySelectSystem entitySelectSystem;
+        private ContextMenuSystem contextMenuSystem;
 
         [Inject]
         private void Construct(
@@ -45,29 +45,29 @@ namespace Assets.Scripts.Interaction
             EntitySelectSystem entitySelectSystem,
             ContextMenuSystem contextMenuSystem)
         {
-            _sceneSaveSystem = sceneSaveSystem;
-            _commandSystem = commandSystem;
-            _inputState = inputState;
-            _interface3DState = interface3DState;
-            _workspaceSaveSystem = workspaceSaveSystem;
-            _gizmoState = gizmoState;
-            _unityState = unityState;
-            _inputHelper = inputHelper;
-            _sceneDirectoryState = sceneDirectoryState;
-            _cameraState = cameraState;
-            _editorEvents = editorEvents;
-            _typeScriptGenerationSystem = typeScriptGenerationSystem;
-            _entitySelectSystem = entitySelectSystem;
-            _contextMenuSystem = contextMenuSystem;
+            this.sceneSaveSystem = this.sceneSaveSystem;
+            this.commandSystem = commandSystem;
+            this.inputState = inputState;
+            this.interface3DState = interface3DState;
+            this.workspaceSaveSystem = workspaceSaveSystem;
+            this.gizmoState = gizmoState;
+            this.unityState = unityState;
+            this.inputHelper = inputHelper;
+            this.sceneDirectoryState = sceneDirectoryState;
+            this.cameraState = cameraState;
+            this.editorEvents = editorEvents;
+            this.typeScriptGenerationSystem = typeScriptGenerationSystem;
+            this.entitySelectSystem = entitySelectSystem;
+            this.contextMenuSystem = contextMenuSystem;
         }
 
 
         void Awake()
         {
-            _inputSystemAsset = new InputSystemAsset();
-            _inputSystemAsset.CameraMovement.Enable();
-            _inputSystemAsset.Modifier.Enable();
-            _inputSystemAsset.Hotkeys.Enable();
+            inputSystemAsset = new InputSystemAsset();
+            inputSystemAsset.CameraMovement.Enable();
+            inputSystemAsset.Modifier.Enable();
+            inputSystemAsset.Hotkeys.Enable();
         }
 
         // Update is called once per frame
@@ -77,7 +77,7 @@ namespace Assets.Scripts.Interaction
 
             InvokeMouseButtonDownEvent();
 
-            switch (_inputState.InState)
+            switch (inputState.InState)
             {
                 case InputState.InStateType.NoInput:
                     UpdateNoInput();
@@ -105,7 +105,7 @@ namespace Assets.Scripts.Interaction
                     UpdateHoldingGizmoTool();
                     break;
                 default:
-                    _inputState.InState = InputState.InStateType.NoInput;
+                    inputState.InState = InputState.InStateType.NoInput;
                     break;
             }
         }
@@ -114,36 +114,36 @@ namespace Assets.Scripts.Interaction
         {
             if (Input.GetMouseButtonDown(0))
             {
-                _editorEvents.InvokeOnMouseButtonDownEvent(0);
+                editorEvents.InvokeOnMouseButtonDownEvent(0);
             }
             if (Input.GetMouseButtonDown(1))
             {
-                _editorEvents.InvokeOnMouseButtonDownEvent(1);
+                editorEvents.InvokeOnMouseButtonDownEvent(1);
             }
         }
 
         private void UpdateNoInput()
         {
-            var pressingAlt = _inputSystemAsset.Modifier.Alt.IsPressed();
-            var pressingControl = _inputSystemAsset.Modifier.Ctrl.IsPressed();
-            var pressingShift = _inputSystemAsset.Modifier.Shift.IsPressed();
+            var pressingAlt = inputSystemAsset.Modifier.Alt.IsPressed();
+            var pressingControl = inputSystemAsset.Modifier.Ctrl.IsPressed();
+            var pressingShift = inputSystemAsset.Modifier.Shift.IsPressed();
 
-            var isSprinting = _inputSystemAsset.CameraMovement.Fast.IsPressed();
+            var isSprinting = inputSystemAsset.CameraMovement.Fast.IsPressed();
 
             // Figure out where the mouse points at
             Ray mouseRay;
             bool isMouseOverGameWindow;
             bool isMouseOverContextMenu;
             {
-                var mousePosViewport = _inputHelper.GetMousePositionInScenePanel();
+                var mousePosViewport = inputHelper.GetMousePositionInScenePanel();
                 // Get the ray from the Camera, that corresponds to the mouse position in the panel
-                mouseRay = _unityState.MainCamera.ViewportPointToRay(mousePosViewport);
+                mouseRay = unityState.MainCamera.ViewportPointToRay(mousePosViewport);
                 // Figure out, if the mouse is over the Game window
                 isMouseOverGameWindow = mousePosViewport.x >= 0 &&
                                         mousePosViewport.x < 1 &&
                                         mousePosViewport.y >= 0 &&
                                         mousePosViewport.y < 1;
-                isMouseOverContextMenu = _contextMenuSystem.IsMouseOverMenu();
+                isMouseOverContextMenu = contextMenuSystem.IsMouseOverMenu();
             }
 
 
@@ -163,29 +163,29 @@ namespace Assets.Scripts.Interaction
                 if (Physics.Raycast(mouseRay, out RaycastHit hitInfoGizmos, 10000, LayerMask.GetMask("Gizmos")))
                 {
                     mousePositionIn3DView = hitInfoGizmos.point;
-                    _interface3DState.CurrentlyHoveredObject = hitInfoGizmos.transform.gameObject;
-                    _interface3DState.CurrentlyHoveredObjectType =
+                    interface3DState.CurrentlyHoveredObject = hitInfoGizmos.transform.gameObject;
+                    interface3DState.CurrentlyHoveredObjectType =
                         Interface3DState.HoveredObjectType.Gizmo;
                 }
                 // Secondly check, if mouse is hovering over a Entity
                 else if (Physics.Raycast(mouseRay, out RaycastHit hitInfoEntity, 10000, LayerMask.GetMask("Entity Click"))) // mouse click layer
                 {
                     mousePositionIn3DView = hitInfoEntity.point;
-                    _interface3DState.CurrentlyHoveredObject = hitInfoEntity.transform.gameObject;
-                    _interface3DState.CurrentlyHoveredObjectType =
+                    interface3DState.CurrentlyHoveredObject = hitInfoEntity.transform.gameObject;
+                    interface3DState.CurrentlyHoveredObjectType =
                         Interface3DState.HoveredObjectType.Entity;
                 }
                 else
                 {
-                    _interface3DState.CurrentlyHoveredObject = null;
-                    _interface3DState.CurrentlyHoveredObjectType =
+                    interface3DState.CurrentlyHoveredObject = null;
+                    interface3DState.CurrentlyHoveredObjectType =
                         Interface3DState.HoveredObjectType.None;
                 }
             }
             else
             {
-                _interface3DState.CurrentlyHoveredObject = null;
-                _interface3DState.CurrentlyHoveredObjectType =
+                interface3DState.CurrentlyHoveredObject = null;
+                interface3DState.CurrentlyHoveredObjectType =
                     Interface3DState.HoveredObjectType.None;
             }
 
@@ -206,23 +206,23 @@ namespace Assets.Scripts.Interaction
             }
 
             // When pressing(down) Left mouse button, select the hovered entity
-            if (_inputHelper.IsLeftMouseButtonDown() && !pressingAlt && isMouseIn3DView)
+            if (inputHelper.IsLeftMouseButtonDown() && !pressingAlt && isMouseIn3DView)
             {
-                switch (_interface3DState.CurrentlyHoveredObjectType)
+                switch (interface3DState.CurrentlyHoveredObjectType)
                 {
                     case Interface3DState.HoveredObjectType.Gizmo:
                     {
-                        _inputState.InState = InputState.InStateType.HoldingGizmoTool;
+                        inputState.InState = InputState.InStateType.HoldingGizmoTool;
 
                         if (mousePositionIn3DView != null)
                         {
-                            GizmoDirection gizmoDir = _interface3DState.CurrentlyHoveredObject.GetComponent<GizmoDirection>();
+                            GizmoDirection gizmoDir = interface3DState.CurrentlyHoveredObject.GetComponent<GizmoDirection>();
                             if (gizmoDir == null) break;
                             Vector3 localGizmoDir = gizmoDir.GetVector();
 
-                            var entity = _sceneDirectoryState.CurrentScene?.SelectionState.PrimarySelectedEntity.GetTransformComponent();
+                            var entity = sceneDirectoryState.CurrentScene?.SelectionState.PrimarySelectedEntity.GetTransformComponent();
 
-                            GizmoState.Mode gizmoMode = _gizmoState.CurrentMode;
+                            GizmoState.Mode gizmoMode = gizmoState.CurrentMode;
 
                             // Two special cases when in translation mode:
                             // Dragging on planes is handled differently from the rest of the gizmo operations.
@@ -231,16 +231,16 @@ namespace Assets.Scripts.Interaction
                                 // Dragging the center block of the translation gizmo (all three axis active in GizmoDirection component)
                                 if (localGizmoDir == Vector3.one)
                                 {
-                                    Vector3 planeNormal = _cameraState.Position - entity.GlobalPosition;
+                                    Vector3 planeNormal = cameraState.Position - entity.GlobalPosition;
                                     Plane p = new Plane(planeNormal, entity.GlobalPosition);
 
                                     // Calculate initial mouse offset to selected object
-                                    Ray r = _unityState.MainCamera.ViewportPointToRay(_inputHelper.GetMousePositionInScenePanel());
+                                    Ray r = unityState.MainCamera.ViewportPointToRay(inputHelper.GetMousePositionInScenePanel());
                                     if (p.Raycast(r, out float enterDistance))
                                     {
                                         Vector3 hitPoint = r.GetPoint(enterDistance);
                                         Vector3 dirToHitPoint = hitPoint - entity.GlobalPosition;
-                                        _inputState.CurrentGizmoData = new InputState.GizmoData(p, dirToHitPoint);
+                                        inputState.CurrentGizmoData = new InputState.GizmoData(p, dirToHitPoint);
                                     }
 
                                     break;
@@ -258,12 +258,12 @@ namespace Assets.Scripts.Interaction
                                     Plane p = new Plane(planeNormal, entity.GlobalPosition);
 
                                     // Calculate initial mouse offset to selected object
-                                    Ray r = _unityState.MainCamera.ViewportPointToRay(_inputHelper.GetMousePositionInScenePanel());
+                                    Ray r = unityState.MainCamera.ViewportPointToRay(inputHelper.GetMousePositionInScenePanel());
                                     if (p.Raycast(r, out float enterDistance))
                                     {
                                         Vector3 hitPoint = r.GetPoint(enterDistance);
                                         Vector3 dirToHitPoint = hitPoint - entity.GlobalPosition;
-                                        _inputState.CurrentGizmoData = new InputState.GizmoData(p, dirToHitPoint);
+                                        inputState.CurrentGizmoData = new InputState.GizmoData(p, dirToHitPoint);
                                     }
 
                                     break;
@@ -301,7 +301,7 @@ namespace Assets.Scripts.Interaction
 
                             // Then make sure that dirToCamera is orthogonal to gizmoAxis. This orthogonal dirToCamera vector
                             // now becomes the normal of the plane which does the mouse collision.
-                            Vector3 dirToCamera = _cameraState.Position - entity.GlobalPosition;
+                            Vector3 dirToCamera = cameraState.Position - entity.GlobalPosition;
                             Vector3.OrthoNormalize(ref gizmoAxis, ref dirToCamera);
                             Vector3 normal = dirToCamera;
 
@@ -317,7 +317,7 @@ namespace Assets.Scripts.Interaction
                             }
 
                             // Calculate initial mouse offset to selected object
-                            Ray ray = _unityState.MainCamera.ViewportPointToRay(_inputHelper.GetMousePositionInScenePanel());
+                            Ray ray = unityState.MainCamera.ViewportPointToRay(inputHelper.GetMousePositionInScenePanel());
 
                             if (plane.Raycast(ray, out float enter))
                             {
@@ -325,7 +325,7 @@ namespace Assets.Scripts.Interaction
                                 Vector3 dirToHitPoint = hitPoint - entity.GlobalPosition;
 
                                 // Pass data about the current gizmo operation to the update method.
-                                _inputState.CurrentGizmoData = new InputState.GizmoData(plane, dirToHitPoint, false, gizmoAxis.normalized, localGizmoDir);
+                                inputState.CurrentGizmoData = new InputState.GizmoData(plane, dirToHitPoint, false, gizmoAxis.normalized, localGizmoDir);
                             }
                         }
 
@@ -334,7 +334,7 @@ namespace Assets.Scripts.Interaction
                     case Interface3DState.HoveredObjectType.Entity:
                     {
                         // select entity
-                        var selectInteraction = _interface3DState.CurrentlyHoveredObject?
+                        var selectInteraction = interface3DState.CurrentlyHoveredObject?
                             .GetComponentInParent<EntitySelectInteraction>();
 
                         if (selectInteraction != null)
@@ -346,7 +346,7 @@ namespace Assets.Scripts.Interaction
                     }
                     case Interface3DState.HoveredObjectType.None:
                     {
-                        _entitySelectSystem.DeselectAll();
+                        entitySelectSystem.DeselectAll();
                         break;
                     }
                     default: // ignore
@@ -355,32 +355,32 @@ namespace Assets.Scripts.Interaction
             }
 
             // When pressing Right mouse button (without alt), switch to Camera WASD moving state
-            if (_inputHelper.IsRightMouseButtonPressed() && !pressingAlt && isMouseIn3DView)
+            if (inputHelper.IsRightMouseButtonPressed() && !pressingAlt && isMouseIn3DView)
             {
-                _inputState.InState = InputState.InStateType.WasdMovement;
-                _inputHelper.HideMouse();
+                inputState.InState = InputState.InStateType.WasdMovement;
+                inputHelper.HideMouse();
             }
 
             // When pressing alt and Right mouse button, switch to Mouse Zooming state
-            if (_inputHelper.IsRightMouseButtonPressed() && pressingAlt && isMouseIn3DView)
+            if (inputHelper.IsRightMouseButtonPressed() && pressingAlt && isMouseIn3DView)
             {
-                _inputState.InState = InputState.InStateType.MouseZoom;
-                _inputHelper.HideMouse();
+                inputState.InState = InputState.InStateType.MouseZoom;
+                inputHelper.HideMouse();
             }
 
             // When pressing ald and Left mouse button, switch to Rotate around point state
-            if (_inputHelper.IsLeftMouseButtonPressed() && pressingAlt && isMouseIn3DView)
+            if (inputHelper.IsLeftMouseButtonPressed() && pressingAlt && isMouseIn3DView)
             {
-                _inputState.RotateCameraAroundPoint = mousePositionIn3DView;
-                _inputState.InState = InputState.InStateType.RotateAroundPoint;
-                _inputHelper.HideMouse();
+                inputState.RotateCameraAroundPoint = mousePositionIn3DView;
+                inputState.InState = InputState.InStateType.RotateAroundPoint;
+                inputHelper.HideMouse();
             }
 
             // When pressing Middle mouse button, switch to "Camera slide moving state"
-            if (_inputHelper.IsMiddleMouseButtonPressed() && isMouseIn3DView)
+            if (inputHelper.IsMiddleMouseButtonPressed() && isMouseIn3DView)
             {
-                _inputState.InState = InputState.InStateType.SlideSideways;
-                _inputHelper.HideMouse();
+                inputState.InState = InputState.InStateType.SlideSideways;
+                inputHelper.HideMouse();
             }
 
             // When scrolling Mouse wheel, zoom in or out
@@ -390,121 +390,121 @@ namespace Assets.Scripts.Interaction
 
                 if (Mathf.Abs(mouseScroll) > 0)
                 {
-                    _cameraState.MoveStep(new Vector3(0, 0, mouseScroll), isSprinting);
+                    cameraState.MoveStep(new Vector3(0, 0, mouseScroll), isSprinting);
                 }
             }
 
             // When pressing the focus hotkey and having a selected primary entity, switch to Focus Transition state
-            if (_inputSystemAsset.CameraMovement.Focus.triggered && _sceneDirectoryState.CurrentScene?.SelectionState.PrimarySelectedEntity != null)
+            if (inputSystemAsset.CameraMovement.Focus.triggered && sceneDirectoryState.CurrentScene?.SelectionState.PrimarySelectedEntity != null)
             {
                 // Fetch position of selected object
-                var selectedEntity = _sceneDirectoryState.CurrentScene?.SelectionState.PrimarySelectedEntity;
+                var selectedEntity = sceneDirectoryState.CurrentScene?.SelectionState.PrimarySelectedEntity;
                 var entityPos = selectedEntity.GetTransformComponent().GlobalPosition;
 
                 // Calculate an offset position so that the camera keeps its rotation and looks at the selected entity
-                Vector3 cameraForward = _cameraState.Forward;
+                Vector3 cameraForward = cameraState.Forward;
                 Vector3 destination = entityPos - cameraForward * 10;
-                _inputState.FocusTransitionDestination = destination;
+                inputState.FocusTransitionDestination = destination;
 
-                _inputState.InState = InputState.InStateType.FocusTransition;
+                inputState.InState = InputState.InStateType.FocusTransition;
             }
 
             // When pressing the save hotkey, save the scene and workspace layout
-            if (_inputSystemAsset.Hotkeys.Save.triggered)
+            if (inputSystemAsset.Hotkeys.Save.triggered)
             {
-                _sceneSaveSystem.Save(_sceneDirectoryState);
-                _workspaceSaveSystem.Save(_unityState.dynamicPanelsCanvas);
-                _typeScriptGenerationSystem.GenerateTypeScript();
+                sceneSaveSystem.Save(sceneDirectoryState);
+                workspaceSaveSystem.Save(unityState.dynamicPanelsCanvas);
+                typeScriptGenerationSystem.GenerateTypeScript();
             }
 
             // When pressing Translate hotkey, enter translation gizmo mode
-            if (_inputSystemAsset.Hotkeys.Translate.triggered)
+            if (inputSystemAsset.Hotkeys.Translate.triggered)
             {
-                _gizmoState.CurrentMode = GizmoState.Mode.Translate;
+                gizmoState.CurrentMode = GizmoState.Mode.Translate;
             }
 
             // When pressing Rotate hotkey, enter rotation gizmo mode
-            if (_inputSystemAsset.Hotkeys.Rotate.triggered)
+            if (inputSystemAsset.Hotkeys.Rotate.triggered)
             {
-                _gizmoState.CurrentMode = GizmoState.Mode.Rotate;
+                gizmoState.CurrentMode = GizmoState.Mode.Rotate;
             }
 
             // When pressing Scale hotkey, enter rotation gizmo mode
-            if (_inputSystemAsset.Hotkeys.Scale.triggered)
+            if (inputSystemAsset.Hotkeys.Scale.triggered)
             {
-                _gizmoState.CurrentMode = GizmoState.Mode.Scale;
+                gizmoState.CurrentMode = GizmoState.Mode.Scale;
             }
         }
 
         private void UpdateWasdMovement()
         {
-            var isSprinting = _inputSystemAsset.CameraMovement.Fast.IsPressed();
+            var isSprinting = inputSystemAsset.CameraMovement.Fast.IsPressed();
 
             // Rotate camera with mouse movement
-            _cameraState.RotateStep(_inputHelper.GetMouseMovement());
+            cameraState.RotateStep(inputHelper.GetMouseMovement());
 
             // Move camera with WASD keys. To go faster, hold shift
-            _cameraState.MoveContinuously(
+            cameraState.MoveContinuously(
                 new Vector3(
-                    _inputSystemAsset.CameraMovement.LeftRight.ReadValue<float>(),
-                    _inputSystemAsset.CameraMovement.UpDown.ReadValue<float>(),
-                    _inputSystemAsset.CameraMovement.ForwardBackward.ReadValue<float>()),
+                    inputSystemAsset.CameraMovement.LeftRight.ReadValue<float>(),
+                    inputSystemAsset.CameraMovement.UpDown.ReadValue<float>(),
+                    inputSystemAsset.CameraMovement.ForwardBackward.ReadValue<float>()),
                 isSprinting);
 
             // When releasing Right mouse button, switch to "No input state"
-            if (!_inputHelper.IsRightMouseButtonPressed())
+            if (!inputHelper.IsRightMouseButtonPressed())
             {
-                _inputState.InState = InputState.InStateType.NoInput;
-                _inputHelper.ShowMouse();
+                inputState.InState = InputState.InStateType.NoInput;
+                inputHelper.ShowMouse();
             }
         }
 
         private void UpdateMouseZoom()
         {
-            var isSprinting = _inputSystemAsset.CameraMovement.Fast.IsPressed();
-            var mouseMovement = _inputHelper.GetMouseMovement();
+            var isSprinting = inputSystemAsset.CameraMovement.Fast.IsPressed();
+            var mouseMovement = inputHelper.GetMouseMovement();
             var targetMovement = mouseMovement.x + mouseMovement.y;
 
-            _cameraState.MoveStep(Vector3.forward * targetMovement * 0.03f, isSprinting);
+            cameraState.MoveStep(Vector3.forward * targetMovement * 0.03f, isSprinting);
 
 
             // When releasing Right mouse button, switch to "No input state"
-            if (!_inputHelper.IsRightMouseButtonPressed())
+            if (!inputHelper.IsRightMouseButtonPressed())
             {
-                _inputState.InState = InputState.InStateType.NoInput;
-                _inputHelper.ShowMouse();
+                inputState.InState = InputState.InStateType.NoInput;
+                inputHelper.ShowMouse();
             }
         }
 
         private void UpdateRotateAroundPoint()
         {
             // Rotate camera around point with mouse movement
-            if (_inputState.RotateCameraAroundPoint != null)
-                _cameraState.RotateAroundPointStep(
-                    _inputState.RotateCameraAroundPoint.Value,
-                    _inputHelper.GetMouseMovement());
+            if (inputState.RotateCameraAroundPoint != null)
+                cameraState.RotateAroundPointStep(
+                    inputState.RotateCameraAroundPoint.Value,
+                    inputHelper.GetMouseMovement());
 
             // When releasing Left mouse button, switch to "No input state"
-            if (!_inputHelper.IsLeftMouseButtonPressed())
+            if (!inputHelper.IsLeftMouseButtonPressed())
             {
-                _inputState.InState = InputState.InStateType.NoInput;
-                _inputHelper.ShowMouse();
+                inputState.InState = InputState.InStateType.NoInput;
+                inputHelper.ShowMouse();
             }
         }
 
         private void UpdateSlideSideways()
         {
-            var isSprinting = _inputSystemAsset.CameraMovement.Fast.IsPressed();
+            var isSprinting = inputSystemAsset.CameraMovement.Fast.IsPressed();
             // Move camera sideways with mouse movement
-            var mouseMovement = _inputHelper.GetMouseMovement();
+            var mouseMovement = inputHelper.GetMouseMovement();
             var targetMovement = new Vector3(mouseMovement.x, mouseMovement.y, 0);
-            _cameraState.MoveStep(targetMovement * -0.03f, isSprinting);
+            cameraState.MoveStep(targetMovement * -0.03f, isSprinting);
 
             // When releasing Middle mouse button, switch to "No input state"
-            if (!_inputHelper.IsMiddleMouseButtonPressed())
+            if (!inputHelper.IsMiddleMouseButtonPressed())
             {
-                _inputState.InState = InputState.InStateType.NoInput;
-                _inputHelper.ShowMouse();
+                inputState.InState = InputState.InStateType.NoInput;
+                inputHelper.ShowMouse();
             }
         }
 
@@ -514,15 +514,15 @@ namespace Assets.Scripts.Interaction
             UpdateNoInput();
 
             // Check if the state changed because of a user interaction.
-            if (_inputState.InState != InputState.InStateType.FocusTransition)
+            if (inputState.InState != InputState.InStateType.FocusTransition)
             {
                 return;
             }
 
 
-            if (_cameraState.MoveTowards((Vector3)_inputState.FocusTransitionDestination, true))
+            if (cameraState.MoveTowards((Vector3)inputState.FocusTransitionDestination, true))
             {
-                _inputState.InState = InputState.InStateType.NoInput;
+                inputState.InState = InputState.InStateType.NoInput;
             }
         }
 
@@ -533,31 +533,31 @@ namespace Assets.Scripts.Interaction
 
         private void UpdateHoldingGizmoTool()
         {
-            GizmoState.Mode mode = _gizmoState.CurrentMode;
-            DclEntity selectedEntity = _sceneDirectoryState.CurrentScene?.SelectionState.PrimarySelectedEntity;
+            GizmoState.Mode mode = gizmoState.CurrentMode;
+            DclEntity selectedEntity = sceneDirectoryState.CurrentScene?.SelectionState.PrimarySelectedEntity;
             DclTransformComponent trans = selectedEntity.GetTransformComponent();
 
             // When releasing LMB, stop holding gizmo
-            if (!_inputHelper.IsLeftMouseButtonPressed())
+            if (!inputHelper.IsLeftMouseButtonPressed())
             {
-                _inputState.InState = InputState.InStateType.NoInput;
-                _inputState.CurrentGizmoData = null;
+                inputState.InState = InputState.InStateType.NoInput;
+                inputState.CurrentGizmoData = null;
 
                 switch (mode)
                 {
                     case GizmoState.Mode.Translate:
-                        _commandSystem.ExecuteCommand(
-                            _commandSystem.CommandFactory.CreateTranslateTransform(selectedEntity.Id, trans.Position.FixedValue, trans.Position.Value)
+                        commandSystem.ExecuteCommand(
+                            commandSystem.CommandFactory.CreateTranslateTransform(selectedEntity.Id, trans.Position.FixedValue, trans.Position.Value)
                         );
                         break;
                     case GizmoState.Mode.Rotate:
-                        _commandSystem.ExecuteCommand(
-                            _commandSystem.CommandFactory.CreateRotateTransform(selectedEntity.Id, trans.Rotation.FixedValue, trans.Rotation.Value)
+                        commandSystem.ExecuteCommand(
+                            commandSystem.CommandFactory.CreateRotateTransform(selectedEntity.Id, trans.Rotation.FixedValue, trans.Rotation.Value)
                         );
                         break;
                     case GizmoState.Mode.Scale:
-                        _commandSystem.ExecuteCommand(
-                            _commandSystem.CommandFactory.CreateScaleTransform(selectedEntity.Id, trans.Scale.FixedValue, trans.Scale.Value)
+                        commandSystem.ExecuteCommand(
+                            commandSystem.CommandFactory.CreateScaleTransform(selectedEntity.Id, trans.Scale.FixedValue, trans.Scale.Value)
                         );
                         break;
                 }
@@ -565,27 +565,27 @@ namespace Assets.Scripts.Interaction
                 return;
             }
 
-            if (_inputState.CurrentGizmoData != null)
+            if (inputState.CurrentGizmoData != null)
             {
-                InputState.GizmoData gizmoData = (InputState.GizmoData)_inputState.CurrentGizmoData;
+                InputState.GizmoData gizmoData = (InputState.GizmoData)inputState.CurrentGizmoData;
 
                 // Find mouse position in world on previously calculated plane
-                Ray ray = _unityState.MainCamera.ViewportPointToRay(_inputHelper.GetMousePositionInScenePanel());
+                Ray ray = unityState.MainCamera.ViewportPointToRay(inputHelper.GetMousePositionInScenePanel());
                 if (gizmoData.plane.Raycast(ray, out float enter))
                 {
                     // Ignore mouse positions that are too far away
-                    if (enter >= _unityState.MainCamera.farClipPlane) return;
+                    if (enter >= unityState.MainCamera.farClipPlane) return;
 
                     Vector3 hitPoint = ray.GetPoint(enter);
                     Vector3 dirToHitPoint = hitPoint - trans.GlobalPosition;
 
                     // Handle movement on planes separately:
-                    if (gizmoData.movingOnPlane && _gizmoState.CurrentMode == GizmoState.Mode.Translate)
+                    if (gizmoData.movingOnPlane && gizmoState.CurrentMode == GizmoState.Mode.Translate)
                     {
                         Vector3 globalPosition = gizmoData.plane.ClosestPointOnPlane(hitPoint - gizmoData.initialMouseOffset);
                         Vector3? localPosition = selectedEntity.Parent?.GetTransformComponent().InverseTransformPoint(globalPosition);
                         trans.Position.SetFloatingValue(localPosition ?? globalPosition);
-                        _editorEvents.InvokeSelectionChangedEvent();
+                        editorEvents.InvokeSelectionChangedEvent();
                         return;
                     }
 
@@ -595,7 +595,7 @@ namespace Assets.Scripts.Interaction
                     Vector3 hitPointOnAxis = Vector3.Project(dirToHitPoint - gizmoData.initialMouseOffset, (Vector3)gizmoData.dragAxis);
 
 
-                    switch (_gizmoState.CurrentMode)
+                    switch (gizmoState.CurrentMode)
                     {
                         case GizmoState.Mode.Translate:
                             Vector3 globalPosition = trans.GlobalPosition + hitPointOnAxis;
@@ -636,21 +636,21 @@ namespace Assets.Scripts.Interaction
                             break;
                     }
 
-                    _editorEvents.InvokeSelectionChangedEvent();
+                    editorEvents.InvokeSelectionChangedEvent();
                 }
             }
         }
 
         private void ProcessHotKeys()
         {
-            if (_inputSystemAsset.Hotkeys.Undo.triggered)
+            if (inputSystemAsset.Hotkeys.Undo.triggered)
             {
-                _commandSystem.UndoCommand();
+                commandSystem.UndoCommand();
             }
 
-            if (_inputSystemAsset.Hotkeys.Redo.triggered)
+            if (inputSystemAsset.Hotkeys.Redo.triggered)
             {
-                _commandSystem.RedoCommand();
+                commandSystem.RedoCommand();
             }
         }
     }
