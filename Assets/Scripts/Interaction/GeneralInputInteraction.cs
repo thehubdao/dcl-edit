@@ -26,6 +26,7 @@ namespace Assets.Scripts.Interaction
         private EditorEvents _editorEvents;
         private TypeScriptGenerationSystem _typeScriptGenerationSystem;
         private EntitySelectSystem _entitySelectSystem;
+        private ContextMenuSystem _contextMenuSystem;
 
         [Inject]
         private void Construct(
@@ -41,7 +42,8 @@ namespace Assets.Scripts.Interaction
             InputHelper inputHelper,
             EditorEvents editorEvents,
             TypeScriptGenerationSystem typeScriptGenerationSystem,
-            EntitySelectSystem entitySelectSystem)
+            EntitySelectSystem entitySelectSystem,
+            ContextMenuSystem contextMenuSystem)
         {
             _sceneSaveSystem = sceneSaveSystem;
             _commandSystem = commandSystem;
@@ -56,6 +58,7 @@ namespace Assets.Scripts.Interaction
             _editorEvents = editorEvents;
             _typeScriptGenerationSystem = typeScriptGenerationSystem;
             _entitySelectSystem = entitySelectSystem;
+            _contextMenuSystem = contextMenuSystem;
         }
 
 
@@ -130,6 +133,7 @@ namespace Assets.Scripts.Interaction
             // Figure out where the mouse points at
             Ray mouseRay;
             bool isMouseOverGameWindow;
+            bool isMouseOverContextMenu;
             {
                 var mousePosViewport = _inputHelper.GetMousePositionInScenePanel();
                 // Get the ray from the Camera, that corresponds to the mouse position in the panel
@@ -139,11 +143,15 @@ namespace Assets.Scripts.Interaction
                                         mousePosViewport.x < 1 &&
                                         mousePosViewport.y >= 0 &&
                                         mousePosViewport.y < 1;
+                isMouseOverContextMenu = _contextMenuSystem.IsMouseOverMenu();
             }
 
 
+            
+
+
             // Figure out, if the mouse is over the 3D viewport (not hovering over any UI)
-            var isMouseIn3DView = /*!EventSystem.current.IsPointerOverGameObject() &&*/ isMouseOverGameWindow;
+            var isMouseIn3DView = /*!EventSystem.current.IsPointerOverGameObject() &&*/ isMouseOverGameWindow && !isMouseOverContextMenu;
 
             // The position the mouse currently points to in the 3D viewport
             Vector3? mousePositionIn3DView = null;
