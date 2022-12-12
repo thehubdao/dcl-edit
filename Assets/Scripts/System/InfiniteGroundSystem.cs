@@ -117,20 +117,24 @@ namespace Assets.Scripts.System
                         float currentPosMovedY = currentPos.y + 0.5f;
 
                         //Where the tile is located in relationship to the other tiles; 16 because the tile has the size of 16, so that they are not overlapping
-                        Vector3 tilePosition = new Vector3(currentPosMovedX * tilePositionChange, 0, currentPosMovedY * tilePositionChange);
+                        Vector3 tilePosition = new Vector3(currentPosMovedX * tilePositionChange, 0,
+                            currentPosMovedY * tilePositionChange);
 
                         Boolean showGrass = true;
 
-                        foreach (DecentralandSceneData.ParcelInformation parcel in parcelInformation)
+                        if (parcelInformation != null)
                         {
-                            //Checks if the x currentPos is aligned with the parcel of the user. Is checked in relationship to the bottomLeftCornerStartParcelPosition, because it indicates the start where it starts to build the parcels of the user
-                            if (currentPos.x == bottomLeftCornerStartParcelPosition.GetX() + parcel.GetX())
+                            foreach (DecentralandSceneData.ParcelInformation parcel in parcelInformation)
                             {
-                                //Checks afterwards the position on the other 2D axis
-                                if (currentPos.y == bottomLeftCornerStartParcelPosition.GetZ() + parcel.GetZ())
+                                //Checks if the x currentPos is aligned with the parcel of the user. Is checked in relationship to the bottomLeftCornerStartParcelPosition, because it indicates the start where it starts to build the parcels of the user
+                                if (currentPos.x == bottomLeftCornerStartParcelPosition.GetX() + parcel.GetX())
                                 {
-                                    //Doesn't show the grass, because underneath the grass is a blue tile and it indicates that the user has his parcel there
-                                    showGrass = false;
+                                    //Checks afterwards the position on the other 2D axis
+                                    if (currentPos.y == bottomLeftCornerStartParcelPosition.GetZ() + parcel.GetZ())
+                                    {
+                                        //Doesn't show the grass, because underneath the grass is a blue tile and it indicates that the user has his parcel there
+                                        showGrass = false;
+                                    }
                                 }
                             }
                         }
