@@ -1,13 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
 using Assets.Scripts.Utility;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityGLTF.Loader;
 using Zenject;
@@ -114,9 +114,26 @@ namespace Assets.Scripts.System
 
                 foreach (var assetPack in assetData.data)
                 {
+                    var assetPackHierarchyItem = new AssetHierarchyItem("Builder Assets");
+                    assetPackHierarchyItem.name = assetPack.title;
+
+                    // Builder assets are in categories which are identified by a string name. E.g. "category":"decorations"
+                    Dictionary<String, AssetHierarchyItem> categories = new Dictionary<string, AssetHierarchyItem>();
+
                     foreach (var asset in assetPack.assets)
                     {
                         var id = Guid.Parse(asset.id);
+
+                        if (!categories.ContainsKey(asset.category))
+                        {
+                            var categoryHierarchyItem = new AssetHierarchyItem();
+                            // Capital first letter
+                            categoryHierarchyItem.name = char.ToUpper(asset.category[0]) + asset.category.Substring(1);
+                            categories.Add(asset.category, categoryHierarchyItem);
+                        }
+                        categories[asset.category].assetIds.Add(id);
+
+
                         _loaderState.Data.Add(id, new BuilderAssetLoaderState.DataStorage
                         {
                             Id = id,
@@ -127,11 +144,21 @@ namespace Assets.Scripts.System
                             ThumbnailHash = asset.thumbnail
                         });
                     }
+
+                    foreach (var category in categories)
+                    {
+                        assetPackHierarchyItem.childDirectories.Add(category.Value);
+                    }
+
+                    _loaderState.assetHierarchy.childDirectories.Add(assetPackHierarchyItem);
                 }
 
                 _editorEvents.InvokeAssetMetadataCacheUpdatedEvent();
             });
         }
+
+        public AssetHierarchyItem GetHierarchy() => _loaderState.assetHierarchy;
+
 
         public IEnumerable<Guid> GetAllAssetIds()
         {
@@ -164,20 +191,20 @@ namespace Assets.Scripts.System
             {
                 // if hash is loaded, return the Thumbnail
                 var thumbnail = _loaderState.LoadedThumbnails[hash];
-                return new AssetThumbnail {Id = id, State = AssetData.State.IsAvailable, Texture = thumbnail};
+                return new AssetThumbnail(id, AssetData.State.IsAvailable, thumbnail);
             }
 
             // check if thumbnail is already loading
             if (data.ThumbnailCacheState == BuilderAssetLoaderState.DataStorage.CacheState.Loading)
             {
-                return new AssetThumbnail {Id = id, State = AssetData.State.IsLoading, Texture = null};
+                return new AssetThumbnail(id, AssetData.State.IsLoading, null);
             }
 
             // Download and load thumbnail
             {
                 _ = LoadThumbnailAsync(data);
 
-                return new AssetThumbnail {Id = id, State = AssetData.State.IsLoading, Texture = null};
+                return new AssetThumbnail(id, AssetData.State.IsLoading, null);
             }
         }
 
@@ -194,7 +221,7 @@ namespace Assets.Scripts.System
 
             var bytes = new byte[stream.Length];
 
-            var readByteCount = await stream.ReadAsync(bytes, 0, (int) stream.Length);
+            var readByteCount = await stream.ReadAsync(bytes, 0, (int)stream.Length);
             Debug.Assert(stream.Length == readByteCount);
 
             var thumbnail = LoadBytesAsImage(bytes, preCreatedTexture);
@@ -206,7 +233,7 @@ namespace Assets.Scripts.System
             _loaderState.LoadedThumbnails.Add(hash, thumbnail);
             data.ThumbnailCacheState = BuilderAssetLoaderState.DataStorage.CacheState.Loaded;
 
-            _editorEvents.InvokeThumbnailDataUpdatedEvent(new List<Guid> {data.Id});
+            _editorEvents.InvokeThumbnailDataUpdatedEvent(new List<Guid> { data.Id });
         }
 
         private Texture2D LoadBytesAsImage(byte[] bytes, Texture2D inTexture = null)
@@ -252,7 +279,7 @@ namespace Assets.Scripts.System
 
                 data.DataCacheState = BuilderAssetLoaderState.DataStorage.CacheState.Loaded;
 
-                var updatedIds = new List<Guid> {id};
+                var updatedIds = new List<Guid> { id };
                 _editorEvents.InvokeAssetDataUpdatedEvent(updatedIds);
             }, new BuilderAssetGltfDataLoader(Path.GetDirectoryName(data.modelPath!), data.contentsPathToHash, assetDownLoader));
 

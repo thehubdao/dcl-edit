@@ -1,8 +1,8 @@
+using System;
 using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
 using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
-using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using Zenject;
@@ -10,65 +10,106 @@ using Zenject;
 public class AssetButtonInteraction : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     public AssetMetadata assetMetadata;
-    private DclEntity _newEntity;
+    private DclEntity newEntity;
+    private bool entityInScene;
     private Vector3 mousePositionInScene;
 
     // Dependencies
-    CommandSystem _commandSystem;
-    InputHelper _inputHelperSystem;
-    SceneDirectoryState _sceneDirectoryState;
-    EditorEvents _editorEvents;
+    private CommandSystem commandSystem;
+    private EditorEvents editorEvents;
+    private InputHelper inputHelperSystem;
+    private SceneDirectoryState sceneDirectoryState;
+    private CameraState cameraState;
 
     [Inject]
-    private void Construct(CommandSystem commandSystem, InputHelper inputHelperSystem, SceneDirectoryState sceneDirectoryState, EditorEvents editorEvents)
+    private void Construct(
+        CommandSystem commandSystem,
+        EditorEvents editorEvents,
+        InputHelper inputHelperSystem,
+        SceneDirectoryState sceneDirectoryState,
+        CameraState cameraState)
     {
-        _commandSystem = commandSystem;
-        _inputHelperSystem = inputHelperSystem;
-        _sceneDirectoryState = sceneDirectoryState;
-        _editorEvents = editorEvents;
+        this.commandSystem = commandSystem;
+        this.inputHelperSystem = inputHelperSystem;
+        this.sceneDirectoryState = sceneDirectoryState;
+        this.editorEvents = editorEvents;
+        this.cameraState = cameraState;
     }
 
-    public void OnBeginDrag(PointerEventData eventData)
+    public void OnClick()
     {
-        _newEntity = new DclEntity(Guid.NewGuid(), assetMetadata.assetDisplayName);
-        _newEntity.AddComponent(new DclTransformComponent());
+        newEntity = SetupEntity();
+
+        Ray ray = new Ray(cameraState.Position, cameraState.Forward);
+        if (Physics.Raycast(ray, out RaycastHit hit, 50))
+        {
+            AddEntityToScene(hit.point);
+        }
+        else
+        {
+            AddEntityToScene(ray.GetPoint(10));
+        }
+    }
+
+    public void OnBeginDrag(PointerEventData eventData) => newEntity = SetupEntity();
+
+    public void OnDrag(PointerEventData eventData)
+    {
+        if (!inputHelperSystem.IsMouseOverScenePanel() && entityInScene)
+        {
+            sceneDirectoryState.CurrentScene.RemoveFloatingEntity(newEntity.Id);
+            editorEvents.InvokeHierarchyChangedEvent();
+            entityInScene = false;
+            return;
+        }
+
+        if (inputHelperSystem.IsMouseOverScenePanel() && !entityInScene)
+        {
+            sceneDirectoryState.CurrentScene.AddFloatingEntity(newEntity);
+            entityInScene = true;
+        }
+
+        mousePositionInScene = inputHelperSystem.GetMousePositionInScene();
+        newEntity.GetTransformComponent().Position.SetFloatingValue(mousePositionInScene);
+        editorEvents.InvokeHierarchyChangedEvent();
+    }
+
+    public void OnEndDrag(PointerEventData eventData)
+    {
+        if (!inputHelperSystem.IsMouseOverScenePanel()) return;
+        
+        AddEntityToScene(mousePositionInScene);
+    }
+
+    private DclEntity SetupEntity()
+    {
+        var e = new DclEntity(Guid.NewGuid(), assetMetadata.assetDisplayName);
+        e.AddComponent(new DclTransformComponent());
 
         switch (assetMetadata.assetType)
         {
             case AssetMetadata.AssetType.Model:
                 var gltfShape = new DclGltfShapeComponent(assetMetadata.assetId);
-                _newEntity.AddComponent(gltfShape);
-                _sceneDirectoryState.CurrentScene.AddFloatingEntity(_newEntity);
+                e.AddComponent(gltfShape);
                 break;
             case AssetMetadata.AssetType.Image:
                 break;
-            default:
-                break;
         }
+
+        return e;
     }
 
-    public void OnDrag(PointerEventData eventData)
+    private void AddEntityToScene(Vector3 position)
     {
-        if (_inputHelperSystem.IsMouseOverScenePanel())
-        {
-            mousePositionInScene = _inputHelperSystem.GetMousePositionInScene();
-            _newEntity.GetTransformComponent().Position.SetFloatingValue(mousePositionInScene);
-            _editorEvents.InvokeHierarchyChangedEvent();
-        }
-    }
-
-    public void OnEndDrag(PointerEventData eventData)
-    {
-        _sceneDirectoryState.CurrentScene.RemoveFloatingEntity(_newEntity.Id);
+        sceneDirectoryState.CurrentScene.RemoveFloatingEntity(newEntity.Id);
         switch (assetMetadata.assetType)
         {
             case AssetMetadata.AssetType.Model:
-                _commandSystem.ExecuteCommand(_commandSystem.CommandFactory.CreateAddModelAssetToScene(_newEntity.Id, _newEntity.CustomName, assetMetadata.assetId, mousePositionInScene));
+                commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateAddModelAssetToScene(newEntity.Id,
+                    newEntity.CustomName, assetMetadata.assetId, position));
                 break;
             case AssetMetadata.AssetType.Image:
                 break;
-            default:
-                break;
         }
-    }
+    } 
 }

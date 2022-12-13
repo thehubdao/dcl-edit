@@ -35,6 +35,10 @@ namespace Assets.Scripts.Command
             newEntity.AddComponent(gltfShape);
 
             editorEvents.InvokeHierarchyChangedEvent();
+            
+            sceneState.SelectionState.SecondarySelectedEntities.Clear();
+            sceneState.SelectionState.PrimarySelectedEntity = newEntity;
+            editorEvents.InvokeSelectionChangedEvent();
         }
 
         public override void Undo(DclScene sceneState, EditorEvents editorEvents)

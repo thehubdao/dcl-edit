@@ -12,7 +12,8 @@ namespace Assets.Scripts.System
         [SerializeField]
         private SetupSceneEventListenersSystem _setupSceneEventListenersSystem;
 
-        // dependencies
+        // Dependencies
+        private AssetManagerSystem _assetManagerSystem;
         private SetupSceneSystem _setupSceneSystem;
         private WorkspaceSaveSystem _workspaceSaveSystem;
         private UnityState _unityState;
@@ -21,12 +22,14 @@ namespace Assets.Scripts.System
 
         [Inject]
         private void Construct(
+            AssetManagerSystem assetManagerSystem,
             SetupSceneSystem setupSceneSystem,
             WorkspaceSaveSystem workspaceSaveSystem,
             UnityState unityState,
             IPathState pathState,
             FrameTimeSystem frameTimeSystem)
         {
+            _assetManagerSystem = assetManagerSystem;
             _setupSceneSystem = setupSceneSystem;
             _workspaceSaveSystem = workspaceSaveSystem;
             _unityState = unityState;
@@ -36,6 +39,8 @@ namespace Assets.Scripts.System
 
         void Awake()
         {
+            _assetManagerSystem.CacheAllAssetMetadata();
+
             // Load default scene
             var v2Path = _pathState.ProjectPath + "/dcl-edit/saves/v2/New Scene.dclscene";
 

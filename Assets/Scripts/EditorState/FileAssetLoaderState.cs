@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,7 +12,9 @@ namespace Assets.Scripts.EditorState
         public Dictionary<Guid, AssetMetadataFile> assetMetadataCache = new Dictionary<Guid, AssetMetadataFile>();
 
         // Contains all asset data that is already cached.
-        public Dictionary<Guid, FileAssetData> assetDataCache = new Dictionary<Guid, FileAssetData>();
+        public Dictionary<Guid, AssetData> assetDataCache = new Dictionary<Guid, AssetData>();
+
+        public AssetHierarchyItem assetHierarchy = new AssetHierarchyItem();
     }
 
 
@@ -22,75 +25,69 @@ namespace Assets.Scripts.EditorState
     {
         public struct Contents
         {
-            public FileAssetMetadata metadata;
-            public Texture2D thumbnail;
+            public Contents(MetaContents metadata, [CanBeNull] Texture2D thumbnail)
+            {
+                this.metadata = metadata;
+
+                this.thumbnail =
+                    thumbnail == null ?
+                        "" :
+                        Convert.ToBase64String(thumbnail.EncodeToPNG());
+            }
+
+            public MetaContents metadata;
+            public string thumbnail;
         }
 
+        public struct MetaContents
+        {
+            public MetaContents(string assetFilename, Guid assetId, AssetMetadata.AssetType assetType, string assetDisplayName)
+            {
+                this.assetFilename = assetFilename;
+                this.assetId = assetId;
+                this.assetType = assetType;
+                this.assetDisplayName = assetDisplayName;
+            }
+
+            public string assetFilename;
+            public Guid assetId;
+            public AssetMetadata.AssetType assetType;
+            public string assetDisplayName;
+        }
+
+        [CanBeNull]
+        public Texture2D thumbnail;
+
         public string metadataFilePath;
-        public Contents contents;
+
+        //public Contents contents;
+        public string assetFilename;
+        public AssetMetadata assetMetadata;
 
         public AssetMetadataFile(Contents contents, string path)
         {
-            this.contents = contents;
-            this.metadataFilePath = path;
-        }
-        public string AssetFilePath => Path.Combine(Path.GetDirectoryName(metadataFilePath), contents.metadata.assetFilename);
-    }
+            //this.contents = contents;
+            assetFilename = contents.metadata.assetFilename;
 
-    public class FileAssetMetadata
-    {
-        public enum AssetType
+            if (!string.IsNullOrEmpty(contents.thumbnail))
+            {
+                thumbnail = new Texture2D(2, 2);
+                thumbnail.LoadImage(Convert.FromBase64String(contents.thumbnail));
+            }
+
+            assetMetadata = new AssetMetadata(contents.metadata.assetDisplayName, contents.metadata.assetId, contents.metadata.assetType);
+
+            metadataFilePath = path;
+        }
+
+        public AssetMetadataFile(string metadataFilePath, string assetFilename, AssetMetadata assetMetadata)
         {
-            Unknown,
-            Model,
-            Image
+            this.thumbnail = null;
+            this.metadataFilePath = metadataFilePath;
+            this.assetFilename = assetFilename;
+            this.assetMetadata = assetMetadata;
         }
 
-        public string assetFilename;
-        public string assetDisplayName => Path.GetFileNameWithoutExtension(assetFilename) ?? "Unkown Asset";
-        public Guid assetId;
-        public AssetType assetType;
-        // public AssetSource source; (Local filesystem, DecentralandBuilder,...)
-
-        new public string ToString() => $"{assetId}; {assetFilename}; {assetType}";
-    }
-
-    public class FileAssetData
-    {
-        public Guid id;
-
-        public enum State
-        {
-            IsAvailable,
-            IsLoading,
-            IsError
-        }
-        public State state;
-
-        public FileAssetData(Guid id, State state)
-        {
-            this.id = id;
-            this.state = state;
-        }
-    }
-
-    public class ModelFileAssetData : FileAssetData
-    {
-        public GameObject data;
-
-        public ModelFileAssetData(Guid id, GameObject data) : base(id, State.IsAvailable)
-        {
-            this.data = data;
-        }
-    }
-
-    public class ImageFileAssetData : FileAssetData
-    {
-        public Texture2D data;
-
-        public ImageFileAssetData(Guid id, Texture2D data) : base(id, State.IsAvailable)
-        {
-            this.data = data;
-        }
+        public string assetFilePath => Path.Combine(Path.GetDirectoryName(metadataFilePath)!, assetFilename);
     }
 }

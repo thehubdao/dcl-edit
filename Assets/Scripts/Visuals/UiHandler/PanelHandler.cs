@@ -14,7 +14,7 @@ namespace Assets.Scripts.Visuals.UiHandler
             Vertical
         }
 
-        public void SetLayoutDirection(LayoutDirection value)
+        public void SetLayoutDirection(LayoutDirection value, bool useFullWidth = true)
         {
             if (IsLayoutGroupCorrect(value)) return;
 
@@ -35,7 +35,7 @@ namespace Assets.Scripts.Visuals.UiHandler
             }
 
             layoutGroup.childForceExpandHeight = false;
-            layoutGroup.childForceExpandWidth = true;
+            layoutGroup.childForceExpandWidth = useFullWidth;
         }
 
         private bool IsLayoutGroupCorrect(LayoutDirection value)

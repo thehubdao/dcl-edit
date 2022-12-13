@@ -3,6 +3,7 @@ using Assets.Scripts.System;
 using NUnit.Framework;
 using System;
 using System.Linq;
+using Assets.Scripts.Tests.EditModeTests.TestUtility;
 
 public class AssetManagerSystemTest
 {
@@ -12,8 +13,8 @@ public class AssetManagerSystemTest
         AssetManagerSystem assetManagerSystem = new AssetManagerSystem();
         assetManagerSystem.Construct(
             new MockAssetLoader(
-                new MockAssetLoader.TestData {filename = "model1.glb", type = FileAssetMetadata.AssetType.Model, id = Guid.Parse("F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4")},
-                new MockAssetLoader.TestData {filename = "image1.png", type = FileAssetMetadata.AssetType.Image, id = Guid.Parse("AAAA8C5E-CEB2-4faa-B6BF-329BF39FA1E4")}
+                new MockAssetLoader.TestData {filename = "model1.glb", type = AssetMetadata.AssetType.Model, id = Guid.Parse("F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4")},
+                new MockAssetLoader.TestData {filename = "image1.png", type = AssetMetadata.AssetType.Image, id = Guid.Parse("AAAA8C5E-CEB2-4faa-B6BF-329BF39FA1E4")}
             )
         );
 
@@ -36,8 +37,8 @@ public class AssetManagerSystemTest
         AssetManagerSystem assetManagerSystem = new AssetManagerSystem();
         assetManagerSystem.Construct(
             new MockAssetLoader(
-                new MockAssetLoader.TestData {filename = "model1.glb", type = FileAssetMetadata.AssetType.Model, id = Guid.Parse("F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4")},
-                new MockAssetLoader.TestData {filename = "image1.png", type = FileAssetMetadata.AssetType.Image, id = Guid.Parse("AAAA8C5E-CEB2-4faa-B6BF-329BF39FA1E4")}
+                new MockAssetLoader.TestData {filename = "model1.glb", type = AssetMetadata.AssetType.Model, id = Guid.Parse("F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4")},
+                new MockAssetLoader.TestData {filename = "image1.png", type = AssetMetadata.AssetType.Image, id = Guid.Parse("AAAA8C5E-CEB2-4faa-B6BF-329BF39FA1E4")}
             )
         );
 
@@ -61,8 +62,8 @@ public class AssetManagerSystemTest
         AssetManagerSystem assetManagerSystem = new AssetManagerSystem();
         assetManagerSystem.Construct(
             new MockAssetLoader(
-                new MockAssetLoader.TestData {filename = "model1.glb", type = FileAssetMetadata.AssetType.Model, id = Guid.Parse("F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4")},
-                new MockAssetLoader.TestData {filename = "image1.png", type = FileAssetMetadata.AssetType.Image, id = Guid.Parse("AAAA8C5E-CEB2-4faa-B6BF-329BF39FA1E4")}
+                new MockAssetLoader.TestData {filename = "model1.glb", type = AssetMetadata.AssetType.Model, id = Guid.Parse("F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4")},
+                new MockAssetLoader.TestData {filename = "image1.png", type = AssetMetadata.AssetType.Image, id = Guid.Parse("AAAA8C5E-CEB2-4faa-B6BF-329BF39FA1E4")}
             )
         );
 

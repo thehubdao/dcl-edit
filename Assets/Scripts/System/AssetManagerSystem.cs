@@ -48,7 +48,8 @@ namespace Assets.Scripts.System
                     return result;
                 }
             }
-            return null;
+
+            return new AssetData(id, AssetData.State.IsError);
         }
 
         public IEnumerable<Guid> GetAllAssetIds()
@@ -59,6 +60,18 @@ namespace Assets.Scripts.System
                 result = result.Concat(loaderSystem.GetAllAssetIds());
             }
             return result;
+        }
+
+        public List<AssetHierarchyItem> GetHierarchy()
+        {
+            List<AssetHierarchyItem> hierarchy = new List<AssetHierarchyItem>();
+
+            foreach (var loaderSystem in _assetLoaderSystems)
+            {
+                hierarchy.Add(loaderSystem.GetHierarchy());
+            }
+
+            return hierarchy;
         }
     }
 }
