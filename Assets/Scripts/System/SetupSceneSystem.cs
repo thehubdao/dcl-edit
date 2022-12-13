@@ -9,6 +9,7 @@ namespace Assets.Scripts.System
     public class SetupSceneSystem
     {
         // Dependencies
+        private MenuBarSystem _menuBarSystem;
         private CameraSystem _cameraSystem;
         private SetupSceneEventListenersSystem _setupSceneEventListenersSystem;
         private EditorState.SceneDirectoryState _sceneDirectoryState;
@@ -16,11 +17,13 @@ namespace Assets.Scripts.System
 
         [Inject]
         private void Construct(
+            MenuBarSystem menuBarSystem,
             CameraSystem cameraSystem,
             SetupSceneEventListenersSystem setupSceneEventListenersSystem,
             EditorState.SceneDirectoryState sceneDirectoryState,
             ISceneLoadSystem sceneLoadSystem)
         {
+            _menuBarSystem = menuBarSystem;
             _cameraSystem = cameraSystem;
             _setupSceneEventListenersSystem = setupSceneEventListenersSystem;
             _sceneDirectoryState = sceneDirectoryState;
@@ -36,6 +39,9 @@ namespace Assets.Scripts.System
             _cameraSystem.CameraStartup();
 
             _setupSceneEventListenersSystem.SetupSceneEventListeners();
+
+            // This needs to be called after SetupSceneEventListeners().
+            _menuBarSystem.DebugCreateExampleMenu(); 
         }
     }
 }
