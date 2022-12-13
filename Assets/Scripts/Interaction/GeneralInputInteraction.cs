@@ -45,7 +45,7 @@ namespace Assets.Scripts.Interaction
             EntitySelectSystem entitySelectSystem,
             ContextMenuSystem contextMenuSystem)
         {
-            this.sceneSaveSystem = this.sceneSaveSystem;
+            this.sceneSaveSystem = sceneSaveSystem;
             this.commandSystem = commandSystem;
             this.inputState = inputState;
             this.interface3DState = interface3DState;
