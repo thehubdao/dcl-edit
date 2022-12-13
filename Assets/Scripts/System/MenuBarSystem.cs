@@ -40,6 +40,7 @@ namespace Assets.Scripts.System
         public void AddMenuItem(string path, UnityAction onClick, int position = -1)
         {
             _state.AddMenuItem(path, onClick, position);
+            _editorEvents.InvokeUpdateMenuBarEvent();
         }
 
         public void DebugCreateExampleMenu()

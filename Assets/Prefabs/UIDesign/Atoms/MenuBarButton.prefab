@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 7265437177802612850}
   - component: {fileID: 7265437177802612851}
   - component: {fileID: 7265437177802612860}
+  - component: {fileID: 7848199414760660694}
   m_Layer: 5
   m_Name: MenuBarButton
   m_TagString: Untagged
@@ -148,6 +149,20 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &7848199414760660694
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7265437177802612862}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d4962cd549d9764d955d382c3b4a6c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  button: {fileID: 7265437177802612851}
+  titleText: {fileID: 7265437178497408456}
 --- !u!1 &7265437178497408459
 GameObject:
   m_ObjectHideFlags: 0

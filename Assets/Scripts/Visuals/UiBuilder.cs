@@ -28,6 +28,7 @@ namespace Assets.Scripts.Visuals
             NumberPropertyInput,
             BooleanPropertyInput,
             Vector3PropertyInput,
+            MenuBarButton,
             ContextMenu,
             ContextMenuItem,
             ContextSubmenuItem,
@@ -309,6 +310,25 @@ namespace Assets.Scripts.Visuals
             return this;
         }
 
+        public UiBuilder MenuBarButon(string title, UnityAction<GameObject> action)
+        {
+            _atoms.Add(new UiAtom
+            {
+                Type = AtomType.MenuBarButton,
+                MakeGameObject = () =>
+                {
+                    GameObject go = GetAtomObjectFromPool(AtomType.MenuBarButton);
+
+                    MenuBarButton menuBarButton = go.GetComponentInChildren<MenuBarButton>();
+                    menuBarButton.Initialize(title, () => action(go));
+
+                    return new MakeGmReturn { go = go, height = 50 };
+                }
+            });
+
+            return this;
+        }
+
         public UiBuilder ContextMenu(UiBuilder content)
         {
             _atoms.Add(new UiAtom
@@ -484,6 +504,7 @@ namespace Assets.Scripts.Visuals
                 AtomType.NumberPropertyInput => Object.Instantiate(_unityState.NumberInputAtom),
                 AtomType.BooleanPropertyInput => Object.Instantiate(_unityState.BooleanInputAtom),
                 AtomType.Vector3PropertyInput => Object.Instantiate(_unityState.Vector3InputAtom),
+                AtomType.MenuBarButton => Object.Instantiate(_unityState.MenuBarButtonAtom),
                 AtomType.ContextMenu => Object.Instantiate(_unityState.ContextMenuAtom),
                 AtomType.ContextMenuItem => Object.Instantiate(_unityState.ContextMenuItemAtom),
                 AtomType.ContextSubmenuItem => Object.Instantiate(_unityState.ContextSubmenuItemAtom),
