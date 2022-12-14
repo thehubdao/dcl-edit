@@ -1,40 +1,24 @@
 using Assets.Scripts.EditorState;
-using Assets.Scripts.SceneState;
-using Assets.Scripts.System;
 using Newtonsoft.Json;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using JetBrains.Annotations;
 using UnityEngine;
-using UnityEngine.InputSystem.Controls;
 using Zenject;
-using static Assets.Scripts.System.SceneLoadSaveSystem;
 
 public class SceneJsonReader
 {
     private static DecentralandSceneData decentralandSceneData;
 
     // Dependencies
-    private IPathState _pathState;
+    private IPathState pathState;
 
     [Inject]
     private void Construct(IPathState pathState)
     {
-        _pathState = pathState;
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        this.pathState = pathState;
     }
 
     /// <summary>
@@ -42,20 +26,21 @@ public class SceneJsonReader
     /// </summary>
     /// <param name="reload">if it should reload the scene data from the json file again</param>
     /// <returns>the Decentraland scene data; if there is an error it returns null</returns>
-    public DecentralandSceneData getSceneData(bool reload)
+    [CanBeNull]
+    public DecentralandSceneData GetSceneData(bool reload)
     {
         try
         {
-            var json = File.ReadAllText(_pathState.ProjectPath + "/scene.json");
-
             if (reload == true || decentralandSceneData == null)
             {
+                var json = File.ReadAllText(pathState.ProjectPath + "/scene.json");
                 decentralandSceneData = JsonConvert.DeserializeObject<DecentralandSceneData>(json);
             }
         }
         catch (Exception e)
         {
-            Debug.LogError(e.ToString());
+            Debug.LogError("Error while reading scene.json");
+            Debug.LogException(e);
             return null;
         }
 
@@ -67,23 +52,23 @@ public class SceneJsonReader
     /// </summary>
     public class DecentralandSceneData
     {
-        public Dis display { get; set; }
+        public Display display { get; set; }
         public string owner { get; set; }
-        public Con contact { get; set; }
+        public Contact contact { get; set; }
 
         public string main { get; set; }
 
         public List<string> tags { get; set; }
 
-        public Sce scene { get; set; }
+        public Scene scene { get; set; }
 
-        public List<Spawn> spawnPoints { get; set; }
+        public List<SpawnPoints> spawnPoints { get; set; }
 
         public List<string> requiredPermissions { get; set; }
 
-        public FeaturedTog featuredToggles { get; set; }
+        public FeatureToggles featureToggles { get; set; }
 
-        public class Dis
+        public class Display
         {
             public string title { get; set; }
             public string description { get; set; }
@@ -91,20 +76,20 @@ public class SceneJsonReader
             public string favicon { get; set; }
         }
 
-        public class Con
+        public class Contact
         {
             public string name { get; set; }
             public string email { get; set; }
         }
 
-        public class Sce
+        public class Scene
         {
             public List<string> parcels { get; set; }
 
             public string @base { get; set; }
         }
 
-        public class Spawn
+        public class SpawnPoints
         {
             public string name { get; set; }
             public bool @default { get; set; }
@@ -112,12 +97,12 @@ public class SceneJsonReader
             public Vector3Int cameraTarget { get; set; }
         }
 
-        public class FeaturedTog
+        public class FeatureToggles
         {
 
         }
 
-        public List<ParcelInformation> GetParcelInformation()
+        public List<ParcelInformation> GetParcelsInformation()
         {
             List<ParcelInformation> output = new List<ParcelInformation>();
 
@@ -125,14 +110,18 @@ public class SceneJsonReader
             {
                 output.Add(new ParcelInformation(decentralandParcel));
             }
-            
+
             return output;
+        }
+
+        public ParcelInformation GetBaseParcelInformation()
+        {
+            return new ParcelInformation(scene.@base);
         }
 
         public class ParcelInformation
         {
-            private int x;
-            private int z;
+            private Vector2Int position;
 
             public ParcelInformation(String decentralandParcel)
             {
@@ -142,25 +131,18 @@ public class SceneJsonReader
                 // using the method
                 String[] strlist = decentralandParcel.Split(spearator, count, StringSplitOptions.RemoveEmptyEntries);
 
-                x = int.Parse(strlist[0], NumberStyles.HexNumber);
-                z = int.Parse(strlist[1], NumberStyles.HexNumber);
+                var x = int.Parse(strlist[0], NumberStyles.HexNumber);
+                var z = int.Parse(strlist[1], NumberStyles.HexNumber);
+
+                position = new Vector2Int(x, z);
             }
 
             public ParcelInformation(int x, int z)
             {
-                this.x = x;
-                this.z = z;
+                position = new Vector2Int(x, z);
             }
 
-            public int GetX()
-            {
-                return x;
-            }
-
-            public int GetZ()
-            {
-                return z;
-            }
+            public Vector2Int GetPosition() => position;
         }
     }
 
@@ -205,5 +187,5 @@ public class SceneJsonReader
  
      */
 
-    
+
 }
