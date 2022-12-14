@@ -147,6 +147,7 @@ GameObject:
   - component: {fileID: 755950926635860375}
   - component: {fileID: 7876252090297234349}
   - component: {fileID: 6879861204936440545}
+  - component: {fileID: -4319893211553812177}
   m_Layer: 5
   m_Name: ContextMenuTextItem
   m_TagString: Untagged
@@ -268,3 +269,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4da5ec0ffc84d844aefcc2219eba46c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &-4319893211553812177
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7252716371144921517}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: -1
+  m_MinHeight: 30
+  m_PreferredWidth: -1
+  m_PreferredHeight: -1
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
