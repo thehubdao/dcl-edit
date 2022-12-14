@@ -120,19 +120,24 @@ namespace Assets.Scripts.Visuals
                     },
                     clickPosition =>
                     {
+                        var addEntityMenuItems = new List<ContextMenuItem>();
+
+                        var lastCategoryNumber = 0;
+                        foreach (var preset in hierarchyContextMenuSystem.GetPresets())
+                        {
+                            var categoryNumber = preset.index / 1000; // Implicit Floor
+                            if (categoryNumber > lastCategoryNumber)
+                            {
+                                addEntityMenuItems.Add(new ContextMenuSpacerItem());
+                                lastCategoryNumber = categoryNumber;
+                            }
+
+                            addEntityMenuItems.Add(new ContextMenuTextItem(preset.name, () => hierarchyContextMenuSystem.AddEntityFromPreset(preset.index)));
+                        }
+
                         contextMenuSystem.OpenMenu(clickPosition, new List<ContextMenuItem>
                         {
-                            new ContextSubmenuItem("Add entity...", new List<ContextMenuItem>
-                            {
-                                new ContextMenuTextItem("Empty Entity", () => hierarchyContextMenuSystem.AddEmptyEntity(entity)),
-                                new ContextMenuSpacerItem(),
-                                new ContextMenuTextItem("Gltf Entity", () => Debug.Log("Add Gltf Entity"), true),
-                                new ContextMenuSpacerItem(),
-                                new ContextMenuTextItem("Cube", () => Debug.Log("Add empty "), true),
-                                new ContextMenuTextItem("Sphere", () => Debug.Log("Add empty "), true),
-                                new ContextMenuTextItem("Cylinder", () => Debug.Log("Add empty "), true),
-                                new ContextMenuTextItem("Cone", () => Debug.Log("Add empty "), true),
-                            }),
+                            new ContextSubmenuItem("Add entity...", addEntityMenuItems),
                             new ContextMenuTextItem("Duplicate", () => Debug.Log("Duplicate entity"), true),
                             new ContextMenuTextItem("Delete", () => Debug.Log("Delete entity"), true)
                         });
