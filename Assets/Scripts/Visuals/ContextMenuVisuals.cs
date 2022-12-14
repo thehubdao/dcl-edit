@@ -2,7 +2,10 @@ using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
 using Assets.Scripts.System;
 using System.Linq;
+using Assets.Scripts.Visuals.UiBuilder;
+using Assets.Scripts.Visuals.UiHandler;
 using UnityEngine;
+using UnityEngine.UI;
 using Zenject;
 
 namespace Assets.Scripts.Visuals
@@ -13,25 +16,32 @@ namespace Assets.Scripts.Visuals
         float width = 200;
 
         // Dependencies
-        ContextMenuState _state;
-        EditorEvents _editorEvents;
-        ContextMenuSystem _contextMenuSystem;
-        UiBuilder.Factory _uiBuilderFactory;
+        ContextMenuState state;
+        EditorEvents editorEvents;
+        ContextMenuSystem contextMenuSystem;
+        UiBuilder.UiBuilder.Factory uiBuilderFactory;
+        UnityState unityState;
 
         [Inject]
-        void Construct(ContextMenuState contextMenuState, EditorEvents editorEvents, ContextMenuSystem contextMenuSystem, UiBuilder.Factory uiBuilderFactory)
+        void Construct(
+            ContextMenuState contextMenuState,
+            EditorEvents editorEvents,
+            ContextMenuSystem contextMenuSystem,
+            UiBuilder.UiBuilder.Factory uiBuilderFactory,
+            UnityState unityState)
         {
-            _state = contextMenuState;
-            _editorEvents = editorEvents;
-            _contextMenuSystem = contextMenuSystem;
-            _uiBuilderFactory = uiBuilderFactory;
+            this.state = contextMenuState;
+            this.editorEvents = editorEvents;
+            this.contextMenuSystem = contextMenuSystem;
+            this.uiBuilderFactory = uiBuilderFactory;
+            this.unityState = unityState;
         }
 
         public void SetupSceneEventListeners()
         {
-            _editorEvents.onUpdateContextMenuEvent += () =>
+            editorEvents.onUpdateContextMenuEvent += () =>
             {
-                transform.SetAsLastSibling();               // Draw context menu on top of UI
+                transform.SetAsLastSibling(); // Draw context menu on top of UI
                 RemoveObsoleteMenuVisuals();
                 CreateMissingMenuVisuals();
             };
@@ -39,8 +49,8 @@ namespace Assets.Scripts.Visuals
 
         void RemoveObsoleteMenuVisuals()
         {
-            var objectsToDelete = _state.menuGameObjects.Keys.ToList();
-            foreach (var data in _state.menuData)
+            var objectsToDelete = state.menuGameObjects.Keys.ToList();
+            foreach (var data in state.menuData)
             {
                 if (objectsToDelete.Contains(data.menuId))
                 {
@@ -49,19 +59,23 @@ namespace Assets.Scripts.Visuals
             }
             foreach (var delObj in objectsToDelete)
             {
-                GameObject go = _state.menuGameObjects[delObj];
+                GameObject go = state.menuGameObjects[delObj];
                 Destroy(go);
-                _state.menuGameObjects.Remove(delObj);
+                state.menuGameObjects.Remove(delObj);
             }
         }
 
         void CreateMissingMenuVisuals()
         {
-            foreach (var menuData in _state.menuData)
+            foreach (var menuData in state.menuData)
             {
-                if (!_state.menuGameObjects.ContainsKey(menuData.menuId))
+                if (!state.menuGameObjects.ContainsKey(menuData.menuId))
                 {
-                    if (menuData.items.Count == 0) { break; }
+                    if (menuData.items.Count == 0)
+                    {
+                        break;
+                    }
+
                     CreateSingleMenu(menuData);
                 }
             }
@@ -69,31 +83,37 @@ namespace Assets.Scripts.Visuals
 
         void CreateSingleMenu(ContextMenuState.Data menuData)
         {
-            var menuRect = CreateMenuParent(menuData.menuId.ToString());
-            _state.menuGameObjects.Add(menuData.menuId, menuRect.gameObject);
+            var menuRect = CreateMenuParent();
+            state.menuGameObjects.Add(menuData.menuId, menuRect.gameObject);
             menuRect.SetAsLastSibling();
 
-            var itemsBuilder = _uiBuilderFactory.Create();
-            for (int i = 0; i < menuData.items.Count; i++)
+            var mainContent = menuRect.GetComponent<PanelHandler>().content;
+            var itemsBuilder = uiBuilderFactory.Create(mainContent);
+
+            var menuPanel = new PanelAtom.Data();
+
+            foreach (var item in menuData.items)
             {
-                var item = menuData.items[i];
-                if (item is ContextMenuTextItem tItem)
+                switch (item)
                 {
-                    itemsBuilder.ContextMenuTextItem(menuData.menuId, tItem.title, tItem.onClick, tItem.isDisabled, _contextMenuSystem);
-                }
-                else if (item is ContextSubmenuItem subItem)
-                {
-                    itemsBuilder.ContextSubmenuItem(menuData.menuId, subItem.submenuId, subItem.title, subItem.items, width, _contextMenuSystem);
-                }
-                else if (item is ContextMenuSpacerItem spItem)
-                {
-                    itemsBuilder.ContextMenuSpacerItem(menuData.menuId, _contextMenuSystem);
+                    case ContextMenuTextItem tItem:
+                        menuPanel.AddContextMenuText(menuData.menuId, tItem.title, tItem.onClick, tItem.isDisabled, contextMenuSystem);
+                        break;
+                    case ContextSubmenuItem subItem:
+                        menuPanel.AddContextSubmenu(menuData.menuId, subItem.submenuId, subItem.title, subItem.items, width, contextMenuSystem);
+                        break;
+                    case ContextMenuSpacerItem spItem:
+                        menuPanel.AddContextMenuSpacer(menuData.menuId, contextMenuSystem);
+                        break;
                 }
             }
 
-            var mainContextMenuBuilder = _uiBuilderFactory.Create();
-            mainContextMenuBuilder.ContextMenu(itemsBuilder);
-            mainContextMenuBuilder.ClearAndMake(menuRect.gameObject);
+            itemsBuilder.Update(menuPanel);
+
+            LayoutRebuilder.ForceRebuildLayoutImmediate(itemsBuilder.parentObject.GetComponent<RectTransform>());
+
+            menuRect.sizeDelta = new Vector2(width, Mathf.Min(Screen.height, itemsBuilder.height));
+
 
             // Find a placement for the new menu where it is fully visible on the screen
             // Info: 0,0 is bottom left of screen
@@ -102,7 +122,7 @@ namespace Assets.Scripts.Visuals
                 Vector3 pos = placement.position;
 
                 // 1. position on y axis
-                var contentRect = menuRect.GetComponentInChildren<PanelHandler>().Content.GetComponent<RectTransform>();
+                var contentRect = mainContent.GetComponent<RectTransform>();
                 Vector2 bottomRightCorner = new Vector2(pos.x + menuRect.sizeDelta.x, pos.y - contentRect.sizeDelta.y);
                 if (menuRect.sizeDelta.y >= Screen.height)
                 {
@@ -143,9 +163,9 @@ namespace Assets.Scripts.Visuals
             }
         }
 
-        RectTransform CreateMenuParent(string name = "ContextMenu")
+        RectTransform CreateMenuParent()
         {
-            var menu = new GameObject(name, typeof(RectTransform)).GetComponent<RectTransform>();
+            var menu = Instantiate(unityState.ContextMenuAtom).GetComponent<RectTransform>();
             menu.SetParent(transform);
             menu.pivot = new Vector2(0, 1);
             menu.sizeDelta = new Vector2(width, 0);

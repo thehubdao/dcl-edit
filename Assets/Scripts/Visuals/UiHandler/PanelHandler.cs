@@ -1,8 +1,67 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
+using UnityEngine.UI;
 
-public class PanelHandler : MonoBehaviour
+namespace Assets.Scripts.Visuals.UiHandler
 {
-    public GameObject Content;
+    public class PanelHandler : MonoBehaviour
+    {
+        public GameObject content;
+
+        public enum LayoutDirection
+        {
+            Horizontal,
+            Vertical
+        }
+
+        public void SetLayoutDirection(LayoutDirection value)
+        {
+            if (IsLayoutGroupCorrect(value)) return;
+
+            RemoveLayoutGroups();
+
+            HorizontalOrVerticalLayoutGroup layoutGroup;
+
+            switch (value)
+            {
+                case LayoutDirection.Horizontal:
+                    layoutGroup = content.AddComponent<HorizontalLayoutGroup>();
+                    break;
+                case LayoutDirection.Vertical:
+                    layoutGroup = content.AddComponent<VerticalLayoutGroup>();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(value), value, null);
+            }
+
+            layoutGroup.childForceExpandHeight = false;
+            layoutGroup.childForceExpandWidth = true;
+        }
+
+        private bool IsLayoutGroupCorrect(LayoutDirection value)
+        {
+            switch (value)
+            {
+                case LayoutDirection.Horizontal:
+                    return content.TryGetComponent(out HorizontalLayoutGroup _);
+                case LayoutDirection.Vertical:
+                    return content.TryGetComponent(out VerticalLayoutGroup _);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(value), value, null);
+            }
+        }
+
+        private void RemoveLayoutGroups()
+        {
+            if (content.TryGetComponent(out HorizontalLayoutGroup hlg))
+            {
+                Destroy(hlg);
+            }
+
+            if (content.TryGetComponent(out VerticalLayoutGroup vlg))
+            {
+                Destroy(vlg);
+            }
+        }
+    }
 }
