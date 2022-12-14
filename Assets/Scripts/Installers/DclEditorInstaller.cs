@@ -107,6 +107,6 @@ public class DclEditorInstaller : MonoInstaller
 
         Container.BindInterfacesAndSelfTo<ContextMenuState>().AsSingle();
 
-        Container.BindInterfacesAndSelfTo<SceneJsonReader>().AsSingle();
+        Container.BindInterfacesAndSelfTo<SceneJsonReaderSystem>().AsSingle();
     }
 }

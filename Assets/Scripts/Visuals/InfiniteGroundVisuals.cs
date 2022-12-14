@@ -1,10 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using Assets.Scripts.EditorState;
+using Assets.Scripts.System;
 using Assets.Scripts.System.Utility;
 using UnityEngine;
 using Zenject;
-using static SceneJsonReader;
+using static Assets.Scripts.System.SceneJsonReaderSystem;
 
 namespace Assets.Scripts.Visuals
 {
@@ -30,21 +31,21 @@ namespace Assets.Scripts.Visuals
         private CameraState cameraState;
 
         //private IPathState _pathState;
-        private SceneJsonReader sceneJsonReader;
+        private SceneJsonReaderSystem sceneJsonReaderSystem;
 
         [Inject]
-        private void Construct( /*IPathState pathState,*/ CameraState cameraState, SceneJsonReader sceneJsonReader)
+        private void Construct( /*IPathState pathState,*/ CameraState cameraState, SceneJsonReaderSystem sceneJsonReaderSystem)
         {
             this.cameraState = cameraState;
             //_pathState = pathState;
-            this.sceneJsonReader = sceneJsonReader;
+            this.sceneJsonReaderSystem = sceneJsonReaderSystem;
         }
 
 
         // Update is called once per frame
         void Update()
         {
-            DecentralandSceneData decentralandSceneData = sceneJsonReader.GetSceneData(false);
+            DecentralandSceneData decentralandSceneData = sceneJsonReaderSystem.GetSceneData(false);
 
             var parcelInformation = decentralandSceneData?.GetParcelsInformation();
 
