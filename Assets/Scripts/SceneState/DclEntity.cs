@@ -132,7 +132,6 @@ namespace Assets.Scripts.SceneState
             {
                 DclComponent newComponent = component.DeepCopy();
                 newComponent.Entity = deepcopyEntity;
-                newComponent.Properties = component.Properties;
                 deepcopyEntity.AddComponent(newComponent);
             }
 
