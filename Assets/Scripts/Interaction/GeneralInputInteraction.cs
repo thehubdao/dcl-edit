@@ -186,6 +186,23 @@ namespace Assets.Scripts.Interaction
                 }
             }
 
+            // When pressing Duplicates selected entity
+            if (_inputSystemAsset.Hotkeys.Duplicate.triggered)
+            {
+                DclEntity entity = _sceneDirectoryState.CurrentScene?.SelectionState.PrimarySelectedEntity;
+
+                DclEntity newEntity = entity.DeepCopy();
+
+                _sceneDirectoryState.CurrentScene.AddEntity(newEntity);
+
+                _editorEvents.InvokeHierarchyChangedEvent();
+
+                _sceneDirectoryState.CurrentScene.SelectionState.SecondarySelectedEntities.Clear();
+                _sceneDirectoryState.CurrentScene.SelectionState.PrimarySelectedEntity = newEntity;
+
+                _editorEvents.InvokeSelectionChangedEvent();
+
+            }
             // When pressing(down) Left mouse button, select the hovered entity
             if (_inputHelper.IsLeftMouseButtonDown() && !pressingAlt && isMouseIn3DView)
             {

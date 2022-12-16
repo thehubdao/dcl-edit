@@ -115,13 +115,28 @@ namespace Assets.Scripts.SceneState
         {
             return names.Any(name => Components.Exists(c => c.NameInCode == name));
         }
-
         public DclEntity(Guid id, string name = "", Guid parentId = default, bool isExposed = false)
         {
             Id = id;
             _customName = name;
             _parentId = parentId;
             IsExposed = isExposed;
+        }
+        public DclEntity DeepCopy()
+        {
+            DclEntity deepcopyEntity = new DclEntity(Id, CustomName, _parentId, true);
+
+            deepcopyEntity.Id = Guid.NewGuid();
+
+            foreach (var component in this.Components)
+            {
+                DclComponent newComponent = component.DeepCopy();
+                newComponent.Entity = deepcopyEntity;
+                newComponent.Properties = component.Properties;
+                deepcopyEntity.AddComponent(newComponent);
+            }
+
+            return deepcopyEntity;
         }
     }
 }
