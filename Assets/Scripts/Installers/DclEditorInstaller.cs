@@ -4,6 +4,7 @@ using Assets.Scripts.Interaction;
 using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
 using Assets.Scripts.Visuals;
+using Assets.Scripts.Visuals.UiBuilder;
 using UnityEngine;
 using Zenject;
 
@@ -25,6 +26,9 @@ public class DclEditorInstaller : MonoInstaller
 
     [SerializeField]
     private GameObject _scaleGizmoPrefab;
+
+    [SerializeField]
+    private GameObject unityStateObject;
 
 
     public override void InstallBindings()
@@ -51,6 +55,8 @@ public class DclEditorInstaller : MonoInstaller
 
         Container.BindInterfacesAndSelfTo<SetupSceneSystem>().AsSingle();
 
+        Container.BindInterfacesAndSelfTo<FrameTimeSystem>().AsSingle();
+
         Container.BindInterfacesAndSelfTo<CameraSystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<ExposeEntitySystem>().AsSingle();
@@ -69,11 +75,11 @@ public class DclEditorInstaller : MonoInstaller
 
         Container.BindInterfacesAndSelfTo<GizmoState>().AsSingle();
 
-        Container.BindInterfacesAndSelfTo<UnityState>().FromComponentOn(gameObject).AsSingle();
+        Container.BindInterfacesAndSelfTo<UnityState>().FromComponentOn(unityStateObject).AsSingle();
 
         Container.BindInterfacesAndSelfTo<InputHelper>().AsSingle();
 
-        Container.BindFactory<UiBuilder, UiBuilder.Factory>().AsSingle();
+        Container.BindFactory<GameObject, UiBuilder, UiBuilder.Factory>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<ProjectState>().AsSingle();
 
@@ -102,5 +108,11 @@ public class DclEditorInstaller : MonoInstaller
         Container.Bind<ProjectSettingState>().To<ProjectSettingState>().AsSingle();
 
         Container.Bind<SceneSettingState>().To<SceneSettingState>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<ContextMenuSystem>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<ContextMenuState>().AsSingle();
+        
+        Container.BindInterfacesAndSelfTo<NumberInputSystem>().AsSingle();
     }
 }

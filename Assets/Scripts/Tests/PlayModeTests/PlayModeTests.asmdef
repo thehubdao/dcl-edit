@@ -9,7 +9,9 @@
         "Utility",
         "SceneState",
         "Systems",
-        "Events"
+        "Events",
+        "Visuals",
+        "Unity.TextMeshPro"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

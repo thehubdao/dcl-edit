@@ -1,3 +1,4 @@
+using Assets.Scripts.Visuals.UiBuilder;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,11 +13,16 @@ namespace Assets.Scripts.Visuals.UiHandler
         [SerializeField]
         public Toggle CheckBoxInput;
 
-        public void SetActions(UiBuilder.UiPropertyActions<bool> actions)
+        public void SetActions(StringPropertyAtom.UiPropertyActions<bool> actions)
         {
-            CheckBoxInput.onValueChanged.RemoveAllListeners();
+            ResetActions();
 
             CheckBoxInput.onValueChanged.AddListener(value => actions.OnSubmit(value));
+        }
+
+        public void ResetActions()
+        {
+            CheckBoxInput.onValueChanged.RemoveAllListeners();
         }
     }
 }
