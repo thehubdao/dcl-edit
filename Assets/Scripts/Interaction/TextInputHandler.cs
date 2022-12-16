@@ -1,8 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using Assets.Scripts.EditorState;
-using Assets.Scripts.System;
 using TMPro;
 using UnityEngine;
 using Zenject;
@@ -15,6 +11,9 @@ public class TextInputHandler : MonoBehaviour
     [SerializeField]
     private TextMeshProUGUI placeHolderText;
 
+    private Color _currentHighlightedBorderColor;
+    private Color _validHighlightedBorderColor;
+    
     // dependencies
     private InputState _inputState;
 
@@ -22,6 +21,8 @@ public class TextInputHandler : MonoBehaviour
     private void Construct(InputState inputState)
     {
         _inputState = inputState;
+        _validHighlightedBorderColor = inputField.colors.selectedColor;
+        _currentHighlightedBorderColor = _validHighlightedBorderColor;
     }
 
     public void SetCurrentText(string text)
@@ -39,12 +40,17 @@ public class TextInputHandler : MonoBehaviour
         placeHolderText.text = placeHolder;
     }
 
-    public void SetActions(Action<string> onChange, Action<string> onSubmit, Action<string> onAbort)
+    public void ResetActions()
     {
         // remove old listeners. This is necessary, because the input field is pooled and might be reused
         inputField.onSelect.RemoveAllListeners();
         inputField.onValueChanged.RemoveAllListeners();
         inputField.onEndEdit.RemoveAllListeners();
+    }
+
+    public void SetActions(Action<string> onChange, Action<string> onSubmit, Action<string> onAbort)
+    {
+        ResetActions();
 
         inputField.onSelect.AddListener(_ => _inputState.InState = InputState.InStateType.UiInput);
         inputField.onValueChanged.AddListener(value => onChange(value));
@@ -62,7 +68,19 @@ public class TextInputHandler : MonoBehaviour
                 onSubmit(value);
             }
         });
+    }
 
-
+    public void SetBorderColorValid(bool validity)
+    {
+        var color = validity ? _validHighlightedBorderColor : Color.red;
+        
+        if (_currentHighlightedBorderColor.Equals(color))
+            return;
+        
+        _currentHighlightedBorderColor = color;
+        var inputFieldColors = inputField.colors;
+        inputFieldColors.selectedColor = color;
+        inputField.colors = inputFieldColors;
     }
 }
+
