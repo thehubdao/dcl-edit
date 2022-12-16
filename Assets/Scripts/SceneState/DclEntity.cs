@@ -82,6 +82,13 @@ namespace Assets.Scripts.SceneState
             component.Entity = this;
             Components.Add(component);
         }
+        
+        public void RemoveComponent(DclComponent component)
+        {
+            component.Entity = null;
+            if(!Components.Remove(component))
+                Debug.Log("No Component on Entity");
+        }
 
         public DclComponent GetComponentByName(string name)
         {
