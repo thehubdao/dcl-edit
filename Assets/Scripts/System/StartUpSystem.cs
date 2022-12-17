@@ -13,7 +13,6 @@ namespace Assets.Scripts.System
         private SetupSceneEventListenersSystem _setupSceneEventListenersSystem;
 
         // dependencies
-        private SetupSceneSystem _setupSceneSystem;
         private WorkspaceSaveSystem _workspaceSaveSystem;
         private UnityState _unityState;
         private IPathState _pathState;
@@ -23,7 +22,6 @@ namespace Assets.Scripts.System
 
         [Inject]
         private void Construct(
-            SetupSceneSystem setupSceneSystem,
             WorkspaceSaveSystem workspaceSaveSystem,
             UnityState unityState,
             IPathState pathState,
@@ -31,7 +29,6 @@ namespace Assets.Scripts.System
             SceneManagerSystem sceneManagerSystem,
             SceneViewSystem sceneViewSystem)
         {
-            _setupSceneSystem = setupSceneSystem;
             _workspaceSaveSystem = workspaceSaveSystem;
             _unityState = unityState;
             _pathState = pathState;
@@ -44,17 +41,10 @@ namespace Assets.Scripts.System
         {
             sceneManagerSystem.DiscoverScenes();
 
+            // TODO: load proper scene. Work around is to load the first scene
             sceneManagerSystem.SetFirstSceneAsCurrent();
 
             sceneViewSystem.SetUpCurrentScene();
-
-            // Load default scene
-            //var v2Path = _pathState.ProjectPath + "/dcl-edit/saves/v2/New Scene.dclscene";
-
-            // TODO: load proper scene. Work around is to load the first scene
-
-
-            //_setupSceneSystem.SetupScene(v2Path);
         }
 
         void Start()
