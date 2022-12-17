@@ -18,6 +18,8 @@ namespace Assets.Scripts.System
         private UnityState _unityState;
         private IPathState _pathState;
         private FrameTimeSystem _frameTimeSystem;
+        private SceneManagerSystem sceneManagerSystem;
+        private SceneViewSystem sceneViewSystem;
 
         [Inject]
         private void Construct(
@@ -25,21 +27,34 @@ namespace Assets.Scripts.System
             WorkspaceSaveSystem workspaceSaveSystem,
             UnityState unityState,
             IPathState pathState,
-            FrameTimeSystem frameTimeSystem)
+            FrameTimeSystem frameTimeSystem,
+            SceneManagerSystem sceneManagerSystem,
+            SceneViewSystem sceneViewSystem)
         {
             _setupSceneSystem = setupSceneSystem;
             _workspaceSaveSystem = workspaceSaveSystem;
             _unityState = unityState;
             _pathState = pathState;
             _frameTimeSystem = frameTimeSystem;
+            this.sceneManagerSystem = sceneManagerSystem;
+            this.sceneViewSystem = sceneViewSystem;
         }
 
         void Awake()
         {
-            // Load default scene
-            var v2Path = _pathState.ProjectPath + "/dcl-edit/saves/v2/New Scene.dclscene";
+            sceneManagerSystem.DiscoverScenes();
 
-            _setupSceneSystem.SetupScene(v2Path);
+            sceneManagerSystem.SetFirstSceneAsCurrent();
+
+            sceneViewSystem.SetUpCurrentScene();
+
+            // Load default scene
+            //var v2Path = _pathState.ProjectPath + "/dcl-edit/saves/v2/New Scene.dclscene";
+
+            // TODO: load proper scene. Work around is to load the first scene
+
+
+            //_setupSceneSystem.SetupScene(v2Path);
         }
 
         void Start()

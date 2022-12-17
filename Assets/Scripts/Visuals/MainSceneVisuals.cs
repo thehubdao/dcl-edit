@@ -3,6 +3,7 @@ using Assets.Scripts.Interaction;
 using Assets.Scripts.Utility;
 using System.Collections.Generic;
 using System.Linq;
+using Assets.Scripts.System;
 using UnityEngine;
 using Zenject;
 
@@ -11,34 +12,34 @@ namespace Assets.Scripts.Visuals
     public class MainSceneVisuals : MonoBehaviour, ISetupSceneEventListeners
     {
         // Dependencies
-        private EntitySelectInteraction.Factory _entitySelectInteractionFactory;
-        private EditorState.SceneDirectoryState _sceneDirectoryState;
-        private EditorEvents _editorEvents;
+        private EntitySelectInteraction.Factory entitySelectInteractionFactory;
+        private EditorEvents editorEvents;
+        private SceneManagerSystem sceneManagerSystem;
 
         [Inject]
         public void Construct(
-            EntitySelectInteraction.Factory entitySelectionInteractionFactory,
-            EditorState.SceneDirectoryState sceneDirectoryState,
-            EditorEvents editorEvents)
+            EntitySelectInteraction.Factory entitySelectInteractionFactory,
+            EditorEvents editorEvents,
+            SceneManagerSystem sceneManagerSystem)
         {
-            _entitySelectInteractionFactory = entitySelectionInteractionFactory;
-            _sceneDirectoryState = sceneDirectoryState;
-            _editorEvents = editorEvents;
+            this.entitySelectInteractionFactory = entitySelectInteractionFactory;
+            this.editorEvents = editorEvents;
+            this.sceneManagerSystem = sceneManagerSystem;
         }
 
         public void SetupSceneEventListeners()
         {
             // when there is a scene loaded, add the visuals updater
-            _editorEvents.onHierarchyChangedEvent += UpdateVisuals;
+            editorEvents.onHierarchyChangedEvent += UpdateVisuals;
 
-            _editorEvents.onSelectionChangedEvent += UpdateVisuals;
+            editorEvents.onSelectionChangedEvent += UpdateVisuals;
 
             UpdateVisuals();
         }
 
         private void UpdateVisuals()
         {
-            var scene = _sceneDirectoryState.CurrentScene;
+            var scene = sceneManagerSystem.GetCurrentScene();
             if (scene == null)
                 return;
 
@@ -54,11 +55,11 @@ namespace Assets.Scripts.Visuals
             foreach (var entity in scene.AllEntities.Select(e => e.Value))
             {
                 //var newEntityVisualsGameObject = Instantiate(_entityVisualsPrefab, transform);
-                var newEntityInteraction = _entitySelectInteractionFactory.Create();
-                newEntityInteraction.Id = entity.Id;
+                var newEntityInteraction = entitySelectInteractionFactory.Create();
+                newEntityInteraction.id = entity.Id;
 
                 var newEntityVisuals = newEntityInteraction.GetComponent<EntityVisuals>();
-                newEntityVisuals.Id = entity.Id;
+                newEntityVisuals.id = entity.Id;
 
                 newEntityInteraction.transform.parent = transform;
 
@@ -68,11 +69,11 @@ namespace Assets.Scripts.Visuals
             // set entity visual's parents
             foreach (var visual in visuals)
             {
-                var parent = scene.GetEntityById(visual.Id).Parent; // look, if the actual entity of the visual has a parent
+                var parent = scene.GetEntityById(visual.id).Parent; // look, if the actual entity of the visual has a parent
 
                 if (parent != null)
                     // set the transforms parent to the transform of the parent visual
-                    visual.transform.SetParent(visuals.Find(v => v.Id == parent.Id).transform, true);
+                    visual.transform.SetParent(visuals.Find(v => v.id == parent.Id).transform, true);
             }
 
             // update entity visuals

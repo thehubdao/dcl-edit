@@ -1,37 +1,37 @@
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using Assets.Scripts.EditorState;
-using UnityEngine;
 using Zenject;
 
-public class SetupSceneEventListenersSystem
+namespace Assets.Scripts.System
 {
-    // Dependencies
-    private UnityState _unityState;
-    private SceneDirectoryState _sceneDirectoryState;
-
-    [Inject]
-    private void Construct(UnityState unityState, SceneDirectoryState sceneDirectoryState)
+    public class SetupSceneEventListenersSystem
     {
-        _unityState = unityState;
-        _sceneDirectoryState = sceneDirectoryState;
-    }
+        // Dependencies
+        private UnityState unityState;
+        private SceneManagerSystem sceneManagerSystem;
 
-    public void SetupSceneEventListeners()
-    {
-        var scene = _sceneDirectoryState.CurrentScene;
-
-        if (scene == null)
-            return;
-
-        var sceneListenersToSetup = 
-            _unityState.SceneVisuals.GetComponentsInChildren<ISetupSceneEventListeners>()
-                .Concat(_unityState.Ui.GetComponentsInChildren<ISetupSceneEventListeners>());
-
-        foreach (var listenerToSetup in sceneListenersToSetup)
+        [Inject]
+        private void Construct(UnityState unityState, SceneManagerSystem sceneManagerSystem)
         {
-            listenerToSetup.SetupSceneEventListeners();
+            this.unityState = unityState;
+            this.sceneManagerSystem = sceneManagerSystem;
+        }
+
+        public void SetupSceneEventListeners()
+        {
+            var scene = sceneManagerSystem.GetCurrentScene();
+
+            if (scene == null)
+                return;
+
+            var sceneListenersToSetup =
+                unityState.SceneVisuals.GetComponentsInChildren<ISetupSceneEventListeners>()
+                    .Concat(unityState.Ui.GetComponentsInChildren<ISetupSceneEventListeners>());
+
+            foreach (var listenerToSetup in sceneListenersToSetup)
+            {
+                listenerToSetup.SetupSceneEventListeners();
+            }
         }
     }
 }

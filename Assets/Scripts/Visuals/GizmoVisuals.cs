@@ -8,49 +8,50 @@ namespace Assets.Scripts.Visuals
 {
     public class GizmoVisuals : MonoBehaviour, ISetupSceneEventListeners
     {
-        private GameObject _translateGizmoObject = null;
-        private GameObject _rotateGizmoObject = null;
-        private GameObject _scaleGizmoObject = null;
-        private GameObject _activeGizmo = null;
+        private GameObject translateGizmoObject = null;
+        private GameObject rotateGizmoObject = null;
+        private GameObject scaleGizmoObject = null;
+        private GameObject activeGizmo = null;
 
         // Dependencies
-        private EditorState.SceneDirectoryState _sceneDirectoryState;
-        private TranslateFactory _translateFactory;
-        private RotateFactory _rotateFactory;
-        private ScaleFactory _scaleFactory;
-        private GizmoState _gizmoState;
-        private UnityState _unityState;
-        private EditorEvents _editorEvents;
+
+        private TranslateFactory translateFactory;
+        private RotateFactory rotateFactory;
+        private ScaleFactory scaleFactory;
+        private GizmoState gizmoState;
+        private UnityState unityState;
+        private EditorEvents editorEvents;
+        private SceneManagerSystem sceneManagerSystem;
 
         [Inject]
         private void Construct(
-            EditorState.SceneDirectoryState sceneDirectoryState,
             TranslateFactory translateFactory,
             RotateFactory rotateFactory,
             ScaleFactory scaleFactory,
             GizmoState gizmoState,
             UnityState unityState,
-            EditorEvents editorEvents)
+            EditorEvents editorEvents,
+            SceneManagerSystem sceneManagerSystem)
         {
-            _sceneDirectoryState = sceneDirectoryState;
-            _translateFactory = translateFactory;
-            _rotateFactory = rotateFactory;
-            _scaleFactory = scaleFactory;
-            _gizmoState = gizmoState;
-            _unityState = unityState;
-            _editorEvents = editorEvents;
+            this.translateFactory = translateFactory;
+            this.rotateFactory = rotateFactory;
+            this.scaleFactory = scaleFactory;
+            this.gizmoState = gizmoState;
+            this.unityState = unityState;
+            this.editorEvents = editorEvents;
+            this.sceneManagerSystem = sceneManagerSystem;
         }
 
         public void SetupSceneEventListeners()
         {
-            _editorEvents.onSelectionChangedEvent += UpdateVisuals;
+            editorEvents.onSelectionChangedEvent += UpdateVisuals;
         }
 
         private void UpdateVisuals()
         {
-            var selectedEntity = _sceneDirectoryState?
-                .CurrentScene?
-                .SelectionState?
+            var selectedEntity = sceneManagerSystem
+                .GetCurrentScene()?
+                .SelectionState
                 .PrimarySelectedEntity;
 
             if (selectedEntity == null)
@@ -59,38 +60,38 @@ namespace Assets.Scripts.Visuals
                 return;
             }
 
-            _activeGizmo?.SetActive(false);
-            switch (_gizmoState.CurrentMode)
+            activeGizmo?.SetActive(false);
+            switch (gizmoState.CurrentMode)
             {
                 case GizmoState.Mode.Translate:
-                    if (_translateGizmoObject == null)
-                        _translateGizmoObject = _translateFactory.Create().gameObject;
-                    _activeGizmo = _translateGizmoObject;
+                    if (translateGizmoObject == null)
+                        translateGizmoObject = translateFactory.Create().gameObject;
+                    activeGizmo = translateGizmoObject;
                     break;
                 case GizmoState.Mode.Rotate:
-                    if (_rotateGizmoObject == null)
-                        _rotateGizmoObject = _rotateFactory.Create().gameObject;
-                    _activeGizmo = _rotateGizmoObject;
+                    if (rotateGizmoObject == null)
+                        rotateGizmoObject = rotateFactory.Create().gameObject;
+                    activeGizmo = rotateGizmoObject;
                     break;
                 case GizmoState.Mode.Scale:
-                    if (_scaleGizmoObject == null)
-                        _scaleGizmoObject = _scaleFactory.Create().gameObject;
-                    _activeGizmo = _scaleGizmoObject;
+                    if (scaleGizmoObject == null)
+                        scaleGizmoObject = scaleFactory.Create().gameObject;
+                    activeGizmo = scaleGizmoObject;
                     break;
             }
 
-            _activeGizmo.SetActive(true);
+            activeGizmo.SetActive(true);
 
             var selectedTransform = selectedEntity.GetTransformComponent();
-            _activeGizmo.transform.position = selectedTransform.GlobalPosition;
-            _activeGizmo.transform.rotation = selectedTransform.GlobalRotation;
+            activeGizmo.transform.position = selectedTransform.GlobalPosition;
+            activeGizmo.transform.rotation = selectedTransform.GlobalRotation;
         }
 
         private void HideGizmo()
         {
-            _translateGizmoObject?.SetActive(false);
-            _rotateGizmoObject?.SetActive(false);
-            _scaleGizmoObject?.SetActive(false);
+            translateGizmoObject?.SetActive(false);
+            rotateGizmoObject?.SetActive(false);
+            scaleGizmoObject?.SetActive(false);
         }
 
         public class TranslateFactory : PlaceholderFactory<GizmoSizeFixerSystem>

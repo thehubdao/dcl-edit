@@ -71,7 +71,7 @@ public class DclEditorInstaller : MonoInstaller
 
         Container.BindInterfacesAndSelfTo<CameraState>().AsSingle();
 
-        Container.BindInterfacesAndSelfTo<SceneDirectoryState>().AsSingle();
+        //Container.BindInterfacesAndSelfTo<SceneDirectoryState>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<GizmoState>().AsSingle();
 
@@ -114,5 +114,11 @@ public class DclEditorInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<ContextMenuState>().AsSingle();
         
         Container.BindInterfacesAndSelfTo<NumberInputSystem>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<SceneManagerSystem>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<SceneManagerState>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<SceneViewSystem>().AsSingle();
     }
 }

@@ -1,4 +1,5 @@
 using Assets.Scripts.SceneState;
+using Assets.Scripts.System;
 using Assets.Scripts.Utility;
 using UnityEngine;
 using Zenject;
@@ -10,12 +11,12 @@ namespace Assets.Scripts.Visuals
         protected const int EntityClickLayer = 10;
 
         // Dependencies
-        private EditorState.SceneDirectoryState _sceneDirectoryState;
+        private SceneManagerSystem sceneManagerSystem;
 
         [Inject]
-        private void Construct(EditorState.SceneDirectoryState sceneDirectoryState)
+        private void Construct(SceneManagerSystem sceneManagerSystem)
         {
-            _sceneDirectoryState = sceneDirectoryState;
+            this.sceneManagerSystem = sceneManagerSystem;
         }
 
 
@@ -26,21 +27,24 @@ namespace Assets.Scripts.Visuals
 
         protected void UpdateSelection(DclEntity entity)
         {
-            var selectionState = _sceneDirectoryState?.CurrentScene?.SelectionState;
-            if (selectionState != null)
+            var selectionState = sceneManagerSystem.GetCurrentScene()?.SelectionState;
+
+            if (selectionState == null)
             {
-                if (selectionState.PrimarySelectedEntity == entity)
-                {
-                    SetRenderingLayerRecursive(gameObject, LayerMask.NameToLayer("Outline2"));
-                }
-                else if (selectionState.SecondarySelectedEntities.Contains(entity))
-                {
-                    SetRenderingLayerRecursive(gameObject, LayerMask.NameToLayer("Outline3"));
-                }
-                else
-                {
-                    SetRenderingLayerRecursive(gameObject, LayerMask.NameToLayer("Default"));
-                }
+                return;
+            }
+
+            if (selectionState.PrimarySelectedEntity == entity)
+            {
+                SetRenderingLayerRecursive(gameObject, LayerMask.NameToLayer("Outline2"));
+            }
+            else if (selectionState.SecondarySelectedEntities.Contains(entity))
+            {
+                SetRenderingLayerRecursive(gameObject, LayerMask.NameToLayer("Outline3"));
+            }
+            else
+            {
+                SetRenderingLayerRecursive(gameObject, LayerMask.NameToLayer("Default"));
             }
         }
 
