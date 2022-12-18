@@ -9,9 +9,6 @@ namespace Assets.Scripts.System
         [SerializeField]
         private CameraSystem _cameraSystem;
 
-        [SerializeField]
-        private SetupSceneEventListenersSystem _setupSceneEventListenersSystem;
-
         // dependencies
         private WorkspaceSaveSystem _workspaceSaveSystem;
         private UnityState _unityState;

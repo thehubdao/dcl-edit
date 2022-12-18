@@ -63,6 +63,7 @@ namespace Assets.Scripts.EditorState
         public SceneDirectoryState(string directoryPath, Guid id)
         {
             this.directoryPath = directoryPath;
+            this.id = id;
         }
     }
 }

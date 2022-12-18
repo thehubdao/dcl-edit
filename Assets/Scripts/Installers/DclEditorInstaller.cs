@@ -63,8 +63,6 @@ public class DclEditorInstaller : MonoInstaller
 
         Container.BindInterfacesAndSelfTo<ExposeEntitySystem>().AsSingle();
 
-        Container.BindInterfacesAndSelfTo<SetupSceneEventListenersSystem>().AsSingle();
-
         Container.BindInterfacesAndSelfTo<WorkspaceSaveSystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<ModelCacheSystem>().AsSingle();

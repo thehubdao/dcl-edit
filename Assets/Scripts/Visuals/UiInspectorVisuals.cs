@@ -10,7 +10,7 @@ using Zenject;
 
 namespace Assets.Scripts.Visuals
 {
-    public class UiInspectorVisuals : MonoBehaviour, ISetupSceneEventListeners
+    public class UiInspectorVisuals : MonoBehaviour
     {
         [SerializeField]
         private GameObject content;
@@ -38,9 +38,11 @@ namespace Assets.Scripts.Visuals
             this.editorEvents = editorEvents;
             this.commandSystem = commandSystem;
             this.sceneManagerSystem = sceneManagerSystem;
+
+            SetupEventListeners();
         }
 
-        public void SetupSceneEventListeners()
+        public void SetupEventListeners()
         {
             editorEvents.onSelectionChangedEvent += UpdateVisuals;
             UpdateVisuals();

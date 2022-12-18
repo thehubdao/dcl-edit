@@ -13,7 +13,7 @@ using static Assets.Scripts.Visuals.UiBuilder.UiBuilder;
 
 namespace Assets.Scripts.Visuals
 {
-    public class UiHierarchyVisuals : MonoBehaviour, ISetupSceneEventListeners
+    public class UiHierarchyVisuals : MonoBehaviour
     {
 #pragma warning disable CS0649 // Warning: Uninitialized filed. Serialized fields will be initialized by Unity
 
@@ -62,9 +62,11 @@ namespace Assets.Scripts.Visuals
             this.hierarchyChangeSystem = hierarchyChangeSystem;
             this.contextMenuSystem = contextMenuSystem;
             this.sceneManagerSystem = sceneManagerSystem;
+
+            SetupEventListeners();
         }
 
-        public void SetupSceneEventListeners()
+        public void SetupEventListeners()
         {
             events.onHierarchyChangedEvent += MarkForUpdate;
             events.onSelectionChangedEvent += MarkForUpdate;

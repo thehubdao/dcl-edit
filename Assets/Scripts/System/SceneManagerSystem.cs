@@ -102,6 +102,11 @@ namespace Assets.Scripts.System
                 };
             }
 
+            if (sceneFileContents.id == Guid.Empty)
+            {
+                sceneFileContents.id = Guid.NewGuid();
+            }
+
             return new SceneDirectoryState(sceneFileContents.relativePath, sceneFileContents.id);
         }
 

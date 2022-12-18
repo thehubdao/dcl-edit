@@ -6,7 +6,7 @@ using Zenject;
 
 namespace Assets.Scripts.Visuals
 {
-    public class TemporaryEntityVisuals : MonoBehaviour, ISetupSceneEventListeners
+    public class TemporaryEntityVisuals : MonoBehaviour
     {
         // Dependencies
         private EditorEvents editorEvents;
@@ -19,9 +19,11 @@ namespace Assets.Scripts.Visuals
         {
             this.editorEvents = editorEvents;
             this.sceneManagerSystem = sceneManagerSystem;
+
+            SetupEventListeners();
         }
 
-        public void SetupSceneEventListeners()
+        public void SetupEventListeners()
         {
             // when there is a scene loaded, add the visuals updater
             editorEvents.onHierarchyChangedEvent += UpdateVisuals;
