@@ -24,9 +24,7 @@ namespace Assets.Scripts.System
             if (scene == null)
                 return;
 
-            var sceneListenersToSetup =
-                unityState.SceneVisuals.GetComponentsInChildren<ISetupSceneEventListeners>()
-                    .Concat(unityState.Ui.GetComponentsInChildren<ISetupSceneEventListeners>());
+            var sceneListenersToSetup = unityState.Ui.GetComponentsInChildren<ISetupSceneEventListeners>();
 
             foreach (var listenerToSetup in sceneListenersToSetup)
             {

@@ -1,3 +1,4 @@
+using Assets.Scripts.Events;
 using Zenject;
 
 namespace Assets.Scripts.System
@@ -8,16 +9,19 @@ namespace Assets.Scripts.System
         private SceneManagerSystem sceneManagerSystem;
         private CameraSystem cameraSystem;
         private SetupSceneEventListenersSystem setupSceneEventListenersSystem;
+        private EditorEvents editorEvents;
 
         [Inject]
         private void Construct(
             SceneManagerSystem sceneManagerSystem,
             CameraSystem cameraSystem,
-            SetupSceneEventListenersSystem setupSceneEventListenersSystem)
+            SetupSceneEventListenersSystem setupSceneEventListenersSystem,
+            EditorEvents editorEvents)
         {
             this.sceneManagerSystem = sceneManagerSystem;
             this.cameraSystem = cameraSystem;
             this.setupSceneEventListenersSystem = setupSceneEventListenersSystem;
+            this.editorEvents = editorEvents;
         }
 
 
@@ -28,6 +32,8 @@ namespace Assets.Scripts.System
             cameraSystem.CameraStartup();
 
             setupSceneEventListenersSystem.SetupSceneEventListeners();
+
+            editorEvents.InvokeHierarchyChangedEvent();
         }
     }
 }

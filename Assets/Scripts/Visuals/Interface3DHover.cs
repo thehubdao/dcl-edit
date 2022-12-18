@@ -5,15 +5,10 @@ using Zenject;
 
 namespace Assets.Scripts.Visuals
 {
-    public abstract class Interface3DHover : MonoBehaviour, ISetupSceneEventListeners
+    public abstract class Interface3DHover : MonoBehaviour
     {
         private bool _isHovering = false;
 
-        // TODO: Remove
-        void Start()
-        {
-            SetupSceneEventListeners();
-        }
 
         // Dependencies
         private Interface3DState _interface3DState;
@@ -24,9 +19,11 @@ namespace Assets.Scripts.Visuals
         {
             _interface3DState = interface3DState;
             _editorEvents = editorEvents;
+
+            SetupEventListeners();
         }
 
-        public void SetupSceneEventListeners()
+        public void SetupEventListeners()
         {
             _editorEvents.onHoverChangedEvent += () =>
             {

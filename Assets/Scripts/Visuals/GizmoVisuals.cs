@@ -6,7 +6,7 @@ using Zenject;
 
 namespace Assets.Scripts.Visuals
 {
-    public class GizmoVisuals : MonoBehaviour, ISetupSceneEventListeners
+    public class GizmoVisuals : MonoBehaviour
     {
         private GameObject translateGizmoObject = null;
         private GameObject rotateGizmoObject = null;
@@ -40,9 +40,11 @@ namespace Assets.Scripts.Visuals
             this.unityState = unityState;
             this.editorEvents = editorEvents;
             this.sceneManagerSystem = sceneManagerSystem;
+
+            SetupEventListeners();
         }
 
-        public void SetupSceneEventListeners()
+        public void SetupEventListeners()
         {
             editorEvents.onSelectionChangedEvent += UpdateVisuals;
         }

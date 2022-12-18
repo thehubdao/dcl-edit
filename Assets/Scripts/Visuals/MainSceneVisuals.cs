@@ -1,47 +1,35 @@
+using System;
 using Assets.Scripts.Events;
 using Assets.Scripts.Interaction;
 using Assets.Scripts.Utility;
 using System.Collections.Generic;
 using System.Linq;
+using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
 using UnityEngine;
 using Zenject;
 
 namespace Assets.Scripts.Visuals
 {
-    public class MainSceneVisuals : MonoBehaviour, ISetupSceneEventListeners
+    public class MainSceneVisuals : MonoBehaviour
     {
         // Dependencies
         private EntitySelectInteraction.Factory entitySelectInteractionFactory;
-        private EditorEvents editorEvents;
         private SceneManagerSystem sceneManagerSystem;
 
         [Inject]
         public void Construct(
             EntitySelectInteraction.Factory entitySelectInteractionFactory,
-            EditorEvents editorEvents,
             SceneManagerSystem sceneManagerSystem)
         {
             this.entitySelectInteractionFactory = entitySelectInteractionFactory;
-            this.editorEvents = editorEvents;
             this.sceneManagerSystem = sceneManagerSystem;
         }
 
-        public void SetupSceneEventListeners()
+
+        public void ShowScene(Guid sceneId)
         {
-            // when there is a scene loaded, add the visuals updater
-            editorEvents.onHierarchyChangedEvent += UpdateVisuals;
-
-            editorEvents.onSelectionChangedEvent += UpdateVisuals;
-
-            UpdateVisuals();
-        }
-
-        private void UpdateVisuals()
-        {
-            var scene = sceneManagerSystem.GetCurrentScene();
-            if (scene == null)
-                return;
+            var scene = sceneManagerSystem.GetScene(sceneId);
 
             // TODO: be smarter about caching and stuff
             foreach (var child in transform.GetChildren())
@@ -81,6 +69,10 @@ namespace Assets.Scripts.Visuals
             {
                 visual.UpdateVisuals();
             }
+        }
+
+        public class Factory : PlaceholderFactory<MainSceneVisuals>
+        {
         }
     }
 }

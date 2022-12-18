@@ -28,6 +28,10 @@ public class DclEditorInstaller : MonoInstaller
     private GameObject _scaleGizmoPrefab;
 
     [SerializeField]
+    private GameObject mainSceneVisualsPrefab;
+
+    [Header("Unity State")]
+    [SerializeField]
     private GameObject unityStateObject;
 
 
@@ -87,6 +91,8 @@ public class DclEditorInstaller : MonoInstaller
 
         Container.BindFactory<EntitySelectInteraction, EntitySelectInteraction.Factory>().FromComponentInNewPrefab(_entityVisualPrefab);
 
+        Container.BindFactory<MainSceneVisuals, MainSceneVisuals.Factory>().FromComponentInNewPrefab(mainSceneVisualsPrefab);
+
         Container.BindFactory<GizmoSizeFixerSystem, GizmoVisuals.TranslateFactory>().FromComponentInNewPrefab(_translateGizmoPrefab).AsSingle();
 
         Container.BindFactory<GizmoSizeFixerSystem, GizmoVisuals.RotateFactory>().FromComponentInNewPrefab(_rotateGizmoPrefab).AsSingle();
@@ -110,7 +116,7 @@ public class DclEditorInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<ContextMenuSystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<ContextMenuState>().AsSingle();
-        
+
         Container.BindInterfacesAndSelfTo<NumberInputSystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<SceneManagerSystem>().AsSingle();
