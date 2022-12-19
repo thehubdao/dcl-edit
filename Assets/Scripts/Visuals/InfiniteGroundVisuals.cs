@@ -11,8 +11,6 @@ namespace Assets.Scripts.Visuals
 {
     public class InfiniteGroundVisuals : MonoBehaviour
     {
-        //public new Camera camera;
-
         //Used to change the position of the tiles in the "update()"
         const int tilePositionChange = 16;
 
@@ -29,15 +27,12 @@ namespace Assets.Scripts.Visuals
 
         // Dependencies
         private CameraState cameraState;
-
-        //private IPathState _pathState;
         private SceneJsonReaderSystem sceneJsonReaderSystem;
 
         [Inject]
-        private void Construct( /*IPathState pathState,*/ CameraState cameraState, SceneJsonReaderSystem sceneJsonReaderSystem)
+        private void Construct( CameraState cameraState, SceneJsonReaderSystem sceneJsonReaderSystem)
         {
             this.cameraState = cameraState;
-            //_pathState = pathState;
             this.sceneJsonReaderSystem = sceneJsonReaderSystem;
         }
 
@@ -96,14 +91,9 @@ namespace Assets.Scripts.Visuals
                         newTile.ShowDefaultGrass = !availableLandPosition?.Contains(currentPos) ?? false;
 
                         tiles.Add(currentPos, newTile);
-
-                        //goto endCreateLoop; // create only one tile per frame
                     }
                 }
             }
-
-            //endCreateLoop:
-
 
             // Delete Tiles that are to far away
             var minPos = campos - new Vector2Int(destroyDistance, destroyDistance);
@@ -117,7 +107,6 @@ namespace Assets.Scripts.Visuals
                 {
                     Destroy(tile.Value.gameObject);
                     keysToRemove.Add(tile.Key);
-                    //break; // remove only one tile per frame
                 }
             }
 
