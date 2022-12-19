@@ -21,6 +21,7 @@ namespace Assets.Scripts.Visuals
         private UiBuilder.UiBuilder uiBuilder;
         private SceneDirectoryState sceneDirectoryState;
         private EditorEvents editorEvents;
+        private CommandSystem commandSystem;
 
         [Inject]
         private void Construct(
@@ -28,13 +29,15 @@ namespace Assets.Scripts.Visuals
             UpdatePropertiesFromUiSystem updatePropertiesSystem,
             UiBuilder.UiBuilder.Factory uiBuilderFactory,
             SceneDirectoryState sceneDirectoryState,
-            EditorEvents editorEvents)
+            EditorEvents editorEvents,
+            CommandSystem commandSystem)
         {
             this.inputState = inputState;
             this.updatePropertiesSystem = updatePropertiesSystem;
             uiBuilder = uiBuilderFactory.Create(content);
             this.sceneDirectoryState = sceneDirectoryState;
             this.editorEvents = editorEvents;
+            this.commandSystem = commandSystem;
         }
 
         public void SetupSceneEventListeners()
@@ -83,7 +86,11 @@ namespace Assets.Scripts.Visuals
             foreach (var component in selectedEntity.Components ?? new List<DclComponent>())
             {
                 var componentPanel = inspectorPanel.AddPanelWithBorder();
-                componentPanel.AddPanelHeader(component.NameInCode, null);
+                
+                if (component.NameInCode == "Transform")
+                    componentPanel.AddPanelHeader(component.NameInCode, null);
+                else
+                    componentPanel.AddPanelHeader(component.NameInCode, () => commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateRemoveComponent(selectedEntity.Id, component)));
 
                 foreach (var property in component.Properties)
                 {
