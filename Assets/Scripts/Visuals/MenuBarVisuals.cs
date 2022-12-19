@@ -1,6 +1,7 @@
 using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
 using Assets.Scripts.System;
+using Assets.Scripts.Visuals.UiBuilder;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -17,15 +18,20 @@ namespace Assets.Scripts.Visuals
         MenuBarState _state;
         EditorEvents _editorEvents;
         ContextMenuSystem _contextMenuSystem;
-        UiBuilder.Factory _uiBuilderFactory;
+        UiBuilder.UiBuilder _uiBuilder;
+
+        PanelAtom.Data panel;
 
         [Inject]
-        void Construct(MenuBarState menuBarState, EditorEvents editorEvents, ContextMenuSystem contextMenuSystem, UiBuilder.Factory uiBuilderFactory)
+        void Construct(MenuBarState menuBarState, EditorEvents editorEvents, ContextMenuSystem contextMenuSystem, UiBuilder.UiBuilder.Factory uiBuilder)
         {
             _state = menuBarState;
             _editorEvents = editorEvents;
             _contextMenuSystem = contextMenuSystem;
-            _uiBuilderFactory = uiBuilderFactory;
+            _uiBuilder = uiBuilder.Create(gameObject);
+
+            panel = new PanelAtom.Data();
+            panel.layoutDirection = UiHandler.PanelHandler.LayoutDirection.Horizontal;
         }
 
         public void SetupSceneEventListeners()
@@ -35,37 +41,25 @@ namespace Assets.Scripts.Visuals
 
         private void UpdateMenuBar()
         {
-            Debug.Log("ToDo: Clear and fill the menu bar is not optimal.");
-            ClearMenuBar();
             FillMenuBar();
-        }
-
-        private void ClearMenuBar()
-        {
-            foreach (Transform child in transform)
-            {
-                Destroy(child.gameObject);
-            }
         }
 
         private void FillMenuBar()
         {
-            var itemsBuilder = _uiBuilderFactory.Create();
+            panel.childDates.Clear();
 
             foreach (MenuBarItem item in _state.menuItems)
             {
-                itemsBuilder.MenuBarButon(item.title, new UnityAction<GameObject>((button) => OpenMenuBarContextMenu(button.GetComponent<RectTransform>(), item.subItems)));
-                //itemsBuilder.MenuBarButon(item.title, OpenMenuBarContextMenu);
+                panel.AddMenuBarButton(item.title, new UnityAction<GameObject>((button) => OpenMenuBarContextMenu(button.GetComponent<RectTransform>(), item.subItems)));
             }
 
-            itemsBuilder.ClearAndMake(gameObject);
+            _uiBuilder.Update(panel);
         }
 
         private void OpenMenuBarContextMenu(RectTransform transform, List<ContextMenuItem> menuItems)
         {
             Vector3[] fourCorners = new Vector3[4];
             transform.GetWorldCorners(fourCorners);
-            Debug.Log(fourCorners[0]);
             _contextMenuSystem.OpenMenu(fourCorners[0], menuItems);
         }
     }
