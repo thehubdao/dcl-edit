@@ -122,7 +122,12 @@ namespace Assets.Scripts.EditorState
             }
 
             ContextMenuTextItem newMenuTextItem = new ContextMenuTextItem(path, onClick);
-            items.Add(newMenuTextItem);
+
+            if (position < 0 || position > items.Count)
+            {
+                position = items.Count;
+            }
+            items.Insert(position, newMenuTextItem);
         }
 
         private (string, string) SplitPath(string path)
