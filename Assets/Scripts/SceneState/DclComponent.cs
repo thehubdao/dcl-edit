@@ -1,5 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace Assets.Scripts.SceneState
@@ -7,8 +10,48 @@ namespace Assets.Scripts.SceneState
     public class DclComponent
     {
         #region Property
+
         public abstract class DclComponentProperty
         {
+            public class PropertyDefinition
+            {
+                public string name;
+                public PropertyType type;
+                public dynamic defaultValue;
+
+                public PropertyDefinition(string name, PropertyType type, dynamic defaultValue)
+                {
+                    if(defaultValue == null){
+                        throw new ArgumentException("Default value cannot be null");
+                    }
+
+                    this.name = name;
+                    this.type = type;
+                    this.defaultValue = defaultValue;
+
+                    if (!ValidateDefaultValue())
+                    {
+                        throw new ArgumentException($"The type of the default value ({defaultValue.GetType()}) does not mach the type of the property ({type})");
+                    }
+                }
+
+                private bool ValidateDefaultValue()
+                {
+                    return type switch
+                    {
+                        PropertyType.None => false,
+                        PropertyType.String => defaultValue is string,
+                        PropertyType.Int => defaultValue is int,
+                        PropertyType.Float => defaultValue is float,
+                        PropertyType.Boolean => defaultValue is bool,
+                        PropertyType.Vector3 => defaultValue is Vector3,
+                        PropertyType.Quaternion => defaultValue is Quaternion,
+                        PropertyType.Asset => defaultValue is Guid,
+                        _ => throw new ArgumentOutOfRangeException()
+                    };
+                }
+            }
+
             public string PropertyName;
 
             public enum PropertyType
@@ -36,15 +79,31 @@ namespace Assets.Scripts.SceneState
                     _ => PropertyType.None
                 };
 
+            public static DclComponentProperty NewFromType(PropertyType type, string name, dynamic initialValue)
+            {
+                return type switch
+                {
+                    PropertyType.None => throw new Exception("Can not make property of type none"),
+                    PropertyType.String => new DclComponentProperty<string>(name, initialValue),
+                    PropertyType.Int => new DclComponentProperty<int>(name, initialValue),
+                    PropertyType.Float => new DclComponentProperty<float>(name, initialValue),
+                    PropertyType.Boolean => new DclComponentProperty<bool>(name, initialValue),
+                    PropertyType.Vector3 => new DclComponentProperty<Vector3>(name, initialValue),
+                    PropertyType.Quaternion => new DclComponentProperty<Quaternion>(name, initialValue),
+                    PropertyType.Asset => new DclComponentProperty<Guid>(name, initialValue),
+                    _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
+                };
+            }
+
             public DclComponentProperty<T> GetConcrete<T>()
             {
                 if (!(this is DclComponentProperty<T> dclComponentProperty))
                 {
                     throw new System.Exception("Property is not of type " + typeof(T).Name);
                 }
+
                 return dclComponentProperty;
             }
-
 
 
             protected bool _isFloating;
@@ -62,7 +121,6 @@ namespace Assets.Scripts.SceneState
             {
                 _isFloating = false;
             }
-
         }
 
         public class DclComponentProperty<T> : DclComponentProperty
@@ -117,6 +175,27 @@ namespace Assets.Scripts.SceneState
                 ResetFloating();
             }
         }
+
+        #endregion
+
+        #region Definition
+
+        public class ComponentDefinition
+        {
+            public string NameInCode { get; }
+
+            public string NameOfSlot { get; }
+
+            public List<DclComponentProperty.PropertyDefinition> properties;
+
+            public ComponentDefinition(string nameInCode, string nameOfSlot, params DclComponentProperty.PropertyDefinition[] properties)
+            {
+                NameInCode = nameInCode;
+                NameOfSlot = nameOfSlot;
+                this.properties = properties.ToList();
+            }
+        }
+
         #endregion
 
         public DclEntity Entity = null;
@@ -132,6 +211,19 @@ namespace Assets.Scripts.SceneState
             return Properties.Exists(p => p.PropertyName == name) ?
                 Properties.Find(p => p.PropertyName == name) :
                 null;
+        }
+
+        public DclComponent(ComponentDefinition definition)
+        {
+            NameInCode = definition.NameInCode;
+            NameOfSlot = definition.NameOfSlot;
+
+            foreach (var propertyDefinition in definition.properties)
+            {
+                DclComponentProperty property = DclComponentProperty.NewFromType(propertyDefinition.type, propertyDefinition.name, propertyDefinition.defaultValue);
+
+                Properties.Add(property);
+            }
         }
 
 
