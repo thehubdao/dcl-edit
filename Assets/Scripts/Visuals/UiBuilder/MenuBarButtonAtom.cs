@@ -48,7 +48,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
             if (!newMenuBarButtonData.Equals(data))
             {
                 // Update data
-                MenuBarButton menuBarButton = gameObject.gameObject.GetComponent<MenuBarButton>();
+                MenuBarButtonHandler menuBarButton = gameObject.gameObject.GetComponent<MenuBarButtonHandler>();
                 menuBarButton.Initialize(newMenuBarButtonData.title, () => newMenuBarButtonData.onClick(gameObject.gameObject));
             }
         }

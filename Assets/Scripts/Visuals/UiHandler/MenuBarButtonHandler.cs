@@ -6,7 +6,7 @@ using UnityEngine.UI;
 using UnityEngine.Events;
 using static UnityEditor.Progress;
 
-public class MenuBarButton : MonoBehaviour
+public class MenuBarButtonHandler : MonoBehaviour
 {
     [SerializeField]
     private Button button;
