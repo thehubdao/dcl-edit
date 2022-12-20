@@ -39,9 +39,6 @@ namespace Assets.Scripts.System
             _cameraSystem.CameraStartup();
 
             _setupSceneEventListenersSystem.SetupSceneEventListeners();
-
-            // This needs to be called after SetupSceneEventListeners().
-            _menuBarSystem.DebugCreateExampleMenu(); 
         }
     }
 }
