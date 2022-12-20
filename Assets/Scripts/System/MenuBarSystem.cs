@@ -16,7 +16,7 @@ namespace Assets.Scripts.System
         private MenuBarState _state;
 
         [Inject]
-        private void Construct(
+        public void Construct(
             EditorEvents editorEvents,
             MenuBarState menuBarState
             )
