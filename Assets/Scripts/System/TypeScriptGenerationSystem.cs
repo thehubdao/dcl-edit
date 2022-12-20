@@ -22,71 +22,74 @@ namespace Assets.Scripts.System
     public class TypeScriptGenerationSystem
     {
         // Dependencies
-        private EditorState.SceneDirectoryState _sceneDirectoryState;
-        private ExposeEntitySystem _exposeEntitySystem;
-        private IPathState _pathState;
+        private ExposeEntitySystem exposeEntitySystem;
+        private IPathState pathState;
+        private SceneManagerSystem sceneManagerSystem;
 
         [Inject]
-        private void Construct(EditorState.SceneDirectoryState sceneDirectoryState, ExposeEntitySystem exposeEntitySystem, IPathState pathState)
+        private void Construct(
+            ExposeEntitySystem exposeEntitySystem,
+            IPathState pathState,
+            SceneManagerSystem sceneManagerSystem)
         {
-            _sceneDirectoryState = sceneDirectoryState;
-            _exposeEntitySystem = exposeEntitySystem;
-            _pathState = pathState;
+            this.exposeEntitySystem = exposeEntitySystem;
+            this.pathState = pathState;
+            this.sceneManagerSystem = sceneManagerSystem;
         }
 
-        private const bool _obfuscate = false;
+        private const bool obfuscate = false;
 
         private struct GenerationInfo
         {
-            public List<SceneInfo> GatheredSceneInfos;
-            public List<UsedComponentInfo> UsedComponentInfos;
+            public List<SceneInfo> gatheredSceneInfos;
+            public List<UsedComponentInfo> usedComponentInfos;
         }
 
         private struct SceneInfo
         {
             // The symbol used to refer to this scene. Aka the name of the scenes class
-            public string Symbol;
-            public List<EntityInfo> GatheredEntityInfos;
+            public string symbol;
+            public List<EntityInfo> gatheredEntityInfos;
         }
 
         private struct EntityInfo
         {
-            public Guid Id;
-            public Guid ParentId;
+            public Guid id;
+            public Guid parentId;
 
-            public string Name;
-            public string InternalScriptSymbol;
+            public string name;
+            public string internalScriptSymbol;
 
-            public bool IsExposed;
-            public string ExposedSymbol;
+            public bool isExposed;
+            public string exposedSymbol;
 
-            public List<EntityComponentInfo> GatheredComponentInfos;
+            public List<EntityComponentInfo> gatheredComponentInfos;
         }
 
         private struct EntityComponentInfo
         {
-            public string Symbol;
-            public string InternalScriptSymbol;
-            public string InEntitySymbol;
-            public string WithTypeSymbol;
+            public string symbol;
+            public string internalScriptSymbol;
+            public string inEntitySymbol;
+            public string withTypeSymbol;
 
-            public bool IsTransform;
+            public bool isTransform;
 
-            public List<PropertyInfo> GatheredPropertyInfos;
+            public List<PropertyInfo> gatheredPropertyInfos;
         }
 
         private struct UsedComponentInfo
         {
-            public string Symbol;
-            public string WithTypeSymbol;
-            public string InEntitySymbol;
-            public bool IsTransform;
+            public string symbol;
+            public string withTypeSymbol;
+            public string inEntitySymbol;
+            public bool isTransform;
         }
 
         private struct PropertyInfo
         {
-            public string Symbol;
-            public string Value;
+            public string symbol;
+            public string value;
         }
 
 
@@ -101,7 +104,7 @@ namespace Assets.Scripts.System
 
             var script = GenerateActualScript(generationInfo.Value);
 
-            var scriptsFolderPath = _pathState.ProjectPath + "/dcl-edit/build/scripts/";
+            var scriptsFolderPath = pathState.ProjectPath + "/dcl-edit/build/scripts/";
 
             Directory.CreateDirectory(scriptsFolderPath);
 
@@ -110,29 +113,32 @@ namespace Assets.Scripts.System
 
         private GenerationInfo? GatherInfo()
         {
-            if (_sceneDirectoryState.CurrentScene == null)
+            var scene = sceneManagerSystem.GetCurrentScene();
+
+            if (scene == null)
+            {
                 return null;
+            }
 
             var generationInfo = new GenerationInfo()
             {
-                GatheredSceneInfos = new List<SceneInfo>(),
-                UsedComponentInfos = new List<UsedComponentInfo>()
+                gatheredSceneInfos = new List<SceneInfo>(),
+                usedComponentInfos = new List<UsedComponentInfo>()
             };
 
             // TODO: generate info for all scenes
             {
-                var scene = _sceneDirectoryState.CurrentScene;
                 var uniqueSymbols = new List<string>();
 
                 var sceneInfo = new SceneInfo()
                 {
-                    Symbol = _exposeEntitySystem.GenerateValidSymbol(scene.name),
-                    GatheredEntityInfos = new List<EntityInfo>()
+                    symbol = exposeEntitySystem.GenerateValidSymbol(scene.name),
+                    gatheredEntityInfos = new List<EntityInfo>()
                 };
 
                 foreach (var entity in scene.AllEntities.Select(pair => pair.Value))
                 {
-                    var internalEntitySymbol = _exposeEntitySystem.GenerateValidSymbol(_obfuscate ? "e" : entity.CustomName);
+                    var internalEntitySymbol = exposeEntitySystem.GenerateValidSymbol(obfuscate ? "e" : entity.CustomName);
 
                     // make the internal symbol unique within the generated scene
                     {
@@ -140,7 +146,7 @@ namespace Assets.Scripts.System
                         while (uniqueSymbols.Contains(internalEntitySymbol))
                         {
                             i++;
-                            internalEntitySymbol = _exposeEntitySystem.GenerateValidSymbol((_obfuscate ? "e" : entity.CustomName) + i);
+                            internalEntitySymbol = exposeEntitySystem.GenerateValidSymbol((obfuscate ? "e" : entity.CustomName) + i);
                         }
                     }
 
@@ -149,21 +155,21 @@ namespace Assets.Scripts.System
 
                     var entityInfo = new EntityInfo()
                     {
-                        Id = entity.Id,
-                        ParentId = entity.ParentId,
+                        id = entity.Id,
+                        parentId = entity.ParentId,
 
-                        Name = entity.ShownName,
-                        InternalScriptSymbol = internalEntitySymbol,
+                        name = entity.ShownName,
+                        internalScriptSymbol = internalEntitySymbol,
 
-                        IsExposed = entity.IsExposed,
-                        ExposedSymbol = _exposeEntitySystem.ExposedName(entity),
-                        GatheredComponentInfos = new List<EntityComponentInfo>()
+                        isExposed = entity.IsExposed,
+                        exposedSymbol = exposeEntitySystem.ExposedName(entity),
+                        gatheredComponentInfos = new List<EntityComponentInfo>()
                     };
 
                     foreach (var component in entity.Components)
                     {
                         // Create unique internal symbol
-                        var internalEntityComponentSymbol = _obfuscate ? "c" : (internalEntitySymbol + component.NameInCode);
+                        var internalEntityComponentSymbol = obfuscate ? "c" : (internalEntitySymbol + component.NameInCode);
 
                         // make the internal symbol unique within the generated scene
                         {
@@ -171,14 +177,14 @@ namespace Assets.Scripts.System
                             while (uniqueSymbols.Contains(internalEntityComponentSymbol))
                             {
                                 i++;
-                                internalEntityComponentSymbol = (_obfuscate ? "c" : (internalEntitySymbol + component.NameInCode)) + i;
+                                internalEntityComponentSymbol = (obfuscate ? "c" : (internalEntitySymbol + component.NameInCode)) + i;
                             }
                         }
 
                         uniqueSymbols.Add(internalEntityComponentSymbol);
 
                         // Create with type symbol
-                        var withTypeSymbol = $"With{_exposeEntitySystem.GenerateValidSymbol(component.NameInCode)}";
+                        var withTypeSymbol = $"With{exposeEntitySystem.GenerateValidSymbol(component.NameInCode)}";
 
                         // same as the internal script symbol but with the first letter in lower case
                         var inEntitySymbol =
@@ -191,12 +197,12 @@ namespace Assets.Scripts.System
                         {
                             var componentInfo = new EntityComponentInfo()
                             {
-                                Symbol = component.NameInCode,
-                                WithTypeSymbol = withTypeSymbol,
-                                InEntitySymbol = inEntitySymbol,
-                                InternalScriptSymbol = internalEntityComponentSymbol,
-                                IsTransform = isTransform,
-                                GatheredPropertyInfos = new List<PropertyInfo>()
+                                symbol = component.NameInCode,
+                                withTypeSymbol = withTypeSymbol,
+                                inEntitySymbol = inEntitySymbol,
+                                internalScriptSymbol = internalEntityComponentSymbol,
+                                isTransform = isTransform,
+                                gatheredPropertyInfos = new List<PropertyInfo>()
                             };
 
                             // Generate Property info
@@ -240,39 +246,39 @@ namespace Assets.Scripts.System
 
                                 var propertyInfo = new PropertyInfo()
                                 {
-                                    Symbol = property.PropertyName,
-                                    Value = value
+                                    symbol = property.PropertyName,
+                                    value = value
                                 };
 
-                                componentInfo.GatheredPropertyInfos.Add(propertyInfo);
+                                componentInfo.gatheredPropertyInfos.Add(propertyInfo);
                             }
 
-                            entityInfo.GatheredComponentInfos.Add(componentInfo);
+                            entityInfo.gatheredComponentInfos.Add(componentInfo);
                         }
 
                         // update the list of all used components
                         //if (entity.IsExposed)
                         {
                             if (!generationInfo
-                                    .UsedComponentInfos
-                                    .Select(ci => ci.Symbol)
+                                    .usedComponentInfos
+                                    .Select(ci => ci.symbol)
                                     .Contains(component.NameInCode))
                             {
-                                generationInfo.UsedComponentInfos.Add(new UsedComponentInfo()
+                                generationInfo.usedComponentInfos.Add(new UsedComponentInfo()
                                 {
-                                    Symbol = component.NameInCode,
-                                    WithTypeSymbol = withTypeSymbol,
-                                    InEntitySymbol = inEntitySymbol,
-                                    IsTransform = isTransform
+                                    symbol = component.NameInCode,
+                                    withTypeSymbol = withTypeSymbol,
+                                    inEntitySymbol = inEntitySymbol,
+                                    isTransform = isTransform
                                 });
                             }
                         }
                     }
 
-                    sceneInfo.GatheredEntityInfos.Add(entityInfo);
+                    sceneInfo.gatheredEntityInfos.Add(entityInfo);
                 }
 
-                generationInfo.GatheredSceneInfos.Add(sceneInfo);
+                generationInfo.gatheredSceneInfos.Add(sceneInfo);
             }
 
             return generationInfo;
@@ -324,7 +330,7 @@ export type DceEntity = {
 
 ");
 
-            if (_obfuscate)
+            if (obfuscate)
             {
                 generatedScript.AppendLine("function p(a: IEntity, b: IEntity){ a.setParent(b)}");
                 generatedScript.AppendLine("function o(a: IEntity, b: any){ a.addComponent(b)}");
@@ -337,10 +343,10 @@ export type DceEntity = {
                 }
             */
 
-            foreach (var componentInfo in generationInfo.UsedComponentInfos.Where(ci => !ci.IsTransform))
+            foreach (var componentInfo in generationInfo.usedComponentInfos.Where(ci => !ci.isTransform))
             {
-                generatedScript.AppendLine($"export type {componentInfo.WithTypeSymbol} = {{".Indent(0));
-                generatedScript.AppendLine($"{componentInfo.InEntitySymbol}: {componentInfo.Symbol}".Indent(1));
+                generatedScript.AppendLine($"export type {componentInfo.withTypeSymbol} = {{".Indent(0));
+                generatedScript.AppendLine($"{componentInfo.inEntitySymbol}: {componentInfo.symbol}".Indent(1));
                 generatedScript.AppendLine("}".Indent(0));
                 generatedScript.AppendLine();
             }
@@ -355,20 +361,20 @@ export type DceEntity = {
                 }
             */
 
-            foreach (var sceneInfo in generationInfo.GatheredSceneInfos)
+            foreach (var sceneInfo in generationInfo.gatheredSceneInfos)
             {
-                generatedScript.AppendLine($"export type {sceneInfo.Symbol} = DceScene & {{".Indent(0));
+                generatedScript.AppendLine($"export type {sceneInfo.symbol} = DceScene & {{".Indent(0));
                 generatedScript.AppendLine($"exposed: {{".Indent(1));
 
-                foreach (var entityInfo in sceneInfo.GatheredEntityInfos.Where(info => info.IsExposed))
+                foreach (var entityInfo in sceneInfo.gatheredEntityInfos.Where(info => info.isExposed))
                 {
-                    generatedScript.Append($"{entityInfo.ExposedSymbol}: DceEntity".Indent(2));
+                    generatedScript.Append($"{entityInfo.exposedSymbol}: DceEntity".Indent(2));
 
                     foreach (var componentInfo in entityInfo
-                                 .GatheredComponentInfos
-                                 .Where(componentInfo => !componentInfo.IsTransform)) // Exclude Transform, because it already is included in DceEntity
+                                 .gatheredComponentInfos
+                                 .Where(componentInfo => !componentInfo.isTransform)) // Exclude Transform, because it already is included in DceEntity
                     {
-                        generatedScript.Append($" & {componentInfo.WithTypeSymbol}");
+                        generatedScript.Append($" & {componentInfo.withTypeSymbol}");
                     }
 
                     generatedScript.AppendLine(",");
@@ -450,14 +456,14 @@ export type DceEntity = {
          */
             generatedScript.AppendLine("export class SceneFactory {".Indent(0));
 
-            foreach (var sceneInfo in generationInfo.GatheredSceneInfos)
+            foreach (var sceneInfo in generationInfo.gatheredSceneInfos)
             {
                 generatedScript.AppendLine("/**".Indent(1));
-                generatedScript.AppendLine($" * Creates a new instance of the scene {sceneInfo.Symbol}".Indent(1));
+                generatedScript.AppendLine($" * Creates a new instance of the scene {sceneInfo.symbol}".Indent(1));
                 generatedScript.AppendLine(" * @param rootEntity specify a root entity for the newly created scene. If null, a new Entity will be generated as the root".Indent(1));
                 generatedScript.AppendLine(" */".Indent(1));
 
-                generatedScript.AppendLine($"static create{sceneInfo.Symbol}(rootEntity: Entity | null = null): {sceneInfo.Symbol} {{".Indent(1));
+                generatedScript.AppendLine($"static create{sceneInfo.symbol}(rootEntity: Entity | null = null): {sceneInfo.symbol} {{".Indent(1));
 
                 const string rootEntitySymbol = "rootEntity";
                 const string rootTransformSymbol = rootEntitySymbol + "Trans";
@@ -466,7 +472,7 @@ export type DceEntity = {
                 generatedScript.AppendLine($"if ({rootEntitySymbol} == null) {{".Indent(2));
                 generatedScript.AppendLine($"{rootEntitySymbol} = new Entity()".Indent(3));
                 generatedScript.AppendLine($"const {rootTransformSymbol} = new Transform()".Indent(3));
-                if (_obfuscate)
+                if (obfuscate)
                 {
                     generatedScript.AppendLine($"o({rootEntitySymbol},{rootTransformSymbol})");
                 }
@@ -477,7 +483,7 @@ export type DceEntity = {
 
                 generatedScript.AppendLine("} else {".Indent(2));
                 generatedScript.AppendLine($"if (!{rootEntitySymbol}.hasComponent(Transform)) {{".Indent(3));
-                if (_obfuscate)
+                if (obfuscate)
                 {
                     generatedScript.AppendLine($"o({rootEntitySymbol},new Transform)");
                 }
@@ -493,31 +499,31 @@ export type DceEntity = {
                 generatedScript.AppendLine();
 
                 // other entities
-                foreach (var entityInfo in sceneInfo.GatheredEntityInfos)
+                foreach (var entityInfo in sceneInfo.gatheredEntityInfos)
                 {
-                    generatedScript.AppendLine($"const {entityInfo.InternalScriptSymbol} = new Entity(\"{entityInfo.Name}\")".Indent(2));
+                    generatedScript.AppendLine($"const {entityInfo.internalScriptSymbol} = new Entity(\"{entityInfo.name}\")".Indent(2));
 
                     // components
-                    foreach (var componentInfo in entityInfo.GatheredComponentInfos)
+                    foreach (var componentInfo in entityInfo.gatheredComponentInfos)
                     {
                         // Temporary solution TODO: Change it
-                        generatedScript.AppendLine(componentInfo.Symbol == "GLTFShape" ?
-                            $"const {componentInfo.InternalScriptSymbol} = new {componentInfo.Symbol}(\"\")".Indent(2) : // use empty initializer until assets can be used here
-                            $"const {componentInfo.InternalScriptSymbol} = new {componentInfo.Symbol}()".Indent(2));
+                        generatedScript.AppendLine(componentInfo.symbol == "GLTFShape" ?
+                            $"const {componentInfo.internalScriptSymbol} = new {componentInfo.symbol}(\"\")".Indent(2) : // use empty initializer until assets can be used here
+                            $"const {componentInfo.internalScriptSymbol} = new {componentInfo.symbol}()".Indent(2));
 
                         // properties. Ignore properties without valid value
-                        foreach (var propertyInfo in componentInfo.GatheredPropertyInfos.Where(pi => pi.Value != null))
+                        foreach (var propertyInfo in componentInfo.gatheredPropertyInfos.Where(pi => pi.value != null))
                         {
-                            generatedScript.AppendLine($"{componentInfo.InternalScriptSymbol}.{propertyInfo.Symbol} = {propertyInfo.Value}".Indent(2));
+                            generatedScript.AppendLine($"{componentInfo.internalScriptSymbol}.{propertyInfo.symbol} = {propertyInfo.value}".Indent(2));
                         }
 
-                        if (_obfuscate)
+                        if (obfuscate)
                         {
-                            generatedScript.AppendLine($"o({entityInfo.InternalScriptSymbol},{componentInfo.InternalScriptSymbol})".Indent(2));
+                            generatedScript.AppendLine($"o({entityInfo.internalScriptSymbol},{componentInfo.internalScriptSymbol})".Indent(2));
                         }
                         else
                         {
-                            generatedScript.AppendLine($"{entityInfo.InternalScriptSymbol}.addComponent({componentInfo.InternalScriptSymbol})".Indent(2));
+                            generatedScript.AppendLine($"{entityInfo.internalScriptSymbol}.addComponent({componentInfo.internalScriptSymbol})".Indent(2));
                         }
                     }
 
@@ -525,33 +531,33 @@ export type DceEntity = {
                 }
 
                 // parents
-                foreach (var entityInfo in sceneInfo.GatheredEntityInfos)
+                foreach (var entityInfo in sceneInfo.gatheredEntityInfos)
                 {
-                    if (entityInfo.ParentId == Guid.Empty)
+                    if (entityInfo.parentId == Guid.Empty)
                     {
-                        if (_obfuscate)
+                        if (obfuscate)
                         {
-                            generatedScript.AppendLine($"p({entityInfo.InternalScriptSymbol},{rootEntitySymbol})");
+                            generatedScript.AppendLine($"p({entityInfo.internalScriptSymbol},{rootEntitySymbol})");
                         }
                         else
                         {
-                            generatedScript.AppendLine($"{entityInfo.InternalScriptSymbol}.setParent({rootEntitySymbol})".Indent(2));
+                            generatedScript.AppendLine($"{entityInfo.internalScriptSymbol}.setParent({rootEntitySymbol})".Indent(2));
                         }
                     }
                     else
                     {
                         var parentsInternalScriptSymbol = sceneInfo
-                            .GatheredEntityInfos
-                            .Find(ei => ei.Id == entityInfo.ParentId)
-                            .InternalScriptSymbol;
+                            .gatheredEntityInfos
+                            .Find(ei => ei.id == entityInfo.parentId)
+                            .internalScriptSymbol;
 
-                        if (_obfuscate)
+                        if (obfuscate)
                         {
-                            generatedScript.AppendLine($"p({entityInfo.InternalScriptSymbol},{parentsInternalScriptSymbol})");
+                            generatedScript.AppendLine($"p({entityInfo.internalScriptSymbol},{parentsInternalScriptSymbol})");
                         }
                         else
                         {
-                            generatedScript.AppendLine($"{entityInfo.InternalScriptSymbol}.setParent({parentsInternalScriptSymbol})".Indent(2));
+                            generatedScript.AppendLine($"{entityInfo.internalScriptSymbol}.setParent({parentsInternalScriptSymbol})".Indent(2));
                         }
                     }
                 }
@@ -604,16 +610,16 @@ export type DceEntity = {
                 generatedScript.AppendLine("exposed: {".Indent(3));
 
                 // exposed entities
-                foreach (var entityInfo in sceneInfo.GatheredEntityInfos.Where(ei => ei.IsExposed))
+                foreach (var entityInfo in sceneInfo.gatheredEntityInfos.Where(ei => ei.isExposed))
                 {
-                    generatedScript.AppendLine($"{entityInfo.ExposedSymbol}: {{".Indent(4));
+                    generatedScript.AppendLine($"{entityInfo.exposedSymbol}: {{".Indent(4));
 
-                    generatedScript.AppendLine($"entity: {entityInfo.InternalScriptSymbol},".Indent(5));
+                    generatedScript.AppendLine($"entity: {entityInfo.internalScriptSymbol},".Indent(5));
 
                     // exposed components
-                    foreach (var componentInfo in entityInfo.GatheredComponentInfos)
+                    foreach (var componentInfo in entityInfo.gatheredComponentInfos)
                     {
-                        generatedScript.AppendLine($"{componentInfo.InEntitySymbol}: {componentInfo.InternalScriptSymbol},".Indent(5));
+                        generatedScript.AppendLine($"{componentInfo.inEntitySymbol}: {componentInfo.internalScriptSymbol},".Indent(5));
                     }
 
                     // show hide
