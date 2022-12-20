@@ -20,14 +20,21 @@ namespace Assets.Scripts.Visuals
         private SettingsSystem settingsSystem;
         private UiBuilder.UiBuilder uiBuilder;
         private UnityState unityState;
+        private InputState inputState;
 
         [Inject]
-        private void Construct(EditorEvents editorEvents, SettingsSystem settingsSystem, UiBuilder.UiBuilder.Factory uiBuilderFactory, UnityState unityState)
+        private void Construct(
+            EditorEvents editorEvents,
+            SettingsSystem settingsSystem,
+            UiBuilder.UiBuilder.Factory uiBuilderFactory,
+            UnityState unityState,
+            InputState inputState)
         {
             this.editorEvents = editorEvents;
             this.settingsSystem = settingsSystem;
             this.uiBuilder = uiBuilderFactory.Create(content);
             this.unityState = unityState;
+            this.inputState = inputState;
 
             SetupEventListeners();
         }
@@ -46,6 +53,11 @@ namespace Assets.Scripts.Visuals
 
         private void UpdateVisuals()
         {
+            if (inputState.InState == InputState.InStateType.UiInput)
+            {
+                return;
+            }
+
             var settingsPanel = new PanelAtom.Data();
 
             foreach (var settingsPair in settingsSystem.ShownSettings)

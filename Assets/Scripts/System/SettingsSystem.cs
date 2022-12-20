@@ -209,36 +209,18 @@ namespace Assets.Scripts.System
 
             var userSettings = new List<ISetting>();
 
-            TestNumber = new FloatUserSetting(this, "Test number", 12.34f);
-            userSettings.Add(TestNumber);
-
-            TestInteger = new IntUserSetting(this, "Test integer", 123);
-            userSettings.Add(TestInteger);
-
-            TestString = new StringUserSetting(this, "Test text", "Hello world!");
-            userSettings.Add(TestString);
-
-            applicationTargetFramerate = new IntUserSetting(this, "applicationTargetFramerate", -1);
-            userSettings.Add(applicationTargetFramerate);
+            applicationTargetFrameRate = new IntUserSetting(this, "Maximum frame rate", -1);
+            userSettings.Add(applicationTargetFrameRate);
 
             ShownSettings.Add("User Settings", userSettings);
 
 
             var projectSettings = new List<ISetting>();
 
-            TestProjVec3 = new Vec3ProjectSetting(this, "Test Vec3 Project", Vector3.one, projectSettingsState);
-            projectSettings.Add(TestProjVec3);
-
-            TestProjString = new StringProjectSetting(this, "Test String Project", "some text", projectSettingsState);
-            projectSettings.Add(TestProjString);
-
             ShownSettings.Add("Project Settings", projectSettings);
 
 
             var sceneSettings = new List<ISetting>();
-
-            TestSceneVec3 = new Vec3SceneSetting(this, "Test Vec3 Scene", Vector3.one, sceneSettingState);
-            sceneSettings.Add(TestSceneVec3);
 
             ShownSettings.Add("Scene Settings", sceneSettings);
             
@@ -249,15 +231,7 @@ namespace Assets.Scripts.System
 
         public Dictionary<string, List<ISetting>> ShownSettings = new Dictionary<string, List<ISetting>>();
 
-        public FloatUserSetting TestNumber;
-        public IntUserSetting TestInteger;
-        public StringUserSetting TestString;
-        public IntUserSetting applicationTargetFramerate;
-
-        public Vec3ProjectSetting TestProjVec3;
-        public StringProjectSetting TestProjString;
-
-        public Vec3SceneSetting TestSceneVec3;
+        public IntUserSetting applicationTargetFrameRate;
 
         public StringUserSetting panelSize;
     }

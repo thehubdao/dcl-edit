@@ -38,7 +38,7 @@ namespace Assets.Scripts.System
         /// </param>
         public void SetApplicationTargetFramerate()
         {
-            Application.targetFrameRate = _settingsSystem.applicationTargetFramerate.Get();
+            Application.targetFrameRate = _settingsSystem.applicationTargetFrameRate.Get();
         }
     }
 
