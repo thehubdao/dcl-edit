@@ -1,10 +1,17 @@
 using UnityEngine;
-using UnityEngine.Android;
 
 namespace Assets.Scripts.SceneState
 {
     public class DclTransformComponent : DclComponent
     {
+        public static readonly ComponentDefinition transformComponentDefinition =
+            new ComponentDefinition(
+                "Transform",
+                "Transform",
+                new DclComponentProperty.PropertyDefinition("position", DclComponentProperty.PropertyType.Vector3, Vector3.zero),
+                new DclComponentProperty.PropertyDefinition("rotation", DclComponentProperty.PropertyType.Quaternion, Quaternion.identity),
+                new DclComponentProperty.PropertyDefinition("scale", DclComponentProperty.PropertyType.Vector3, Vector3.one));
+
         public DclTransformComponent() : base("Transform", "Transform")
         { }
 
@@ -112,37 +119,7 @@ namespace Assets.Scripts.SceneState
 
         public bool Validate()
         {
-            if (NameInCode != "Transform")
-                return false;
-
-            if (NameOfSlot != "Transform")
-                return false;
-
-            var posProperty = GetPropertyByName("position");
-
-            if (posProperty == null)
-                return false;
-
-            if (posProperty.Type != DclComponentProperty.PropertyType.Vector3)
-                return false;
-
-            var quatProperty = GetPropertyByName("rotation");
-
-            if (quatProperty == null)
-                return false;
-
-            if (quatProperty.Type != DclComponentProperty.PropertyType.Quaternion)
-                return false;
-
-            var scaleProperty = GetPropertyByName("scale");
-
-            if (scaleProperty == null)
-                return false;
-
-            if (scaleProperty.Type != DclComponentProperty.PropertyType.Vector3)
-                return false;
-
-            return true;
+            return IsFollowingDefinition(transformComponentDefinition);
         }
 
         /// <summary>
