@@ -12,7 +12,7 @@ using static Assets.Scripts.EditorState.MenuBarState;
 
 namespace Assets.Scripts.Visuals
 {
-    public class MenuBarVisuals : MonoBehaviour, ISetupSceneEventListeners
+    public class MenuBarVisuals : MonoBehaviour
     {
         // Dependencies
         MenuBarState _state;
@@ -32,9 +32,11 @@ namespace Assets.Scripts.Visuals
 
             panel = new PanelAtom.Data();
             panel.layoutDirection = UiHandler.PanelHandler.LayoutDirection.Horizontal;
+
+            SetupEventListeners();
         }
 
-        public void SetupSceneEventListeners()
+        public void SetupEventListeners()
         {
             _editorEvents.onUpdateMenuBarEvent += UpdateMenuBar;
         }

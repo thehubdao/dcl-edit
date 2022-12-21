@@ -1,37 +1,46 @@
 using Assets.Scripts.Events;
 using System.Linq;
+using Assets.Scripts.System;
 using UnityEngine;
 using Zenject;
 
 namespace Assets.Scripts.Visuals
 {
-    public class TemporaryEntityVisuals : MonoBehaviour, ISetupSceneEventListeners
+    public class TemporaryEntityVisuals : MonoBehaviour
     {
         // Dependencies
-        private EditorState.SceneDirectoryState _sceneDirectoryState;
-        private EditorEvents _editorEvents;
+        private EditorEvents editorEvents;
+        private SceneManagerSystem sceneManagerSystem;
 
         [Inject]
-        private void Construct(EditorState.SceneDirectoryState sceneDirectoryState, EditorEvents editorEvents)
+        private void Construct(
+            EditorEvents editorEvents,
+            SceneManagerSystem sceneManagerSystem)
         {
-            _sceneDirectoryState = sceneDirectoryState;
-            _editorEvents = editorEvents;
+            this.editorEvents = editorEvents;
+            this.sceneManagerSystem = sceneManagerSystem;
+
+            SetupEventListeners();
         }
 
-        public void SetupSceneEventListeners()
+        public void SetupEventListeners()
         {
             // when there is a scene loaded, add the visuals updater
-            _editorEvents.onHierarchyChangedEvent += UpdateVisuals;
+            editorEvents.onHierarchyChangedEvent += UpdateVisuals;
 
             UpdateVisuals();
         }
 
         private void UpdateVisuals()
         {
-            if (_sceneDirectoryState.CurrentScene == null)
-                return;
+            var scene = sceneManagerSystem.GetCurrentScene();
 
-            foreach (var entity in _sceneDirectoryState.CurrentScene.AllEntities.Select(e => e.Value))
+            if (scene == null)
+            {
+                return;
+            }
+
+            foreach (var entity in scene.AllEntities.Select(e => e.Value))
             {
                 var entityPos = entity.GetComponentByName("transform")?.GetPropertyByName("position")
                     ?.GetConcrete<Vector3>().Value;

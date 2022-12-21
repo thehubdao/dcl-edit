@@ -19,11 +19,11 @@ namespace Assets.Scripts.Tests.EditModeTests
             var sceneDirectoryState = new SceneDirectoryState();
             var scenePath = pathState.ProjectPath + "/dcl-edit/saves/v2/New Scene.dclscene";
 
-            sceneDirectoryState.DirectoryPath = scenePath;
+            sceneDirectoryState.directoryPath = scenePath;
 
             loadSaveSystem.Load(sceneDirectoryState);
 
-            var scene = sceneDirectoryState.CurrentScene;
+            var scene = sceneDirectoryState.currentScene;
 
             Assert.NotNull(scene);
 
@@ -70,12 +70,12 @@ namespace Assets.Scripts.Tests.EditModeTests
             {
                 var sceneDirectoryState = new SceneDirectoryState
                 {
-                    DirectoryPath = scenePath
+                    directoryPath = scenePath
                 };
 
                 loadSaveSystem.Load(sceneDirectoryState);
 
-                var scene = sceneDirectoryState.CurrentScene;
+                var scene = sceneDirectoryState.currentScene;
 
                 Assert.NotNull(scene);
 
@@ -107,12 +107,12 @@ namespace Assets.Scripts.Tests.EditModeTests
             {
                 var sceneDirectoryState = new SceneDirectoryState
                 {
-                    DirectoryPath = scenePath
+                    directoryPath = scenePath
                 };
 
                 loadSaveSystem.Load(sceneDirectoryState);
 
-                var scene = sceneDirectoryState.CurrentScene;
+                var scene = sceneDirectoryState.currentScene;
 
                 Assert.NotNull(scene);
 

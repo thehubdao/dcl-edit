@@ -148,7 +148,7 @@ namespace Assets.Scripts.System
                 ChangeToLocal(entity, null);
             }
 
-            sceneDirectoryState.CurrentScene = newScene;
+            sceneDirectoryState.currentScene = newScene;
         }
 
         private void ChangeToLocal(DclEntity entity, DclTransformComponent dclParentTransform)

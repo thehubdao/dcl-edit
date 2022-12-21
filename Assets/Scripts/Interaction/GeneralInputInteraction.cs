@@ -2,6 +2,7 @@ using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
 using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
+using ModestTree;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Zenject;
@@ -21,12 +22,12 @@ namespace Assets.Scripts.Interaction
         private GizmoState gizmoState;
         private UnityState unityState;
         private InputHelper inputHelper;
-        private EditorState.SceneDirectoryState sceneDirectoryState;
         private CameraState cameraState;
         private EditorEvents editorEvents;
         private TypeScriptGenerationSystem typeScriptGenerationSystem;
         private EntitySelectSystem entitySelectSystem;
         private ContextMenuSystem contextMenuSystem;
+        private SceneManagerSystem sceneManagerSystem;
 
         [Inject]
         private void Construct(
@@ -35,7 +36,6 @@ namespace Assets.Scripts.Interaction
             InputState inputState,
             Interface3DState interface3DState,
             WorkspaceSaveSystem workspaceSaveSystem,
-            EditorState.SceneDirectoryState sceneDirectoryState,
             CameraState cameraState,
             GizmoState gizmoState,
             UnityState unityState,
@@ -43,7 +43,8 @@ namespace Assets.Scripts.Interaction
             EditorEvents editorEvents,
             TypeScriptGenerationSystem typeScriptGenerationSystem,
             EntitySelectSystem entitySelectSystem,
-            ContextMenuSystem contextMenuSystem)
+            ContextMenuSystem contextMenuSystem,
+            SceneManagerSystem sceneManagerSystem)
         {
             this.sceneSaveSystem = sceneSaveSystem;
             this.commandSystem = commandSystem;
@@ -53,12 +54,12 @@ namespace Assets.Scripts.Interaction
             this.gizmoState = gizmoState;
             this.unityState = unityState;
             this.inputHelper = inputHelper;
-            this.sceneDirectoryState = sceneDirectoryState;
             this.cameraState = cameraState;
             this.editorEvents = editorEvents;
             this.typeScriptGenerationSystem = typeScriptGenerationSystem;
             this.entitySelectSystem = entitySelectSystem;
             this.contextMenuSystem = contextMenuSystem;
+            this.sceneManagerSystem = sceneManagerSystem;
         }
 
 
@@ -220,7 +221,7 @@ namespace Assets.Scripts.Interaction
                             if (gizmoDir == null) break;
                             Vector3 localGizmoDir = gizmoDir.GetVector();
 
-                            var entity = sceneDirectoryState.CurrentScene?.SelectionState.PrimarySelectedEntity.GetTransformComponent();
+                            var entity = sceneManagerSystem.GetCurrentScene()?.SelectionState.PrimarySelectedEntity.GetTransformComponent();
 
                             GizmoState.Mode gizmoMode = gizmoState.CurrentMode;
 
@@ -395,10 +396,10 @@ namespace Assets.Scripts.Interaction
             }
 
             // When pressing the focus hotkey and having a selected primary entity, switch to Focus Transition state
-            if (inputSystemAsset.CameraMovement.Focus.triggered && sceneDirectoryState.CurrentScene?.SelectionState.PrimarySelectedEntity != null)
+            if (inputSystemAsset.CameraMovement.Focus.triggered && sceneManagerSystem.GetCurrentScene()?.SelectionState.PrimarySelectedEntity != null)
             {
                 // Fetch position of selected object
-                var selectedEntity = sceneDirectoryState.CurrentScene?.SelectionState.PrimarySelectedEntity;
+                var selectedEntity = sceneManagerSystem.GetCurrentScene()?.SelectionState.PrimarySelectedEntity;
                 var entityPos = selectedEntity.GetTransformComponent().GlobalPosition;
 
                 // Calculate an offset position so that the camera keeps its rotation and looks at the selected entity
@@ -412,7 +413,7 @@ namespace Assets.Scripts.Interaction
             // When pressing the save hotkey, save the scene and workspace layout
             if (inputSystemAsset.Hotkeys.Save.triggered)
             {
-                sceneSaveSystem.Save(sceneDirectoryState);
+                sceneSaveSystem.Save(sceneManagerSystem.GetCurrentDirectoryState());
                 workspaceSaveSystem.Save(unityState.dynamicPanelsCanvas);
                 typeScriptGenerationSystem.GenerateTypeScript();
             }
@@ -534,8 +535,14 @@ namespace Assets.Scripts.Interaction
         private void UpdateHoldingGizmoTool()
         {
             GizmoState.Mode mode = gizmoState.CurrentMode;
-            DclEntity selectedEntity = sceneDirectoryState.CurrentScene?.SelectionState.PrimarySelectedEntity;
-            DclTransformComponent trans = selectedEntity.GetTransformComponent();
+            DclEntity selectedEntity = sceneManagerSystem.GetCurrentScene()?.SelectionState.PrimarySelectedEntity;
+
+            if (selectedEntity == null)
+            {
+                return;
+            }
+
+            DclTransformComponent trans = selectedEntity!.GetTransformComponent();
 
             // When releasing LMB, stop holding gizmo
             if (!inputHelper.IsLeftMouseButtonPressed())

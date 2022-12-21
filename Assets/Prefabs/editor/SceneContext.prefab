@@ -82,3 +82,4 @@ MonoBehaviour:
   _rotateGizmoPrefab: {fileID: 7576839295262608665, guid: bd121112ea8e3144ca5e8e5af300829c, type: 3}
   _scaleGizmoPrefab: {fileID: 6226587272053408715, guid: 08b0965eef8544b43a35a9a4be5dab6a, type: 3}
   unityStateObject: {fileID: 0}
+  mainSceneVisualsPrefab: {fileID: 605670504806266054, guid: b3d29882895606a40a7e0a82c4a68140, type: 3}

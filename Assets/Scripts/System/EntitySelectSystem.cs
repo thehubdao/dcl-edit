@@ -2,22 +2,27 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Assets.Scripts.EditorState;
+using Assets.Scripts.SceneState;
+using JetBrains.Annotations;
 using Zenject;
 
 namespace Assets.Scripts.System
 {
     public class EntitySelectSystem
     {
-        private InputHelper _inputHelper;
-        private SceneDirectoryState _sceneDirectoryState;
-        private CommandSystem _commandSystem;
+        private InputHelper inputHelper;
+        private CommandSystem commandSystem;
+        private SceneManagerSystem sceneManagerSystem;
 
         [Inject]
-        private void Construct(InputHelper inputHelper, SceneDirectoryState sceneDirectoryState, CommandSystem commandSystem)
+        private void Construct(
+            InputHelper inputHelper,
+            CommandSystem commandSystem,
+            SceneManagerSystem sceneManagerSystem)
         {
-            _inputHelper = inputHelper;
-            _sceneDirectoryState = sceneDirectoryState;
-            _commandSystem = commandSystem;
+            this.inputHelper = inputHelper;
+            this.commandSystem = commandSystem;
+            this.sceneManagerSystem = sceneManagerSystem;
         }
 
         public void ClickedOnEntity(Guid entity)
@@ -28,7 +33,7 @@ namespace Assets.Scripts.System
                 return;
             }
 
-            if (_inputHelper.GetIsControlPressed())
+            if (inputHelper.GetIsControlPressed())
             {
                 SelectAdditional(entity);
                 return;
@@ -40,48 +45,65 @@ namespace Assets.Scripts.System
 
         public void SelectAdditional(Guid id)
         {
-            var scene = _sceneDirectoryState.CurrentScene;
-            var selectionCommand = _commandSystem.CommandFactory.CreateChangeSelection(
-                GetPrimarySelectionFromScene(),
-                GetSecondarySelectionFromScene(),
+            var scene = sceneManagerSystem.GetCurrentScene();
+            if (scene == null)
+            {
+                return;
+            }
+
+            var selectionCommand = commandSystem.CommandFactory.CreateChangeSelection(
+                GetPrimarySelectionFromScene(scene),
+                GetSecondarySelectionFromScene(scene),
                 id,
                 scene.SelectionState.AllSelectedEntities
                     .Select(e => e?.Id ?? Guid.Empty)
                     .Where(current => current != Guid.Empty && current != id));
 
-            _commandSystem.ExecuteCommand(selectionCommand);
+            commandSystem.ExecuteCommand(selectionCommand);
         }
 
         public void SelectSingle(Guid id)
         {
-            var selectionCommand = _commandSystem.CommandFactory.CreateChangeSelection(
-                GetPrimarySelectionFromScene(),
-                GetSecondarySelectionFromScene(),
+            var scene = sceneManagerSystem.GetCurrentScene();
+            if (scene == null)
+            {
+                return;
+            }
+
+            var selectionCommand = commandSystem.CommandFactory.CreateChangeSelection(
+                GetPrimarySelectionFromScene(scene),
+                GetSecondarySelectionFromScene(scene),
                 id,
                 Array.Empty<Guid>());
 
-            _commandSystem.ExecuteCommand(selectionCommand);
+            commandSystem.ExecuteCommand(selectionCommand);
         }
 
         public void DeselectAll()
         {
-            var selectionCommand = _commandSystem.CommandFactory.CreateChangeSelection(
-                GetPrimarySelectionFromScene(),
-                GetSecondarySelectionFromScene(),
+            var scene = sceneManagerSystem.GetCurrentScene();
+            if (scene == null)
+            {
+                return;
+            }
+
+            var selectionCommand = commandSystem.CommandFactory.CreateChangeSelection(
+                GetPrimarySelectionFromScene(scene),
+                GetSecondarySelectionFromScene(scene),
                 Guid.Empty,
                 Array.Empty<Guid>());
 
-            _commandSystem.ExecuteCommand(selectionCommand);
+            commandSystem.ExecuteCommand(selectionCommand);
         }
 
-        public Guid GetPrimarySelectionFromScene()
+        public Guid GetPrimarySelectionFromScene([NotNull] DclScene scene)
         {
-            return _sceneDirectoryState.CurrentScene!.SelectionState.PrimarySelectedEntity?.Id ?? Guid.Empty;
+            return scene.SelectionState.PrimarySelectedEntity?.Id ?? Guid.Empty;
         }
 
-        public IEnumerable<Guid> GetSecondarySelectionFromScene()
+        public IEnumerable<Guid> GetSecondarySelectionFromScene([NotNull] DclScene scene)
         {
-            return _sceneDirectoryState.CurrentScene!.SelectionState.SecondarySelectedEntities.Select(e => e.Id);
+            return scene.SelectionState.SecondarySelectedEntities.Select(e => e.Id);
         }
     }
 }
