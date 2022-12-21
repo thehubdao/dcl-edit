@@ -104,18 +104,12 @@ namespace Assets.Scripts.System
         /// <returns></returns>
         public Vector2 GetMousePositionInScenePanel()
         {
-            // get the mouse position
-            var mousePosition = GetMousePosition();
-            // get the rectTransform from the Panel, the scene is currently visible in
-            var sceneImageRectTransform = _unityState.SceneImage.rectTransform;
-            // Get the position of the panel. This will give us the center of the panel, because the anchor is in the Center
-            var panelPosCenter = new Vector2(sceneImageRectTransform.position.x, sceneImageRectTransform.position.y);
-            // Calculate the bottom left corner position
-            var panelPos = panelPosCenter - (sceneImageRectTransform.rect.size / 2);
-            // Calculate the mouse position inside the panel
-            var mousePosInPanel = mousePosition - panelPos;
-            // convert the mouse position in panel into Viewport space
-            var mousePosViewport = _unityState.MainCamera.ScreenToViewportPoint(mousePosInPanel);
+            Vector3[] fourCorners = new Vector3[4];
+            _unityState.SceneImage.rectTransform.GetWorldCorners(fourCorners);
+
+            Vector2 mousePosInPanel = GetMousePosition() - new Vector2(fourCorners[0].x, fourCorners[0].y);
+            Vector3 mousePosViewport = _unityState.MainCamera.ScreenToViewportPoint(mousePosInPanel);
+
             return mousePosViewport;
         }
 
