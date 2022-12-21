@@ -243,8 +243,8 @@ namespace Assets.Scripts.System
 
             var userSettings = new List<ISetting>();
 
-            TestNumber = new FloatUserSetting(this, "Test number", 12.34f);
-            userSettings.Add(TestNumber);
+            uiScalingFactor = new FloatClampedUserSetting(this, "UI Scaling", 1.0f, 0.5f, 3.0f);
+            userSettings.Add(uiScalingFactor);
 
             TestInteger = new IntUserSetting(this, "Test integer", 123);
             userSettings.Add(TestInteger);
@@ -283,7 +283,7 @@ namespace Assets.Scripts.System
 
         public Dictionary<string, List<ISetting>> ShownSettings = new Dictionary<string, List<ISetting>>();
 
-        public FloatUserSetting TestNumber;
+        public FloatUserSetting uiScalingFactor;
         public IntUserSetting TestInteger;
         public StringUserSetting TestString;
         public IntUserSetting applicationTargetFramerate;
