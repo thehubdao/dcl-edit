@@ -246,6 +246,9 @@ namespace Assets.Scripts.System
             uiScalingFactor = new FloatClampedUserSetting(this, "UI Scaling", 1.0f, 0.5f, 3.0f);
             userSettings.Add(uiScalingFactor);
 
+            mouseSensitivity = new FloatClampedUserSetting(this, "Mouse Sensitivity", 1.0f, 0.1f, 10.0f);
+            userSettings.Add(mouseSensitivity);
+
             TestInteger = new IntUserSetting(this, "Test integer", 123);
             userSettings.Add(TestInteger);
 
@@ -284,6 +287,7 @@ namespace Assets.Scripts.System
         public Dictionary<string, List<ISetting>> ShownSettings = new Dictionary<string, List<ISetting>>();
 
         public FloatUserSetting uiScalingFactor;
+        public FloatUserSetting mouseSensitivity;
         public IntUserSetting TestInteger;
         public StringUserSetting TestString;
         public IntUserSetting applicationTargetFramerate;

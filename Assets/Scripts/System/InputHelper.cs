@@ -1,4 +1,5 @@
 using Assets.Scripts.EditorState;
+using Assets.Scripts.Events;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Zenject;
@@ -20,17 +21,36 @@ namespace Assets.Scripts.System
 
         private int _lastMouseDownCalculated = -1;
 
+        private float mousesensitivity;
+
         // Dependencies
         private InputSystemAsset _inputSystemAsset;
         private UnityState _unityState;
+        private SettingsSystem _settingsSystem;
+        private EditorEvents _editorEvents;
 
         [Inject]
-        private void Construct(UnityState unityState)
+        private void Construct(
+            UnityState unityState,
+            SettingsSystem settingsSystem,
+            EditorEvents editorEvents)
         {
             _inputSystemAsset = new InputSystemAsset();
             _inputSystemAsset.Modifier.Enable();
 
             _unityState = unityState;
+            _settingsSystem = settingsSystem;
+            _editorEvents = editorEvents;
+
+
+            // mouse sensitivity
+            SetMouseSensitivity();
+            _editorEvents.onSettingsChangedEvent += SetMouseSensitivity;
+        }
+
+        private void SetMouseSensitivity()
+        {
+            mousesensitivity = _settingsSystem.mouseSensitivity.Get();
         }
 
         private void RequireMouseDowns()
@@ -75,7 +95,7 @@ namespace Assets.Scripts.System
 
         public Vector2 GetMouseMovement()
         {
-            return Mouse.current.delta.ReadValue() / 20; // divide by 20 to get a similar value to the GetAxis of the old input system
+            return (Mouse.current.delta.ReadValue() / 20) * mousesensitivity; // divide by 20 to get a similar value to the GetAxis of the old input system
         }
 
         public Vector2 GetMousePosition()
