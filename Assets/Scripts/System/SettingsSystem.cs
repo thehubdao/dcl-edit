@@ -106,6 +106,23 @@ namespace Assets.Scripts.System
             }
         }
 
+        public class IntClampedUserSetting : IntUserSetting
+        {
+            private int minValue;
+            private int maxValue;
+
+            public IntClampedUserSetting(SettingsSystem settingsSystem, string name, int defaultValue, int minValue, int maxValue) : base(settingsSystem, name, defaultValue)
+            {
+                this.minValue = minValue;
+                this.maxValue = maxValue;
+            }
+
+            public override void Set(int value)
+            {
+                base.Set(Mathf.Clamp(value, minValue, maxValue));
+            }
+        }
+
         public class FloatUserSetting : UserSetting<float>
         {
             public FloatUserSetting(SettingsSystem settingsSystem, string name, float defaultValue) : base(settingsSystem, name, defaultValue)
@@ -124,6 +141,23 @@ namespace Assets.Scripts.System
             {
                 PlayerPrefs.SetFloat(name, value);
                 base.Set(value);
+            }
+        }
+
+        public class FloatClampedUserSetting : FloatUserSetting
+        {
+            private float minValue;
+            private float maxValue;
+
+            public FloatClampedUserSetting(SettingsSystem settingsSystem, string name, float defaultValue, float minValue, float maxValue) : base(settingsSystem, name, defaultValue)
+            {
+                this.minValue = minValue;
+                this.maxValue = maxValue;
+            }
+
+            public override void Set(float value)
+            {
+                base.Set(Mathf.Clamp(value, minValue, maxValue));
             }
         }
 
