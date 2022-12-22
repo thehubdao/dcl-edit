@@ -249,6 +249,9 @@ namespace Assets.Scripts.System
             mouseSensitivity = new FloatClampedUserSetting(this, "Mouse Sensitivity", 1.0f, 0.1f, 10.0f);
             userSettings.Add(mouseSensitivity);
 
+            gizmoSize = new FloatClampedUserSetting(this, "Gizmo Size", 1.0f, 0.1f, 10.0f);
+            userSettings.Add(gizmoSize);
+
             TestInteger = new IntUserSetting(this, "Test integer", 123);
             userSettings.Add(TestInteger);
 
@@ -288,6 +291,7 @@ namespace Assets.Scripts.System
 
         public FloatUserSetting uiScalingFactor;
         public FloatUserSetting mouseSensitivity;
+        public FloatUserSetting gizmoSize;
         public IntUserSetting TestInteger;
         public StringUserSetting TestString;
         public IntUserSetting applicationTargetFramerate;
