@@ -15,6 +15,7 @@ namespace Assets.Scripts.System
         {
             String,
             Float,
+            Boolean,
             Integer,
             Vector3
         }
@@ -140,6 +141,27 @@ namespace Assets.Scripts.System
             public override void Set(float value)
             {
                 PlayerPrefs.SetFloat(name, value);
+                base.Set(value);
+            }
+        }
+
+        public class BooleanUserSetting : UserSetting<bool>
+        {
+            public BooleanUserSetting(SettingsSystem settingsSystem, string name, bool defaultValue) : base(settingsSystem, name, defaultValue)
+            {
+                type = SettingType.Boolean;
+            }
+
+            public override bool Get()
+            {
+                return PlayerPrefs.HasKey(name) ?
+                    PlayerPrefs.GetInt(name) > 0 :
+                    defaultValue;
+            }
+
+            public override void Set(bool value)
+            {
+                PlayerPrefs.SetInt(name, value ? 1 : 0);
                 base.Set(value);
             }
         }
@@ -276,6 +298,7 @@ namespace Assets.Scripts.System
             //Hidden Settings
             //Saves Panel Size
             panelSize = new StringUserSetting(this, "Panel Size","");
+            gizmoToolSnapping = new BooleanUserSetting(this, "Gizmo tool snapping", true);
         }
 
         public Dictionary<string, List<ISetting>> ShownSettings = new Dictionary<string, List<ISetting>>();
@@ -293,5 +316,6 @@ namespace Assets.Scripts.System
         public Vec3SceneSetting TestSceneVec3;
 
         public StringUserSetting panelSize;
+        public BooleanUserSetting gizmoToolSnapping;
     }
 }
