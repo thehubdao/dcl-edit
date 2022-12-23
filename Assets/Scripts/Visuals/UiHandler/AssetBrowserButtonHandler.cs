@@ -67,7 +67,6 @@ public class AssetBrowserButtonHandler : ButtonHandler
         {
             if (maskedImage.sprite == null)
             {
-                return;
                 var result = assetThumbnailManagerSystem.GetThumbnailById(metadata.assetId);
 
                 switch (result.state)
