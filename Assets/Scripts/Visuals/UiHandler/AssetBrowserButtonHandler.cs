@@ -103,7 +103,6 @@ public class AssetBrowserButtonHandler : ButtonHandler
     {
         if (ids.Contains(metadata.assetId))
         {
-            Debug.Log("Thumbnail updated " + metadata.assetDisplayName);
             var thumbnail = assetThumbnailManagerSystem.GetThumbnailById(metadata.assetId);
             if (thumbnail.texture != null)
             {

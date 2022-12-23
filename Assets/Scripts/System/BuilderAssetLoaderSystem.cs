@@ -4,6 +4,7 @@ using Assets.Scripts.Utility;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -85,6 +86,8 @@ namespace Assets.Scripts.System
 #pragma warning restore CS0649
 
         #endregion
+
+        private bool thumbnailRequestCoroutineRunning = false;
 
         // Dependencies
         private BuilderAssetLoaderState _loaderState;
@@ -202,7 +205,15 @@ namespace Assets.Scripts.System
 
             // Download and load thumbnail
             {
-                _ = LoadThumbnailAsync(data);
+                if (!_loaderState.thumbnailRequestQueue.Contains(id))
+                {
+                    _loaderState.thumbnailRequestQueue.Enqueue(id);
+                    if (!thumbnailRequestCoroutineRunning)
+                    {
+                        var unityState = GameObject.Find("UnityState").GetComponent<UnityState>();  // This is currently only used to have a GameObject on which a coroutine can be started
+                        unityState.StartCoroutine(ThumbnailRequestCoroutine());
+                    }
+                }
 
                 return new AssetThumbnail(id, AssetData.State.IsLoading, null);
             }
@@ -233,8 +244,30 @@ namespace Assets.Scripts.System
             _loaderState.LoadedThumbnails.Add(hash, thumbnail);
             data.ThumbnailCacheState = BuilderAssetLoaderState.DataStorage.CacheState.Loaded;
 
-            _editorEvents.InvokeThumbnailDataUpdatedEvent(new List<Guid> { data.Id });
         }
+
+        private IEnumerator ThumbnailRequestCoroutine()
+        {
+            thumbnailRequestCoroutineRunning = true;
+            while (_loaderState.thumbnailRequestQueue.Count > 0)
+            {
+                yield return new WaitForEndOfFrame();
+
+                var id = _loaderState.thumbnailRequestQueue.Dequeue();
+                if (_loaderState.Data.TryGetValue(id, out var data))
+                {
+                    Debug.Log("Loading thumbnail for " + data.Name);
+                    var loadingTask = LoadThumbnailAsync(data);
+                    yield return new WaitUntil(() => loadingTask.IsCompleted);
+
+                    _editorEvents.InvokeThumbnailDataUpdatedEvent(new List<Guid> { data.Id });
+
+                    yield return null;
+                }
+            }
+            thumbnailRequestCoroutineRunning = false;
+        }
+
 
         private Texture2D LoadBytesAsImage(byte[] bytes, Texture2D inTexture = null)
         {

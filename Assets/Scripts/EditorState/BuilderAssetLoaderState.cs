@@ -39,6 +39,8 @@ namespace Assets.Scripts.EditorState
         // loaded thumbnails with the Hash as key
         public Dictionary<string, Texture2D> LoadedThumbnails = new Dictionary<string, Texture2D>();
 
+        public Queue<Guid> thumbnailRequestQueue = new Queue<Guid>();
+
         public AssetHierarchyItem assetHierarchy = new AssetHierarchyItem
         {
             name = "Builder Assets"
