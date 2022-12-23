@@ -26,16 +26,19 @@ namespace Assets.Scripts.Visuals.UiHandler
             {
                 case LayoutDirection.Horizontal:
                     layoutGroup = content.AddComponent<HorizontalLayoutGroup>();
+                    layoutGroup.childForceExpandHeight = false;
+                    layoutGroup.childForceExpandWidth = false;
                     break;
                 case LayoutDirection.Vertical:
                     layoutGroup = content.AddComponent<VerticalLayoutGroup>();
+                    layoutGroup.childForceExpandHeight = false;
+                    layoutGroup.childForceExpandWidth = true;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(value), value, null);
             }
 
-            layoutGroup.childForceExpandHeight = false;
-            layoutGroup.childForceExpandWidth = true;
+            
         }
 
         private bool IsLayoutGroupCorrect(LayoutDirection value)
