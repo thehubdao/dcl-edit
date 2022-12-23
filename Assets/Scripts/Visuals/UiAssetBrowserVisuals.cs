@@ -98,9 +98,8 @@ namespace Assets.Scripts.Visuals
 
         public void SetupSceneEventListeners()
         {
-            editorEvents.onAssetMetadataCacheUpdatedEvent += UpdateVisuals;
+            editorEvents.onAssetMetadataCacheUpdatedEvent += UpdateContent;
             editorEvents.onUiChangedEvent += UpdateVisuals;
-            editorEvents.onAssetThumbnailUpdatedEvent += _ => UpdateVisuals();
         }
 
         private void UpdateVisuals()

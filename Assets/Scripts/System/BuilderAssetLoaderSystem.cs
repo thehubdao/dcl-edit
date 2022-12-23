@@ -251,8 +251,6 @@ namespace Assets.Scripts.System
             thumbnailRequestCoroutineRunning = true;
             while (_loaderState.thumbnailRequestQueue.Count > 0)
             {
-                yield return new WaitForEndOfFrame();
-
                 var id = _loaderState.thumbnailRequestQueue.Dequeue();
                 if (_loaderState.Data.TryGetValue(id, out var data))
                 {
