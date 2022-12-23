@@ -45,4 +45,9 @@ public class CommandFactorySystem
     {
         return new ChangeSelection(oldPrimary, oldSecondary, newPrimary, newSecondary);
     }
+
+    public DuplicateEntity CreateDuplicateEntity(Guid entityId)
+    {
+        return new DuplicateEntity(entityId);
+    }
 }

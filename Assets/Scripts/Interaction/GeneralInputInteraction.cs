@@ -2,6 +2,8 @@ using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
 using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
+using ModestTree;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Zenject;
@@ -202,17 +204,7 @@ namespace Assets.Scripts.Interaction
             {
                 DclEntity entity = _sceneDirectoryState.CurrentScene?.SelectionState.PrimarySelectedEntity;
 
-                DclEntity newEntity = entity.DeepCopy();
-
-                _sceneDirectoryState.CurrentScene.AddEntity(newEntity);
-
-                _editorEvents.InvokeHierarchyChangedEvent();
-
-                _sceneDirectoryState.CurrentScene.SelectionState.SecondarySelectedEntities.Clear();
-                _sceneDirectoryState.CurrentScene.SelectionState.PrimarySelectedEntity = newEntity;
-
-                _editorEvents.InvokeSelectionChangedEvent();
-
+                _commandSystem.ExecuteCommand(_commandSystem.CommandFactory.CreateDuplicateEntity(entity.Id));
             }
             // When pressing(down) Left mouse button, select the hovered entity
             if (_inputHelper.IsLeftMouseButtonDown() && !pressingAlt && isMouseIn3DView)

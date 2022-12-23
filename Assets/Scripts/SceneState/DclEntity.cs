@@ -4,6 +4,7 @@ using System.Linq;
 using Assets.Scripts.Utility;
 using JetBrains.Annotations;
 using UnityEngine;
+using static UnityEngine.EventSystems.EventTrigger;
 
 
 namespace Assets.Scripts.SceneState
@@ -122,7 +123,7 @@ namespace Assets.Scripts.SceneState
             _parentId = parentId;
             IsExposed = isExposed;
         }
-        public DclEntity DeepCopy()
+        public DclEntity DeepCopy(DclScene sceneState)
         {
             DclEntity deepcopyEntity = new DclEntity(Id, CustomName, _parentId, true);
 
@@ -135,6 +136,16 @@ namespace Assets.Scripts.SceneState
                 deepcopyEntity.AddComponent(newComponent);
             }
 
+            if (Children.ToList().Count > 0)
+            {
+                foreach (var child in Children.ToList())
+                {
+                    DclEntity newChild = child.DeepCopy(sceneState);
+                    newChild.Parent = deepcopyEntity;
+
+                    sceneState.AddEntity(newChild);
+                }
+            }
             return deepcopyEntity;
         }
     }
