@@ -1,5 +1,4 @@
 using Assets.Scripts.EditorState;
-using Assets.Scripts.System;
 using Assets.Scripts.Visuals.UiBuilder;
 using TMPro;
 using UnityEngine;
@@ -20,24 +19,24 @@ public class AssetBrowserFolderHandler : MonoBehaviour
 
     // Dependencies
     private UiBuilder uiBuilder;
-    AssetManagerSystem assetManagerSystem;
     UnityState unityState;
 
 
     [Inject]
-    void Construct(UiBuilder.Factory uiBuilderFactory, AssetManagerSystem assetManagerSystem, UnityState unityState)
+    void Construct(UiBuilder.Factory uiBuilderFactory, UnityState unityState)
     {
         uiBuilder = uiBuilderFactory.Create(gameObject);
-        this.assetManagerSystem = assetManagerSystem;
         this.unityState = unityState;
     }
 
 
-    public void Init(AssetHierarchyItem hierarchyItem, ScrollRect scrollViewRect)
+    public void Initialize(AssetHierarchyItem hierarchyItem, ScrollRect scrollViewRect)
     {
         this.hierarchyItem = hierarchyItem;
         headerText.text = hierarchyItem.name;
         this.scrollViewRect = scrollViewRect;
+
+        SetExpanded(false);
     }
 
 
@@ -70,22 +69,23 @@ public class AssetBrowserFolderHandler : MonoBehaviour
 
     private void BuildFolderHierarchy()
     {
-        var panel = new PanelAtom.Data();
+        PanelAtom.Data panel = new PanelAtom.Data();
 
-        foreach (var subfolder in hierarchyItem.childDirectories)
+        foreach (AssetHierarchyItem subfolder in hierarchyItem.childDirectories)
         {
-            panel.AddAssetBrowserFolder(subfolder, scrollViewRect);
+            if (!subfolder.IsEmpty())
+            {
+                panel.AddAssetBrowserFolder(subfolder, scrollViewRect);
+            }
         }
 
-        if (hierarchyItem.assetIds.Count > 0)
+        if (hierarchyItem.assets.Count > 0)
         {
-            var grid = panel.AddGrid();
-            foreach (var childItem in hierarchyItem.assetIds)
+            GridAtom.Data grid = panel.AddGrid();
+            foreach (AssetMetadata asset in hierarchyItem.assets)
             {
-                var assetMetadata = assetManagerSystem.GetMetadataById(childItem);
-
                 Texture2D typeIndicator = null;
-                switch (assetMetadata.assetType)
+                switch (asset.assetType)
                 {
                     case AssetMetadata.AssetType.Unknown:
                         break;
@@ -99,7 +99,7 @@ public class AssetBrowserFolderHandler : MonoBehaviour
                         break;
                 }
 
-                grid.AddAssetBrowserButton(assetMetadata, typeIndicator, scrollViewRect);
+                grid.AddAssetBrowserButton(asset, typeIndicator, scrollViewRect);
             }
         }
 
@@ -113,23 +113,17 @@ public class AssetBrowserFolderHandler : MonoBehaviour
         {
             if (handler != this)
             {
-                handler.Remove();
+                handler.RemoveSingleFolder();
             }
         }
 
         uiBuilder.Update(new PanelAtom.Data());
     }
 
-    public void Remove()
-    {
-        /*
-        var panel = transform.Find("Panel(Clone)");
-        if (panel)
-        {
-            Destroy(panel.gameObject);
-        }*/
-        uiBuilder.Update(new PanelAtom.Data());
 
+    public void RemoveSingleFolder()
+    {
+        uiBuilder.Update(new PanelAtom.Data());
     }
 
 

@@ -85,18 +85,41 @@ namespace Assets.Scripts.EditorState
     {
         public string name = "<Asset Hierarchy Item>";
         public List<AssetHierarchyItem> childDirectories = new List<AssetHierarchyItem>();
-        public List<Guid> assetIds = new List<Guid>();
+        public List<AssetMetadata> assets = new List<AssetMetadata>();
 
         public AssetHierarchyItem() { }
         public AssetHierarchyItem(string name)
         {
             this.name = name;
         }
-        public AssetHierarchyItem(string name, List<AssetHierarchyItem> childDirectories, List<Guid> assetIds)
+        public AssetHierarchyItem(string name, List<AssetHierarchyItem> childDirectories, List<AssetMetadata> assets)
         {
             this.name = name;
             this.childDirectories = childDirectories;
-            this.assetIds = assetIds;
+            this.assets = assets;
+        }
+
+        /// <summary>
+        /// Checks if the current directory and all subdirectories have no assets in them. Directories can contain subdirectories
+        /// and are still considered empty if they don't have any assets in them.
+        /// </summary>
+        /// <returns></returns>
+        public bool IsEmpty()
+        {
+            if (assets.Count > 0)
+            {
+                return false;
+            }
+
+            foreach (AssetHierarchyItem subdir in childDirectories)
+            {
+                if (!subdir.IsEmpty())
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }

@@ -49,7 +49,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
             {
                 // Update data
                 var handler = gameObject.gameObject.GetComponent<AssetBrowserFolderHandler>();
-                handler.Init(newFolderData.hierarchyItem, newFolderData.scrollViewRect);
+                handler.Initialize(newFolderData.hierarchyItem, newFolderData.scrollViewRect);
                 data = newFolderData;
             }
         }
@@ -69,8 +69,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
     {
         public static AssetBrowserFolderAtom.Data AddAssetBrowserFolder(this PanelAtom.Data panelAtomData,
             AssetHierarchyItem hierarchyItem,
-            ScrollRect scrollViewRect
-            )
+            ScrollRect scrollViewRect)
         {
             var data = new AssetBrowserFolderAtom.Data
             {

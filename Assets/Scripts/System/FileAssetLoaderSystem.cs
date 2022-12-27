@@ -150,10 +150,10 @@ namespace Assets.Scripts.System
             string[] files = Directory.GetFiles(path, "*.*");
             string[] subdirs = Directory.GetDirectories(path);
 
-            List<Guid> assetIds = new List<Guid>();              // The ids the assets that were found in this directory
+            List<AssetMetadata> assets = new List<AssetMetadata>();
             List<AssetHierarchyItem> childDirectories = new List<AssetHierarchyItem>();
 
-            foreach (var assetFile in files)
+            foreach (string assetFile in files)
             {
                 // Populate caches. Assets and their corresponding metadata files get added using their Guid as key.
                 if (IsMetadataFile(assetFile)) { continue; }
@@ -166,7 +166,7 @@ namespace Assets.Scripts.System
                 }
 
                 assetMetadataCache[metadataFile.assetMetadata.assetId] = metadataFile;
-                assetIds.Add(metadataFile.assetMetadata.assetId);
+                assets.Add(metadataFile.assetMetadata);
             }
 
             foreach (var subdir in subdirs)
@@ -174,7 +174,7 @@ namespace Assets.Scripts.System
                 childDirectories.Add(ScanDirectory(subdir));
             }
 
-            return new AssetHierarchyItem(Path.GetFileName(path), childDirectories, assetIds);
+            return new AssetHierarchyItem(Path.GetFileName(path), childDirectories, assets);
         }
 
         /// <summary>

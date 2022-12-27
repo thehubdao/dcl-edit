@@ -123,7 +123,7 @@ namespace Assets.Scripts.System
                     // Builder assets are in categories which are identified by a string name. E.g. "category":"decorations"
                     Dictionary<String, AssetHierarchyItem> categories = new Dictionary<string, AssetHierarchyItem>();
 
-                    foreach (var asset in assetPack.assets)
+                    foreach (AssetPacksAsset asset in assetPack.assets)
                     {
                         var id = Guid.Parse(asset.id);
 
@@ -134,7 +134,7 @@ namespace Assets.Scripts.System
                             categoryHierarchyItem.name = char.ToUpper(asset.category[0]) + asset.category.Substring(1);
                             categories.Add(asset.category, categoryHierarchyItem);
                         }
-                        categories[asset.category].assetIds.Add(id);
+                        categories[asset.category].assets.Add(new AssetMetadata(asset.name, id, AssetMetadata.AssetType.Model));
 
 
                         _loaderState.Data.Add(id, new BuilderAssetLoaderState.DataStorage
@@ -254,7 +254,6 @@ namespace Assets.Scripts.System
                 var id = _loaderState.thumbnailRequestQueue.Dequeue();
                 if (_loaderState.Data.TryGetValue(id, out var data))
                 {
-                    Debug.Log("Loading thumbnail for " + data.Name);
                     var loadingTask = LoadThumbnailAsync(data);
                     yield return new WaitUntil(() => loadingTask.IsCompleted);
 

@@ -42,10 +42,14 @@ public class AssetBrowserButtonHandler : ButtonHandler
             assetTypeIndicator.sprite = Sprite.Create(typeIndicator, new Rect(0, 0, typeIndicator.width, typeIndicator.height), new Vector2(0.5f, 0.5f), 100);
         }
 
+
+
         editorEvents.onAssetThumbnailUpdatedEvent += OnAssetThumbnailUpdatedCallback;
-        scrollViewRect.onValueChanged.AddListener(OnScrollViewUpdatedCallback);
+        scrollViewRect.onValueChanged.AddListener(ShowThumbnailWhenVisible);
 
         // TODO: unsubscribe from assetthumbnailupdated and scrollviewupdated on destroy
+
+        ShowThumbnailWhenVisible(Vector2.zero);
     }
 
 
@@ -61,7 +65,7 @@ public class AssetBrowserButtonHandler : ButtonHandler
     }
 
 
-    private void OnScrollViewUpdatedCallback(Vector2 _)
+    private void ShowThumbnailWhenVisible(Vector2 _)
     {
         if (IsVisibleInScrollView())
         {

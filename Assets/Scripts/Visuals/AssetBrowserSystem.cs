@@ -8,66 +8,111 @@ namespace Assets.Scripts.System
 {
     public class AssetBrowserSystem
     {
-        public List<IAssetFilter> Filters => _assetBrowserState.filters;
-        public IAssetSorting Sorting => _assetBrowserState.sorting;
+        public List<AssetMetadata.AssetType> filters => assetBrowserState.shownAssetTypes;
 
         // Dependencies
-        private AssetManagerSystem _assetManagerSystem;
-        private AssetBrowserState _assetBrowserState;
-        private EditorEvents _editorEvents;
+        private AssetManagerSystem assetManagerSystem;
+        private AssetBrowserState assetBrowserState;
+        private EditorEvents editorEvents;
+
 
         [Inject]
         public void Construct(AssetManagerSystem assetManagerSystem, AssetBrowserState assetBrowserState, EditorEvents editorEvents)
         {
-            _assetManagerSystem = assetManagerSystem;
-            _assetBrowserState = assetBrowserState;
-            _editorEvents = editorEvents;
+            this.assetManagerSystem = assetManagerSystem;
+            this.assetBrowserState = assetBrowserState;
+            this.editorEvents = editorEvents;
         }
 
-        public List<AssetMetadata> GetFilteredMetadata()
+
+        public List<AssetHierarchyItem> GetFilteredAssetHierarchy()
         {
-            var ids = _assetManagerSystem.GetAllAssetIds();
-            var allAssets = new List<AssetMetadata>();
-            foreach (var id in ids)
+            List<AssetHierarchyItem> hierarchy = assetManagerSystem.GetHierarchy();
+            List<AssetHierarchyItem> filteredHierarchy = new List<AssetHierarchyItem>();
+
+            foreach (AssetHierarchyItem item in hierarchy)
             {
-                allAssets.Add(_assetManagerSystem.GetMetadataById(id));
+                filteredHierarchy.Add(ApplyFilters(item));
             }
 
-            if (Filters.Count > 0)
+            for (int i = 0; i < filteredHierarchy.Count; i++)
             {
-                var filteredAssets = new List<AssetMetadata>();
-                foreach (var f in _assetBrowserState.filters)
+                filteredHierarchy[i] = ApplySorting(filteredHierarchy[i]);
+            }
+
+            return filteredHierarchy;
+        }
+
+
+        private AssetHierarchyItem ApplyFilters(AssetHierarchyItem hierarchyItem)
+        {
+            AssetHierarchyItem filteredItem = new AssetHierarchyItem(hierarchyItem.name);
+
+            foreach (AssetHierarchyItem subdir in hierarchyItem.childDirectories)
+            {
+                filteredItem.childDirectories.Add(ApplyFilters(subdir));
+            }
+
+            foreach (AssetMetadata asset in hierarchyItem.assets)
+            {
+                if (assetBrowserState.shownAssetTypes.Contains(asset.assetType) || assetBrowserState.shownAssetTypes.Count == 0)
                 {
-                    var filtered = f.Apply(allAssets);
-                    filteredAssets = filteredAssets.Union(filtered).ToList();
+                    filteredItem.assets.Add(asset);
                 }
-                allAssets = filteredAssets;
             }
 
-            allAssets = Sorting?.Apply(allAssets);
-
-            return allAssets;
+            return filteredItem;
         }
 
-        public void AddFilter(IAssetFilter newFilter)
+
+        private AssetHierarchyItem ApplySorting(AssetHierarchyItem hierarchyItem)
         {
-            foreach (var f in _assetBrowserState.filters)
+            AssetHierarchyItem sortedItem = new AssetHierarchyItem(hierarchyItem.name);
+
+            switch (assetBrowserState.sorting)
             {
-                if (f.Equals(newFilter)) return;
+                case AssetBrowserState.Sorting.NameAscending:
+                    sortedItem.childDirectories = hierarchyItem.childDirectories.OrderBy(item => item.name).ToList();
+                    sortedItem.assets = hierarchyItem.assets.OrderBy(item => item.assetDisplayName).ToList();
+                    break;
+                case AssetBrowserState.Sorting.NameDescending:
+                    sortedItem.childDirectories = hierarchyItem.childDirectories.OrderByDescending(item => item.name).ToList();
+                    sortedItem.assets = hierarchyItem.assets.OrderByDescending(item => item.assetDisplayName).ToList();
+                    break;
             }
 
-            _assetBrowserState.filters.Add(newFilter);
-            _editorEvents.InvokeAssetMetadataCacheUpdatedEvent();
+            for (int i = 0; i < sortedItem.childDirectories.Count; i++)
+            {
+                sortedItem.childDirectories[i] = ApplySorting(sortedItem.childDirectories[i]);
+            }
+
+            return sortedItem;
         }
 
-        public void RemoveFilter(IAssetFilter filter) => _assetBrowserState.filters.Remove(filter);
 
-        public void ChangeSorting(IAssetSorting newSorting)
+        public void AddFilter(AssetMetadata.AssetType assetType)
         {
-            if (newSorting != null)
+            if (assetBrowserState.AddShownType(assetType))
             {
-                _assetBrowserState.sorting = newSorting;
-                _editorEvents.InvokeAssetMetadataCacheUpdatedEvent();
+                editorEvents.InvokeAssetMetadataCacheUpdatedEvent();
+            }
+        }
+
+
+        public void RemoveFilter(AssetMetadata.AssetType assetType)
+        {
+            if (assetBrowserState.RemoveShownType(assetType))
+            {
+                editorEvents.InvokeAssetMetadataCacheUpdatedEvent();
+            }
+        }
+
+
+        public void ChangeSorting(AssetBrowserState.Sorting newSorting)
+        {
+            if (assetBrowserState.ChangeSorting(newSorting))
+            {
+                editorEvents.InvokeAssetMetadataCacheUpdatedEvent();
             }
         }
     }

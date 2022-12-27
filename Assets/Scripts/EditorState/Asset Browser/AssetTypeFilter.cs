@@ -1,6 +1,4 @@
 using Assets.Scripts.EditorState;
-using System.Collections.Generic;
-using System.Linq;
 
 public class AssetTypeFilter : IAssetFilter
 {
@@ -11,11 +9,25 @@ public class AssetTypeFilter : IAssetFilter
         this.type = type;
     }
 
-    public List<AssetMetadata> Apply(List<AssetMetadata> metadata)
+    public AssetHierarchyItem Apply(AssetHierarchyItem item)
     {
-        var filteredData = new List<AssetMetadata>();
-        metadata.ForEach(item => filteredData.Add(item));
-        return metadata.Where(metadata => metadata.assetType == type).ToList();
+        AssetHierarchyItem filteredItem = new AssetHierarchyItem(item.name);
+
+        foreach (AssetHierarchyItem subdir in item.childDirectories)
+        {
+            filteredItem.childDirectories.Add(Apply(subdir));
+        }
+
+        for (int i = item.assets.Count - 1; i > 0; i--)
+        {
+            AssetMetadata asset = item.assets[i];
+            if (asset.assetType == type)
+            {
+                filteredItem.assets.Add(asset);
+            }
+        }
+
+        return filteredItem;
     }
 
     public string GetName() => type.ToString();

@@ -91,14 +91,14 @@ namespace Assets.Scripts.Visuals
         IEnumerator LateStart()
         {
             yield return null;
-            assetBrowserSystem.ChangeSorting(new AssetNameSorting(true));
+            assetBrowserSystem.ChangeSorting(AssetBrowserState.Sorting.NameAscending);
             UpdateVisuals();
         }
 
 
         public void SetupSceneEventListeners()
         {
-            editorEvents.onAssetMetadataCacheUpdatedEvent += UpdateContent;
+            editorEvents.onAssetMetadataCacheUpdatedEvent += UpdateVisuals;
             editorEvents.onUiChangedEvent += UpdateVisuals;
         }
 
@@ -118,18 +118,13 @@ namespace Assets.Scripts.Visuals
             };
 
             headerData.AddText("Filter:");
-            foreach (var f in assetBrowserSystem.Filters)
+            foreach (AssetMetadata.AssetType type in assetBrowserSystem.filters)
             {
-                headerData.AddButton(f.GetName() + " x", _ =>
-                {
-                    assetBrowserSystem.RemoveFilter(f);
-                    editorEvents.InvokeAssetMetadataCacheUpdatedEvent();
-                });
+                headerData.AddButton(type.ToString() + " x", _ => assetBrowserSystem.RemoveFilter(type));
             }
 
             headerData.AddButton("+", btn =>
             {
-                Debug.Log("Open context menu");
                 var rect = btn.GetComponent<RectTransform>();
                 contextMenuSystem.OpenMenu(new List<ContextMenuState.Placement>
                 {
@@ -145,10 +140,10 @@ namespace Assets.Scripts.Visuals
                     }
                 }, new List<ContextMenuItem>
                 {
-                    new ContextMenuTextItem("Add model filter", () => assetBrowserSystem.AddFilter(new AssetTypeFilter(AssetMetadata.AssetType.Model))),
-                    new ContextMenuTextItem("Add image filter", () => assetBrowserSystem.AddFilter(new AssetTypeFilter(AssetMetadata.AssetType.Image))),
-                    new ContextMenuTextItem("Sort by name (A-Z)", () => assetBrowserSystem.ChangeSorting(new AssetNameSorting(true))),
-                    new ContextMenuTextItem("Sort by name (Z-A)", () => assetBrowserSystem.ChangeSorting(new AssetNameSorting(false))),
+                    new ContextMenuTextItem("Add model filter", () => assetBrowserSystem.AddFilter(AssetMetadata.AssetType.Model)),
+                    new ContextMenuTextItem("Add image filter", () => assetBrowserSystem.AddFilter(AssetMetadata.AssetType.Image)),
+                    new ContextMenuTextItem("Sort by name (A-Z)", () => assetBrowserSystem.ChangeSorting(AssetBrowserState.Sorting.NameAscending)),
+                    new ContextMenuTextItem("Sort by name (Z-A)", () => assetBrowserSystem.ChangeSorting(AssetBrowserState.Sorting.NameDescending)),
                 });
             });
 
@@ -161,7 +156,7 @@ namespace Assets.Scripts.Visuals
 
             var panel = new PanelAtom.Data();
 
-            var assetHierarchy = assetManagerSystem.GetHierarchy();
+            var assetHierarchy = assetBrowserSystem.GetFilteredAssetHierarchy();
 
             foreach (var item in assetHierarchy)
             {
