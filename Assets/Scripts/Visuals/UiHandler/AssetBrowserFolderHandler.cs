@@ -77,27 +77,30 @@ public class AssetBrowserFolderHandler : MonoBehaviour
             panel.AddAssetBrowserFolder(subfolder, scrollViewRect);
         }
 
-        var grid = panel.AddGrid();
-        foreach (var childItem in hierarchyItem.assetIds)
+        if (hierarchyItem.assetIds.Count > 0)
         {
-            var assetMetadata = assetManagerSystem.GetMetadataById(childItem);
-
-            Texture2D typeIndicator = null;
-            switch (assetMetadata.assetType)
+            var grid = panel.AddGrid();
+            foreach (var childItem in hierarchyItem.assetIds)
             {
-                case AssetMetadata.AssetType.Unknown:
-                    break;
-                case AssetMetadata.AssetType.Model:
-                    typeIndicator = unityState.AssetTypeModelIcon;
-                    break;
-                case AssetMetadata.AssetType.Image:
-                    typeIndicator = unityState.AssetTypeImageIcon;
-                    break;
-                default:
-                    break;
-            }
+                var assetMetadata = assetManagerSystem.GetMetadataById(childItem);
 
-            grid.AddAssetBrowserButton(assetMetadata, typeIndicator, scrollViewRect);
+                Texture2D typeIndicator = null;
+                switch (assetMetadata.assetType)
+                {
+                    case AssetMetadata.AssetType.Unknown:
+                        break;
+                    case AssetMetadata.AssetType.Model:
+                        typeIndicator = unityState.AssetTypeModelIcon;
+                        break;
+                    case AssetMetadata.AssetType.Image:
+                        typeIndicator = unityState.AssetTypeImageIcon;
+                        break;
+                    default:
+                        break;
+                }
+
+                grid.AddAssetBrowserButton(assetMetadata, typeIndicator, scrollViewRect);
+            }
         }
 
         uiBuilder.Update(panel);
@@ -106,7 +109,27 @@ public class AssetBrowserFolderHandler : MonoBehaviour
 
     private void ClearFolderHierarchy()
     {
+        foreach (var handler in GetComponentsInChildren<AssetBrowserFolderHandler>())
+        {
+            if (handler != this)
+            {
+                handler.Remove();
+            }
+        }
+
         uiBuilder.Update(new PanelAtom.Data());
+    }
+
+    public void Remove()
+    {
+        /*
+        var panel = transform.Find("Panel(Clone)");
+        if (panel)
+        {
+            Destroy(panel.gameObject);
+        }*/
+        uiBuilder.Update(new PanelAtom.Data());
+
     }
 
 
