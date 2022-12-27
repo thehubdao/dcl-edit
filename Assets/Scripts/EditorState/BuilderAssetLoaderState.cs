@@ -43,7 +43,8 @@ namespace Assets.Scripts.EditorState
 
         public AssetHierarchyItem assetHierarchy = new AssetHierarchyItem
         {
-            name = "Builder Assets"
+            name = "Builder Assets",
+            path = "/Builder Assets"
         };
     }
 }

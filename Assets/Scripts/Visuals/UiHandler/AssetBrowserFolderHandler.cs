@@ -12,21 +12,21 @@ public class AssetBrowserFolderHandler : MonoBehaviour
     public RectTransform expandIcon;
     private AssetHierarchyItem hierarchyItem;
     private ScrollRect scrollViewRect;
-
-
     private bool expanded = false;
 
 
     // Dependencies
     private UiBuilder uiBuilder;
     UnityState unityState;
+    AssetBrowserState assetBrowserState;
 
 
     [Inject]
-    void Construct(UiBuilder.Factory uiBuilderFactory, UnityState unityState)
+    void Construct(UiBuilder.Factory uiBuilderFactory, UnityState unityState, AssetBrowserState assetBrowserState)
     {
         uiBuilder = uiBuilderFactory.Create(gameObject);
         this.unityState = unityState;
+        this.assetBrowserState = assetBrowserState;
     }
 
 
@@ -36,7 +36,15 @@ public class AssetBrowserFolderHandler : MonoBehaviour
         headerText.text = hierarchyItem.name;
         this.scrollViewRect = scrollViewRect;
 
-        SetExpanded(false);
+        // Check if folder was expanded before the UI rebuild
+        if (assetBrowserState.expandedFoldersPaths.Contains(hierarchyItem.path))
+        {
+            SetExpanded(true);
+        }
+        else
+        {
+            SetExpanded(false);
+        }
     }
 
 
@@ -51,14 +59,16 @@ public class AssetBrowserFolderHandler : MonoBehaviour
 
         if (expanded)
         {
+            assetBrowserState.expandedFoldersPaths.Add(hierarchyItem.path);
             BuildFolderHierarchy();
         }
         else
         {
+            // Mark all folders as closed that are at the current position or further down in the asset hierarchy
+            assetBrowserState.expandedFoldersPaths.RemoveAll((path) => path.Contains(hierarchyItem.path));
             ClearFolderHierarchy();
         }
     }
-
 
     public void ToggleExpanded()
     {

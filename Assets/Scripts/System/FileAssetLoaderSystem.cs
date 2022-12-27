@@ -145,10 +145,13 @@ namespace Assets.Scripts.System
         #endregion
 
         #region Metadata related methods
-        private AssetHierarchyItem ScanDirectory(string path)
+        private AssetHierarchyItem ScanDirectory(string fileSystemPath, string pathInHierarchy = "")
         {
-            string[] files = Directory.GetFiles(path, "*.*");
-            string[] subdirs = Directory.GetDirectories(path);
+            string dirname = Path.GetFileName(fileSystemPath);
+            string[] files = Directory.GetFiles(fileSystemPath, "*.*");
+            string[] subdirs = Directory.GetDirectories(fileSystemPath);
+
+            pathInHierarchy += "/" + dirname;
 
             List<AssetMetadata> assets = new List<AssetMetadata>();
             List<AssetHierarchyItem> childDirectories = new List<AssetHierarchyItem>();
@@ -169,12 +172,12 @@ namespace Assets.Scripts.System
                 assets.Add(metadataFile.assetMetadata);
             }
 
-            foreach (var subdir in subdirs)
+            foreach (string subdir in subdirs)
             {
-                childDirectories.Add(ScanDirectory(subdir));
+                childDirectories.Add(ScanDirectory(subdir, pathInHierarchy));
             }
 
-            return new AssetHierarchyItem(Path.GetFileName(path), childDirectories, assets);
+            return new AssetHierarchyItem(dirname, pathInHierarchy, childDirectories, assets);
         }
 
         /// <summary>

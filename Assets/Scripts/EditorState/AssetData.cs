@@ -84,17 +84,20 @@ namespace Assets.Scripts.EditorState
     public class AssetHierarchyItem
     {
         public string name = "<Asset Hierarchy Item>";
+        public string path = "<Path>";
         public List<AssetHierarchyItem> childDirectories = new List<AssetHierarchyItem>();
         public List<AssetMetadata> assets = new List<AssetMetadata>();
 
         public AssetHierarchyItem() { }
-        public AssetHierarchyItem(string name)
+        public AssetHierarchyItem(string name, string path)
         {
             this.name = name;
+            this.path = path;
         }
-        public AssetHierarchyItem(string name, List<AssetHierarchyItem> childDirectories, List<AssetMetadata> assets)
+        public AssetHierarchyItem(string name, string path, List<AssetHierarchyItem> childDirectories, List<AssetMetadata> assets)
         {
             this.name = name;
+            this.path = path;
             this.childDirectories = childDirectories;
             this.assets = assets;
         }

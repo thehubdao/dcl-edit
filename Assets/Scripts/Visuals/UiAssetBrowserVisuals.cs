@@ -3,7 +3,6 @@ using Assets.Scripts.Events;
 using Assets.Scripts.System;
 using Assets.Scripts.Visuals.UiBuilder;
 using Assets.Scripts.Visuals.UiHandler;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -37,26 +36,11 @@ namespace Assets.Scripts.Visuals
         private GameObject assetGridPrefab;
 
 
-
-
-        private bool contentIsUpdating = false;
-        private bool anotherUpdateQueued = false;
-
-        private List<AssetMetadata> displayedAssets = new List<AssetMetadata>();
-        private Dictionary<Guid, AssetBrowserButtonHandler> assetButtons = new Dictionary<Guid, AssetBrowserButtonHandler>();
-        private int updatesPerFrame = 2;
-
-
-
-
         // Dependencies
-        private UiBuilder.UiBuilder.Factory uiBuilderFactory;
         private EditorEvents editorEvents;
         private AssetBrowserSystem assetBrowserSystem;
         private AssetManagerSystem assetManagerSystem;
-        private UnityState unityState;
         private ContextMenuSystem contextMenuSystem;
-        private AssetThumbnailManagerSystem assetThumbnailManagerSystem;
 
 
         [Inject]
@@ -64,21 +48,16 @@ namespace Assets.Scripts.Visuals
             UiBuilder.UiBuilder.Factory uiBuilderFactory,
             EditorEvents editorEvents,
             AssetBrowserSystem assetBrowserSystem,
-            AssetThumbnailManagerSystem assetThumbnailManagerSystem,
             AssetManagerSystem assetManagerSystem,
-            UnityState unityState,
             ContextMenuSystem contextMenuSystem)
         {
-            this.uiBuilderFactory = uiBuilderFactory;
             headerUiBuilder = uiBuilderFactory.Create(headerContent);
             contentUiBuilder = uiBuilderFactory.Create(scrollViewContent);
             footerUiBuilder = uiBuilderFactory.Create(footerContent);
             this.editorEvents = editorEvents;
             this.assetBrowserSystem = assetBrowserSystem;
             this.assetManagerSystem = assetManagerSystem;
-            this.unityState = unityState;
             this.contextMenuSystem = contextMenuSystem;
-            this.assetThumbnailManagerSystem = assetThumbnailManagerSystem;
         }
 
 
@@ -102,12 +81,14 @@ namespace Assets.Scripts.Visuals
             editorEvents.onUiChangedEvent += UpdateVisuals;
         }
 
+
         private void UpdateVisuals()
         {
             UpdateHeader();
             UpdateContent();
             UpdateFooter();
         }
+
 
         private void UpdateHeader()
         {
@@ -150,10 +131,9 @@ namespace Assets.Scripts.Visuals
             headerUiBuilder.Update(headerData);
         }
 
+
         private void UpdateContent()
         {
-            contentIsUpdating = true;
-
             var panel = new PanelAtom.Data();
 
             var assetHierarchy = assetBrowserSystem.GetFilteredAssetHierarchy();
@@ -165,6 +145,7 @@ namespace Assets.Scripts.Visuals
 
             contentUiBuilder.Update(panel);
         }
+
 
         private void UpdateFooter()
         {

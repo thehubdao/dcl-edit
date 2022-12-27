@@ -15,7 +15,6 @@ namespace Assets.Scripts.System
         private AssetBrowserState assetBrowserState;
         private EditorEvents editorEvents;
 
-
         [Inject]
         public void Construct(AssetManagerSystem assetManagerSystem, AssetBrowserState assetBrowserState, EditorEvents editorEvents)
         {
@@ -46,7 +45,7 @@ namespace Assets.Scripts.System
 
         private AssetHierarchyItem ApplyFilters(AssetHierarchyItem hierarchyItem)
         {
-            AssetHierarchyItem filteredItem = new AssetHierarchyItem(hierarchyItem.name);
+            AssetHierarchyItem filteredItem = new AssetHierarchyItem(hierarchyItem.name, hierarchyItem.path);
 
             foreach (AssetHierarchyItem subdir in hierarchyItem.childDirectories)
             {
@@ -67,7 +66,7 @@ namespace Assets.Scripts.System
 
         private AssetHierarchyItem ApplySorting(AssetHierarchyItem hierarchyItem)
         {
-            AssetHierarchyItem sortedItem = new AssetHierarchyItem(hierarchyItem.name);
+            AssetHierarchyItem sortedItem = new AssetHierarchyItem(hierarchyItem.name, hierarchyItem.path);
 
             switch (assetBrowserState.sorting)
             {

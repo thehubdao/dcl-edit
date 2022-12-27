@@ -115,23 +115,24 @@ namespace Assets.Scripts.System
             {
                 var assetData = JsonConvert.DeserializeObject<AssetPacks>(request.webRequest.downloadHandler.text);
 
-                foreach (var assetPack in assetData.data)
+                foreach (AssetPacksData assetPack in assetData.data)
                 {
-                    var assetPackHierarchyItem = new AssetHierarchyItem("Builder Assets");
-                    assetPackHierarchyItem.name = assetPack.title;
+                    string assetPackPath = _loaderState.assetHierarchy.path + "/" + assetPack.title;
+                    AssetHierarchyItem assetPackHierarchyItem = new AssetHierarchyItem(assetPack.title, assetPackPath);
 
                     // Builder assets are in categories which are identified by a string name. E.g. "category":"decorations"
                     Dictionary<String, AssetHierarchyItem> categories = new Dictionary<string, AssetHierarchyItem>();
 
                     foreach (AssetPacksAsset asset in assetPack.assets)
                     {
-                        var id = Guid.Parse(asset.id);
+                        Guid id = Guid.Parse(asset.id);
 
                         if (!categories.ContainsKey(asset.category))
                         {
-                            var categoryHierarchyItem = new AssetHierarchyItem();
                             // Capital first letter
-                            categoryHierarchyItem.name = char.ToUpper(asset.category[0]) + asset.category.Substring(1);
+                            string name = char.ToUpper(asset.category[0]) + asset.category.Substring(1);
+                            string path = assetPackPath + "/" + name;
+                            AssetHierarchyItem categoryHierarchyItem = new AssetHierarchyItem(name, path);
                             categories.Add(asset.category, categoryHierarchyItem);
                         }
                         categories[asset.category].assets.Add(new AssetMetadata(asset.name, id, AssetMetadata.AssetType.Model));

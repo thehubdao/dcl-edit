@@ -13,6 +13,7 @@ namespace Assets.Scripts.EditorState
 
         public List<AssetMetadata.AssetType> shownAssetTypes { get; }
         public Sorting sorting { get; private set; }
+        public List<string> expandedFoldersPaths = new List<string>();
 
 
         public AssetBrowserState()
