@@ -123,6 +123,14 @@ namespace Assets.Scripts.SceneState
             _parentId = parentId;
             IsExposed = isExposed;
         }
+        public Guid GenerateSeededGuid(int seed)
+        {
+            var r = new System.Random(seed);
+            var guid = new byte[16];
+            r.NextBytes(guid);
+
+            return new Guid(guid);
+        }
         public DclEntity DeepCopy(DclScene sceneState)
         {
             DclEntity deepcopyEntity = new DclEntity(Id, CustomName, _parentId, true);
@@ -135,15 +143,15 @@ namespace Assets.Scripts.SceneState
                 newComponent.Entity = deepcopyEntity;
                 deepcopyEntity.AddComponent(newComponent);
             }
-
+            
+            sceneState.AddEntity(deepcopyEntity);
+            
             if (Children.ToList().Count > 0)
             {
                 foreach (var child in Children.ToList())
                 {
                     DclEntity newChild = child.DeepCopy(sceneState);
                     newChild.Parent = deepcopyEntity;
-
-                    sceneState.AddEntity(newChild);
                 }
             }
             return deepcopyEntity;

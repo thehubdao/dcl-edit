@@ -9,6 +9,7 @@ public class DuplicateEntity : Command
 
     private Guid entityId;
 
+    private Guid prevEntityId;
     public DuplicateEntity(Guid entityId)
     {
         this.entityId = entityId;
@@ -16,16 +17,14 @@ public class DuplicateEntity : Command
 
     public override void Do(DclScene sceneState, EditorEvents editorEvents)
     {
-        //DclEntity entity = sceneState.SelectionState.PrimarySelectedEntity;
-
         DclEntity entity = sceneState.GetEntityById(entityId);
 
         DclEntity newEntity = entity.DeepCopy(sceneState);
 
-        sceneState.AddEntity(newEntity);
+        this.prevEntityId = entityId;
 
         this.entityId = newEntity.Id;
-
+        
         editorEvents.InvokeHierarchyChangedEvent();
 
         sceneState.SelectionState.SecondarySelectedEntities.Clear();
@@ -36,11 +35,10 @@ public class DuplicateEntity : Command
 
     public override void Undo(DclScene sceneState, EditorEvents editorEvents)
     {
-        //DclEntity entity = sceneState.SelectionState.PrimarySelectedEntity;
         sceneState.RemoveEntity(entityId);
         editorEvents.InvokeHierarchyChangedEvent();
         sceneState.SelectionState.SecondarySelectedEntities.Clear();
-        sceneState.SelectionState.PrimarySelectedEntity = null;
+        sceneState.SelectionState.PrimarySelectedEntity = sceneState.GetEntityById(prevEntityId);
         editorEvents.InvokeSelectionChangedEvent();
     }
 }
