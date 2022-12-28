@@ -1,6 +1,8 @@
 ﻿using Assets.Scripts.Events;
 using Assets.Scripts.SceneState;
 using System;
+using System.Collections.Generic;
+
 public class DuplicateEntity : Command
 {
     public override string Name => "Duplicate entity";
@@ -10,22 +12,30 @@ public class DuplicateEntity : Command
     private Guid entityId;
 
     private Guid prevEntityId;
-    public DuplicateEntity(Guid entityId)
+
+    private int seed;
+
+    private List<DclEntity> secondarySelectedEntities;
+    
+    public DuplicateEntity(Guid entityId, int seed)
     {
         this.entityId = entityId;
+        this.seed = seed;
     }
 
     public override void Do(DclScene sceneState, EditorEvents editorEvents)
     {
         DclEntity entity = sceneState.GetEntityById(entityId);
 
-        DclEntity newEntity = entity.DeepCopy(sceneState);
+        DclEntity newEntity = entity.DeepCopy(sceneState, new System.Random(this.seed));
 
         this.prevEntityId = entityId;
 
         this.entityId = newEntity.Id;
         
         editorEvents.InvokeHierarchyChangedEvent();
+
+        this.secondarySelectedEntities = sceneState.SelectionState.SecondarySelectedEntities;
 
         sceneState.SelectionState.SecondarySelectedEntities.Clear();
         sceneState.SelectionState.PrimarySelectedEntity = newEntity;
@@ -37,7 +47,10 @@ public class DuplicateEntity : Command
     {
         sceneState.RemoveEntity(entityId);
         editorEvents.InvokeHierarchyChangedEvent();
-        sceneState.SelectionState.SecondarySelectedEntities.Clear();
+        foreach (DclEntity entity in secondarySelectedEntities)
+        {
+            sceneState.SelectionState.SecondarySelectedEntities.Add(entity);
+        }
         sceneState.SelectionState.PrimarySelectedEntity = sceneState.GetEntityById(prevEntityId);
         editorEvents.InvokeSelectionChangedEvent();
     }

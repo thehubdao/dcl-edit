@@ -46,8 +46,11 @@ public class CommandFactorySystem
         return new ChangeSelection(oldPrimary, oldSecondary, newPrimary, newSecondary);
     }
 
+    // Duplicate Entity
     public DuplicateEntity CreateDuplicateEntity(Guid entityId)
     {
-        return new DuplicateEntity(entityId);
+        System.Random rand = new System.Random();
+        int seed = rand.Next();
+        return new DuplicateEntity(entityId, seed);
     }
 }

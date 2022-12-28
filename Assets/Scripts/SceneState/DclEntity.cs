@@ -123,19 +123,21 @@ namespace Assets.Scripts.SceneState
             _parentId = parentId;
             IsExposed = isExposed;
         }
-        public Guid GenerateSeededGuid(int seed)
+        public Guid GenerateSeededGuid(System.Random seed)
         {
-            var r = new System.Random(seed);
+            //var r = new System.Random(seed);
             var guid = new byte[16];
-            r.NextBytes(guid);
+            seed.NextBytes(guid);
 
             return new Guid(guid);
         }
-        public DclEntity DeepCopy(DclScene sceneState)
+        public DclEntity DeepCopy(DclScene sceneState, System.Random random = null)
         {
             DclEntity deepcopyEntity = new DclEntity(Id, CustomName, _parentId, true);
 
-            deepcopyEntity.Id = Guid.NewGuid();
+            random ??= new System.Random();
+
+            deepcopyEntity.Id = GenerateSeededGuid(random);
 
             foreach (var component in this.Components)
             {
