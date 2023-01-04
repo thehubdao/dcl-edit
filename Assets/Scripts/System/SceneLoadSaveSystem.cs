@@ -45,9 +45,9 @@ namespace Assets.Scripts.System
         public void Save(SceneDirectoryState sceneDirectoryState)
         {
             DclSceneData sceneData = new DclSceneData(sceneDirectoryState.currentScene);
+            string sceneDirPath = sceneDirectoryState.directoryPath;
 
-            // Create scene directory (if not exists)
-            string sceneDirPath = $"{_pathState.ProjectPath}/dcl-edit/saves/v2/{sceneData.name}.dclscene";
+            // Create scene directory in case it does not exist
             DirectoryInfo sceneDir = Directory.CreateDirectory(sceneDirPath);
 
             // Clear scene directory from files, that are regenerated

@@ -36,9 +36,7 @@ namespace Assets.Scripts.System
             sceneManagerSystem.DiscoverScenes();
 
             // TODO: load proper scene. Work around is to load the first scene
-            sceneManagerSystem.SetFirstSceneAsCurrent();
-
-            sceneViewSystem.SetUpCurrentScene();
+            sceneManagerSystem.SetFirstSceneAsCurrentScene();
         }
 
         void Start()

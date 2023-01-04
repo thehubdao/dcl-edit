@@ -65,5 +65,13 @@ namespace Assets.Scripts.EditorState
             this.directoryPath = directoryPath;
             this.id = id;
         }
+
+        /// <summary>
+        /// Creates a new SceneDirectoryState and ads a Scene to it.
+        /// </summary>
+        public static SceneDirectoryState CreateNewSceneDirectoryState()
+        {
+            return new SceneDirectoryState { currentScene = new DclScene() };
+        }
     }
 }

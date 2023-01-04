@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using JetBrains.Annotations;
 using Assets.Scripts.Utility;
@@ -42,6 +43,11 @@ namespace Assets.Scripts.EditorState
             }
 
             return sceneDirectoryStates[index];
+        }
+
+        public SceneDirectoryState GetDirectoryState(string path)
+        {
+            return sceneDirectoryStates.First(t => Path.GetFullPath(t.Value.directoryPath) == Path.GetFullPath(path)).Value;
         }
 
         [CanBeNull]
