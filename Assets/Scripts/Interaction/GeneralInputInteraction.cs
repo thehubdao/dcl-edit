@@ -414,7 +414,7 @@ namespace Assets.Scripts.Interaction
             if (inputSystemAsset.Hotkeys.Save.triggered)
             {
                 sceneSaveSystem.Save(sceneManagerSystem.GetCurrentDirectoryState());
-                workspaceSaveSystem.Save(unityState.dynamicPanelsCanvas);
+                workspaceSaveSystem.Save();
                 typeScriptGenerationSystem.GenerateTypeScript();
             }
 
