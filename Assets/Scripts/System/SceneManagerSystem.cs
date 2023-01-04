@@ -70,20 +70,19 @@ namespace Assets.Scripts.System
         [CanBeNull]
         public DclScene GetCurrentScene()
         {
-            return sceneManagerState.Exists(sceneManagerState.currentSceneIndex) ?
-                GetScene(sceneManagerState.currentSceneIndex) :
-                null;
+            //return null if no scene is open
+            if (sceneManagerState.currentSceneIndex == Guid.Empty)
+            {
+                return null;
+            }
+
+            return GetScene(sceneManagerState.currentSceneIndex);
         }
 
         [NotNull]
         public DclScene GetScene(Guid index)
         {
             var sceneDirectoryState = sceneManagerState.GetDirectoryState(index);
-
-            if (sceneDirectoryState == null)
-            {
-                throw new ArgumentOutOfRangeException($"There is no scene with the id: {index.Shortened()}");
-            }
 
             if (!sceneDirectoryState.IsSceneOpened())
             {

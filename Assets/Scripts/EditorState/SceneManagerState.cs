@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
+using Assets.Scripts.Utility;
 
 namespace Assets.Scripts.EditorState
 {
@@ -15,6 +16,11 @@ namespace Assets.Scripts.EditorState
 
         public void SetCurrentSceneIndex(Guid index)
         {
+            if (!Exists(index))
+            {
+                throw new ArgumentOutOfRangeException($"There is no SceneDirectoryState with the ID \"{index.Shortened()}\"");
+            }
+
             currentSceneIndex = index;
         }
 
@@ -23,31 +29,30 @@ namespace Assets.Scripts.EditorState
             sceneDirectoryStates.Add(sceneDirectoryState.id, sceneDirectoryState);
         }
 
-        public bool Exists(Guid id)
+        private bool Exists(Guid id)
         {
             return sceneDirectoryStates.ContainsKey(id);
         }
 
-        [CanBeNull]
         public SceneDirectoryState GetDirectoryState(Guid index)
         {
-            if (sceneDirectoryStates.TryGetValue(index, out var value))
+            if (!Exists(index))
             {
-                return value;
+                throw new ArgumentOutOfRangeException($"There is no SceneDirectoryState with the ID \"{index.Shortened()}\"");
             }
 
-            return null;
+            return sceneDirectoryStates[index];
         }
 
         [CanBeNull]
         public SceneDirectoryState GetCurrentDirectoryState()
         {
-            if (sceneDirectoryStates.TryGetValue(currentSceneIndex, out var value))
+            if (currentSceneIndex == Guid.Empty)
             {
-                return value;
+                return null;
             }
 
-            return null;
+            return sceneDirectoryStates[currentSceneIndex];
         }
     }
 }
