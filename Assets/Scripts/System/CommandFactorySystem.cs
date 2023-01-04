@@ -1,6 +1,7 @@
 using Assets.Scripts.Command;
 using System;
 using System.Collections.Generic;
+using Assets.Scripts.SceneState;
 using UnityEngine;
 
 public class CommandFactorySystem
@@ -49,5 +50,10 @@ public class CommandFactorySystem
     public AddModelAssetToScene CreateAddModelAssetToScene(Guid entityId, string entityCustomName, Guid assetId, Vector3 positionInScene)
     {
         return new AddModelAssetToScene(entityId, entityCustomName, assetId, positionInScene);
+    }
+    
+    public RemoveComponent CreateRemoveComponent(Guid entityId, DclComponent component)
+    {
+        return new RemoveComponent(entityId, component);
     }
 }

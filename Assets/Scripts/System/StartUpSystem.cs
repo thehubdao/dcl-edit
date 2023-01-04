@@ -9,42 +9,42 @@ namespace Assets.Scripts.System
         [SerializeField]
         private CameraSystem _cameraSystem;
 
-        [SerializeField]
-        private SetupSceneEventListenersSystem _setupSceneEventListenersSystem;
-
         // Dependencies
         private AssetManagerSystem _assetManagerSystem;
-        private SetupSceneSystem _setupSceneSystem;
         private WorkspaceSaveSystem _workspaceSaveSystem;
         private UnityState _unityState;
         private IPathState _pathState;
         private FrameTimeSystem _frameTimeSystem;
+        private SceneManagerSystem sceneManagerSystem;
+        private SceneViewSystem sceneViewSystem;
 
         [Inject]
         private void Construct(
             AssetManagerSystem assetManagerSystem,
-            SetupSceneSystem setupSceneSystem,
             WorkspaceSaveSystem workspaceSaveSystem,
             UnityState unityState,
             IPathState pathState,
-            FrameTimeSystem frameTimeSystem)
+            FrameTimeSystem frameTimeSystem,
+            SceneManagerSystem sceneManagerSystem,
+            SceneViewSystem sceneViewSystem)
         {
             _assetManagerSystem = assetManagerSystem;
-            _setupSceneSystem = setupSceneSystem;
             _workspaceSaveSystem = workspaceSaveSystem;
             _unityState = unityState;
             _pathState = pathState;
             _frameTimeSystem = frameTimeSystem;
+            this.sceneManagerSystem = sceneManagerSystem;
+            this.sceneViewSystem = sceneViewSystem;
         }
 
         void Awake()
         {
-            _assetManagerSystem.CacheAllAssetMetadata();
+            sceneManagerSystem.DiscoverScenes();
 
-            // Load default scene
-            var v2Path = _pathState.ProjectPath + "/dcl-edit/saves/v2/New Scene.dclscene";
+            // TODO: load proper scene. Work around is to load the first scene
+            sceneManagerSystem.SetFirstSceneAsCurrent();
 
-            _setupSceneSystem.SetupScene(v2Path);
+            sceneViewSystem.SetUpCurrentScene();
         }
 
         void Start()

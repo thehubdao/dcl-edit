@@ -10,7 +10,7 @@ using Zenject;
 
 namespace Assets.Scripts.Visuals
 {
-    public class UiInspectorVisuals : MonoBehaviour, ISetupSceneEventListeners
+    public class UiInspectorVisuals : MonoBehaviour
     {
         [SerializeField]
         private GameObject content;
@@ -19,25 +19,30 @@ namespace Assets.Scripts.Visuals
         private InputState inputState;
         private UpdatePropertiesFromUiSystem updatePropertiesSystem;
         private UiBuilder.UiBuilder uiBuilder;
-        private SceneDirectoryState sceneDirectoryState;
         private EditorEvents editorEvents;
+        private CommandSystem commandSystem;
+        private SceneManagerSystem sceneManagerSystem;
 
         [Inject]
         private void Construct(
             InputState inputState,
             UpdatePropertiesFromUiSystem updatePropertiesSystem,
             UiBuilder.UiBuilder.Factory uiBuilderFactory,
-            SceneDirectoryState sceneDirectoryState,
-            EditorEvents editorEvents)
+            EditorEvents editorEvents,
+            CommandSystem commandSystem,
+            SceneManagerSystem sceneManagerSystem)
         {
             this.inputState = inputState;
             this.updatePropertiesSystem = updatePropertiesSystem;
-            uiBuilder = uiBuilderFactory.Create(content);
-            this.sceneDirectoryState = sceneDirectoryState;
+            this.uiBuilder = uiBuilderFactory.Create(content);
             this.editorEvents = editorEvents;
+            this.commandSystem = commandSystem;
+            this.sceneManagerSystem = sceneManagerSystem;
+
+            SetupEventListeners();
         }
 
-        public void SetupSceneEventListeners()
+        public void SetupEventListeners()
         {
             editorEvents.onSelectionChangedEvent += UpdateVisuals;
             UpdateVisuals();
@@ -52,7 +57,17 @@ namespace Assets.Scripts.Visuals
 
             var inspectorPanel = new PanelAtom.Data();
 
-            var selectedEntity = sceneDirectoryState.CurrentScene?.SelectionState.PrimarySelectedEntity;
+            var currentScene = sceneManagerSystem.GetCurrentScene();
+
+            if (currentScene == null)
+            {
+                inspectorPanel.AddTitle("No Scene loaded");
+
+                uiBuilder.Update(inspectorPanel);
+                return;
+            }
+
+            var selectedEntity = currentScene.SelectionState.PrimarySelectedEntity;
 
             if (selectedEntity == null)
             {
@@ -83,7 +98,11 @@ namespace Assets.Scripts.Visuals
             foreach (var component in selectedEntity.Components ?? new List<DclComponent>())
             {
                 var componentPanel = inspectorPanel.AddPanelWithBorder();
-                componentPanel.AddPanelHeader(component.NameInCode, null);
+                
+                if (component.NameInCode == "Transform")
+                    componentPanel.AddPanelHeader(component.NameInCode, null);
+                else
+                    componentPanel.AddPanelHeader(component.NameInCode, () => commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateRemoveComponent(selectedEntity.Id, component)));
 
                 foreach (var property in component.Properties)
                 {

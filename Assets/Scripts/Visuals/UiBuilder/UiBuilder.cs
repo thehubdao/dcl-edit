@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using Assets.Scripts.EditorState;
 using JetBrains.Annotations;
 using System.Collections.Generic;
@@ -48,6 +50,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
             NumberPropertyInput,
             BooleanPropertyInput,
             Vector3PropertyInput,
+            MenuBarButton,
             ContextMenu,
             ContextMenuItem,
             ContextSubmenuItem,
@@ -105,7 +108,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
         {
             Stats.instantiateCount++;
 
-            return type switch
+            GameObject gameObject = type switch
             {
                 AtomType.Title => Object.Instantiate(unityState.TitleAtom),
                 AtomType.Text => Object.Instantiate(unityState.TextAtom),
@@ -118,6 +121,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
                 AtomType.NumberPropertyInput => Object.Instantiate(unityState.NumberInputAtom),
                 AtomType.BooleanPropertyInput => Object.Instantiate(unityState.BooleanInputAtom),
                 AtomType.Vector3PropertyInput => Object.Instantiate(unityState.Vector3InputAtom),
+                AtomType.MenuBarButton => Object.Instantiate(unityState.MenuBarButtonAtom),
                 AtomType.ContextMenu => Object.Instantiate(unityState.ContextMenuAtom),
                 AtomType.ContextMenuItem => Object.Instantiate(unityState.ContextMenuItemAtom),
                 AtomType.ContextSubmenuItem => Object.Instantiate(unityState.ContextSubmenuItemAtom),
@@ -126,8 +130,9 @@ namespace Assets.Scripts.Visuals.UiBuilder
                 AtomType.Grid => Object.Instantiate(unityState.GridAtom),
                 AtomType.AssetBrowserFolder => assetBrowserFolderHandlerFactory.Create().gameObject,
                 AtomType.AssetBrowserButton => assetBrowserButtonHandlerFactory.Create().gameObject,
-                _ => null
+                _ => throw new ArgumentOutOfRangeException($"The type {type.ToString()} is not listed to instantiate.")
             };
+            return gameObject; ;
         }
 
         private GameObject InstantiateSpacerObject()

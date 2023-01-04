@@ -24,29 +24,35 @@ public class AddRenderTexture : MonoBehaviour
     }
 
 
-    private Vector2 lastSize = Vector2.zero;
+    private Vector2Int lastSize = Vector2Int.zero;
 
     void Update()
     {
-        if (lastSize != ViewPortSize)
+        Vector2Int viewPortSize = GetViewPortSize();
+
+        if (lastSize != viewPortSize)
         {
-            UpdateRenderTexture();
+            UpdateRenderTexture(viewPortSize);
         }
     }
 
-    private Vector2 ViewPortSize => _unityState.SceneImage.rectTransform.rect.size;
-
-
-    private void UpdateRenderTexture()
+    private void UpdateRenderTexture(Vector2Int viewPortSize)
     {
-        //Debug.Log("Updating RT to " + ViewPortSize);
-
-        cam.targetTexture = new RenderTexture((int)ViewPortSize.x, (int)ViewPortSize.y, 1, DefaultFormat.LDR);
+        cam.targetTexture = new RenderTexture(viewPortSize.x, viewPortSize.y, 1, DefaultFormat.LDR);
         cam.forceIntoRenderTexture = true;
         
-        lastSize = ViewPortSize;
+        lastSize = viewPortSize;
 
         if (gameObject.name == "Main Camera") // TODO: Make a more robust solution for that
             _unityState.SceneImage.texture = cam.targetTexture;
+    }
+
+    private Vector2Int GetViewPortSize()
+    {
+        Vector3[] fourCorners = new Vector3[4];
+        _unityState.SceneImage.rectTransform.GetWorldCorners(fourCorners);
+        Vector2Int viewPortSize = new Vector2Int((int)(fourCorners[2].x - fourCorners[0].x), (int)(fourCorners[2].y - fourCorners[0].y));
+        return viewPortSize;
+
     }
 }

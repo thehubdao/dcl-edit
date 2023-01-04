@@ -106,6 +106,23 @@ namespace Assets.Scripts.System
             }
         }
 
+        public class IntClampedUserSetting : IntUserSetting
+        {
+            private int minValue;
+            private int maxValue;
+
+            public IntClampedUserSetting(SettingsSystem settingsSystem, string name, int defaultValue, int minValue, int maxValue) : base(settingsSystem, name, defaultValue)
+            {
+                this.minValue = minValue;
+                this.maxValue = maxValue;
+            }
+
+            public override void Set(int value)
+            {
+                base.Set(Mathf.Clamp(value, minValue, maxValue));
+            }
+        }
+
         public class FloatUserSetting : UserSetting<float>
         {
             public FloatUserSetting(SettingsSystem settingsSystem, string name, float defaultValue) : base(settingsSystem, name, defaultValue)
@@ -124,6 +141,23 @@ namespace Assets.Scripts.System
             {
                 PlayerPrefs.SetFloat(name, value);
                 base.Set(value);
+            }
+        }
+
+        public class FloatClampedUserSetting : FloatUserSetting
+        {
+            private float minValue;
+            private float maxValue;
+
+            public FloatClampedUserSetting(SettingsSystem settingsSystem, string name, float defaultValue, float minValue, float maxValue) : base(settingsSystem, name, defaultValue)
+            {
+                this.minValue = minValue;
+                this.maxValue = maxValue;
+            }
+
+            public override void Set(float value)
+            {
+                base.Set(Mathf.Clamp(value, minValue, maxValue));
             }
         }
 
@@ -209,8 +243,14 @@ namespace Assets.Scripts.System
 
             var userSettings = new List<ISetting>();
 
-            TestNumber = new FloatUserSetting(this, "Test number", 12.34f);
-            userSettings.Add(TestNumber);
+            uiScalingFactor = new FloatClampedUserSetting(this, "UI Scaling", 1.0f, 0.5f, 3.0f);
+            userSettings.Add(uiScalingFactor);
+
+            mouseSensitivity = new FloatClampedUserSetting(this, "Mouse Sensitivity", 1.0f, 0.1f, 10.0f);
+            userSettings.Add(mouseSensitivity);
+
+            gizmoSize = new FloatClampedUserSetting(this, "Gizmo Size", 1.0f, 0.1f, 10.0f);
+            userSettings.Add(gizmoSize);
 
             TestInteger = new IntUserSetting(this, "Test integer", 123);
             userSettings.Add(TestInteger);
@@ -218,7 +258,7 @@ namespace Assets.Scripts.System
             TestString = new StringUserSetting(this, "Test text", "Hello world!");
             userSettings.Add(TestString);
 
-            applicationTargetFramerate = new IntUserSetting(this, "applicationTargetFramerate", -1);
+            applicationTargetFramerate = new IntClampedUserSetting(this, "applicationTargetFramerate", 120, 5, 1000);
             userSettings.Add(applicationTargetFramerate);
 
             ShownSettings.Add("User Settings", userSettings);
@@ -249,10 +289,12 @@ namespace Assets.Scripts.System
 
         public Dictionary<string, List<ISetting>> ShownSettings = new Dictionary<string, List<ISetting>>();
 
-        public FloatUserSetting TestNumber;
+        public FloatClampedUserSetting uiScalingFactor;
+        public FloatClampedUserSetting mouseSensitivity;
+        public FloatClampedUserSetting gizmoSize;
         public IntUserSetting TestInteger;
         public StringUserSetting TestString;
-        public IntUserSetting applicationTargetFramerate;
+        public IntClampedUserSetting applicationTargetFramerate;
 
         public Vec3ProjectSetting TestProjVec3;
         public StringProjectSetting TestProjString;

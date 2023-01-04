@@ -44,7 +44,7 @@ namespace Assets.Scripts.System
 
         public void Save(SceneDirectoryState sceneDirectoryState)
         {
-            DclSceneData sceneData = new DclSceneData(sceneDirectoryState.CurrentScene);
+            DclSceneData sceneData = new DclSceneData(sceneDirectoryState.currentScene);
 
             // Create scene directory (if not exists)
             string sceneDirPath = $"{_pathState.ProjectPath}/dcl-edit/saves/v2/{sceneData.name}.dclscene";
@@ -53,33 +53,33 @@ namespace Assets.Scripts.System
             // Clear scene directory from files, that are regenerated
             foreach (FileInfo file in sceneDir
                          .GetFiles()
-                         .Where(f => sceneDirectoryState.LoadedFilePathsInScene.Contains(NormalizePath(f.FullName))))
+                         .Where(f => sceneDirectoryState.loadedFilePathsInScene.Contains(NormalizePath(f.FullName))))
                 // Only delete files that were loaded into the scene.
                 // This prevents the deletion of faulty entity files and files the user added manually into the scene folder
             {
                 file.Delete();
             }
 
-            sceneDirectoryState.LoadedFilePathsInScene.Clear();
+            sceneDirectoryState.loadedFilePathsInScene.Clear();
 
             // Create scene metadata file
             string metadataFilePath = $"{sceneDirPath}/scene.json";
             File.WriteAllText(metadataFilePath, "");
 
-            sceneDirectoryState.LoadedFilePathsInScene.Add(NormalizePath(metadataFilePath));
+            sceneDirectoryState.loadedFilePathsInScene.Add(NormalizePath(metadataFilePath));
 
             // Create entity files
-            foreach (var entity in sceneDirectoryState.CurrentScene!.AllEntities.Select(pair => pair.Value))
+            foreach (var entity in sceneDirectoryState.currentScene!.AllEntities.Select(pair => pair.Value))
             {
                 var newPath = CreateEntityFile(entity, sceneDirPath);
 
-                sceneDirectoryState.LoadedFilePathsInScene.Add(NormalizePath(newPath));
+                sceneDirectoryState.loadedFilePathsInScene.Add(NormalizePath(newPath));
             }
         }
 
         public void Load(SceneDirectoryState sceneDirectoryState)
         {
-            var scenePath = sceneDirectoryState.DirectoryPath;
+            var scenePath = sceneDirectoryState.directoryPath;
 
             // return if path isn't directory
             if (!Directory.Exists(scenePath))
@@ -106,7 +106,7 @@ namespace Assets.Scripts.System
 
                 if (fileName == "scene.json")
                 {
-                    sceneDirectoryState.LoadedFilePathsInScene.Add("scene.json");
+                    sceneDirectoryState.loadedFilePathsInScene.Add("scene.json");
                     continue;
                 }
 
@@ -114,7 +114,7 @@ namespace Assets.Scripts.System
                 {
                     LoadEntityFile(scene, directoryInfo.FullName + "/" + fileName);
 
-                    sceneDirectoryState.LoadedFilePathsInScene.Add(fileName);
+                    sceneDirectoryState.loadedFilePathsInScene.Add(fileName);
                 }
                 catch (Exception e)
                 {
@@ -122,7 +122,7 @@ namespace Assets.Scripts.System
                 }
             }
 
-            sceneDirectoryState.CurrentScene = scene;
+            sceneDirectoryState.currentScene = scene;
         }
 
         /**
