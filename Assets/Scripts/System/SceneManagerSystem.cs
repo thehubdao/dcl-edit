@@ -50,6 +50,23 @@ namespace Assets.Scripts.System
             sceneManagerState.SetCurrentSceneIndex(sceneManagerState.allSceneDirectoryStates.First().id);
         }
 
+        public void SaveCurrentScene()
+        {
+            SaveScene(GetCurrentDirectoryState());
+        }
+
+        public void SaveScene(Guid id)
+        {
+            SaveScene(sceneManagerState.GetDirectoryState(id));
+        }
+
+        private void SaveScene(SceneDirectoryState sceneDirectoryState)
+        {
+            sceneSaveSystem.Save(sceneDirectoryState);
+            workspaceSaveSystem.Save(); // TODO: Save the workspace under proper conditions.
+            typeScriptGenerationSystem.GenerateTypeScript();
+        }
+
         [CanBeNull]
         public DclScene GetCurrentScene()
         {
