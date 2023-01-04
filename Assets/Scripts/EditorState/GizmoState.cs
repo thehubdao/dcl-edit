@@ -6,13 +6,11 @@ namespace Assets.Scripts.EditorState
     public class GizmoState
     {
         // Dependencies
-        private SceneDirectoryState _sceneDirectoryState;
         private EditorEvents _editorEvents;
 
         [Inject]
-        private void Construct(SceneDirectoryState sceneDirectoryState, EditorEvents editorEvents)
+        private void Construct(EditorEvents editorEvents)
         {
-            _sceneDirectoryState = sceneDirectoryState;
             _editorEvents = editorEvents;
         }
 

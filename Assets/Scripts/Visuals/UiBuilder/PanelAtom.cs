@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using Assets.Scripts.Visuals.UiHandler;
 using JetBrains.Annotations;
+using UnityEngine;
 
 namespace Assets.Scripts.Visuals.UiBuilder
 {
@@ -8,6 +10,8 @@ namespace Assets.Scripts.Visuals.UiBuilder
     {
         public new class Data : Atom.Data
         {
+            public PanelHandler.LayoutDirection layoutDirection = PanelHandler.LayoutDirection.Vertical;
+
             public AtomDataList childDates = new AtomDataList();
 
             public override bool Equals(Atom.Data other)
@@ -38,35 +42,21 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
         public List<Atom> childAtoms = new List<Atom>();
 
-        public override bool Update(Atom.Data newData, int newPosition)
+        public override void Update(Atom.Data newData)
         {
             UiBuilder.Stats.atomsUpdatedCount++;
 
-            var hasChanged = false;
             var newPanelData = (Data) newData;
 
             if (gameObject == null)
             {
                 gameObject = MakeNewAtomGameObject();
-                hasChanged = true;
             }
-
-            var newHeight = -1;
 
             if (!newPanelData.Equals(data))
             {
-                UpdateData(newPanelData, out var changed, out newHeight);
-
-                hasChanged = hasChanged || changed;
+                UpdateData(newPanelData);
             }
-
-            if (newPosition != gameObject.position || (newHeight > 0 && newHeight != gameObject.height))
-            {
-                UpdatePositionAndSize(newPosition, newHeight);
-                hasChanged = true;
-            }
-
-            return hasChanged;
         }
 
         public override void Remove()
@@ -82,16 +72,13 @@ namespace Assets.Scripts.Visuals.UiBuilder
         protected virtual AtomGameObject MakeNewAtomGameObject()
         {
             var atomObject = uiBuilder.GetAtomObjectFromPool(UiBuilder.AtomType.Panel);
-            atomObject.height = 40;
-            atomObject.position = -1;
             return atomObject;
         }
 
-        protected void UpdateData(Data newPanelData, out bool hasChanged, out int endHeight)
+        protected void UpdateData(Data newPanelData)
         {
-            hasChanged = false;
-
-            var lastPos = 0;
+            // make layout group
+            gameObject.gameObject.GetComponent<PanelHandler>().SetLayoutDirection(newPanelData.layoutDirection);
 
             var atomIndex = 0;
             var dataIndex = 0;
@@ -103,17 +90,13 @@ namespace Assets.Scripts.Visuals.UiBuilder
                 if (atomIndex < childAtoms.Count && childAtoms[atomIndex].DoesDataTypeMatch(childData))
                 {
                     // Update the atom to represent the new data
-                    var changed = childAtoms[atomIndex].Update(childData, lastPos);
+                    childAtoms[atomIndex].Update(childData);
 
-                    if (changed)
-                    {
-                        hasChanged = true;
-                    }
+                    childAtoms[atomIndex].gameObject.gameObject.transform.SetParent(
+                        gameObject.gameObject.GetComponent<PanelHandler>().content.transform, false);
 
-                    childAtoms[atomIndex].gameObject.gameObject.gameObject.transform.SetParent(
-                        gameObject.gameObject.gameObject.GetComponent<PanelHandler>().Content.transform, false);
+                    childAtoms[atomIndex].gameObject.gameObject.transform.localScale = Vector3.one;
 
-                    lastPos += childAtoms[atomIndex].gameObject.height;
                     // advance both atom index and data index
                     atomIndex++;
                     dataIndex++;
@@ -131,17 +114,12 @@ namespace Assets.Scripts.Visuals.UiBuilder
                     // create new atom and populate with data
                     var childAtom = MakeChildAtom(childData);
 
-                    var changed = childAtom.Update(childData, lastPos);
+                    childAtom.Update(childData);
 
-                    if (changed)
-                    {
-                        hasChanged = true;
-                    }
+                    childAtom.gameObject.gameObject.transform.SetParent(
+                        gameObject.gameObject.GetComponent<PanelHandler>().content.transform, false);
 
-                    childAtom.gameObject.gameObject.gameObject.transform.SetParent(
-                        gameObject.gameObject.gameObject.GetComponent<PanelHandler>().Content.transform, false);
-
-                    lastPos += childAtom.gameObject.height;
+                    childAtom.gameObject.gameObject.transform.localScale = Vector3.one;
 
                     childAtoms.Add(childAtom);
 
@@ -157,8 +135,6 @@ namespace Assets.Scripts.Visuals.UiBuilder
                 childAtoms[atomIndex].Remove();
                 childAtoms.RemoveAt(atomIndex);
             }
-
-            endHeight = lastPos + totalBorderHeight;
         }
 
         protected virtual int totalBorderHeight { get; set; } = 0;
@@ -178,6 +154,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
                 NumberPropertyAtom.Data _ => new NumberPropertyAtom(uiBuilder),
                 BooleanPropertyAtom.Data _ => new BooleanPropertyAtom(uiBuilder),
                 Vector3PropertyAtom.Data _ => new Vector3PropertyAtom(uiBuilder),
+                MenuBarButtonAtom.Data _ => new MenuBarButtonAtom(uiBuilder),
                 ContextMenuTextAtom.Data _ => new ContextMenuTextAtom(uiBuilder),
                 ContextSubmenuAtom.Data _ => new ContextSubmenuAtom(uiBuilder),
                 ContextMenuSpacerAtom.Data _ => new ContextMenuSpacerAtom(uiBuilder),
@@ -192,10 +169,11 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
     public static class PanelPanelHelper
     {
-        public static PanelAtom.Data AddPanel(this PanelAtom.Data panelAtomData, [CanBeNull] AtomDataList childDates = null)
+        public static PanelAtom.Data AddPanel(this PanelAtom.Data panelAtomData, PanelHandler.LayoutDirection layoutDirection = PanelHandler.LayoutDirection.Vertical, [CanBeNull] AtomDataList childDates = null)
         {
             var data = new PanelAtom.Data
             {
+                layoutDirection = layoutDirection,
                 childDates = childDates ?? new AtomDataList()
             };
 

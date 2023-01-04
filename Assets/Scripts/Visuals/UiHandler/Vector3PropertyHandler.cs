@@ -56,7 +56,7 @@ namespace Assets.Scripts.Visuals.UiHandler
                     }
                     else
                     {
-                        actions.OnChange(currentValue.Value);
+                        actions.OnChange?.Invoke(currentValue.Value);
                     }
                 },
                 () =>
@@ -68,24 +68,18 @@ namespace Assets.Scripts.Visuals.UiHandler
                     var currentValue = GetCurrentValue();
                     if (currentValue == null)
                     {
-                        actions.OnAbort(Vector3.zero);
+                        actions.OnAbort?.Invoke(Vector3.zero);
                     }
                     else
                     {
-                        actions.OnSubmit(currentValue.Value);
+                        actions.OnSubmit?.Invoke(currentValue.Value);
                     }
                 },
                 _ =>
                 {
                     var currentValue = GetCurrentValue();
-                    if (currentValue == null)
-                    {
-                        actions.OnAbort(Vector3.zero);
-                    }
-                    else
-                    {
-                        actions.OnAbort(currentValue.Value);
-                    }
+
+                    actions.OnAbort?.Invoke(currentValue ?? Vector3.zero);
                 });
         }
     }

@@ -3,12 +3,14 @@ using Assets.Scripts.Events;
 using Assets.Scripts.System;
 using System.Linq;
 using Assets.Scripts.Visuals.UiBuilder;
+using Assets.Scripts.Visuals.UiHandler;
 using UnityEngine;
+using UnityEngine.UI;
 using Zenject;
 
 namespace Assets.Scripts.Visuals
 {
-    public class ContextMenuVisuals : MonoBehaviour, ISetupSceneEventListeners
+    public class ContextMenuVisuals : MonoBehaviour
     {
         [SerializeField]
         float width = 200;
@@ -33,9 +35,11 @@ namespace Assets.Scripts.Visuals
             this.contextMenuSystem = contextMenuSystem;
             this.uiBuilderFactory = uiBuilderFactory;
             this.unityState = unityState;
+
+            SetupEventListeners();
         }
 
-        public void SetupSceneEventListeners()
+        public void SetupEventListeners()
         {
             editorEvents.onUpdateContextMenuEvent += () =>
             {
@@ -85,7 +89,7 @@ namespace Assets.Scripts.Visuals
             state.menuGameObjects.Add(menuData.menuId, menuRect.gameObject);
             menuRect.SetAsLastSibling();
 
-            var mainContent = menuRect.GetComponent<PanelHandler>().Content;
+            var mainContent = menuRect.GetComponent<PanelHandler>().content;
             var itemsBuilder = uiBuilderFactory.Create(mainContent);
 
             var menuPanel = new PanelAtom.Data();
@@ -107,6 +111,8 @@ namespace Assets.Scripts.Visuals
             }
 
             itemsBuilder.Update(menuPanel);
+
+            LayoutRebuilder.ForceRebuildLayoutImmediate(itemsBuilder.parentObject.GetComponent<RectTransform>());
 
             menuRect.sizeDelta = new Vector2(width, Mathf.Min(Screen.height, itemsBuilder.height));
 

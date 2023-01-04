@@ -109,7 +109,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8024071907148859791, guid: 940a8e80e3325354b9baed45c93a96f0, type: 3}
       propertyPath: m_Name
-      value: Title Variant
+      value: Text-Title
+      objectReference: {fileID: 0}
+    - target: {fileID: 8642057508157690593, guid: 940a8e80e3325354b9baed45c93a96f0, type: 3}
+      propertyPath: m_MinHeight
+      value: 130
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 940a8e80e3325354b9baed45c93a96f0, type: 3}

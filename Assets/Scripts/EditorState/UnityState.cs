@@ -84,6 +84,9 @@ namespace Assets.Scripts.EditorState
         public GameObject Vector3InputAtom;
 
         [SerializeField]
+        public GameObject MenuBarButtonAtom;
+
+        [SerializeField]
         public GameObject ContextMenuItemAtom;
 
         [SerializeField]
