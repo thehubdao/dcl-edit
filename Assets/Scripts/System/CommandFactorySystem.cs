@@ -49,8 +49,6 @@ public class CommandFactorySystem
     // Duplicate Entity
     public DuplicateEntity CreateDuplicateEntity(Guid entityId)
     {
-        System.Random rand = new System.Random();
-        int seed = rand.Next();
-        return new DuplicateEntity(entityId, seed);
+        return new DuplicateEntity(entityId);
     }
 }

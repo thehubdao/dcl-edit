@@ -17,15 +17,17 @@ public class DuplicateEntity : Command
 
     private List<DclEntity> secondarySelectedEntities;
     
-    public DuplicateEntity(Guid entityId, int seed)
+    public DuplicateEntity(Guid entityId)
     {
         this.entityId = entityId;
-        this.seed = seed;
     }
 
     public override void Do(DclScene sceneState, EditorEvents editorEvents)
     {
         DclEntity entity = sceneState.GetEntityById(entityId);
+
+        System.Random rand = new System.Random();
+        this.seed = rand.Next();
 
         DclEntity newEntity = entity.DeepCopy(sceneState, new System.Random(this.seed));
 
