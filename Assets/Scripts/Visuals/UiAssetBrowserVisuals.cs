@@ -11,7 +11,7 @@ using Zenject;
 
 namespace Assets.Scripts.Visuals
 {
-    public class UiAssetBrowserVisuals : MonoBehaviour, ISetupSceneEventListeners
+    public class UiAssetBrowserVisuals : MonoBehaviour
     {
         [SerializeField]
         private ScrollRect scrollViewRect;
@@ -58,6 +58,8 @@ namespace Assets.Scripts.Visuals
             this.assetBrowserSystem = assetBrowserSystem;
             this.assetManagerSystem = assetManagerSystem;
             this.contextMenuSystem = contextMenuSystem;
+
+            SetupSceneEventListeners();
         }
 
 

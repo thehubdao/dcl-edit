@@ -20,18 +20,23 @@ namespace Assets.Scripts.Visuals
         private AssetManagerSystem _assetManagerSystem;
         private UnityState _unityState;
         private EditorEvents _editorEvents;
-        private SceneDirectoryState _sceneDirectoryState;
+        private SceneManagerSystem _sceneManagerSystem;
 
         [Inject]
-        private void Construct(EntityVisuals entityVisuals, AssetManagerSystem assetManagerSystem, UnityState unityState, EditorEvents editorEvents, SceneDirectoryState sceneDirectoryState)
+        private void Construct(
+            EntityVisuals entityVisuals,
+            AssetManagerSystem assetManagerSystem,
+            UnityState unityState,
+            EditorEvents editorEvents,
+            SceneManagerSystem sceneManagerSystem)
         {
             _entityVisuals = entityVisuals;
             _assetManagerSystem = assetManagerSystem;
             _unityState = unityState;
             _editorEvents = editorEvents;
-            _sceneDirectoryState = sceneDirectoryState;
+            _sceneManagerSystem = sceneManagerSystem;
 
-            entity = _sceneDirectoryState.CurrentScene?.GetEntityById(_entityVisuals.Id);
+            entity = _sceneManagerSystem.GetCurrentScene()?.GetEntityById(_entityVisuals.id);
             _editorEvents.onAssetDataUpdatedEvent += OnAssetDataUpdatedCallback;
         }
 
@@ -95,7 +100,7 @@ namespace Assets.Scripts.Visuals
                 UpdateSelection(entity);
             }
 
-            if (_sceneDirectoryState.CurrentScene?.IsFloatingEntity(entity.Id)! == true)
+            if (_sceneManagerSystem.GetCurrentScene()?.IsFloatingEntity(entity.Id)! == true)
             {
                 StaticUtilities.SetLayerRecursive(gameObject, LayerMask.NameToLayer("Ignore Raycast"));
             }

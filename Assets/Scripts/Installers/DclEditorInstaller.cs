@@ -35,7 +35,7 @@ public class DclEditorInstaller : MonoInstaller
 
     [Header("Unity State")]
     [SerializeField]
-    private GameObject unityStateObject;
+    private UnityState unityState;
 
 
     public override void InstallBindings()
@@ -78,7 +78,7 @@ public class DclEditorInstaller : MonoInstaller
 
         Container.BindInterfacesAndSelfTo<GizmoState>().AsSingle();
 
-        Container.BindInterfacesAndSelfTo<UnityState>().FromComponentOn(unityStateObject).AsSingle();
+        Container.BindInterfacesAndSelfTo<UnityState>().FromComponentOn(unityState.gameObject).AsSingle();
 
         Container.BindInterfacesAndSelfTo<InputHelper>().AsSingle();
 
@@ -152,5 +152,7 @@ public class DclEditorInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<SceneManagerState>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<SceneViewSystem>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<MenuBarState>().AsSingle();
     }
 }

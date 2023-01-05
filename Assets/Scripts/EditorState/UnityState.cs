@@ -9,9 +9,6 @@ namespace Assets.Scripts.EditorState
     {
         [Header("Scene References")]
         [SerializeField]
-        public GameObject SceneVisuals;
-
-        [SerializeField]
         public GameObject Ui;
 
         [SerializeField]

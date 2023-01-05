@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Assets.Scripts.EditorState;
 using JetBrains.Annotations;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;

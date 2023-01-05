@@ -18,7 +18,7 @@ public class AssetButtonInteraction : MonoBehaviour, IBeginDragHandler, IDragHan
     private CommandSystem commandSystem;
     private EditorEvents editorEvents;
     private InputHelper inputHelperSystem;
-    private SceneDirectoryState sceneDirectoryState;
+    private SceneManagerSystem sceneManagerSystem;
     private CameraState cameraState;
 
     [Inject]
@@ -26,12 +26,12 @@ public class AssetButtonInteraction : MonoBehaviour, IBeginDragHandler, IDragHan
         CommandSystem commandSystem,
         EditorEvents editorEvents,
         InputHelper inputHelperSystem,
-        SceneDirectoryState sceneDirectoryState,
+        SceneManagerSystem sceneManagerSystem,
         CameraState cameraState)
     {
         this.commandSystem = commandSystem;
         this.inputHelperSystem = inputHelperSystem;
-        this.sceneDirectoryState = sceneDirectoryState;
+        this.sceneManagerSystem = sceneManagerSystem;
         this.editorEvents = editorEvents;
         this.cameraState = cameraState;
     }
@@ -55,9 +55,16 @@ public class AssetButtonInteraction : MonoBehaviour, IBeginDragHandler, IDragHan
 
     public void OnDrag(PointerEventData eventData)
     {
+        var currentScene = sceneManagerSystem.GetCurrentScene();
+
+        if (currentScene == null)
+        {
+            return;
+        }
+
         if (!inputHelperSystem.IsMouseOverScenePanel() && entityInScene)
         {
-            sceneDirectoryState.CurrentScene.RemoveFloatingEntity(newEntity.Id);
+            currentScene.RemoveFloatingEntity(newEntity.Id);
             editorEvents.InvokeHierarchyChangedEvent();
             entityInScene = false;
             return;
@@ -65,7 +72,7 @@ public class AssetButtonInteraction : MonoBehaviour, IBeginDragHandler, IDragHan
 
         if (inputHelperSystem.IsMouseOverScenePanel() && !entityInScene)
         {
-            sceneDirectoryState.CurrentScene.AddFloatingEntity(newEntity);
+            currentScene.AddFloatingEntity(newEntity);
             entityInScene = true;
         }
 
@@ -101,7 +108,7 @@ public class AssetButtonInteraction : MonoBehaviour, IBeginDragHandler, IDragHan
 
     private void AddEntityToScene(Vector3 position)
     {
-        sceneDirectoryState.CurrentScene.RemoveFloatingEntity(newEntity.Id);
+        sceneManagerSystem.GetCurrentScene()?.RemoveFloatingEntity(newEntity.Id);
         switch (assetMetadata.assetType)
         {
             case AssetMetadata.AssetType.Model:

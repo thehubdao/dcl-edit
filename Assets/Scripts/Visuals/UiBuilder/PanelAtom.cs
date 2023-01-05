@@ -2,8 +2,6 @@ using Assets.Scripts.Visuals.UiHandler;
 using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
-using Assets.Scripts.Visuals.UiHandler;
-using JetBrains.Annotations;
 using UnityEngine;
 
 namespace Assets.Scripts.Visuals.UiBuilder
@@ -143,7 +141,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
         protected virtual void MakeLayoutGroup(Data newPanelData)
         {
-            gameObject.gameObject.GetComponent<PanelHandler>().SetLayoutDirection(newPanelData.layoutDirection, newPanelData.useFullWidth);
+            gameObject.gameObject.GetComponent<PanelHandler>().SetLayoutDirection(newPanelData.layoutDirection);
         }
 
         protected virtual int totalBorderHeight { get; set; } = 0;

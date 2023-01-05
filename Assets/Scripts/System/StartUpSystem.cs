@@ -6,15 +6,11 @@ namespace Assets.Scripts.System
 {
     public class StartUpSystem : MonoBehaviour
     {
-        [SerializeField]
-        private CameraSystem _cameraSystem;
-
         // Dependencies
-        private AssetManagerSystem _assetManagerSystem;
-        private WorkspaceSaveSystem _workspaceSaveSystem;
-        private UnityState _unityState;
-        private IPathState _pathState;
-        private FrameTimeSystem _frameTimeSystem;
+        private AssetManagerSystem assetManagerSystem;
+        private WorkspaceSaveSystem workspaceSaveSystem;
+        private UnityState unityState;
+        private FrameTimeSystem frameTimeSystem;
         private SceneManagerSystem sceneManagerSystem;
         private SceneViewSystem sceneViewSystem;
 
@@ -28,17 +24,18 @@ namespace Assets.Scripts.System
             SceneManagerSystem sceneManagerSystem,
             SceneViewSystem sceneViewSystem)
         {
-            _assetManagerSystem = assetManagerSystem;
-            _workspaceSaveSystem = workspaceSaveSystem;
-            _unityState = unityState;
-            _pathState = pathState;
-            _frameTimeSystem = frameTimeSystem;
+            this.assetManagerSystem = assetManagerSystem;
+            this.workspaceSaveSystem = workspaceSaveSystem;
+            this.unityState = unityState;
+            this.frameTimeSystem = frameTimeSystem;
             this.sceneManagerSystem = sceneManagerSystem;
             this.sceneViewSystem = sceneViewSystem;
         }
 
         void Awake()
         {
+            assetManagerSystem.CacheAllAssetMetadata();
+
             sceneManagerSystem.DiscoverScenes();
 
             // TODO: load proper scene. Work around is to load the first scene
@@ -49,9 +46,9 @@ namespace Assets.Scripts.System
 
         void Start()
         {
-            _workspaceSaveSystem.Load(_unityState.dynamicPanelsCanvas);
+            workspaceSaveSystem.Load(unityState.dynamicPanelsCanvas);
 
-            _frameTimeSystem.SetApplicationTargetFramerate();
+            frameTimeSystem.SetApplicationTargetFramerate();
         }
     }
 }
