@@ -43,7 +43,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b88f25d91feaddf43aa63bf06bbb35b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SceneVisuals: {fileID: 0}
   Ui: {fileID: 0}
   MainCamera: {fileID: 0}
   SceneImage: {fileID: 0}
@@ -55,7 +54,17 @@ MonoBehaviour:
   PlaneMesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
   ConeMesh: {fileID: 3613567641014311022, guid: e140720f2ef3dc5459b3d88eacb859c8, type: 3}
   DefaultMat: {fileID: 2100000, guid: c1295392ace60d94da19d7a387884d71, type: 2}
+  DefaultAssetThumbnail: {fileID: 2800000, guid: 617c143300c28314e8539c12f20d5b21, type: 3}
+  AssetTypeModelIcon: {fileID: 2800000, guid: fe476aebf1136394a9100229fa339276, type: 3}
+  AssetTypeImageIcon: {fileID: 2800000, guid: 0ebbff0ce96e9244ea03a1752ad226fd, type: 3}
+  ErrorModel: {fileID: 919132149155446097, guid: 21ffe9f6c42dbca479a66c81e1b5c91d, type: 3}
+  LoadingModel: {fileID: 5108317101022607464, guid: b3105ef88651e5f4b97a1d65f40d9972, type: 3}
   ContextMenuAtom: {fileID: 9033582606962256507, guid: 8db363346bbc09646b96fffac6224be5, type: 3}
+  ButtonAtom: {fileID: 747852077168732134, guid: d530f0d1ef157894cadc657abe174f42, type: 3}
+  AssetBrowserButtonAtom: {fileID: 9199737783199215851, guid: 5fbffa0ef7a6dae40aee2be1808b6979, type: 3}
+  AssetBrowserFolderAtom: {fileID: 569288621326271914, guid: bdf698fa20b9d9842917888e8bea6558, type: 3}
+  GridAtom: {fileID: 4422393104943835944, guid: b75c20faed760924ca2e299a52b58318, type: 3}
+  RowAtom: {fileID: 5193469626862403777, guid: aa59e69bb55d30d478a07c7357d777f0, type: 3}
   TitleAtom: {fileID: 8443903582673140652, guid: 3c23a0bcc4d4d3c4dabf00112e429b5d, type: 3}
   TextAtom: {fileID: 8024071907148859791, guid: 940a8e80e3325354b9baed45c93a96f0, type: 3}
   PanelAtom: {fileID: 1138364758976655925, guid: fc9c78ab342848c41a8eb0f0fbf743a4, type: 3}
@@ -66,6 +75,7 @@ MonoBehaviour:
   NumberInputAtom: {fileID: 5812454901384158741, guid: 643cb13cbab094b42887dae813c93af2, type: 3}
   BooleanInputAtom: {fileID: 5233136792266491960, guid: 42f6030112784864f9dc60d33b26df8a, type: 3}
   Vector3InputAtom: {fileID: 5341960638517146307, guid: 45f07c32725cf3c419e1758b1f6b2ab0, type: 3}
+  MenuBarButtonAtom: {fileID: 7265437177802612862, guid: 8f16b9e78189d6944a0c4a38ec29bc83, type: 3}
   ContextMenuItemAtom: {fileID: 7252716371144921517, guid: f3e20cb956778e94b84cf06eb3365b7d, type: 3}
   ContextSubmenuItemAtom: {fileID: 7092327081975487917, guid: 64a24d68977842740b7c550a18b8b6c9, type: 3}
   ContextMenuSpacerItemAtom: {fileID: 1012576247357608871, guid: 395030571d765984c8e17050dab03b59, type: 3}

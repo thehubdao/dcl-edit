@@ -4,54 +4,29 @@ using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
 using Assets.Scripts.Utility;
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 
 namespace Assets.Scripts.Visuals
 {
-    public class GltfShapeVisuals : ShapeVisuals, IDisposable
+    public class GltfShapeVisuals : ShapeVisuals
     {
         private GameObject _currentModelObject = null;
-        private DclEntity entity;
 
         // Dependencies
-        private EntityVisuals _entityVisuals;
         private AssetManagerSystem _assetManagerSystem;
         private UnityState _unityState;
-        private EditorEvents _editorEvents;
         private SceneManagerSystem _sceneManagerSystem;
 
         [Inject]
         private void Construct(
-            EntityVisuals entityVisuals,
             AssetManagerSystem assetManagerSystem,
             UnityState unityState,
-            EditorEvents editorEvents,
             SceneManagerSystem sceneManagerSystem)
         {
-            _entityVisuals = entityVisuals;
             _assetManagerSystem = assetManagerSystem;
             _unityState = unityState;
-            _editorEvents = editorEvents;
             _sceneManagerSystem = sceneManagerSystem;
-
-            entity = _sceneManagerSystem.GetCurrentScene()?.GetEntityById(_entityVisuals.id);
-            _editorEvents.onAssetDataUpdatedEvent += OnAssetDataUpdatedCallback;
-        }
-
-        void IDisposable.Dispose()
-        {
-            _editorEvents.onAssetDataUpdatedEvent -= OnAssetDataUpdatedCallback;
-        }
-
-        public void OnAssetDataUpdatedCallback(List<Guid> ids)
-        {
-            var assetId = entity?.GetComponentByName("GLTFShape")?.GetPropertyByName("asset")?.GetConcrete<Guid>()?.Value;
-            if (assetId.HasValue && ids.Contains(assetId.Value))
-            {
-                UpdateVisuals(entity);
-            }
         }
 
         public override void UpdateVisuals(DclEntity entity)
@@ -69,24 +44,25 @@ namespace Assets.Scripts.Visuals
                 case AssetData.State.IsAvailable:
                     if (data is ModelAssetData)
                     {
-                        ModelAssetData modelData = (ModelAssetData)data;
+                        ModelAssetData modelData = (ModelAssetData) data;
                         if (modelData.data == null)
                             return;
 
                         newModel = modelData.data;
                     }
-                    break;
-                case AssetData.State.IsLoading:
 
                     break;
+
+                case AssetData.State.IsLoading:
+                    newModel = Instantiate(_unityState.LoadingModel);
+                    break;
+
                 case AssetData.State.IsError:
                     newModel = Instantiate(_unityState.ErrorModel);
                     break;
-                default:
-                    break;
             }
 
-            if (newModel)
+            if (newModel != null)
             {
                 Destroy(_currentModelObject);
 

@@ -56,6 +56,9 @@ namespace Assets.Scripts.EditorState
         [SerializeField]
         public GameObject ErrorModel;
 
+        [SerializeField]
+        public GameObject LoadingModel;
+
 
         [Header("Context Menu Prefab")]
         [SerializeField]
