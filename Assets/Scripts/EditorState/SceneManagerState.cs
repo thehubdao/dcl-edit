@@ -62,12 +62,16 @@ namespace Assets.Scripts.EditorState
 
         public SceneDirectoryState GetDirectoryState(string path)
         {
-            return sceneDirectoryStates.First(t => Path.GetFullPath(t.Value.directoryPath) == Path.GetFullPath(path)).Value;
+            return sceneDirectoryStates
+                .First(t => (t.Value.directoryPath != null) && (Path.GetFullPath(t.Value.directoryPath) == Path.GetFullPath(path)))
+                .Value;
         }
 
         public bool TryGetDirectoryState(string path, out SceneDirectoryState sceneDirectoryState)
         {
-            sceneDirectoryState = sceneDirectoryStates.FirstOrDefault(t => Path.GetFullPath(t.Value.directoryPath) == Path.GetFullPath(path)).Value;
+            sceneDirectoryState = sceneDirectoryStates
+                .FirstOrDefault(t => (t.Value.directoryPath != null) && (Path.GetFullPath(t.Value.directoryPath) == Path.GetFullPath(path)))
+                .Value;
 
             return sceneDirectoryState != null;
         }
