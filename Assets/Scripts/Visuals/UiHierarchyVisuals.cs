@@ -153,7 +153,7 @@ namespace Assets.Scripts.Visuals
 
         private void ExpandSelectedItem()
         {
-            var selectedEntity = sceneDirectoryState.CurrentScene?.SelectionState.PrimarySelectedEntity;
+            var selectedEntity = sceneManagerSystem.GetCurrentScene()?.SelectionState.PrimarySelectedEntity;
             hierarchyChangeSystem.ExpandParents(selectedEntity);
         }
 
