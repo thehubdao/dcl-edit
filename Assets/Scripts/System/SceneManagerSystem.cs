@@ -57,9 +57,7 @@ namespace Assets.Scripts.System
 
             foreach (var path in sceneDirectoryPaths)
             {
-                var sds = LoadSceneDirectoryState(path);
-
-                sceneManagerState.AddSceneDirectoryState(sds);
+                SceneDirectoryState sceneDirectoryState = LoadSceneDirectoryState(path);
             }
         }
 
@@ -186,33 +184,38 @@ namespace Assets.Scripts.System
         /// <param name="sceneDirectoryState">The SceneDirectoryState of the scene to save.</param>
         private void SaveSceneAs(SceneDirectoryState sceneDirectoryState)
         {
-            string path = sceneDirectoryState.directoryPath;
+            string oldPath = sceneDirectoryState.directoryPath;
 
-            string oldPath;
+            string oldContainingDirectoryPath;
             string oldName;
-            if (path == null)
+            if (oldPath == null)
             {
-                oldPath = pathState.ProjectPath;
+                oldContainingDirectoryPath = pathState.ProjectPath;
                 oldName = "New Scene";
             }
             else
             {
-                path = Path.GetFullPath(path); //normalize path format (e.g. turn '/' into '\\')
-                oldPath = path.Substring(0, path.LastIndexOf(Path.DirectorySeparatorChar));
-                oldName = path.Substring(path.LastIndexOf(Path.DirectorySeparatorChar) + 1);
+                oldPath = Path.GetFullPath(oldPath); //normalize path format (e.g. turn '/' into '\\')
+                oldContainingDirectoryPath = oldPath.Substring(0, oldPath.LastIndexOf(Path.DirectorySeparatorChar));
+                oldName = oldPath.Substring(oldPath.LastIndexOf(Path.DirectorySeparatorChar) + 1);
                 oldName = oldName.Substring(0, oldName.LastIndexOf('.'));
             }
 
-            path = StandaloneFileBrowser.SaveFilePanel("Save Scene", oldPath, oldName, "dclscene");
+            string newPath = StandaloneFileBrowser.SaveFilePanel("Save Scene", oldContainingDirectoryPath, oldName, "dclscene");
 
             // check for canceled dialog
-            if (path == "")
+            if (newPath == "")
             {
                 return;
             }
 
-            sceneDirectoryState.directoryPath = path;
+            sceneDirectoryState.directoryPath = newPath;
             SaveScene(sceneDirectoryState);
+
+            if (oldPath != null)
+            {
+                LoadSceneDirectoryState(oldPath);
+            }
         }
 
         [CanBeNull]
@@ -247,7 +250,12 @@ namespace Assets.Scripts.System
             public JObject settings;
         }
 
-        public SceneDirectoryState LoadSceneDirectoryState(string path)
+        /// <summary>
+        /// Load a Scene from the file system and add it to the loaded SceneDirectoryStates in SceneManagerState.
+        /// </summary>
+        /// <param name="path">The directory to load the scene from.</param>
+        /// <returns>The new loaded scene.</returns>
+        private SceneDirectoryState LoadSceneDirectoryState(string path)
         {
             var sceneFileJson = Path.Combine(path, "scene.json");
 
@@ -271,7 +279,9 @@ namespace Assets.Scripts.System
                 sceneFileContents.id = Guid.NewGuid();
             }
 
-            return new SceneDirectoryState(sceneFileContents.relativePath, sceneFileContents.id);
+            SceneDirectoryState sceneDirectoryState = new SceneDirectoryState(sceneFileContents.relativePath, sceneFileContents.id);
+            sceneManagerState.AddSceneDirectoryState(sceneDirectoryState);
+            return sceneDirectoryState;
         }
 
         public SceneDirectoryState GetCurrentDirectoryState()
