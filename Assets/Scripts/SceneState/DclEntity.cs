@@ -131,11 +131,18 @@ namespace Assets.Scripts.SceneState
 
             return new Guid(guid);
         }
-        public DclEntity DeepCopy(DclScene sceneState, System.Random random = null)
+
+        private System.Random _random;
+        public DclEntity DeepCopy(DclScene sceneState, System.Random random)
         {
             DclEntity deepcopyEntity = new DclEntity(Id, CustomName, _parentId, true);
 
-            random ??= new System.Random();
+            if (random != null)
+            {
+                _random = random;
+            }
+
+            random ??= _random;
 
             deepcopyEntity.Id = GenerateSeededGuid(random);
 
@@ -152,7 +159,7 @@ namespace Assets.Scripts.SceneState
             {
                 foreach (var child in Children.ToList())
                 {
-                    DclEntity newChild = child.DeepCopy(sceneState);
+                    DclEntity newChild = child.DeepCopy(sceneState, random);
                     newChild.Parent = deepcopyEntity;
                 }
             }
