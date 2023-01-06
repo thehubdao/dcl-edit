@@ -27,6 +27,13 @@ namespace Assets.Scripts.EditorState
 
         public void AddSceneDirectoryState(SceneDirectoryState sceneDirectoryState)
         {
+            //check for duplicate directoryPaths (not null)
+            if (sceneDirectoryState.directoryPath != null &&
+                TryGetDirectoryState(sceneDirectoryState.directoryPath, out SceneDirectoryState _))
+            {
+                throw new ArgumentException($"Scenes are not allowed be added twice to sceneDirectoryStates: \"{sceneDirectoryState.directoryPath}\"");
+            }
+
             sceneDirectoryStates.Add(sceneDirectoryState.id, sceneDirectoryState);
         }
 
@@ -48,6 +55,13 @@ namespace Assets.Scripts.EditorState
         public SceneDirectoryState GetDirectoryState(string path)
         {
             return sceneDirectoryStates.First(t => Path.GetFullPath(t.Value.directoryPath) == Path.GetFullPath(path)).Value;
+        }
+
+        public bool TryGetDirectoryState(string path, out SceneDirectoryState sceneDirectoryState)
+        {
+            sceneDirectoryState = sceneDirectoryStates.FirstOrDefault(t => Path.GetFullPath(t.Value.directoryPath) == Path.GetFullPath(path)).Value;
+
+            return sceneDirectoryState != null;
         }
 
         [CanBeNull]
