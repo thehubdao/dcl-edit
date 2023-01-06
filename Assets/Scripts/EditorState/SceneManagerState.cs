@@ -37,6 +37,14 @@ namespace Assets.Scripts.EditorState
             sceneDirectoryStates.Add(sceneDirectoryState.id, sceneDirectoryState);
         }
 
+        public void RemoveSceneDirectoryState(SceneDirectoryState sceneDirectoryState)
+        {
+            if (!sceneDirectoryStates.Remove(sceneDirectoryState.id))
+            {
+                throw new ArgumentException($"There is no SceneDirectoryState with the ID \"{sceneDirectoryState.id.Shortened()}\"");
+            }
+        }
+
         private bool Exists(Guid id)
         {
             return sceneDirectoryStates.ContainsKey(id);

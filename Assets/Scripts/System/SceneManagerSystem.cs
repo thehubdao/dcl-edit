@@ -209,6 +209,12 @@ namespace Assets.Scripts.System
                 return;
             }
 
+            //remove any potential scene that will be overridden
+            if (sceneManagerState.TryGetDirectoryState(newPath, out SceneDirectoryState sceneDirectoryStateToOverride))
+            {
+                sceneManagerState.RemoveSceneDirectoryState(sceneDirectoryStateToOverride);
+            }
+
             sceneDirectoryState.directoryPath = newPath;
             SaveScene(sceneDirectoryState);
 
