@@ -18,13 +18,11 @@ namespace Assets.Scripts.Interaction
         private ICommandSystem commandSystem;
         private InputState inputState;
         private Interface3DState interface3DState;
-        private WorkspaceSaveSystem workspaceSaveSystem;
         private GizmoState gizmoState;
         private UnityState unityState;
         private InputHelper inputHelper;
         private CameraState cameraState;
         private EditorEvents editorEvents;
-        private TypeScriptGenerationSystem typeScriptGenerationSystem;
         private EntitySelectSystem entitySelectSystem;
         private ContextMenuSystem contextMenuSystem;
         private SceneManagerSystem sceneManagerSystem;
@@ -35,13 +33,11 @@ namespace Assets.Scripts.Interaction
             ICommandSystem commandSystem,
             InputState inputState,
             Interface3DState interface3DState,
-            WorkspaceSaveSystem workspaceSaveSystem,
             CameraState cameraState,
             GizmoState gizmoState,
             UnityState unityState,
             InputHelper inputHelper,
             EditorEvents editorEvents,
-            TypeScriptGenerationSystem typeScriptGenerationSystem,
             EntitySelectSystem entitySelectSystem,
             ContextMenuSystem contextMenuSystem,
             SceneManagerSystem sceneManagerSystem)
@@ -50,13 +46,11 @@ namespace Assets.Scripts.Interaction
             this.commandSystem = commandSystem;
             this.inputState = inputState;
             this.interface3DState = interface3DState;
-            this.workspaceSaveSystem = workspaceSaveSystem;
             this.gizmoState = gizmoState;
             this.unityState = unityState;
             this.inputHelper = inputHelper;
             this.cameraState = cameraState;
             this.editorEvents = editorEvents;
-            this.typeScriptGenerationSystem = typeScriptGenerationSystem;
             this.entitySelectSystem = entitySelectSystem;
             this.contextMenuSystem = contextMenuSystem;
             this.sceneManagerSystem = sceneManagerSystem;
@@ -410,12 +404,10 @@ namespace Assets.Scripts.Interaction
                 inputState.InState = InputState.InStateType.FocusTransition;
             }
 
-            // When pressing the save hotkey, save the scene and workspace layout
+            // When pressing the save hotkey, save the scene
             if (inputSystemAsset.Hotkeys.Save.triggered)
             {
-                sceneSaveSystem.Save(sceneManagerSystem.GetCurrentDirectoryState());
-                workspaceSaveSystem.Save(unityState.dynamicPanelsCanvas);
-                typeScriptGenerationSystem.GenerateTypeScript();
+                sceneManagerSystem.SaveCurrentScene();
             }
 
             // When pressing Translate hotkey, enter translation gizmo mode

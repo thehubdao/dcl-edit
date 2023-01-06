@@ -11,7 +11,6 @@ namespace Assets.Scripts.System
 
         // dependencies
         private WorkspaceSaveSystem _workspaceSaveSystem;
-        private UnityState _unityState;
         private IPathState _pathState;
         private FrameTimeSystem _frameTimeSystem;
         private SceneManagerSystem sceneManagerSystem;
@@ -20,14 +19,12 @@ namespace Assets.Scripts.System
         [Inject]
         private void Construct(
             WorkspaceSaveSystem workspaceSaveSystem,
-            UnityState unityState,
             IPathState pathState,
             FrameTimeSystem frameTimeSystem,
             SceneManagerSystem sceneManagerSystem,
             SceneViewSystem sceneViewSystem)
         {
             _workspaceSaveSystem = workspaceSaveSystem;
-            _unityState = unityState;
             _pathState = pathState;
             _frameTimeSystem = frameTimeSystem;
             this.sceneManagerSystem = sceneManagerSystem;
@@ -39,14 +36,12 @@ namespace Assets.Scripts.System
             sceneManagerSystem.DiscoverScenes();
 
             // TODO: load proper scene. Work around is to load the first scene
-            sceneManagerSystem.SetFirstSceneAsCurrent();
-
-            sceneViewSystem.SetUpCurrentScene();
+            sceneManagerSystem.SetFirstSceneAsCurrentScene();
         }
 
         void Start()
         {
-            _workspaceSaveSystem.Load(_unityState.dynamicPanelsCanvas);
+            _workspaceSaveSystem.Load();
 
             _frameTimeSystem.SetApplicationTargetFramerate();
         }
