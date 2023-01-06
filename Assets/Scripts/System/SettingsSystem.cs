@@ -258,7 +258,7 @@ namespace Assets.Scripts.System
             TestString = new StringUserSetting(this, "Test text", "Hello world!");
             userSettings.Add(TestString);
 
-            applicationTargetFramerate = new IntUserSetting(this, "applicationTargetFramerate", -1);
+            applicationTargetFramerate = new IntClampedUserSetting(this, "applicationTargetFramerate", 120, 5, 1000);
             userSettings.Add(applicationTargetFramerate);
 
             ShownSettings.Add("User Settings", userSettings);
@@ -280,12 +280,12 @@ namespace Assets.Scripts.System
 
         public Dictionary<string, List<ISetting>> ShownSettings = new Dictionary<string, List<ISetting>>();
 
-        public FloatUserSetting uiScalingFactor;
-        public FloatUserSetting mouseSensitivity;
-        public FloatUserSetting gizmoSize;
+        public FloatClampedUserSetting uiScalingFactor;
+        public FloatClampedUserSetting mouseSensitivity;
+        public FloatClampedUserSetting gizmoSize;
         public IntUserSetting TestInteger;
         public StringUserSetting TestString;
-        public IntUserSetting applicationTargetFramerate;
+        public IntClampedUserSetting applicationTargetFramerate;
 
         public Vec3ProjectSetting TestProjVec3;
         public StringProjectSetting TestProjString;

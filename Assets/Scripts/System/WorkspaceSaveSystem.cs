@@ -2,6 +2,7 @@ using UnityEngine;
 using DynamicPanels;
 using System;
 using Zenject;
+using Assets.Scripts.EditorState;
 
 namespace Assets.Scripts.System
 {
@@ -9,23 +10,29 @@ namespace Assets.Scripts.System
     {
         //Dependency
         private SettingsSystem settingSystem;
+        private UnityState unityState;
 
         [Inject]
         public void Construct(
-            SettingsSystem settingSystem)
+            SettingsSystem settingSystem,
+            UnityState unityState)
         {
             this.settingSystem = settingSystem;
+            this.unityState = unityState;
         }
 
-        public void Save(DynamicPanelsCanvas canvas)
+        public void Save()
         {
+            DynamicPanelsCanvas canvas = unityState.dynamicPanelsCanvas;
             byte[] data = PanelSerialization.SerializeCanvasToArray(canvas);
             string dataString = Convert.ToBase64String(data);
             settingSystem.panelSize.Set(dataString);
         }
 
-        public void Load(DynamicPanelsCanvas canvas)
+        public void Load()
         {
+            DynamicPanelsCanvas canvas = unityState.dynamicPanelsCanvas;
+
             if (settingSystem.panelSize.Get() == "")
             {
                 Debug.Log("Layout save is empty");
