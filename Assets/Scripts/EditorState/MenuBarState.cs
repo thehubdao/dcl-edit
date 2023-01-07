@@ -1,10 +1,8 @@
-using Assets.Scripts.EditorState;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using UnityEngine.Events;
-using UnityEditor;
 
 namespace Assets.Scripts.EditorState
 {
@@ -16,17 +14,20 @@ namespace Assets.Scripts.EditorState
         {
             public string title;
             public List<ContextMenuItem> subItems;
+            public int sortingPriority = 0;
 
-            public MenuBarItem(string title)
+            public MenuBarItem(string title, int sortingPriority = 0)
             {
                 this.title = title;
                 this.subItems = new List<ContextMenuItem>();
+                this.sortingPriority = sortingPriority;
             }
 
-            public MenuBarItem(string title, List<ContextMenuItem> subItems)
+            public MenuBarItem(string title, List<ContextMenuItem> subItems, int sortingPriority = 0)
             {
                 this.title = title;
                 this.subItems = subItems;
+                this.sortingPriority = sortingPriority;
             }
         }
 
@@ -46,20 +47,26 @@ namespace Assets.Scripts.EditorState
                 throw new System.ArgumentException($"Cannot add actions to the root of the menu bar. Create at least one directory. \"{path}\".");
             }
 
-            MenuBarItem itemToAddTo = GetOrCreateMenuBarItem(pathParsed.FirstTitle);
+            MenuBarItem itemToAddTo = GetOrCreateMenuBarItem(pathParsed.FirstTitle, pathParsed.FirstSortingPriority);
             AddToExistingContextMenuItems(itemToAddTo.subItems, pathParsed.FirstElementRemoved(), onClick);
         }
 
 
-        private MenuBarItem GetOrCreateMenuBarItem(string title)
+        private MenuBarItem GetOrCreateMenuBarItem(string title, int sortingPriority)
         {
             MenuBarItem item = menuItems.SingleOrDefault(item => item.title == title);
 
             // Create new menu bar item if it does not exist yet.
             if (item == null)
             {
-                item = new MenuBarItem(title);
-                menuItems.Add(item);
+                item = new MenuBarItem(title, sortingPriority);
+                
+                int i = 0;
+                while (i < menuItems.Count && menuItems[i].sortingPriotiry.CompareTo(sortingPriority) <= 0)
+                {
+                    i++;
+                }
+                menuItems.Insert(i, item);
             }
 
             return item;
@@ -71,6 +78,7 @@ namespace Assets.Scripts.EditorState
             if (path.Depth == 1)
             {
                 AddToNewContextMenuItems(items, path, onClick);
+                ContextMenuState.SortItems(items);
             }
             else
             {
@@ -90,6 +98,7 @@ namespace Assets.Scripts.EditorState
                 {
                     // switch to adding items
                     AddToNewContextMenuItems(items, path, onClick);
+                    ContextMenuState.SortItems(items);
                 }
             }
         }
@@ -99,21 +108,15 @@ namespace Assets.Scripts.EditorState
         {
             while (path.Depth > 1)
             {
-                ContextSubmenuItem newSubmenuItem = new ContextSubmenuItem(path.FirstTitle);
+                ContextSubmenuItem newSubmenuItem = new ContextSubmenuItem(path.FirstTitle, sortingPriority: path.FirstSortingPriority);
                 items.Add(newSubmenuItem);
 
                 items = newSubmenuItem.items;
                 path.RemoveFirstElement();
             }
 
-            ContextMenuTextItem newMenuTextItem = new ContextMenuTextItem(path.FirstTitle, onClick);
-
-            int position = path.FirstPositionIndex;
-            if (position < 0 || position > items.Count)
-            {
-                position = items.Count;
-            }
-            items.Insert(position, newMenuTextItem);
+            ContextMenuTextItem newMenuTextItem = new ContextMenuTextItem(path.FirstTitle, onClick, sortingPriority: path.FirstSortingPriority);
+            items.Add(newMenuTextItem);
         }
 
         /// <summary>
@@ -123,17 +126,17 @@ namespace Assets.Scripts.EditorState
         {
             private int firstElement; //used to skip elements, by just incrementing. Starting with 0.
             private string[] titles;
-            private int[] positionIndices;
+            private int[] sortingOrders;
 
             /// <summary>
-            /// The title of the first element of the path without its position index.
+            /// The title of the first element of the path without its sorting priority.
             /// </summary>
             public string FirstTitle { get => titles[firstElement]; }
 
             /// <summary>
-            /// The position index of the first element of the path.
+            /// The sorting priority of the first element of the path.
             /// </summary>
-            public int FirstPositionIndex { get => positionIndices[firstElement]; } //the position index of the first element of the path
+            public int FirstSortingPriority { get => sortingOrders[firstElement]; } //the sorting priority of the first element of the path
 
             /// <summary>
             /// The number of elements in th remaining path.
@@ -145,7 +148,7 @@ namespace Assets.Scripts.EditorState
             {
                 firstElement = path.firstElement;
                 titles = path.titles;
-                positionIndices = path.positionIndices;
+                sortingOrders = path.sortingOrders;
             }
 
             /// <summary>
@@ -166,7 +169,7 @@ namespace Assets.Scripts.EditorState
                     }
                 }
 
-                positionIndices = new int[titles.Length];
+                sortingOrders = new int[titles.Length];
 
                 for (int i = 0; i < titles.Length; i++)
                 {
@@ -175,17 +178,17 @@ namespace Assets.Scripts.EditorState
                     {
                         try
                         {
-                            positionIndices[i] = int.Parse(titles[i].Substring(splitterIndex + 1));
+                            sortingOrders[i] = int.Parse(titles[i].Substring(splitterIndex + 1));
                         }
                         catch
                         {
-                            throw new System.ArgumentException($"The position index \"{titles[i].Substring(splitterIndex)}\" is not valid. From the Path: \"{path}\".");
+                            throw new System.ArgumentException($"The sorting priority \"{titles[i].Substring(splitterIndex)}\" is not valid. From the Path: \"{path}\".");
                         }
                         titles[i] = titles[i].Substring(0, splitterIndex);
                     }
                     else
                     {
-                        positionIndices[i] = -1;
+                        sortingOrders[i] = 0; //default sorting order
                     }
                 }
             }
@@ -227,9 +230,9 @@ namespace Assets.Scripts.EditorState
                 for (int i = firstElement; i < titles.Length - 1; i++)
                 {
                     str += titles[i];
-                    if (positionIndices[i] >= 0)
+                    if (sortingOrders[i] >= 0)
                     {
-                        str += "#" + positionIndices[i];
+                        str += "#" + sortingOrders[i];
                     }
                     str += "/";
                 }

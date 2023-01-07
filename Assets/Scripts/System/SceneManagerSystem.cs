@@ -349,10 +349,10 @@ namespace Assets.Scripts.System
 
         private void CreateMenuBarItems()
         {
-            menuBarSystem.AddMenuItem("File/New Scene", SetNewScneneAsCurrentScene);
-            menuBarSystem.AddMenuItem("File/Open Scene", SetDialogAsCurrentScene);
-            menuBarSystem.AddMenuItem("File/Save Scene", SaveCurrentScene);
-            menuBarSystem.AddMenuItem("File/Save Scene As...", SaveCurrentSceneAs);
+            menuBarSystem.AddMenuItem("File#1/New Scene#1", SetNewScneneAsCurrentScene);
+            menuBarSystem.AddMenuItem("File#1/Open Scene#2", SetDialogAsCurrentScene);
+            menuBarSystem.AddMenuItem("File#1/Save Scene#3", SaveCurrentScene);
+            menuBarSystem.AddMenuItem("File#1/Save Scene As...#4", SaveCurrentSceneAs);
         }
         
         private struct SceneFileContents
