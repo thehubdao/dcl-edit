@@ -10,7 +10,7 @@ namespace Assets.Scripts.EditorState
 {
     public class MenuBarState
     {
-        public List<MenuBarItem> menuItems = new List<MenuBarItem>(); //wish to be Lis<MenuBarItem>
+        public List<MenuBarItem> menuItems = new List<MenuBarItem>();
 
         public class MenuBarItem : ContextMenuItem
         {
@@ -30,35 +30,24 @@ namespace Assets.Scripts.EditorState
             }
         }
 
-        public void AddMenuItem(string path, UnityAction onClick, int position = -1)
+        public void AddMenuItem(string path, UnityAction onClick)
         {
-            // Check for root directory.
-            if (path.IndexOf('/') < 0)
-            {
-                Debug.LogError($"Cannot add actions to the root of the menu bar. Create at least one directory like \"File/My Action\".");
-            }
-
-            // Check for nameless directories.
-            foreach (string pathPart in path.Split('/'))
-            {
-                if (pathPart == "")
-                {
-                    Debug.LogError($"Unvalid Path for adding to menu bar: \"{path}\".");
-                    return;
-                }
-            }
-
             // Check for null action.
             if (onClick == null)
             {
-                Debug.LogError("Null cannot be added to the menu bar items.");
-                return;
+                throw new System.ArgumentException($"Null not a valid onClick argument.");
             }
 
-            (string pathPartFirst, string pathPartSub) = SplitPath(path);
+            Path pathParsed = new Path(path);
 
-            MenuBarItem itemToAddTo = GetOrCreateMenuBarItem(pathPartFirst);
-            AddToExistingContextMenuItems(itemToAddTo.subItems, pathPartSub, onClick, position);
+            // Check for root directory.
+            if (pathParsed.Depth <= 1)
+            {
+                throw new System.ArgumentException($"Cannot add actions to the root of the menu bar. Create at least one directory. \"{path}\".");
+            }
+
+            MenuBarItem itemToAddTo = GetOrCreateMenuBarItem(pathParsed.FirstTitle);
+            AddToExistingContextMenuItems(itemToAddTo.subItems, pathParsed.FirstElementRemoved(), onClick);
         }
 
 
@@ -77,52 +66,49 @@ namespace Assets.Scripts.EditorState
         }
 
 
-        private void AddToExistingContextMenuItems(List<ContextMenuItem> items, string path, UnityAction onClick, int position)
+        private void AddToExistingContextMenuItems(List<ContextMenuItem> items, Path path, UnityAction onClick)
         {
-            if (path.IndexOf('/') < 0)
+            if (path.Depth == 1)
             {
-                AddToNewContextMenuItems(items, path, onClick, position);
+                AddToNewContextMenuItems(items, path, onClick);
             }
             else
             {
-                (string pathPartFirst, string pathPartSub) = SplitPath(path);
-
                 if (items == null)
                 {
                     Debug.Log(path);
                 }
 
-                ContextSubmenuItem foundItem = (ContextSubmenuItem)items.SingleOrDefault(item => (item as ContextSubmenuItem)?.title == pathPartFirst);
+                ContextSubmenuItem foundItem = (ContextSubmenuItem)items.SingleOrDefault(item => (item as ContextSubmenuItem)?.title == path.FirstTitle);
 
                 if (foundItem != null)
                 {
-                    //recursive
-                    AddToExistingContextMenuItems(foundItem.items, pathPartSub, onClick, position);
+                    // recursive
+                    AddToExistingContextMenuItems(foundItem.items, path.FirstElementRemoved(), onClick);
                 }
                 else
                 {
-                    //switch to adding items
-                    AddToNewContextMenuItems(items, path, onClick, position);
+                    // switch to adding items
+                    AddToNewContextMenuItems(items, path, onClick);
                 }
             }
         }
 
 
-        private void AddToNewContextMenuItems(List<ContextMenuItem> items, string path, UnityAction onClick, int position)
+        private void AddToNewContextMenuItems(List<ContextMenuItem> items, Path path, UnityAction onClick)
         {
-            while (path.IndexOf('/') > 0)
+            while (path.Depth > 1)
             {
-                (string pathPartFirst, string pathPartSub) = SplitPath(path);
-
-                ContextSubmenuItem newSubmenuItem = new ContextSubmenuItem(pathPartFirst);
+                ContextSubmenuItem newSubmenuItem = new ContextSubmenuItem(path.FirstTitle);
                 items.Add(newSubmenuItem);
 
                 items = newSubmenuItem.items;
-                path = pathPartSub;
+                path.RemoveFirstElement();
             }
 
-            ContextMenuTextItem newMenuTextItem = new ContextMenuTextItem(path, onClick);
+            ContextMenuTextItem newMenuTextItem = new ContextMenuTextItem(path.FirstTitle, onClick);
 
+            int position = path.FirstPositionIndex;
             if (position < 0 || position > items.Count)
             {
                 position = items.Count;
@@ -130,12 +116,126 @@ namespace Assets.Scripts.EditorState
             items.Insert(position, newMenuTextItem);
         }
 
-        private (string, string) SplitPath(string path)
+        /// <summary>
+        /// Used to extract atomic informations from paths for th emenu bar.
+        /// </summary>
+        private class Path
         {
-            string pathPartFirst = path.Substring(0, path.IndexOf('/')); //the first part of the path
-            string pathPartSub = path.Substring(path.IndexOf('/') + 1); //the path except the first part
+            private int firstElement; //used to skip elements, by just incrementing. Starting with 0.
+            private string[] titles;
+            private int[] positionIndices;
 
-            return (pathPartFirst, pathPartSub);
+            /// <summary>
+            /// The title of the first element of the path without its position index.
+            /// </summary>
+            public string FirstTitle { get => titles[firstElement]; }
+
+            /// <summary>
+            /// The position index of the first element of the path.
+            /// </summary>
+            public int FirstPositionIndex { get => positionIndices[firstElement]; } //the position index of the first element of the path
+
+            /// <summary>
+            /// The number of elements in th remaining path.
+            /// </summary>
+            public int Depth { get => titles.Length - firstElement; }
+
+
+            private Path(Path path)
+            {
+                firstElement = path.firstElement;
+                titles = path.titles;
+                positionIndices = path.positionIndices;
+            }
+
+            /// <summary>
+            /// Contert a string path to at Path object.
+            /// </summary>
+            /// <param name="path"></param>
+            public Path(string path)
+            {
+                firstElement = 0;
+                titles = path.Split('/');
+
+                // Check for empty titles.
+                foreach (string title in titles)
+                {
+                    if (title == "")
+                    {
+                        throw new System.ArgumentException($"Elements are not allowed to have no title: \"{path}\".");
+                    }
+                }
+
+                positionIndices = new int[titles.Length];
+
+                for (int i = 0; i < titles.Length; i++)
+                {
+                    int splitterIndex = titles[i].IndexOf('#');
+                    if (splitterIndex > 0)
+                    {
+                        try
+                        {
+                            positionIndices[i] = int.Parse(titles[i].Substring(splitterIndex + 1));
+                        }
+                        catch
+                        {
+                            throw new System.ArgumentException($"The position index \"{titles[i].Substring(splitterIndex)}\" is not valid. From the Path: \"{path}\".");
+                        }
+                        titles[i] = titles[i].Substring(0, splitterIndex);
+                    }
+                    else
+                    {
+                        positionIndices[i] = -1;
+                    }
+                }
+            }
+
+            /// <summary>
+            /// Remove the first element from the Path to use the rest of the path.
+            /// </summary>
+            /// <returns>This with all other elements.</returns>
+            /// <exception cref="System.Exception"></exception>
+            public Path RemoveFirstElement()
+            {
+                if (Depth <= 1)
+                {
+                    throw new System.Exception($"Cannot Remove any more elements the Path \"{ToString()}\".");
+                }
+                firstElement ++;
+
+                return this;
+            }
+
+            /// <summary>
+            /// Remove the first element from the Path to use the rest of the path.
+            /// </summary>
+            /// <returns>New Path object with all other elements.</returns>
+            /// <exception cref="System.Exception"></exception>
+            public Path FirstElementRemoved()
+            {
+                return new Path(this).RemoveFirstElement();
+            }
+
+            /// <summary>
+            /// Convert back to a string Path. Used for logging.
+            /// </summary>
+            /// <returns>The path as string.</returns>
+            public override string ToString()
+            {
+                string str = "";
+
+                for (int i = firstElement; i < titles.Length - 1; i++)
+                {
+                    str += titles[i];
+                    if (positionIndices[i] >= 0)
+                    {
+                        str += "#" + positionIndices[i];
+                    }
+                    str += "/";
+                }
+
+                return str;
+            }
         }
     }
 }

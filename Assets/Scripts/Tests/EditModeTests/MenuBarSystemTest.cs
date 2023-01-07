@@ -29,7 +29,7 @@ namespace Assets.Scripts.Tests.EditModeTests
             ContextMenuItem contextMenuItem;
 
             //add menu item
-            menuBarSystem.AddMenuItem("A1/A2/A3", testUnityAction, -1);
+            menuBarSystem.AddMenuItem("A1/A2/A3", testUnityAction);
             CheckEventCounter(1);
 
             //asserts
@@ -47,7 +47,7 @@ namespace Assets.Scripts.Tests.EditModeTests
             Assert.AreSame((contextMenuItem as ContextMenuTextItem).onClick, testUnityAction);
 
             //add menu item
-            menuBarSystem.AddMenuItem("A1/A2/A4", testUnityAction, -1);
+            menuBarSystem.AddMenuItem("A1/A2/A4", testUnityAction);
             CheckEventCounter(1);
 
             //asserts
@@ -65,7 +65,7 @@ namespace Assets.Scripts.Tests.EditModeTests
             Assert.AreSame((contextMenuItem as ContextMenuTextItem).onClick, testUnityAction);
 
             //add menu item
-            menuBarSystem.AddMenuItem("A1/A2/A5", testUnityAction, 1);
+            menuBarSystem.AddMenuItem("A1/A2/A5#1", testUnityAction);
             CheckEventCounter(1);
 
             //asserts
@@ -83,7 +83,7 @@ namespace Assets.Scripts.Tests.EditModeTests
             Assert.AreSame((contextMenuItem as ContextMenuTextItem).onClick, testUnityAction);
 
             //add menu item
-            menuBarSystem.AddMenuItem("A1/A6/A7", testUnityAction, 1);
+            menuBarSystem.AddMenuItem("A1/A6/A7", testUnityAction);
             CheckEventCounter(1);
 
             //asserts
@@ -116,7 +116,7 @@ namespace Assets.Scripts.Tests.EditModeTests
             UnityAction testUnityAction = new UnityAction(TestUnityAction);
 
             //add menu items
-            menuBarSystem.AddMenuItem("A1/A2/A3", testUnityAction, -1);
+            menuBarSystem.AddMenuItem("A1/A2/A3", testUnityAction);
             menuBarSystem.AddMenuItem("B1/B2", testUnityAction);
             menuBarSystem.AddMenuItem("B1/B3/B4", testUnityAction);
             menuBarSystem.AddMenuItem("B1/B3/B5", testUnityAction);
