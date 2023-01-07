@@ -44,8 +44,25 @@ namespace Assets.Scripts.Visuals
 
         public void SetupEventListeners()
         {
-            editorEvents.onSelectionChangedEvent += UpdateVisuals;
-            UpdateVisuals();
+            editorEvents.onSelectionChangedEvent += SetDirty;
+            SetDirty();
+        }
+
+
+        private bool _dirty;
+
+        void SetDirty()
+        {
+            _dirty = true;
+        }
+
+        void LateUpdate()
+        {
+            if (_dirty)
+            {
+                _dirty = false;
+                UpdateVisuals();
+            }
         }
 
         private void UpdateVisuals()

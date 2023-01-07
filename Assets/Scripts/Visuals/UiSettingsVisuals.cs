@@ -41,14 +41,30 @@ namespace Assets.Scripts.Visuals
 
         public void SetupEventListeners()
         {
-            editorEvents.onSettingsChangedEvent += UpdateVisuals;
+            editorEvents.onSettingsChangedEvent += SetDirty;
             unityState.StartCoroutine(DelayedUpdate()); // Unity state is guarantied to be available and active
         }
 
         IEnumerator DelayedUpdate() // There are some problems with Zenject, when using the UiBuilder in the first frame
         {
             yield return null;
-            UpdateVisuals();
+            SetDirty();
+        }
+
+        private bool _dirty;
+
+        void SetDirty()
+        {
+            _dirty = true;
+        }
+
+        void LateUpdate()
+        {
+            if (_dirty)
+            {
+                _dirty = false;
+                UpdateVisuals();
+            }
         }
 
         private void UpdateVisuals()
