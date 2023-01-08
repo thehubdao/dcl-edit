@@ -56,25 +56,6 @@ namespace Assets.Scripts.System
                 string directoryPath = pathState.ProjectPath + relativePathInProject;
 
                 loaderState.assetHierarchy = ScanDirectory(directoryPath);
-                /*
-                string[] allFiles = Directory.GetFiles(directoryPath, "*.*", SearchOption.AllDirectories);  // Also search all child directories
-
-                // Populate caches. Assets and their corresponding metadata files get added using their Guid as key.
-                foreach (var assetFile in allFiles)
-                {
-                    if (IsMetadataFile(assetFile)) { continue; }
-
-                    AssetMetadataFile metadataFile = ReadExistingMetadataFile(assetFile);
-
-                    if (metadataFile == null)
-                    {
-                        metadataFile = GenerateMetadataFromAsset(assetFile);
-                        WriteMetadataToFile(metadataFile);
-                    }
-
-                    assetMetadataCache[metadataFile.assetMetadata.assetId] = metadataFile;
-                }
-                */
 
                 editorEvents.InvokeAssetMetadataCacheUpdatedEvent();
             }
