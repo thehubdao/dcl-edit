@@ -202,11 +202,14 @@ namespace Assets.Scripts.Interaction
             }
 
             // When pressing Duplicates selected entity
-            if (_inputSystemAsset.Hotkeys.Duplicate.triggered)
+            if (inputSystemAsset.Hotkeys.Duplicate.triggered)
             {
-                DclEntity entity = _sceneDirectoryState.CurrentScene?.SelectionState.PrimarySelectedEntity;
-
-                _commandSystem.ExecuteCommand(_commandSystem.CommandFactory.CreateDuplicateEntity(entity.Id));
+                var currentScene = sceneManagerSystem.GetCurrentScene();
+                if (currentScene != null)
+                {
+                    var selectedEntity = currentScene.SelectionState.PrimarySelectedEntity;
+                    commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateDuplicateEntity(selectedEntity.Id));
+                }
             }
             // When pressing(down) Left mouse button, select the hovered entity
             if (inputHelper.IsLeftMouseButtonDown() && !pressingAlt && isMouseIn3DView)
