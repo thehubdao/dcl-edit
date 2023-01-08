@@ -54,6 +54,8 @@ namespace Assets.Scripts.Tests.EditModeTests.TestUtility
             }
         }
 
+        public void ClearAllData() => allAssetsCached = false;
+
         public void CacheAllAssetMetadata()
         {
             allAssetsCached = true;

@@ -41,8 +41,16 @@ namespace Assets.Scripts.System
 
 
         #region Public methods
+        public void ClearAllData()
+        {
+            loaderState.assetDataCache.Clear();
+            loaderState.assetMetadataCache.Clear();
+            loaderState.assetHierarchy = new AssetHierarchyItem();
+        }
+
         public void CacheAllAssetMetadata()
         {
+            ClearAllData();
             try
             {
                 string directoryPath = pathState.ProjectPath + relativePathInProject;

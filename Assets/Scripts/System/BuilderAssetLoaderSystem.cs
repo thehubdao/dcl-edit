@@ -108,8 +108,20 @@ namespace Assets.Scripts.System
             this.assetDownLoader = new BuilderAssetDownLoader(modelCachePath, webRequestSystem);
         }
 
+        public void ClearAllData()
+        {
+            _loaderState.Data.Clear();
+            _loaderState.loadedModels.Clear();
+            _loaderState.LoadedThumbnails.Clear();
+            _loaderState.thumbnailRequestQueue.Clear();
+            _loaderState.assetHierarchy.assets = new List<AssetMetadata>();
+            _loaderState.assetHierarchy.childDirectories = new List<AssetHierarchyItem>();
+        }
+
         public void CacheAllAssetMetadata()
         {
+            ClearAllData();
+
             // load all asset metadata from the official builder
             _webRequestSystem.Get("https://builder-api.decentraland.org/v1/assetPacks?owner=default", request =>
             {

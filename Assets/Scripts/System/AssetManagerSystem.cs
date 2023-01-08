@@ -2,6 +2,7 @@ using Assets.Scripts.EditorState;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 using Zenject;
 
 namespace Assets.Scripts.System
@@ -19,8 +20,10 @@ namespace Assets.Scripts.System
 
         public void CacheAllAssetMetadata()
         {
+            ClearModelCache();
             foreach (var loaderSystem in _assetLoaderSystems)
             {
+                loaderSystem.ClearAllData();
                 loaderSystem.CacheAllAssetMetadata();
             }
         }
@@ -72,6 +75,18 @@ namespace Assets.Scripts.System
             }
 
             return hierarchy;
+        }
+
+        private void ClearModelCache()
+        {
+            GameObject modelCache = GameObject.Find("ModelCache");
+            if (modelCache != null)
+            {
+                foreach (Transform child in modelCache.transform)
+                {
+                    GameObject.Destroy(child.gameObject);
+                }
+            }
         }
     }
 }

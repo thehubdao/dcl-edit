@@ -6,6 +6,7 @@ namespace Assets.Scripts.System
 {
     public interface IAssetLoaderSystem
     {
+        void ClearAllData();
         void CacheAllAssetMetadata();
         IEnumerable<Guid> GetAllAssetIds();
         AssetHierarchyItem GetHierarchy();
