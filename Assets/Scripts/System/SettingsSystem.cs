@@ -258,7 +258,7 @@ namespace Assets.Scripts.System
             TestString = new StringUserSetting(this, "Test text", "Hello world!");
             userSettings.Add(TestString);
 
-            applicationTargetFramerate = new IntClampedUserSetting(this, "applicationTargetFramerate", 120, 5, 1000);
+            applicationTargetFramerate = new IntClampedUserSetting(this, "Maximum frame rate", 120, 5, 1000);
             userSettings.Add(applicationTargetFramerate);
 
             ShownSettings.Add("User Settings", userSettings);
