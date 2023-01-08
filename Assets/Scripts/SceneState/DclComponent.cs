@@ -105,6 +105,39 @@ namespace Assets.Scripts.SceneState
                 return dclComponentProperty;
             }
 
+            public DclComponentProperty DeepCopy(DclComponentProperty other)
+            {
+                Type propertyType = other.GetType();
+              
+                if (propertyType == typeof(DclComponentProperty<Vector3>))
+                {
+                    return new DclComponentProperty<Vector3>(other.PropertyName, other.GetConcrete<Vector3>().Value);
+                }
+                else if (propertyType == typeof(DclComponentProperty<Quaternion>)) {
+                    return new DclComponentProperty<Quaternion>(other.PropertyName, other.GetConcrete<Quaternion>().Value);
+                }
+                else if (propertyType == typeof(DclComponentProperty<Guid>))
+                {
+                    return new DclComponentProperty<Guid>(other.PropertyName, other.GetConcrete<Guid>().Value);
+                }
+                else if (propertyType == typeof(DclComponentProperty<string>))
+                {
+                    return new DclComponentProperty<string>(other.PropertyName, other.GetConcrete<string>().Value);
+                }
+                else if (propertyType == typeof(DclComponentProperty<int>))
+                {
+                    return new DclComponentProperty<int>(other.PropertyName, other.GetConcrete<int>().Value);
+                }
+                else if (propertyType == typeof(DclComponentProperty<float>))
+                {
+                    return new DclComponentProperty<float>(other.PropertyName, other.GetConcrete<float>().Value);
+                }
+                else if (propertyType == typeof(DclComponentProperty<bool>))
+                {
+                    return new DclComponentProperty<bool>(other.PropertyName, other.GetConcrete<bool>().Value);
+                }
+                return other;
+            }
 
             protected bool _isFloating;
 
@@ -219,7 +252,18 @@ namespace Assets.Scripts.SceneState
                 Properties.Find(p => p.PropertyName == name) :
                 null;
         }
-
+        public DclComponent DeepCopy()
+        {
+            DclComponent deepcopyComponent = new DclComponent(NameInCode,NameOfSlot);
+            deepcopyComponent.Properties.Clear();
+            foreach (var prop in Properties)
+            {
+                DclComponentProperty componentProperty = prop.DeepCopy(prop);
+                deepcopyComponent.Properties.Add(componentProperty);
+            }
+            return deepcopyComponent;
+        }        
+        
         public DclComponent(ComponentDefinition definition)
         {
             NameInCode = definition.NameInCode;
@@ -232,7 +276,6 @@ namespace Assets.Scripts.SceneState
                 Properties.Add(property);
             }
         }
-
 
         public DclComponent(string name, string slotName)
         {

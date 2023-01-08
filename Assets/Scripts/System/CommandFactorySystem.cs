@@ -46,6 +46,12 @@ public class CommandFactorySystem
     {
         return new ChangeSelection(oldPrimary, oldSecondary, newPrimary, newSecondary);
     }
+
+    // Duplicate Entity
+    public DuplicateEntity CreateDuplicateEntity(Guid entityId)
+    {
+        return new DuplicateEntity(entityId);
+    }
     
     public RemoveComponent CreateRemoveComponent(Guid entityId, DclComponent component)
     {
