@@ -10,7 +10,7 @@ using Zenject;
 
 namespace Assets.Scripts.Visuals
 {
-    public class ContextMenuVisuals : MonoBehaviour, ISetupSceneEventListeners
+    public class ContextMenuVisuals : MonoBehaviour
     {
         [SerializeField]
         float width = 200;
@@ -35,9 +35,11 @@ namespace Assets.Scripts.Visuals
             this.contextMenuSystem = contextMenuSystem;
             this.uiBuilderFactory = uiBuilderFactory;
             this.unityState = unityState;
+
+            SetupEventListeners();
         }
 
-        public void SetupSceneEventListeners()
+        public void SetupEventListeners()
         {
             editorEvents.onUpdateContextMenuEvent += () =>
             {

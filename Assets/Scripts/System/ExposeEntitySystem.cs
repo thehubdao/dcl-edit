@@ -2,23 +2,24 @@ using System.Linq;
 using System.Text;
 using Assets.Scripts.EditorState;
 using Assets.Scripts.SceneState;
+using Assets.Scripts.System;
 using Zenject;
 
 public class ExposeEntitySystem
 {
     // Dependencies
-    private SceneDirectoryState _sceneDirectoryState;
+    private SceneManagerSystem sceneManagerSystem;
 
     [Inject]
-    private void Construct(SceneDirectoryState sceneDirectoryState)
+    private void Construct(SceneManagerSystem sceneManagerSystem)
     {
-        _sceneDirectoryState = sceneDirectoryState;
+        this.sceneManagerSystem = sceneManagerSystem;
     }
 
 
     public bool IsEntityExposable(DclEntity entity)
     {
-        var scene = _sceneDirectoryState.CurrentScene;
+        var scene = sceneManagerSystem.GetCurrentScene();
         if (scene == null)
         {
             return false;

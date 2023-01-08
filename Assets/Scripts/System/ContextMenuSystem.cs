@@ -78,7 +78,16 @@ namespace Assets.Scripts.System
 
         private void CloseIfMouseNotOverMenu()
         {
-            bool mouseOverMenu = false;
+            bool mouseOverMenu = IsMouseOverMenu();
+
+            if (!mouseOverMenu)
+            {
+                CloseMenu();
+            }
+        }
+
+        public bool IsMouseOverMenu()
+        {
             foreach (var item in _state.menuGameObjects)
             {
                 var mousePos = Input.mousePosition;
@@ -89,15 +98,10 @@ namespace Assets.Scripts.System
                 var topRightCorner = new Vector2(pos.x + size.x, pos.y);
                 if (mousePos.x >= bottomLeftCorner.x && mousePos.y >= bottomLeftCorner.y && mousePos.x <= topRightCorner.x && mousePos.y <= topRightCorner.y)
                 {
-                    mouseOverMenu = true;
-                    break;
+                    return true;
                 }
             }
-
-            if (!mouseOverMenu)
-            {
-                CloseMenu();
-            }
+            return false;
         }
     }
 }

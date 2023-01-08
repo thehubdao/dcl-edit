@@ -28,6 +28,10 @@ public class DclEditorInstaller : MonoInstaller
     private GameObject _scaleGizmoPrefab;
 
     [SerializeField]
+    private GameObject mainSceneVisualsPrefab;
+
+    [Header("Unity State")]
+    [SerializeField]
     private GameObject unityStateObject;
 
 
@@ -53,15 +57,11 @@ public class DclEditorInstaller : MonoInstaller
 
         Container.BindInterfacesAndSelfTo<Interface3DState>().AsSingle();
 
-        Container.BindInterfacesAndSelfTo<SetupSceneSystem>().AsSingle();
-
         Container.BindInterfacesAndSelfTo<FrameTimeSystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<CameraSystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<ExposeEntitySystem>().AsSingle();
-
-        Container.BindInterfacesAndSelfTo<SetupSceneEventListenersSystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<WorkspaceSaveSystem>().AsSingle();
 
@@ -71,7 +71,7 @@ public class DclEditorInstaller : MonoInstaller
 
         Container.BindInterfacesAndSelfTo<CameraState>().AsSingle();
 
-        Container.BindInterfacesAndSelfTo<SceneDirectoryState>().AsSingle();
+        //Container.BindInterfacesAndSelfTo<SceneDirectoryState>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<GizmoState>().AsSingle();
 
@@ -88,6 +88,8 @@ public class DclEditorInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<TypeScriptGenerationSystem>().AsSingle();
 
         Container.BindFactory<EntitySelectInteraction, EntitySelectInteraction.Factory>().FromComponentInNewPrefab(_entityVisualPrefab);
+
+        Container.BindFactory<MainSceneVisuals, MainSceneVisuals.Factory>().FromComponentInNewPrefab(mainSceneVisualsPrefab);
 
         Container.BindFactory<GizmoSizeFixerSystem, GizmoVisuals.TranslateFactory>().FromComponentInNewPrefab(_translateGizmoPrefab).AsSingle();
 
@@ -112,7 +114,17 @@ public class DclEditorInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<ContextMenuSystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<ContextMenuState>().AsSingle();
-        
+
+        Container.BindInterfacesAndSelfTo<MenuBarSystem>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<MenuBarState>().AsSingle();
+
         Container.BindInterfacesAndSelfTo<NumberInputSystem>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<SceneManagerSystem>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<SceneManagerState>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<SceneViewSystem>().AsSingle();
     }
 }

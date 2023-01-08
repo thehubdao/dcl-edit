@@ -10,7 +10,7 @@ using Zenject;
 
 namespace Assets.Scripts.Visuals
 {
-    public class UiSettingsVisuals : MonoBehaviour, ISetupSceneEventListeners
+    public class UiSettingsVisuals : MonoBehaviour
     {
         [SerializeField]
         private GameObject content;
@@ -28,9 +28,11 @@ namespace Assets.Scripts.Visuals
             this.settingsSystem = settingsSystem;
             this.uiBuilder = uiBuilderFactory.Create(content);
             this.unityState = unityState;
+
+            SetupEventListeners();
         }
 
-        public void SetupSceneEventListeners()
+        public void SetupEventListeners()
         {
             editorEvents.onSettingsChangedEvent += UpdateVisuals;
             unityState.StartCoroutine(DelayedUpdate()); // Unity state is guarantied to be available and active

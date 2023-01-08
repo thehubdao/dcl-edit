@@ -43,11 +43,18 @@ namespace Assets.Scripts.EditorState
         public string title;
         public List<ContextMenuItem> items;
 
-        public ContextSubmenuItem(string title, List<ContextMenuItem> subItems)
+        public ContextSubmenuItem(string title, List<ContextMenuItem> subItems = null)
         {
             this.submenuId = Guid.NewGuid();
             this.title = title;
-            this.items = subItems;
+            if (subItems != null)
+            {
+                this.items = subItems;
+            }
+            else
+            {
+                items = new List<ContextMenuItem>();
+            }
         }
     }
     public class ContextMenuTextItem : ContextMenuItem

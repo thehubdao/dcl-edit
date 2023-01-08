@@ -1,6 +1,7 @@
 using Assets.Scripts.Command;
 using System;
 using System.Collections.Generic;
+using Assets.Scripts.SceneState;
 using UnityEngine;
 
 public class CommandFactorySystem
@@ -50,5 +51,10 @@ public class CommandFactorySystem
     public DuplicateEntity CreateDuplicateEntity(Guid entityId)
     {
         return new DuplicateEntity(entityId);
+    }
+    
+    public RemoveComponent CreateRemoveComponent(Guid entityId, DclComponent component)
+    {
+        return new RemoveComponent(entityId, component);
     }
 }
