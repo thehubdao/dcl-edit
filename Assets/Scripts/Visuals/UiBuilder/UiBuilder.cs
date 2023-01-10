@@ -53,17 +53,28 @@ namespace Assets.Scripts.Visuals.UiBuilder
             ContextMenu,
             ContextMenuItem,
             ContextSubmenuItem,
-            ContextMenuSpacerItem
+            ContextMenuSpacerItem,
+            Button,
+            AssetBrowserButton,
+            AssetBrowserFolder,
+            Grid
         }
 
 
         // Dependencies
         private UnityState unityState;
+        private AssetBrowserButtonHandler.Factory assetBrowserButtonHandlerFactory;
+        private AssetBrowserFolderHandler.Factory assetBrowserFolderHandlerFactory;
 
         [Inject]
-        public void Constructor(UnityState unityState)
+        public void Constructor(
+            UnityState unityState,
+            AssetBrowserButtonHandler.Factory assetBrowserButtonHandlerFactory,
+            AssetBrowserFolderHandler.Factory assetBrowserFolderHandlerFactory)
         {
             this.unityState = unityState;
+            this.assetBrowserButtonHandlerFactory = assetBrowserButtonHandlerFactory;
+            this.assetBrowserFolderHandlerFactory = assetBrowserFolderHandlerFactory;
         }
 
         #region Object Pool
@@ -84,12 +95,12 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
                     go.SetActive(true);
 
-                    return new AtomGameObject {atomType = type, gameObject = go};
+                    return new AtomGameObject { atomType = type, gameObject = go };
                 }
             }
 
             var instantiatedObject = InstantiateObject(type);
-            return new AtomGameObject {atomType = type, gameObject = instantiatedObject};
+            return new AtomGameObject { atomType = type, gameObject = instantiatedObject };
         }
 
         private GameObject InstantiateObject(AtomType type)
@@ -114,6 +125,10 @@ namespace Assets.Scripts.Visuals.UiBuilder
                 AtomType.ContextMenuItem => Object.Instantiate(unityState.ContextMenuItemAtom),
                 AtomType.ContextSubmenuItem => Object.Instantiate(unityState.ContextSubmenuItemAtom),
                 AtomType.ContextMenuSpacerItem => Object.Instantiate(unityState.ContextMenuSpacerItemAtom),
+                AtomType.Button => Object.Instantiate(unityState.ButtonAtom),
+                AtomType.Grid => Object.Instantiate(unityState.GridAtom),
+                AtomType.AssetBrowserFolder => assetBrowserFolderHandlerFactory.Create().gameObject,
+                AtomType.AssetBrowserButton => assetBrowserButtonHandlerFactory.Create().gameObject,
                 _ => throw new ArgumentOutOfRangeException($"The type {type.ToString()} is not listed to instantiate.")
             };
             return gameObject; ;

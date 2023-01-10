@@ -12,8 +12,12 @@ namespace Assets.Scripts.SceneState
                 new DclComponentProperty.PropertyDefinition("rotation", DclComponentProperty.PropertyType.Quaternion, Quaternion.identity),
                 new DclComponentProperty.PropertyDefinition("scale", DclComponentProperty.PropertyType.Vector3, Vector3.one));
 
-        public DclTransformComponent() : base("Transform", "Transform")
-        { }
+        public DclTransformComponent(Vector3? position = null, Quaternion? rotation = null, Vector3? scale = null) : base("Transform", "Transform")
+        {
+            Properties.Add(new DclComponentProperty<Vector3>("position", position ?? Vector3.zero));
+            Properties.Add(new DclComponentProperty<Quaternion>("rotation", rotation ?? Quaternion.identity));
+            Properties.Add(new DclComponentProperty<Vector3>("scale", scale ?? Vector3.one));
+        }
 
         public DclTransformComponent(DclComponent c) : base(c.NameInCode, c.NameInCode)
         {

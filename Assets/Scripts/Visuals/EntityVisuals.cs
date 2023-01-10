@@ -28,9 +28,17 @@ namespace Assets.Scripts.Visuals
             this.sceneManagerSystem = sceneManagerSystem;
         }
 
+        public void OnAssetDataUpdatedCallback()
+        {
+            UpdateVisuals();
+        }
+
         public void UpdateVisuals()
         {
-            var entity = sceneManagerSystem.GetCurrentScene()?.GetEntityById(id);
+            var currentScene = sceneManagerSystem.GetCurrentScene();
+
+            var entity = currentScene?.GetEntityById(id) ?? currentScene?.GetFloatingEntityById(id);
+
             if (entity == null)
                 return;
 

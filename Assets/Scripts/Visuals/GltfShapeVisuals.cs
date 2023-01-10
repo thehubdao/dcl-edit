@@ -1,6 +1,8 @@
-using Assets.Scripts.ProjectState;
+using Assets.Scripts.EditorState;
+using Assets.Scripts.Events;
 using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
+using Assets.Scripts.Utility;
 using System;
 using UnityEngine;
 using Zenject;
@@ -12,14 +14,19 @@ namespace Assets.Scripts.Visuals
         private GameObject _currentModelObject = null;
 
         // Dependencies
-        private ModelCacheSystem _modelCacheSystem;
-        private EditorState.ProjectState _projectState;
+        private AssetManagerSystem _assetManagerSystem;
+        private UnityState _unityState;
+        private SceneManagerSystem _sceneManagerSystem;
 
         [Inject]
-        private void Construct(ModelCacheSystem modelCacheSystem, EditorState.ProjectState projectState)
+        private void Construct(
+            AssetManagerSystem assetManagerSystem,
+            UnityState unityState,
+            SceneManagerSystem sceneManagerSystem)
         {
-            _modelCacheSystem = modelCacheSystem;
-            _projectState = projectState;
+            _assetManagerSystem = assetManagerSystem;
+            _unityState = unityState;
+            _sceneManagerSystem = sceneManagerSystem;
         }
 
         public override void UpdateVisuals(DclEntity entity)
@@ -29,35 +36,50 @@ namespace Assets.Scripts.Visuals
             if (!assetGuid.HasValue)
                 return;
 
-            if (_projectState.Assets.UsedAssets.TryGetValue(assetGuid.Value, out var asset))
+            var data = _assetManagerSystem.GetDataById((Guid)assetGuid);
+
+            GameObject newModel = null;
+            switch (data.state)
             {
-                var gltfAsset = asset as DclGltfAsset;
-
-                if (gltfAsset == null)
-                    return;
-
-                _modelCacheSystem.GetModel(gltfAsset.Path, "",
-                    o =>
+                case AssetData.State.IsAvailable:
+                    if (data is ModelAssetData)
                     {
-                        if (o == null)
+                        ModelAssetData modelData = (ModelAssetData) data;
+                        if (modelData.data == null)
                             return;
 
-                        Destroy(_currentModelObject);
+                        newModel = modelData.data;
+                    }
 
-                        o.transform.SetParent(transform);
-                        o.transform.localScale = Vector3.one;
-                        o.transform.localRotation = Quaternion.identity;
-                        o.transform.localPosition = Vector3.zero;
+                    break;
 
-                        _currentModelObject = o;
+                case AssetData.State.IsLoading:
+                    newModel = Instantiate(_unityState.LoadingModel);
+                    break;
 
-                        UpdateSelection(entity);
-                    });
-
+                case AssetData.State.IsError:
+                    newModel = Instantiate(_unityState.ErrorModel);
+                    break;
             }
 
-            UpdateSelection(entity);
+            if (newModel != null)
+            {
+                Destroy(_currentModelObject);
 
+                newModel.transform.SetParent(transform);
+                newModel.transform.localScale = Vector3.one;
+                newModel.transform.localRotation = Quaternion.identity;
+                newModel.transform.localPosition = Vector3.zero;
+
+                _currentModelObject = newModel;
+
+                UpdateSelection(entity);
+            }
+
+            if (_sceneManagerSystem.GetCurrentScene()?.IsFloatingEntity(entity.Id)! == true)
+            {
+                StaticUtilities.SetLayerRecursive(gameObject, LayerMask.NameToLayer("Ignore Raycast"));
+            }
         }
 
         public override void Deactivate()

@@ -9,6 +9,7 @@ namespace Assets.Scripts.SceneState
         public string name = "New Scene";
 
         private Dictionary<Guid, DclEntity> _allEntities = new Dictionary<Guid, DclEntity>();
+        private Dictionary<Guid, DclEntity> _allFloatingEntities = new Dictionary<Guid, DclEntity>();
 
         public IEnumerable<DclEntity> EntitiesInSceneRoot =>
             AllEntities
@@ -22,13 +23,32 @@ namespace Assets.Scripts.SceneState
 
             return _allEntities.TryGetValue(id, out var entity) ? entity : null;
         }
+        public DclEntity GetFloatingEntityById(Guid id)
+        {
+            if (id == Guid.Empty) return null;
+
+            return _allFloatingEntities.TryGetValue(id, out var entity) ? entity : null;
+        }
+
+        public bool? IsFloatingEntity(Guid id)
+        {
+            if (GetEntityById(id) != null) return false;
+            if (GetFloatingEntityById(id) != null) return true;
+            return null;
+        }
 
         public IEnumerable<KeyValuePair<Guid, DclEntity>> AllEntities => _allEntities;
+        public IEnumerable<KeyValuePair<Guid, DclEntity>> AllFloatingEntities => _allFloatingEntities;
 
         public void AddEntity(DclEntity entity)
         {
             entity.Scene = this;
             _allEntities.Add(entity.Id, entity);
+        }
+        public void AddFloatingEntity(DclEntity entity)
+        {
+            entity.Scene = this;
+            _allFloatingEntities.Add(entity.Id, entity);
         }
 
         public void RemoveEntity(Guid id)
@@ -39,6 +59,11 @@ namespace Assets.Scripts.SceneState
             }
             _allEntities.Remove(id);
         }
+        public void RemoveFloatingEntity(Guid id)
+        {
+            _allFloatingEntities.Remove(id);
+        }
+        public void ClearFloatingEntities() => _allFloatingEntities.Clear();
 
         // Other States
 

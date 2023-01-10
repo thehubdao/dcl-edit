@@ -52,6 +52,11 @@ public class CommandFactorySystem
     {
         return new DuplicateEntity(entityId);
     }
+
+    public AddModelAssetToScene CreateAddModelAssetToScene(Guid entityId, string entityCustomName, Guid assetId, Vector3 positionInScene)
+    {
+        return new AddModelAssetToScene(entityId, entityCustomName, assetId, positionInScene);
+    }
     
     public RemoveComponent CreateRemoveComponent(Guid entityId, DclComponent component)
     {

@@ -10,29 +10,33 @@ namespace Assets.Scripts.System
         private CameraSystem _cameraSystem;
 
         // dependencies
-        private WorkspaceSaveSystem _workspaceSaveSystem;
-        private IPathState _pathState;
-        private FrameTimeSystem _frameTimeSystem;
+        private AssetManagerSystem assetManagerSystem;
+        private WorkspaceSaveSystem workspaceSaveSystem;
+        private IPathState pathState;
+        private FrameTimeSystem frameTimeSystem;
         private SceneManagerSystem sceneManagerSystem;
         private SceneViewSystem sceneViewSystem;
 
         [Inject]
         private void Construct(
+            AssetManagerSystem assetManagerSystem,
             WorkspaceSaveSystem workspaceSaveSystem,
             IPathState pathState,
             FrameTimeSystem frameTimeSystem,
             SceneManagerSystem sceneManagerSystem,
             SceneViewSystem sceneViewSystem)
         {
-            _workspaceSaveSystem = workspaceSaveSystem;
-            _pathState = pathState;
-            _frameTimeSystem = frameTimeSystem;
+            this.assetManagerSystem = assetManagerSystem;
+            this.workspaceSaveSystem = workspaceSaveSystem;
+            this.frameTimeSystem = frameTimeSystem;
             this.sceneManagerSystem = sceneManagerSystem;
             this.sceneViewSystem = sceneViewSystem;
         }
 
         void Awake()
         {
+            assetManagerSystem.CacheAllAssetMetadata();
+
             sceneManagerSystem.DiscoverScenes();
 
             // TODO: load proper scene. Work around is to load the first scene
@@ -41,9 +45,9 @@ namespace Assets.Scripts.System
 
         void Start()
         {
-            _workspaceSaveSystem.Load();
+            workspaceSaveSystem.Load();
 
-            _frameTimeSystem.SetApplicationTargetFramerate();
+            frameTimeSystem.SetApplicationTargetFramerate();
         }
     }
 }
