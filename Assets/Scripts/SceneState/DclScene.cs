@@ -53,6 +53,10 @@ namespace Assets.Scripts.SceneState
 
         public void RemoveEntity(Guid id)
         {
+            foreach (var child in _allEntities[id].Children.ToList())
+            {
+                RemoveEntity(child.Id);
+            }
             _allEntities.Remove(id);
         }
         public void RemoveFloatingEntity(Guid id)

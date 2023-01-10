@@ -6,10 +6,13 @@ namespace Assets.Scripts.System
 {
     public class StartUpSystem : MonoBehaviour
     {
-        // Dependencies
+        [SerializeField]
+        private CameraSystem _cameraSystem;
+
+        // dependencies
         private AssetManagerSystem assetManagerSystem;
         private WorkspaceSaveSystem workspaceSaveSystem;
-        private UnityState unityState;
+        private IPathState pathState;
         private FrameTimeSystem frameTimeSystem;
         private SceneManagerSystem sceneManagerSystem;
         private SceneViewSystem sceneViewSystem;
@@ -18,7 +21,6 @@ namespace Assets.Scripts.System
         private void Construct(
             AssetManagerSystem assetManagerSystem,
             WorkspaceSaveSystem workspaceSaveSystem,
-            UnityState unityState,
             IPathState pathState,
             FrameTimeSystem frameTimeSystem,
             SceneManagerSystem sceneManagerSystem,
@@ -26,7 +28,6 @@ namespace Assets.Scripts.System
         {
             this.assetManagerSystem = assetManagerSystem;
             this.workspaceSaveSystem = workspaceSaveSystem;
-            this.unityState = unityState;
             this.frameTimeSystem = frameTimeSystem;
             this.sceneManagerSystem = sceneManagerSystem;
             this.sceneViewSystem = sceneViewSystem;
@@ -39,14 +40,12 @@ namespace Assets.Scripts.System
             sceneManagerSystem.DiscoverScenes();
 
             // TODO: load proper scene. Work around is to load the first scene
-            sceneManagerSystem.SetFirstSceneAsCurrent();
-
-            sceneViewSystem.SetUpCurrentScene();
+            sceneManagerSystem.SetFirstSceneAsCurrentScene();
         }
 
         void Start()
         {
-            workspaceSaveSystem.Load(unityState.dynamicPanelsCanvas);
+            workspaceSaveSystem.Load();
 
             frameTimeSystem.SetApplicationTargetFramerate();
         }

@@ -33,6 +33,7 @@ namespace Assets.Scripts.Visuals
             panel = new PanelAtom.Data();
             panel.layoutDirection = UiHandler.PanelHandler.LayoutDirection.Horizontal;
 
+            UpdateMenuBar(); // initial setup
             SetupEventListeners();
         }
 

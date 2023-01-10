@@ -154,5 +154,7 @@ public class DclEditorInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<SceneViewSystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<MenuBarState>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<MenuBarSystem>().AsSingle();
     }
 }
