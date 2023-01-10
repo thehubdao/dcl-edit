@@ -258,7 +258,7 @@ namespace Assets.Scripts.System
             TestString = new StringUserSetting(this, "Test text", "Hello world!");
             userSettings.Add(TestString);
 
-            applicationTargetFramerate = new IntClampedUserSetting(this, "applicationTargetFramerate", 120, 5, 1000);
+            applicationTargetFramerate = new IntClampedUserSetting(this, "Maximum frame rate", 120, 5, 1000);
             userSettings.Add(applicationTargetFramerate);
 
             ShownSettings.Add("User Settings", userSettings);
@@ -266,19 +266,10 @@ namespace Assets.Scripts.System
 
             var projectSettings = new List<ISetting>();
 
-            TestProjVec3 = new Vec3ProjectSetting(this, "Test Vec3 Project", Vector3.one, projectSettingsState);
-            projectSettings.Add(TestProjVec3);
-
-            TestProjString = new StringProjectSetting(this, "Test String Project", "some text", projectSettingsState);
-            projectSettings.Add(TestProjString);
-
             ShownSettings.Add("Project Settings", projectSettings);
 
 
             var sceneSettings = new List<ISetting>();
-
-            TestSceneVec3 = new Vec3SceneSetting(this, "Test Vec3 Scene", Vector3.one, sceneSettingState);
-            sceneSettings.Add(TestSceneVec3);
 
             ShownSettings.Add("Scene Settings", sceneSettings);
             

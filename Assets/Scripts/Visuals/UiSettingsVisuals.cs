@@ -20,32 +20,60 @@ namespace Assets.Scripts.Visuals
         private SettingsSystem settingsSystem;
         private UiBuilder.UiBuilder uiBuilder;
         private UnityState unityState;
+        private InputState inputState;
 
         [Inject]
-        private void Construct(EditorEvents editorEvents, SettingsSystem settingsSystem, UiBuilder.UiBuilder.Factory uiBuilderFactory, UnityState unityState)
+        private void Construct(
+            EditorEvents editorEvents,
+            SettingsSystem settingsSystem,
+            UiBuilder.UiBuilder.Factory uiBuilderFactory,
+            UnityState unityState,
+            InputState inputState)
         {
             this.editorEvents = editorEvents;
             this.settingsSystem = settingsSystem;
             this.uiBuilder = uiBuilderFactory.Create(content);
             this.unityState = unityState;
+            this.inputState = inputState;
 
             SetupEventListeners();
         }
 
         public void SetupEventListeners()
         {
-            editorEvents.onSettingsChangedEvent += UpdateVisuals;
+            editorEvents.onSettingsChangedEvent += SetDirty;
             unityState.StartCoroutine(DelayedUpdate()); // Unity state is guarantied to be available and active
         }
 
         IEnumerator DelayedUpdate() // There are some problems with Zenject, when using the UiBuilder in the first frame
         {
             yield return null;
-            UpdateVisuals();
+            SetDirty();
+        }
+
+        private bool _dirty;
+
+        void SetDirty()
+        {
+            _dirty = true;
+        }
+
+        void LateUpdate()
+        {
+            if (_dirty)
+            {
+                _dirty = false;
+                UpdateVisuals();
+            }
         }
 
         private void UpdateVisuals()
         {
+            if (inputState.InState == InputState.InStateType.UiInput)
+            {
+                return;
+            }
+
             var settingsPanel = new PanelAtom.Data();
 
             foreach (var settingsPair in settingsSystem.ShownSettings)
