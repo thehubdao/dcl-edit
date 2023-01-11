@@ -19,8 +19,8 @@ namespace Assets.Scripts.System
         // Dependencies
         private SceneManagerState sceneManagerState;
         private PathState pathState;
-        private ISceneLoadSystem sceneLoadSystem;
-        private ISceneSaveSystem sceneSaveSystem;
+        private SceneLoadSaveSystem sceneLoadSaveSystem;
+        private CheckVersionSystem checkVersionSystem;
         private WorkspaceSaveSystem workspaceSaveSystem;
         private TypeScriptGenerationSystem typeScriptGenerationSystem;
         private SceneViewSystem sceneViewSystem;
@@ -30,8 +30,8 @@ namespace Assets.Scripts.System
         public void Construct(
             SceneManagerState sceneManagerState,
             PathState pathState,
-            ISceneLoadSystem sceneLoadSystem,
-            ISceneSaveSystem sceneSaveSystem,
+            SceneLoadSaveSystem sceneLoadSaveSystem,
+            CheckVersionSystem checkVersionSystem,
             WorkspaceSaveSystem workspaceSaveSystem,
             TypeScriptGenerationSystem typeScriptGenerationSystem,
             SceneViewSystem sceneViewSystem,
@@ -39,8 +39,8 @@ namespace Assets.Scripts.System
         {
             this.sceneManagerState = sceneManagerState;
             this.pathState = pathState;
-            this.sceneLoadSystem = sceneLoadSystem;
-            this.sceneSaveSystem = sceneSaveSystem;
+            this.sceneLoadSaveSystem = sceneLoadSaveSystem;
+            this.checkVersionSystem = checkVersionSystem;
             this.workspaceSaveSystem = workspaceSaveSystem;
             this.typeScriptGenerationSystem = typeScriptGenerationSystem;
             this.sceneViewSystem = sceneViewSystem;
@@ -49,16 +49,45 @@ namespace Assets.Scripts.System
             CreateMenuBarItems();
         }
 
+        /// <summary>
+        /// Checks for a decentraland scene and if it exists,
+        /// adds the scene directory states of existing beta/alpha dcl-edit projects and
+        /// creates a new scene directory state, if no dcl-edit project exists.  
+        /// </summary>
         public void DiscoverScenes()
         {
-            // TODO: This should go through the asset manager
-
-            var sceneDirectoryPaths = Directory.GetDirectories(pathState.ProjectPath, "*.dclscene", SearchOption.AllDirectories);
-
-            foreach (var path in sceneDirectoryPaths)
+            if (!checkVersionSystem.CheckDclSceneExists())
             {
-                SceneDirectoryState sceneDirectoryState = LoadSceneDirectoryState(path);
+                //TODO Display a message, that there is no project and exit after user input
+                Debug.LogError("No Decentraland Folder found");
+                return;
             }
+
+            if (checkVersionSystem.TryGetBetaPaths(out var betaSceneDirectoryPaths))
+            {
+                foreach (var path in betaSceneDirectoryPaths)
+                {
+                    var sceneDirectoryState = LoadSceneDirectoryState(path);
+                    
+                    if (!sceneManagerState.TryGetDirectoryState(sceneDirectoryState.directoryPath, out sceneDirectoryState))
+                    {
+                        sceneManagerState.AddSceneDirectoryState(sceneDirectoryState);
+                    }
+                }
+            }
+            //Check for dcl-edit alpha projects or missing project
+            else
+            {
+                var doAlphaFilesExist = checkVersionSystem.CheckForAlpha();
+
+                var sceneDirectoryState = doAlphaFilesExist
+                    ? new SceneDirectoryState(null, Guid.NewGuid(), DclEditVersion.Alpha)
+                    : SceneDirectoryState.CreateNewSceneDirectoryState();
+                
+                //Don't have to check for duplicates since non existing / alpha scenes get converted.
+                sceneManagerState.AddSceneDirectoryState(sceneDirectoryState);
+            }
+            // TODO: This should go through the asset manager
         }
 
         /// <summary>
@@ -152,7 +181,7 @@ namespace Assets.Scripts.System
             }
             else
             {
-                sceneSaveSystem.Save(sceneDirectoryState);
+                sceneLoadSaveSystem.Save(sceneDirectoryState);
                 workspaceSaveSystem.Save(); // TODO: Save the workspace under proper conditions.
                 typeScriptGenerationSystem.GenerateTypeScript();
             }
@@ -243,17 +272,40 @@ namespace Assets.Scripts.System
 
             if (!sceneDirectoryState.IsSceneOpened())
             {
-                sceneLoadSystem.Load(sceneDirectoryState);
+                Load(id);
             }
 
             return sceneDirectoryState.currentScene!;
         }
 
-        private struct SceneFileContents
+        /// <summary>
+        /// Loads the scene contents into an existing alpha or beta dcl-edit scene.
+        /// </summary>
+        /// <param name="sceneIndex">The index of the scene</param>
+        /// <exception cref="ArgumentException">Thrown when the scene directory state is neither 'alpha' nor 'beta'</exception>
+        private void Load(Guid sceneIndex)
         {
-            public Guid id;
-            public string relativePath;
-            public JObject settings;
+            var sceneDirectoryState = sceneManagerState.GetDirectoryState(sceneIndex);
+
+            if (sceneDirectoryState == null)
+            {
+                Debug.LogError("Scene directory state doesn't exist");
+                return;
+            }
+
+            switch (sceneDirectoryState.dclEditVersion)
+            {
+                case DclEditVersion.Alpha:
+                    sceneLoadSaveSystem.LoadV1(sceneDirectoryState);
+                    break;
+                case DclEditVersion.Beta:
+                    //TODO Implement a version check (i.e. 2.0)
+                    //TODO Display a message, that the user should update dcl-edit and exit after user input 
+                    sceneLoadSaveSystem.Load(sceneDirectoryState);
+                    break;
+                default:
+                    throw new ArgumentException("Scene directory state is neither alpha nor beta");
+            }
         }
 
         /// <summary>
@@ -285,7 +337,7 @@ namespace Assets.Scripts.System
                 sceneFileContents.id = Guid.NewGuid();
             }
 
-            SceneDirectoryState sceneDirectoryState = new SceneDirectoryState(sceneFileContents.relativePath, sceneFileContents.id);
+            SceneDirectoryState sceneDirectoryState = new SceneDirectoryState(sceneFileContents.relativePath, sceneFileContents.id, DclEditVersion.Beta);
             sceneManagerState.AddSceneDirectoryState(sceneDirectoryState);
             return sceneDirectoryState;
         }
@@ -301,6 +353,13 @@ namespace Assets.Scripts.System
             menuBarSystem.AddMenuItem("File/Open Scene", SetDialogAsCurrentScene);
             menuBarSystem.AddMenuItem("File/Save Scene", SaveCurrentScene);
             menuBarSystem.AddMenuItem("File/Save Scene As...", SaveCurrentSceneAs);
+        }
+        
+        private struct SceneFileContents
+        {
+            public Guid id;
+            public string relativePath;
+            public JObject settings;
         }
     }
 }

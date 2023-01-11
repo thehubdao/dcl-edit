@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using Assets.Scripts.EditorState;
 using UnityEngine;
+using Zenject;
 using Debug = UnityEngine.Debug;
 
 namespace Assets.Scripts.System
@@ -36,7 +37,15 @@ namespace Assets.Scripts.System
     {
         // Dependencies
         private IPathState _pathState;
+        private LoadFromVersion1System loadFromVersion1System;
 
+        [Inject]
+        public void Construct(
+            LoadFromVersion1System loadFromVersion1System)
+        {
+            this.loadFromVersion1System = loadFromVersion1System;
+        }
+        
         public SceneLoadSaveSystem(IPathState pathState)
         {
             _pathState = pathState;
@@ -124,7 +133,7 @@ namespace Assets.Scripts.System
 
             sceneDirectoryState.currentScene = scene;
         }
-
+        
         /**
          * <summary>
          * Creates a save file for a given entity

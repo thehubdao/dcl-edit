@@ -59,19 +59,34 @@ namespace Assets.Scripts.EditorState
         {
             id = Guid.NewGuid();
         }
+        
+        /**
+         * <summary>
+         * The version of the dcl-edit project
+         * </summary>
+         */
+        public readonly DclEditVersion dclEditVersion = DclEditVersion.None;
 
-        public SceneDirectoryState(string directoryPath, Guid id)
+        public SceneDirectoryState(string directoryPath, Guid id, DclEditVersion dclEditVersion = DclEditVersion.Beta)
         {
             this.directoryPath = directoryPath;
             this.id = id;
+            this.dclEditVersion = dclEditVersion;
         }
 
         /// <summary>
-        /// Creates a new SceneDirectoryState and ads a Scene to it.
+        /// Creates a new SceneDirectoryState and adds a Scene to it.
         /// </summary>
         public static SceneDirectoryState CreateNewSceneDirectoryState()
         {
             return new SceneDirectoryState { currentScene = new DclScene() };
         }
+    }
+    
+    public enum DclEditVersion
+    {
+        None,
+        Alpha,
+        Beta
     }
 }

@@ -10,10 +10,6 @@ using Zenject;
 
 public class DclEditorInstaller : MonoInstaller
 {
-    [Header("Scene Loading and Saving")]
-    [SerializeField]
-    private bool _loadSceneFromVersion1 = false;
-
     [Header("Prefabs")]
     [SerializeField]
     private GameObject _entityVisualPrefab;
@@ -40,15 +36,9 @@ public class DclEditorInstaller : MonoInstaller
 
     public override void InstallBindings()
     {
-        if (_loadSceneFromVersion1)
-        {
-            Container.Bind<ISceneLoadSystem>().To<LoadFromVersion1System>().AsSingle();
-            Container.Bind<ISceneSaveSystem>().To<SceneLoadSaveSystem>().AsSingle();
-        }
-        else
-        {
+        Container.BindInterfacesAndSelfTo<LoadFromVersion1System>().AsSingle();
+
         Container.BindInterfacesAndSelfTo<SceneLoadSaveSystem>().AsSingle();
-        }
 
         Container.BindInterfacesAndSelfTo<CommandSystem>().AsSingle();
 
