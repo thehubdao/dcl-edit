@@ -47,7 +47,7 @@ public class DclEditorInstaller : MonoInstaller
         }
         else
         {
-            Container.BindInterfacesAndSelfTo<SceneLoadSaveSystem>().AsSingle();
+        Container.BindInterfacesAndSelfTo<SceneLoadSaveSystem>().AsSingle();
         }
 
         Container.BindInterfacesAndSelfTo<CommandSystem>().AsSingle();
@@ -156,5 +156,7 @@ public class DclEditorInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<MenuBarState>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<MenuBarSystem>().AsSingle();
+        
+        Container.BindInterfacesAndSelfTo<CheckVersionSystem>().AsSingle();
     }
 }
