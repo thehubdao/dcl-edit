@@ -27,7 +27,6 @@ namespace Assets.Scripts.Interaction
         private EntitySelectSystem entitySelectSystem;
         private ContextMenuSystem contextMenuSystem;
         private SceneManagerSystem sceneManagerSystem;
-        private MouseHoverSceneButton mouseHoverSceneButton;
 
         [Inject]
         private void Construct(
@@ -42,8 +41,7 @@ namespace Assets.Scripts.Interaction
             EditorEvents editorEvents,
             EntitySelectSystem entitySelectSystem,
             ContextMenuSystem contextMenuSystem,
-            SceneManagerSystem sceneManagerSystem,
-            MouseHoverSceneButton mouseHoverSceneButton
+            SceneManagerSystem sceneManagerSystem
             )
         {
             this.sceneSaveSystem = sceneSaveSystem;
@@ -58,7 +56,6 @@ namespace Assets.Scripts.Interaction
             this.entitySelectSystem = entitySelectSystem;
             this.contextMenuSystem = contextMenuSystem;
             this.sceneManagerSystem = sceneManagerSystem;
-            this.mouseHoverSceneButton = mouseHoverSceneButton;
         }
 
 
@@ -134,7 +131,7 @@ namespace Assets.Scripts.Interaction
             Ray mouseRay;
             bool isMouseOverGameWindow;
             bool isMouseOverContextMenu;
-            bool isMouseOverGizmoModeMenu;
+            //bool isMouseOverGizmoModeMenu;
             {
                 var mousePosViewport = inputHelper.GetMousePositionInScenePanel();
                 // Get the ray from the Camera, that corresponds to the mouse position in the panel
@@ -145,7 +142,7 @@ namespace Assets.Scripts.Interaction
                                         mousePosViewport.y >= 0 &&
                                         mousePosViewport.y < 1;
                 isMouseOverContextMenu = contextMenuSystem.IsMouseOverMenu();
-                isMouseOverGizmoModeMenu = mouseHoverSceneButton.IsMouseOverGizmoModeMenu;
+                //isMouseOverGizmoModeMenu = mouseHoverSceneButton.IsMouseOverGizmoModeMenu;
             }
 
 
@@ -153,7 +150,7 @@ namespace Assets.Scripts.Interaction
 
 
             // Figure out, if the mouse is over the 3D viewport (not hovering over any UI)
-            var isMouseIn3DView = /*!EventSystem.current.IsPointerOverGameObject() &&*/ isMouseOverGameWindow && !isMouseOverContextMenu;&& !isMouseOverGizmoModeMenu;
+            var isMouseIn3DView = /*!EventSystem.current.IsPointerOverGameObject() &&*/ isMouseOverGameWindow && !isMouseOverContextMenu; //&& !isMouseOverGizmoModeMenu;
 
             // The position the mouse currently points to in the 3D viewport
             Vector3? mousePositionIn3DView = null;

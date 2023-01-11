@@ -483,6 +483,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _text: 'Tool: Scale (T)'
+--- !u!114 &478222242
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 478222233}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19ebb3b7f453e984d9ed994bf2a17c13, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &520491715 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6554674216587907473, guid: 20ed7006bd4d7d84dab9ab96b9f5129a, type: 3}
@@ -833,6 +845,18 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 747852077168732135, guid: d530f0d1ef157894cadc657abe174f42, type: 3}
   m_PrefabInstance: {fileID: 33357736}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1016746920
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1016746911}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19ebb3b7f453e984d9ed994bf2a17c13, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1028728754
 GameObject:
   m_ObjectHideFlags: 0
@@ -1192,6 +1216,18 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 747852077168732135, guid: d530f0d1ef157894cadc657abe174f42, type: 3}
   m_PrefabInstance: {fileID: 1496368178}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1726226000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1726225991}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19ebb3b7f453e984d9ed994bf2a17c13, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1939838839
 GameObject:
   m_ObjectHideFlags: 0
@@ -1297,6 +1333,10 @@ MonoBehaviour:
   _translateButton: {fileID: 1726225991}
   _rotateButton: {fileID: 1016746911}
   _scaleButton: {fileID: 478222233}
+  _buttonsGameObjects:
+  - {fileID: 1726225991}
+  - {fileID: 1016746911}
+  - {fileID: 478222233}
 --- !u!1001 &2209880424613424354
 PrefabInstance:
   m_ObjectHideFlags: 0
