@@ -13,6 +13,13 @@ namespace Assets.Scripts.Command.Utility
 
             return entity;
         }
+        
+        public static DclEntity AddEntity(DclScene scene, DclEntity entity)
+        {
+            scene.AddEntity(entity);
+
+            return entity;
+        }
 
         public static void DeleteEntity(DclScene scene, Guid id)
         {

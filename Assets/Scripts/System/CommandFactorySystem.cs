@@ -62,4 +62,9 @@ public class CommandFactorySystem
     {
         return new RemoveComponent(entityId, component);
     }
+
+    public RemoveEntity CreateRemoveEntity(DclEntity entity)
+    {
+        return new RemoveEntity(entity);
+    }
 }
