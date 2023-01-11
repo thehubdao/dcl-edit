@@ -1,3 +1,4 @@
+using Assets.Scripts.Visuals.UiBuilder;
 using TMPro;
 using UnityEngine;
 
@@ -11,9 +12,14 @@ namespace Assets.Scripts.Visuals.PropertyHandler
         [SerializeField]
         public TextInputHandler stringInput;
 
-        public void SetActions(UiBuilder.UiPropertyActions<string> actions)
+        public void SetActions(StringPropertyAtom.UiPropertyActions<string> actions)
         {
-            stringInput.SetActions(actions.OnChange,actions.OnSubmit,actions.OnAbort);
+            stringInput.SetActions(actions.OnChange, actions.OnSubmit, actions.OnAbort);
+        }
+
+        public void ResetActions()
+        {
+            stringInput.ResetActions();
         }
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using Assets.Scripts.System;
 using UnityEngine;
 using Zenject;
 #if UNITY_EDITOR
@@ -9,27 +10,35 @@ namespace Assets.Scripts.Visuals
 {
     public class EntityVisuals : MonoBehaviour
     {
-        public Guid Id;
+        public Guid id;
 
         // Dependencies
-        private GltfShapeVisuals.Factory _gltfShapeVisualsFactory;
-        private PrimitiveShapeVisuals.Factory _primitiveShapeVisualsFactory;
-        private EditorState.SceneDirectoryState _sceneDirectoryState;
+        private GltfShapeVisuals.Factory gltfShapeVisualsFactory;
+        private PrimitiveShapeVisuals.Factory primitiveShapeVisualsFactory;
+        private SceneManagerSystem sceneManagerSystem;
 
         [Inject]
         private void Construct(
             GltfShapeVisuals.Factory gltfShapeVisualsFactory,
             PrimitiveShapeVisuals.Factory primitiveShapeVisualsFactory,
-            EditorState.SceneDirectoryState sceneDirectoryState)
+            SceneManagerSystem sceneManagerSystem)
         {
-            _gltfShapeVisualsFactory = gltfShapeVisualsFactory;
-            _primitiveShapeVisualsFactory = primitiveShapeVisualsFactory;
-            _sceneDirectoryState = sceneDirectoryState;
+            this.gltfShapeVisualsFactory = gltfShapeVisualsFactory;
+            this.primitiveShapeVisualsFactory = primitiveShapeVisualsFactory;
+            this.sceneManagerSystem = sceneManagerSystem;
+        }
+
+        public void OnAssetDataUpdatedCallback()
+        {
+            UpdateVisuals();
         }
 
         public void UpdateVisuals()
         {
-            var entity = _sceneDirectoryState.CurrentScene?.GetEntityById(Id);
+            var currentScene = sceneManagerSystem.GetCurrentScene();
+
+            var entity = currentScene?.GetEntityById(id) ?? currentScene?.GetFloatingEntityById(id);
+
             if (entity == null)
                 return;
 
@@ -49,7 +58,7 @@ namespace Assets.Scripts.Visuals
             {
                 if (gltfShapeVisualization == null)
                 {
-                    gltfShapeVisualization = _gltfShapeVisualsFactory.Create();
+                    gltfShapeVisualization = gltfShapeVisualsFactory.Create();
                 }
 
                 gltfShapeVisualization.UpdateVisuals(entity);
@@ -66,7 +75,7 @@ namespace Assets.Scripts.Visuals
             if (primitiveShapeComponent != null)
             {
                 if (primitiveShapeVisualization == null)
-                    primitiveShapeVisualization = _primitiveShapeVisualsFactory.Create();
+                    primitiveShapeVisualization = primitiveShapeVisualsFactory.Create();
 
                 primitiveShapeVisualization.UpdateVisuals(entity);
             }

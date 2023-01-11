@@ -1,66 +1,105 @@
-using System.Collections.Generic;
-using System.Linq;
 using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
 using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
+using Assets.Scripts.Visuals.UiBuilder;
 using Assets.Scripts.Visuals.UiHandler;
+using JetBrains.Annotations;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Zenject;
+using static Assets.Scripts.Visuals.UiBuilder.UiBuilder;
 
 namespace Assets.Scripts.Visuals
 {
-    public class UiHierarchyVisuals : MonoBehaviour, ISetupSceneEventListeners
+    public class UiHierarchyVisuals : MonoBehaviour
     {
 #pragma warning disable CS0649 // Warning: Uninitialized filed. Serialized fields will be initialized by Unity
 
         [SerializeField]
-        private GameObject _content;
+        private GameObject content;
 
 #pragma warning restore CS0649
 
-        // Dependencies
-        private EditorEvents _events;
-        private UiBuilder.Factory _uiBuilderFactory;
-        private SceneDirectoryState _sceneDirectoryState;
-        private CommandSystem _commandSystem;
-        private HierarchyChangeSystem _hierarchyChangeSystem;
+        #region Mark for update
 
-        [Inject]
-        private void Construct(EditorEvents events, UiBuilder.Factory uiBuilderFactory, SceneDirectoryState scene, CommandSystem commandSystem, HierarchyChangeSystem hierarchyChangeSystem)
+        private bool shouldUpdate = false;
+
+        void LateUpdate()
         {
-            _events = events;
-            _uiBuilderFactory = uiBuilderFactory;
-            _sceneDirectoryState = scene;
-            _commandSystem = commandSystem;
-            _hierarchyChangeSystem = hierarchyChangeSystem;
+            if (shouldUpdate)
+            {
+                UpdateVisuals();
+                shouldUpdate = false;
+            }
         }
 
-        public void SetupSceneEventListeners()
+        private void MarkForUpdate()
         {
-            _events.onHierarchyChangedEvent += UpdateVisuals;
-            _events.onSelectionChangedEvent += UpdateVisuals;
-            UpdateVisuals();
+            shouldUpdate = true;
+        }
+
+        #endregion
+
+        // Dependencies
+        private EditorEvents events;
+        private UiBuilder.UiBuilder uiBuilder;
+        private HierarchyChangeSystem hierarchyChangeSystem;
+        private ContextMenuSystem contextMenuSystem;
+        private SceneManagerSystem sceneManagerSystem;
+
+        [Inject]
+        private void Construct(
+            EditorEvents events,
+            Factory uiBuilderFactory,
+            HierarchyChangeSystem hierarchyChangeSystem,
+            ContextMenuSystem contextMenuSystem,
+            SceneManagerSystem sceneManagerSystem)
+        {
+            this.events = events;
+            this.uiBuilder = uiBuilderFactory.Create(content);
+            this.hierarchyChangeSystem = hierarchyChangeSystem;
+            this.contextMenuSystem = contextMenuSystem;
+            this.sceneManagerSystem = sceneManagerSystem;
+
+            SetupEventListeners();
+        }
+
+        public void SetupEventListeners()
+        {
+            events.onHierarchyChangedEvent += MarkForUpdate;
+            events.onSelectionChangedEvent += MarkForUpdate;
+            MarkForUpdate();
         }
 
         private void UpdateVisuals()
         {
-            var uiBuilder = _uiBuilderFactory.Create();
+            var mainPanelData = NewPanelData();
 
-            MakeHierarchyItemsRecursive(uiBuilder, 0, _sceneDirectoryState.CurrentScene!.EntitiesInSceneRoot);
+            var scene = sceneManagerSystem.GetCurrentScene();
 
-            uiBuilder.Spacer(300);
+            if (scene == null)
+            {
+                mainPanelData.AddTitle("No scene loaded");
+            }
+            else
+            {
+                MakeHierarchyItemsRecursive(scene, 0, scene.EntitiesInSceneRoot, mainPanelData);
 
-            uiBuilder.ClearAndMake(_content);
+                mainPanelData.AddSpacer(300);
+            }
+
+            uiBuilder.Update(mainPanelData);
         }
 
-        private void MakeHierarchyItemsRecursive(UiBuilder uiBuilder, int level, IEnumerable<DclEntity> entities)
+        private void MakeHierarchyItemsRecursive([NotNull] DclScene scene, int level, IEnumerable<DclEntity> entities, PanelAtom.Data mainPanelData)
         {
             foreach (var entity in entities)
             {
-                var isPrimarySelection = _sceneDirectoryState.CurrentScene!.SelectionState.PrimarySelectedEntity == entity;
+                var isPrimarySelection = scene.SelectionState.PrimarySelectedEntity == entity;
 
-                var isSecondarySelection = _sceneDirectoryState.CurrentScene!.SelectionState.SecondarySelectedEntities.Contains(entity);
+                var isSecondarySelection = scene.SelectionState.SecondarySelectedEntities.Contains(entity);
 
                 var style =
                     isPrimarySelection ?
@@ -69,17 +108,36 @@ namespace Assets.Scripts.Visuals
                             TextHandler.TextStyle.SecondarySelection :
                             TextHandler.TextStyle.Normal;
 
-                var isExpanded = _hierarchyChangeSystem.IsExpanded(entity);
+                var isExpanded = hierarchyChangeSystem.IsExpanded(entity);
 
-                uiBuilder.HierarchyItem(entity.ShownName, level, entity.Children.Any(), isExpanded, style, new HierarchyItemHandler.UiHierarchyItemActions
-                {
-                    OnArrowClick = () => { _hierarchyChangeSystem.ClickedOnEntityExpandArrow(entity); },
-                    OnNameClick = () => { _hierarchyChangeSystem.ClickedOnEntityInHierarchy(entity); }
-                });
+                mainPanelData.AddHierarchyItem(entity.ShownName, level, entity.Children.Any(), isExpanded, style, new HierarchyItemHandler.UiHierarchyItemActions
+                    {
+                        onArrowClick = () => { hierarchyChangeSystem.ClickedOnEntityExpandArrow(entity); },
+                        onNameClick = () => { hierarchyChangeSystem.ClickedOnEntityInHierarchy(entity); }
+                    },
+                    clickPosition =>
+                    {
+                        contextMenuSystem.OpenMenu(clickPosition, new List<ContextMenuItem>
+                        {
+                            new ContextSubmenuItem("Add entity...", new List<ContextMenuItem>
+                            {
+                                new ContextMenuTextItem("Empty Entity", () => Debug.Log("Add empty Entity")),
+                                new ContextMenuSpacerItem(),
+                                new ContextMenuTextItem("Gltf Entity", () => Debug.Log("Add Gltf Entity")),
+                                new ContextMenuSpacerItem(),
+                                new ContextMenuTextItem("Cube", () => Debug.Log("Add empty ")),
+                                new ContextMenuTextItem("Sphere", () => Debug.Log("Add empty ")),
+                                new ContextMenuTextItem("Cylinder", () => Debug.Log("Add empty ")),
+                                new ContextMenuTextItem("Cone", () => Debug.Log("Add empty ")),
+                            }),
+                            new ContextMenuTextItem("Duplicate", () => Debug.Log("Duplicate entity")),
+                            new ContextMenuTextItem("Delete", () => Debug.Log("Delete entity"))
+                        });
+                    });
 
                 if (isExpanded)
                 {
-                    MakeHierarchyItemsRecursive(uiBuilder, level + 1, entity.Children);
+                    MakeHierarchyItemsRecursive(scene, level + 1, entity.Children, mainPanelData);
                 }
             }
         }

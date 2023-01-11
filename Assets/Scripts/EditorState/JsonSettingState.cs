@@ -12,13 +12,13 @@ namespace Assets.Scripts.EditorState
     {
         // Dependencies
         protected PathState _pathState;
-        protected SceneDirectoryState _sceneDirectoryState;
+        protected SceneManagerState sceneManagerState;
 
         [Inject]
-        private void Constructor(PathState pathState, SceneDirectoryState sceneDirectoryState)
+        private void Constructor(PathState pathState, SceneManagerState sceneManagerState)
         {
             _pathState = pathState;
-            _sceneDirectoryState = sceneDirectoryState;
+            this.sceneManagerState = sceneManagerState;
         }
 
 
@@ -89,12 +89,13 @@ namespace Assets.Scripts.EditorState
     {
         protected override void SaveSettings()
         {
-            if (!_sceneDirectoryState.IsSceneOpened())
+            if (!sceneManagerState.GetCurrentDirectoryState()?.IsSceneOpened() ?? true)
             {
+                // when there is no scene, just return
                 return;
             }
 
-            var sceneJsonPath = _sceneDirectoryState.DirectoryPath + "/scene.json";
+            var sceneJsonPath = sceneManagerState.GetCurrentDirectoryState()!.directoryPath + "/scene.json";
 
             JObject sceneJson;
             try
@@ -121,11 +122,18 @@ namespace Assets.Scripts.EditorState
 
         protected override void LoadSettings()
         {
-            var sceneJsonPath = _sceneDirectoryState.DirectoryPath + "/scene.json";
-
             JObject sceneJson;
             try
             {
+                var currentDirectoryState = sceneManagerState.GetCurrentDirectoryState();
+
+                if (currentDirectoryState == null)
+                {
+                    throw new Exception();
+                }
+
+                var sceneJsonPath = currentDirectoryState.directoryPath + "/scene.json";
+
                 sceneJson = File.Exists(sceneJsonPath) ?
                     JObject.Parse(File.ReadAllText(sceneJsonPath)) :
                     new JObject();

@@ -6,7 +6,9 @@
         "UnityEditor.TestRunner",
         "SceneState",
         "Systems",
-        "EditorState"
+        "EditorState",
+        "Interaction",
+        "Events"
     ],
     "includePlatforms": [
         "Editor"

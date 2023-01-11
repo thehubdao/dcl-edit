@@ -1,31 +1,45 @@
 using UnityEngine;
 using DynamicPanels;
 using System;
-using System.IO;
+using Zenject;
+using Assets.Scripts.EditorState;
 
 namespace Assets.Scripts.System
 {
     public class WorkspaceSaveSystem
     {
-        public string saveFilePath => Application.dataPath + "/panel_layout.txt";
+        //Dependency
+        private SettingsSystem settingSystem;
+        private UnityState unityState;
 
-        public void Save(DynamicPanelsCanvas canvas)
+        [Inject]
+        public void Construct(
+            SettingsSystem settingSystem,
+            UnityState unityState)
         {
-            byte[] data = PanelSerialization.SerializeCanvasToArray(canvas);
-            string dataString = Convert.ToBase64String(data);
-            File.WriteAllText(saveFilePath, dataString);
+            this.settingSystem = settingSystem;
+            this.unityState = unityState;
         }
 
-        public void Load(DynamicPanelsCanvas canvas)
+        public void Save()
         {
-            if(!File.Exists(saveFilePath))
+            DynamicPanelsCanvas canvas = unityState.dynamicPanelsCanvas;
+            byte[] data = PanelSerialization.SerializeCanvasToArray(canvas);
+            string dataString = Convert.ToBase64String(data);
+            settingSystem.panelSize.Set(dataString);
+        }
+
+        public void Load()
+        {
+            DynamicPanelsCanvas canvas = unityState.dynamicPanelsCanvas;
+
+            if (settingSystem.panelSize.Get() == "")
             {
-                Debug.Log("Couldn't find workspace layout save file");
+                Debug.Log("Layout save is empty");
                 return;
             }
 
-            string dataString = File.ReadAllText(saveFilePath);
-            byte[] data = Convert.FromBase64String(dataString);
+            byte[] data = Convert.FromBase64String(settingSystem.panelSize.Get());
             PanelSerialization.DeserializeCanvasFromArray(canvas, data);
         }
     }

@@ -46,6 +46,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4572500443968408437}
   - component: {fileID: 7021667795846845239}
+  - component: {fileID: -3399197616908110466}
   m_Layer: 5
   m_Name: HierarchyItem
   m_TagString: Untagged
@@ -85,10 +86,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e72c9c2342d1d064ca6cb53431aa39fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Text: {fileID: 1838785119936099034}
-  Arrow: {fileID: 4611500091154730652}
-  ArrowContainer: {fileID: 3812687420822348181}
-  Indent: {fileID: 2265490378801644114}
+  text: {fileID: 1838785119936099034}
+  arrow: {fileID: 4611500091154730652}
+  arrowContainer: {fileID: 3812687420822348181}
+  indent: {fileID: 2265490378801644114}
+  rightClickHandler: {fileID: 3541963152108461758}
+--- !u!114 &-3399197616908110466
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2570515792709860737}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: -1
+  m_MinHeight: 30
+  m_PreferredWidth: -1
+  m_PreferredHeight: -1
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
 --- !u!1 &3805850520352286205
 GameObject:
   m_ObjectHideFlags: 0
@@ -445,6 +467,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 169b2e350ae095b41939620222df4067, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &3541963152108461758
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7422797023849748746}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f0ae3498c713ae4cbdcca21dc117379, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &5347190927912761868

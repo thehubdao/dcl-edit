@@ -9,39 +9,45 @@ namespace Assets.Scripts.System
         [SerializeField]
         private CameraSystem _cameraSystem;
 
-        [SerializeField]
-        private SetupSceneEventListenersSystem _setupSceneEventListenersSystem;
-
         // dependencies
-        private SetupSceneSystem _setupSceneSystem;
-        private WorkspaceSaveSystem _workspaceSaveSystem;
-        private UnityState _unityState;
-        private IPathState _pathState;
+        private AssetManagerSystem assetManagerSystem;
+        private WorkspaceSaveSystem workspaceSaveSystem;
+        private IPathState pathState;
+        private FrameTimeSystem frameTimeSystem;
+        private SceneManagerSystem sceneManagerSystem;
+        private SceneViewSystem sceneViewSystem;
 
         [Inject]
         private void Construct(
-            SetupSceneSystem setupSceneSystem,
+            AssetManagerSystem assetManagerSystem,
             WorkspaceSaveSystem workspaceSaveSystem,
-            UnityState unityState,
-            IPathState pathState)
+            IPathState pathState,
+            FrameTimeSystem frameTimeSystem,
+            SceneManagerSystem sceneManagerSystem,
+            SceneViewSystem sceneViewSystem)
         {
-            _setupSceneSystem = setupSceneSystem;
-            _workspaceSaveSystem = workspaceSaveSystem;
-            _unityState = unityState;
-            _pathState = pathState;
+            this.assetManagerSystem = assetManagerSystem;
+            this.workspaceSaveSystem = workspaceSaveSystem;
+            this.frameTimeSystem = frameTimeSystem;
+            this.sceneManagerSystem = sceneManagerSystem;
+            this.sceneViewSystem = sceneViewSystem;
         }
 
         void Awake()
         {
-            // Load default scene
-            var v2Path = _pathState.ProjectPath + "/dcl-edit/saves/v2/New Scene.dclscene";
+            assetManagerSystem.CacheAllAssetMetadata();
 
-            _setupSceneSystem.SetupScene(v2Path);
+            sceneManagerSystem.DiscoverScenes();
+
+            // TODO: load proper scene. Work around is to load the first scene
+            sceneManagerSystem.SetFirstSceneAsCurrentScene();
         }
 
         void Start()
         {
-            _workspaceSaveSystem.Load(_unityState.dynamicPanelsCanvas);
+            workspaceSaveSystem.Load();
+
+            frameTimeSystem.SetApplicationTargetFramerate();
         }
     }
 }

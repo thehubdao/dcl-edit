@@ -4,6 +4,7 @@ using Assets.Scripts.Interaction;
 using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
 using Assets.Scripts.Visuals;
+using Assets.Scripts.Visuals.UiBuilder;
 using UnityEngine;
 using Zenject;
 
@@ -25,6 +26,16 @@ public class DclEditorInstaller : MonoInstaller
 
     [SerializeField]
     private GameObject _scaleGizmoPrefab;
+
+    [SerializeField]
+    private GameObject _assetThumbnailGeneratorPrefab;
+
+    [SerializeField]
+    private GameObject mainSceneVisualsPrefab;
+
+    [Header("Unity State")]
+    [SerializeField]
+    private UnityState unityState;
 
 
     public override void InstallBindings()
@@ -49,13 +60,11 @@ public class DclEditorInstaller : MonoInstaller
 
         Container.BindInterfacesAndSelfTo<Interface3DState>().AsSingle();
 
-        Container.BindInterfacesAndSelfTo<SetupSceneSystem>().AsSingle();
+        Container.BindInterfacesAndSelfTo<FrameTimeSystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<CameraSystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<ExposeEntitySystem>().AsSingle();
-
-        Container.BindInterfacesAndSelfTo<SetupSceneEventListenersSystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<WorkspaceSaveSystem>().AsSingle();
 
@@ -65,15 +74,15 @@ public class DclEditorInstaller : MonoInstaller
 
         Container.BindInterfacesAndSelfTo<CameraState>().AsSingle();
 
-        Container.BindInterfacesAndSelfTo<SceneDirectoryState>().AsSingle();
+        //Container.BindInterfacesAndSelfTo<SceneDirectoryState>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<GizmoState>().AsSingle();
 
-        Container.BindInterfacesAndSelfTo<UnityState>().FromComponentOn(gameObject).AsSingle();
+        Container.BindInterfacesAndSelfTo<UnityState>().FromComponentOn(unityState.gameObject).AsSingle();
 
         Container.BindInterfacesAndSelfTo<InputHelper>().AsSingle();
 
-        Container.BindFactory<UiBuilder, UiBuilder.Factory>().AsSingle();
+        Container.BindFactory<GameObject, UiBuilder, UiBuilder.Factory>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<ProjectState>().AsSingle();
 
@@ -82,6 +91,8 @@ public class DclEditorInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<TypeScriptGenerationSystem>().AsSingle();
 
         Container.BindFactory<EntitySelectInteraction, EntitySelectInteraction.Factory>().FromComponentInNewPrefab(_entityVisualPrefab);
+
+        Container.BindFactory<MainSceneVisuals, MainSceneVisuals.Factory>().FromComponentInNewPrefab(mainSceneVisualsPrefab);
 
         Container.BindFactory<GizmoSizeFixerSystem, GizmoVisuals.TranslateFactory>().FromComponentInNewPrefab(_translateGizmoPrefab).AsSingle();
 
@@ -102,5 +113,48 @@ public class DclEditorInstaller : MonoInstaller
         Container.Bind<ProjectSettingState>().To<ProjectSettingState>().AsSingle();
 
         Container.Bind<SceneSettingState>().To<SceneSettingState>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<ContextMenuSystem>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<ContextMenuState>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<AssetManagerSystem>().AsSingle();
+
+        Container.Bind<IAssetLoaderSystem>().To<FileAssetLoaderSystem>().AsSingle();
+        Container.Bind<IAssetLoaderSystem>().To<BuilderAssetLoaderSystem>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<FileAssetLoaderState>().AsTransient();
+
+        Container.BindInterfacesAndSelfTo<AssetBrowserSystem>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<AssetBrowserState>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<LoadGltfFromFileSystem>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<BuilderAssetLoaderState>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<WebRequestSystem>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<NumberInputSystem>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<AssetThumbnailManagerSystem>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<AssetThumbnailGeneratorSystem>().FromComponentInNewPrefab(_assetThumbnailGeneratorPrefab).AsSingle();
+
+        Container.BindInterfacesAndSelfTo<AssetThumbnailGeneratorState>().AsSingle();
+
+        Container.BindFactory<AssetBrowserButtonHandler, AssetBrowserButtonHandler.Factory>().FromComponentInNewPrefab(unityState.AssetBrowserButtonAtom);
+
+        Container.BindFactory<AssetBrowserFolderHandler, AssetBrowserFolderHandler.Factory>().FromComponentInNewPrefab(unityState.AssetBrowserFolderAtom);
+
+        Container.BindInterfacesAndSelfTo<SceneManagerSystem>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<SceneManagerState>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<SceneViewSystem>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<MenuBarState>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<MenuBarSystem>().AsSingle();
     }
 }

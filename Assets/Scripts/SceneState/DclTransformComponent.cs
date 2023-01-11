@@ -1,12 +1,23 @@
 using UnityEngine;
-using UnityEngine.Android;
 
 namespace Assets.Scripts.SceneState
 {
     public class DclTransformComponent : DclComponent
     {
-        public DclTransformComponent() : base("Transform", "Transform")
-        { }
+        public static readonly ComponentDefinition transformComponentDefinition =
+            new ComponentDefinition(
+                "Transform",
+                "Transform",
+                new DclComponentProperty.PropertyDefinition("position", DclComponentProperty.PropertyType.Vector3, Vector3.zero),
+                new DclComponentProperty.PropertyDefinition("rotation", DclComponentProperty.PropertyType.Quaternion, Quaternion.identity),
+                new DclComponentProperty.PropertyDefinition("scale", DclComponentProperty.PropertyType.Vector3, Vector3.one));
+
+        public DclTransformComponent(Vector3? position = null, Quaternion? rotation = null, Vector3? scale = null) : base("Transform", "Transform")
+        {
+            Properties.Add(new DclComponentProperty<Vector3>("position", position ?? Vector3.zero));
+            Properties.Add(new DclComponentProperty<Quaternion>("rotation", rotation ?? Quaternion.identity));
+            Properties.Add(new DclComponentProperty<Vector3>("scale", scale ?? Vector3.one));
+        }
 
         public DclTransformComponent(DclComponent c) : base(c.NameInCode, c.NameInCode)
         {
@@ -20,39 +31,85 @@ namespace Assets.Scripts.SceneState
 
         public DclComponentProperty<Vector3> Scale => GetPropertyByName("scale")?.GetConcrete<Vector3>();
 
-        // gives the global fixed position
-        public Vector3 GlobalFixedPosition
+        public Matrix4x4 GlobalTransformMatrix
         {
             get
             {
                 if (Entity.Parent == null)
                 {
-                    return Position.FixedValue;
+                    Matrix4x4 transformMatrix = new Matrix4x4();
+                    transformMatrix.SetTRS(Position.Value, Rotation.Value, Scale.Value);
+                    return transformMatrix;
                 }
-
+                
                 var parentTransform = Entity.Parent.GetTransformComponent();
-                var scaledLocalPosition = Position.FixedValue;
-                scaledLocalPosition.Scale(parentTransform.Scale.FixedValue);
-                var globalPosition = (parentTransform.GlobalFixedPosition + (parentTransform.GlobalFixedRotation * scaledLocalPosition));
+                var parentMatrix = parentTransform.GlobalTransformMatrix;
 
-                return globalPosition;
+                Matrix4x4 localMatrix = new Matrix4x4();
+                localMatrix.SetTRS(Position.Value, Rotation.Value, Scale.Value);
+
+                var globalMatrix = parentMatrix * localMatrix;
+
+                return globalMatrix;
             }
         }
+
         public Vector3 GlobalPosition
         {
             get
             {
+                Vector3 position;
+                position.x = GlobalTransformMatrix.m03;
+                position.y = GlobalTransformMatrix.m13;
+                position.z = GlobalTransformMatrix.m23;
+                position /= GlobalTransformMatrix.m33;
+
+                return position;
+            }
+        }
+        public Quaternion GlobalRotation
+        {
+            get
+            {
+                return Entity.Parent == null
+                    ? Rotation.Value
+                    : Entity.Parent.GetTransformComponent().GlobalRotation * Rotation.Value;
+            }
+        }
+        public Matrix4x4 GlobalFixedTransformMatrix
+        {
+            get
+            {
                 if (Entity.Parent == null)
                 {
-                    return Position.Value;
+                    Matrix4x4 transformMatrix = new Matrix4x4();
+                    transformMatrix.SetTRS(Position.FixedValue, Rotation.FixedValue, Scale.FixedValue);
+                    return transformMatrix;
                 }
 
                 var parentTransform = Entity.Parent.GetTransformComponent();
-                var scaledLocalPosition = Position.Value;
-                scaledLocalPosition.Scale(parentTransform.Scale.Value);
-                var globalPosition = (parentTransform.GlobalPosition + (parentTransform.GlobalRotation * scaledLocalPosition));
+                var parentMatrix = parentTransform.GlobalFixedTransformMatrix;
 
-                return globalPosition;
+                Matrix4x4 localMatrix = new Matrix4x4();
+                localMatrix.SetTRS(Position.FixedValue, Rotation.FixedValue, Scale.FixedValue);
+
+                var globalMatrix = parentMatrix * localMatrix;
+
+                return globalMatrix;
+            }
+        }
+
+        public Vector3 GlobalFixedPosition
+        {
+            get
+            {
+                Vector3 position;
+                position.x = GlobalFixedTransformMatrix.m03;
+                position.y = GlobalFixedTransformMatrix.m13;
+                position.z = GlobalFixedTransformMatrix.m23;
+                position /= GlobalFixedTransformMatrix.m33;
+
+                return position;
             }
         }
 
@@ -60,63 +117,13 @@ namespace Assets.Scripts.SceneState
         {
             get
             {
-                if (Entity.Parent == null)
-                {
-                    return Rotation.FixedValue;
-                }
-
-                var parentTransform = Entity.Parent.GetTransformComponent();
-                return parentTransform.GlobalFixedRotation * Rotation.FixedValue;
-            }
-        }
-
-        public Quaternion GlobalRotation
-        {
-            get
-            {
-                if (Entity.Parent == null)
-                {
-                    return Rotation.Value;
-                }
-
-                var parentTransform = Entity.Parent.GetTransformComponent();
-                return parentTransform.GlobalRotation * Rotation.Value;
+                return GlobalFixedTransformMatrix.rotation;
             }
         }
 
         public bool Validate()
         {
-            if (NameInCode != "Transform")
-                return false;
-
-            if (NameOfSlot != "Transform")
-                return false;
-
-            var posProperty = GetPropertyByName("position");
-
-            if (posProperty == null)
-                return false;
-
-            if (posProperty.Type != DclComponentProperty.PropertyType.Vector3)
-                return false;
-
-            var quatProperty = GetPropertyByName("rotation");
-
-            if (quatProperty == null)
-                return false;
-
-            if (quatProperty.Type != DclComponentProperty.PropertyType.Quaternion)
-                return false;
-
-            var scaleProperty = GetPropertyByName("scale");
-
-            if (scaleProperty == null)
-                return false;
-
-            if (scaleProperty.Type != DclComponentProperty.PropertyType.Vector3)
-                return false;
-
-            return true;
+            return IsFollowingDefinition(transformComponentDefinition);
         }
 
         /// <summary>

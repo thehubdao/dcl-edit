@@ -1,53 +1,86 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
 using Assets.Scripts.System;
-using UnityEditor.SearchService;
+using Assets.Scripts.Visuals.UiBuilder;
 using UnityEngine;
 using Zenject;
 
 namespace Assets.Scripts.Visuals
 {
-    public class UiSettingsVisuals : MonoBehaviour, ISetupSceneEventListeners
+    public class UiSettingsVisuals : MonoBehaviour
     {
         [SerializeField]
-        private GameObject _content;
+        private GameObject content;
 
         // Dependencies
-        private EditorEvents _editorEvents;
-        private SettingsSystem _settingsSystem;
-        private UiBuilder.Factory _uiBuilderFactory;
+        private EditorEvents editorEvents;
+        private SettingsSystem settingsSystem;
+        private UiBuilder.UiBuilder uiBuilder;
+        private UnityState unityState;
+        private InputState inputState;
 
         [Inject]
-        private void Construct(EditorEvents editorEvents, SettingsSystem settingsSystem, UiBuilder.Factory uiBuilderFactory)
+        private void Construct(
+            EditorEvents editorEvents,
+            SettingsSystem settingsSystem,
+            UiBuilder.UiBuilder.Factory uiBuilderFactory,
+            UnityState unityState,
+            InputState inputState)
         {
-            _editorEvents = editorEvents;
-            _settingsSystem = settingsSystem;
-            _uiBuilderFactory = uiBuilderFactory;
+            this.editorEvents = editorEvents;
+            this.settingsSystem = settingsSystem;
+            this.uiBuilder = uiBuilderFactory.Create(content);
+            this.unityState = unityState;
+            this.inputState = inputState;
+
+            SetupEventListeners();
         }
 
-        public void SetupSceneEventListeners()
+        public void SetupEventListeners()
         {
-            _editorEvents.onSettingsChangedEvent += UpdateVisuals;
-            StartCoroutine(DelayedUpdate());
+            editorEvents.onSettingsChangedEvent += SetDirty;
+            unityState.StartCoroutine(DelayedUpdate()); // Unity state is guarantied to be available and active
         }
 
         IEnumerator DelayedUpdate() // There are some problems with Zenject, when using the UiBuilder in the first frame
         {
             yield return null;
-            UpdateVisuals();
+            SetDirty();
+        }
+
+        private bool _dirty;
+
+        void SetDirty()
+        {
+            _dirty = true;
+        }
+
+        void LateUpdate()
+        {
+            if (_dirty)
+            {
+                _dirty = false;
+                UpdateVisuals();
+            }
         }
 
         private void UpdateVisuals()
         {
-            var uiBuilder = _uiBuilderFactory.Create();
-
-            foreach (var settingsPair in _settingsSystem.ShownSettings)
+            if (inputState.InState == InputState.InStateType.UiInput)
             {
-                var categoryBuilder = _uiBuilderFactory.Create();
+                return;
+            }
 
-                categoryBuilder.PanelHeader(settingsPair.Key);
+            var settingsPanel = new PanelAtom.Data();
+
+            foreach (var settingsPair in settingsSystem.ShownSettings)
+            {
+                var categoryPanel = settingsPanel.AddPanelWithBorder();
+
+                categoryPanel.AddPanelHeader(settingsPair.Key);
 
                 foreach (var setting in settingsPair.Value)
                 {
@@ -56,86 +89,86 @@ namespace Assets.Scripts.Visuals
                         case (SettingsSystem.SettingStage.User, SettingsSystem.SettingType.String):
                         {
                             var concreteSetting = (SettingsSystem.StringUserSetting) setting;
-                            var actions = new UiBuilder.UiPropertyActions<string>
+                            var actions = new StringPropertyAtom.UiPropertyActions<string>
                             {
                                 OnChange = _ => { },
                                 OnAbort = _ => { },
                                 OnSubmit = value => { concreteSetting.Set(value); }
                             };
-                            categoryBuilder.StringPropertyInput(concreteSetting.name, "", concreteSetting.Get(), actions);
+                            categoryPanel.AddStringProperty(concreteSetting.name, "", concreteSetting.Get(), actions);
                             break;
                         }
                         case (SettingsSystem.SettingStage.User, SettingsSystem.SettingType.Float):
                         {
                             var concreteSetting = (SettingsSystem.FloatUserSetting) setting;
-                            var actions = new UiBuilder.UiPropertyActions<float>
+                            var actions = new StringPropertyAtom.UiPropertyActions<float>
                             {
                                 OnChange = _ => { },
+                                OnInvalid = () => { },
                                 OnAbort = _ => { },
                                 OnSubmit = value => { concreteSetting.Set(value); }
                             };
-                            categoryBuilder.NumberPropertyInput(concreteSetting.name, "", concreteSetting.Get(), actions);
+                            categoryPanel.AddNumberProperty(concreteSetting.name, "", concreteSetting.Get(), actions);
                             break;
                         }
                         case (SettingsSystem.SettingStage.User, SettingsSystem.SettingType.Integer):
                         {
                             var concreteSetting = (SettingsSystem.IntUserSetting) setting;
-                            var actions = new UiBuilder.UiPropertyActions<float>
+                            var actions = new StringPropertyAtom.UiPropertyActions<float>
                             {
                                 OnChange = _ => { },
+                                OnInvalid = () => { },
                                 OnAbort = _ => { },
                                 OnSubmit = value => { concreteSetting.Set((int) value); }
                             };
-                            categoryBuilder.NumberPropertyInput(concreteSetting.name, "", concreteSetting.Get(), actions);
+                            categoryPanel.AddNumberProperty(concreteSetting.name, "", concreteSetting.Get(), actions);
                             break;
                         }
                         case (SettingsSystem.SettingStage.Project, SettingsSystem.SettingType.String):
                         {
                             var concreteSetting = (SettingsSystem.StringProjectSetting) setting;
-                            var actions = new UiBuilder.UiPropertyActions<string>
+                            var actions = new StringPropertyAtom.UiPropertyActions<string>
                             {
                                 OnChange = _ => { },
                                 OnAbort = _ => { },
                                 OnSubmit = value => { concreteSetting.Set(value); }
                             };
-                            categoryBuilder.StringPropertyInput(concreteSetting.name, "", concreteSetting.Get(), actions);
+                            categoryPanel.AddStringProperty(concreteSetting.name, "", concreteSetting.Get(), actions);
                             break;
                         }
                         case (SettingsSystem.SettingStage.Project, SettingsSystem.SettingType.Vector3):
                         {
                             var concreteSetting = (SettingsSystem.Vec3ProjectSetting) setting;
-                            var actions = new UiBuilder.UiPropertyActions<Vector3>
+                            var actions = new StringPropertyAtom.UiPropertyActions<Vector3>
                             {
                                 OnChange = _ => { },
+                                OnInvalid = () => { },
                                 OnAbort = _ => { },
                                 OnSubmit = value => { concreteSetting.Set(value); }
                             };
-                            string[] placeholders = {"", "", ""};
-                            categoryBuilder.Vector3PropertyInput(concreteSetting.name, placeholders, concreteSetting.Get(), actions);
+                            categoryPanel.AddVector3Property(concreteSetting.name, new List<string> {"", "", ""}, concreteSetting.Get(), actions);
                             break;
                         }
                         case (SettingsSystem.SettingStage.Scene, SettingsSystem.SettingType.Vector3):
                         {
                             var concreteSetting = (SettingsSystem.Vec3SceneSetting) setting;
-                            var actions = new UiBuilder.UiPropertyActions<Vector3>
+                            var actions = new StringPropertyAtom.UiPropertyActions<Vector3>
                             {
                                 OnChange = _ => { },
+                                OnInvalid = () => { },
                                 OnAbort = _ => { },
                                 OnSubmit = value => { concreteSetting.Set(value); }
                             };
-                            string[] placeholders = {"", "", ""};
-                            categoryBuilder.Vector3PropertyInput(concreteSetting.name, placeholders, concreteSetting.Get(), actions);
+                            categoryPanel.AddVector3Property(concreteSetting.name, new List<string> {"", "", ""}, concreteSetting.Get(), actions);
                             break;
                         }
                         default:
                             throw new Exception($"No Setting Type available for stage {setting.stage} and type {setting.type}");
                     }
                 }
-
-                uiBuilder.Panel(categoryBuilder);
             }
 
-            uiBuilder.ClearAndMake(_content);
+            uiBuilder.Update(settingsPanel);
         }
     }
 }

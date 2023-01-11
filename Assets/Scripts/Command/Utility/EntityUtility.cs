@@ -1,14 +1,17 @@
-using System;
 using Assets.Scripts.SceneState;
+using System;
 
 namespace Assets.Scripts.Command.Utility
 {
     public class EntityUtility
     {
-        public static void AddEntity(DclScene scene, Guid id, string name, DclEntity parent)
+        public static DclEntity AddEntity(DclScene scene, Guid id, string name, DclEntity parent = null)
         {
-            var entity = new DclEntity(id, name, parent.Id);
+            DclEntity entity = new DclEntity(id, name, parent?.Id ?? Guid.Empty);
+
             scene.AddEntity(entity);
+
+            return entity;
         }
 
         public static void DeleteEntity(DclScene scene, Guid id)

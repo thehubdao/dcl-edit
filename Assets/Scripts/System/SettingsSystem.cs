@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Assets.Scripts.EditorState;
+using Assets.Scripts.Events;
 using UnityEngine;
 using Zenject;
 
@@ -7,6 +8,9 @@ namespace Assets.Scripts.System
 {
     public class SettingsSystem
     {
+        //Dependencies
+        EditorEvents _editorEvents;
+
         public enum SettingType
         {
             String,
@@ -35,8 +39,13 @@ namespace Assets.Scripts.System
 
         public abstract class UserSetting<T> : ISetting
         {
-            protected UserSetting(string name, T defaultValue)
+            // Dependencies
+            private SettingsSystem _settingsSystem;
+
+            protected UserSetting(SettingsSystem settingsSystem, string name, T defaultValue)
             {
+                _settingsSystem = settingsSystem;
+
                 this.name = name;
                 this.defaultValue = defaultValue;
 
@@ -49,12 +58,15 @@ namespace Assets.Scripts.System
             public SettingType type { get; protected set; }
             public SettingStage stage { get; }
             public abstract T Get();
-            public abstract void Set(T value);
+            public virtual void Set(T value)
+            {
+                _settingsSystem._editorEvents.InvokeSettingsChangedEvent();
+            }
         }
 
         public class StringUserSetting : UserSetting<string>
         {
-            public StringUserSetting(string name, string defaultValue) : base(name, defaultValue)
+            public StringUserSetting(SettingsSystem settingsSystem, string name, string defaultValue) : base(settingsSystem, name, defaultValue)
             {
                 type = SettingType.String;
             }
@@ -69,12 +81,13 @@ namespace Assets.Scripts.System
             public override void Set(string value)
             {
                 PlayerPrefs.SetString(name, value);
+                base.Set(value);
             }
         }
 
         public class IntUserSetting : UserSetting<int>
         {
-            public IntUserSetting(string name, int defaultValue) : base(name, defaultValue)
+            public IntUserSetting(SettingsSystem settingsSystem, string name, int defaultValue) : base(settingsSystem, name, defaultValue)
             {
                 type = SettingType.Integer;
             }
@@ -89,12 +102,30 @@ namespace Assets.Scripts.System
             public override void Set(int value)
             {
                 PlayerPrefs.SetInt(name, value);
+                base.Set(value);
+            }
+        }
+
+        public class IntClampedUserSetting : IntUserSetting
+        {
+            private int minValue;
+            private int maxValue;
+
+            public IntClampedUserSetting(SettingsSystem settingsSystem, string name, int defaultValue, int minValue, int maxValue) : base(settingsSystem, name, defaultValue)
+            {
+                this.minValue = minValue;
+                this.maxValue = maxValue;
+            }
+
+            public override void Set(int value)
+            {
+                base.Set(Mathf.Clamp(value, minValue, maxValue));
             }
         }
 
         public class FloatUserSetting : UserSetting<float>
         {
-            public FloatUserSetting(string name, float defaultValue) : base(name, defaultValue)
+            public FloatUserSetting(SettingsSystem settingsSystem, string name, float defaultValue) : base(settingsSystem, name, defaultValue)
             {
                 type = SettingType.Float;
             }
@@ -109,13 +140,36 @@ namespace Assets.Scripts.System
             public override void Set(float value)
             {
                 PlayerPrefs.SetFloat(name, value);
+                base.Set(value);
+            }
+        }
+
+        public class FloatClampedUserSetting : FloatUserSetting
+        {
+            private float minValue;
+            private float maxValue;
+
+            public FloatClampedUserSetting(SettingsSystem settingsSystem, string name, float defaultValue, float minValue, float maxValue) : base(settingsSystem, name, defaultValue)
+            {
+                this.minValue = minValue;
+                this.maxValue = maxValue;
+            }
+
+            public override void Set(float value)
+            {
+                base.Set(Mathf.Clamp(value, minValue, maxValue));
             }
         }
 
         public abstract class JsonSetting<T, TSettingState> : ISetting where TSettingState : JsonSettingState
         {
-            protected JsonSetting(string name, T defaultValue, TSettingState tSettingState)
+            // Dependencies
+            private SettingsSystem _settingsSystem;
+
+            protected JsonSetting(SettingsSystem settingsSystem, string name, T defaultValue, TSettingState tSettingState)
             {
+                _settingsSystem = settingsSystem;
+
                 this.name = name;
                 this.defaultValue = defaultValue;
 
@@ -152,12 +206,13 @@ namespace Assets.Scripts.System
             public void Set(T value)
             {
                 SettingState.SetSetting(name, value);
+                _settingsSystem._editorEvents.InvokeSettingsChangedEvent();
             }
         }
 
         public class Vec3ProjectSetting : JsonSetting<Vector3, ProjectSettingState>
         {
-            public Vec3ProjectSetting(string name, Vector3 defaultValue, ProjectSettingState projectSettingsState) : base(name, defaultValue, projectSettingsState)
+            public Vec3ProjectSetting(SettingsSystem settingsSystem, string name, Vector3 defaultValue, ProjectSettingState projectSettingsState) : base(settingsSystem, name, defaultValue, projectSettingsState)
             {
                 type = SettingType.Vector3;
             }
@@ -166,7 +221,7 @@ namespace Assets.Scripts.System
 
         public class StringProjectSetting : JsonSetting<string, ProjectSettingState>
         {
-            public StringProjectSetting(string name, string defaultValue, ProjectSettingState projectSettingsState) : base(name, defaultValue, projectSettingsState)
+            public StringProjectSetting(SettingsSystem settingsSystem, string name, string defaultValue, ProjectSettingState projectSettingsState) : base(settingsSystem, name, defaultValue, projectSettingsState)
             {
                 type = SettingType.String;
             }
@@ -174,7 +229,7 @@ namespace Assets.Scripts.System
 
         public class Vec3SceneSetting : JsonSetting<Vector3, SceneSettingState>
         {
-            public Vec3SceneSetting(string name, Vector3 defaultValue, SceneSettingState projectSettingsState) : base(name, defaultValue, projectSettingsState)
+            public Vec3SceneSetting(SettingsSystem settingsSystem, string name, Vector3 defaultValue, SceneSettingState projectSettingsState) : base(settingsSystem, name, defaultValue, projectSettingsState)
             {
                 type = SettingType.Vector3;
             }
@@ -182,50 +237,61 @@ namespace Assets.Scripts.System
 
 
         [Inject]
-        public SettingsSystem(ProjectSettingState projectSettingsState, SceneSettingState sceneSettingState)
+        public SettingsSystem(ProjectSettingState projectSettingsState, SceneSettingState sceneSettingState, EditorEvents editorEvents)
         {
+            _editorEvents = editorEvents;
+
             var userSettings = new List<ISetting>();
 
-            TestNumber = new FloatUserSetting("Test number", 12.34f);
-            userSettings.Add(TestNumber);
+            uiScalingFactor = new FloatClampedUserSetting(this, "UI Scaling", 1.0f, 0.5f, 3.0f);
+            userSettings.Add(uiScalingFactor);
 
-            TestInteger = new IntUserSetting("Test integer", 123);
+            mouseSensitivity = new FloatClampedUserSetting(this, "Mouse Sensitivity", 1.0f, 0.1f, 10.0f);
+            userSettings.Add(mouseSensitivity);
+
+            gizmoSize = new FloatClampedUserSetting(this, "Gizmo Size", 1.0f, 0.1f, 10.0f);
+            userSettings.Add(gizmoSize);
+
+            TestInteger = new IntUserSetting(this, "Test integer", 123);
             userSettings.Add(TestInteger);
 
-            TestString = new StringUserSetting("Test text", "Hello world!");
+            TestString = new StringUserSetting(this, "Test text", "Hello world!");
             userSettings.Add(TestString);
+
+            applicationTargetFramerate = new IntClampedUserSetting(this, "Maximum frame rate", 120, 5, 1000);
+            userSettings.Add(applicationTargetFramerate);
 
             ShownSettings.Add("User Settings", userSettings);
 
 
             var projectSettings = new List<ISetting>();
 
-            TestProjVec3 = new Vec3ProjectSetting("Test Vec3 Project", Vector3.one, projectSettingsState);
-            projectSettings.Add(TestProjVec3);
-
-            TestProjString = new StringProjectSetting("Test String Project", "some text", projectSettingsState);
-            projectSettings.Add(TestProjString);
-
             ShownSettings.Add("Project Settings", projectSettings);
 
 
             var sceneSettings = new List<ISetting>();
 
-            TestSceneVec3 = new Vec3SceneSetting("Test Vec3 Scene", Vector3.one, sceneSettingState);
-            sceneSettings.Add(TestSceneVec3);
-
             ShownSettings.Add("Scene Settings", sceneSettings);
+            
+            //Hidden Settings
+            //Saves Panel Size
+            panelSize = new StringUserSetting(this, "Panel Size","");
         }
 
         public Dictionary<string, List<ISetting>> ShownSettings = new Dictionary<string, List<ISetting>>();
 
-        public FloatUserSetting TestNumber;
+        public FloatClampedUserSetting uiScalingFactor;
+        public FloatClampedUserSetting mouseSensitivity;
+        public FloatClampedUserSetting gizmoSize;
         public IntUserSetting TestInteger;
         public StringUserSetting TestString;
+        public IntClampedUserSetting applicationTargetFramerate;
 
         public Vec3ProjectSetting TestProjVec3;
         public StringProjectSetting TestProjString;
 
         public Vec3SceneSetting TestSceneVec3;
+
+        public StringUserSetting panelSize;
     }
 }

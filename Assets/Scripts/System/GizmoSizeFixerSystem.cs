@@ -8,11 +8,16 @@ namespace Assets.Scripts.System
     {
         // Dependencies
         private CameraState _cameraState;
+        private SettingsSystem _settingsSystem;
+
+        // this is used in addition to the gizmo scale setting, so a gizmo scale of 1.0 is reasonable.
+        private const float scaleFactor = 0.2f;
 
         [Inject]
-        private void Construct(CameraState cameraState)
+        private void Construct(CameraState cameraState, SettingsSystem settingsSystem)
         {
             _cameraState = cameraState;
+            _settingsSystem = settingsSystem;
         }
 
         void LateUpdate()
@@ -27,15 +32,13 @@ namespace Assets.Scripts.System
             var proj = Vector3.Project(diffVector, camForward);
 
             // the length of the projected vector is the perceived distance to the gizmo
-            var dist = proj.magnitude;
+            var size = proj.magnitude;
 
-            // some artificial multiplier to give the gizmo a nice size
-            var multiplier = 0.2f; // TODO: gizmo size settings
-
-            dist *= multiplier;
+            // apply gizmo scale setting
+            size *= scaleFactor * _settingsSystem.gizmoSize.Get();
 
             // set the scale of the gizmo
-            transform.localScale = new Vector3(dist, dist, dist);
+            transform.localScale = new Vector3(size, size, size);
         }
     }
 }

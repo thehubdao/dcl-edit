@@ -11,24 +11,20 @@ namespace Assets.Scripts.Interaction
 {
     public class EntitySelectInteraction : MonoBehaviour
     {
-        public Guid Id;
+        public Guid id;
 
         // dependencies
-        private ICommandSystem _commandSystem;
-        private EditorState.SceneDirectoryState _sceneDirectoryState;
-        private EntitySelectSystem _entitySelectSystem;
+        private EntitySelectSystem entitySelectSystem;
 
         [Inject]
-        public void Construct(ICommandSystem commandSystem, EditorState.SceneDirectoryState sceneDirectoryState, EntitySelectSystem entitySelectSystem)
+        public void Construct(EntitySelectSystem entitySelectSystem)
         {
-            _commandSystem = commandSystem;
-            _sceneDirectoryState = sceneDirectoryState;
-            _entitySelectSystem = entitySelectSystem;
+            this.entitySelectSystem = entitySelectSystem;
         }
 
         public void Select()
         {
-            _entitySelectSystem.ClickedOnEntity(Id);
+            entitySelectSystem.ClickedOnEntity(id);
         }
 
         public class Factory : PlaceholderFactory<EntitySelectInteraction>

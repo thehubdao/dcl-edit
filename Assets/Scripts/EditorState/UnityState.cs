@@ -1,16 +1,13 @@
+using DynamicPanels;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityGLTF;
-using DynamicPanels;
 
 namespace Assets.Scripts.EditorState
 {
     public class UnityState : MonoBehaviour
     {
         [Header("Scene References")]
-        [SerializeField]
-        public GameObject SceneVisuals;
-
         [SerializeField]
         public GameObject Ui;
 
@@ -46,7 +43,44 @@ namespace Assets.Scripts.EditorState
         [SerializeField]
         public Material DefaultMat;
 
-        [Header("Ui Atoms")] 
+        [SerializeField]
+        public Texture2D DefaultAssetThumbnail;
+
+        [SerializeField]
+        public Texture2D AssetTypeModelIcon;
+
+        [SerializeField]
+        public Texture2D AssetTypeImageIcon;
+
+        [Space]
+        [SerializeField]
+        public GameObject ErrorModel;
+
+        [SerializeField]
+        public GameObject LoadingModel;
+
+
+        [Header("Context Menu Prefab")]
+        [SerializeField]
+        public GameObject ContextMenuAtom;
+
+
+        [Header("Ui Atoms")]
+        [SerializeField]
+        public GameObject ButtonAtom;
+
+        [SerializeField]
+        public GameObject AssetBrowserButtonAtom;
+
+        [SerializeField]
+        public GameObject AssetBrowserFolderAtom;
+
+        [SerializeField]
+        public GameObject GridAtom;
+
+        [SerializeField]
+        public GameObject RowAtom;
+
         [SerializeField]
         public GameObject TitleAtom;
 
@@ -55,7 +89,10 @@ namespace Assets.Scripts.EditorState
 
         [SerializeField]
         public GameObject PanelAtom;
-        
+
+        [SerializeField]
+        public GameObject PanelWithBorderAtom;
+
         [SerializeField]
         public GameObject PanelHeaderAtom;
 
@@ -73,5 +110,17 @@ namespace Assets.Scripts.EditorState
 
         [SerializeField]
         public GameObject Vector3InputAtom;
+
+        [SerializeField]
+        public GameObject MenuBarButtonAtom;
+
+        [SerializeField]
+        public GameObject ContextMenuItemAtom;
+
+        [SerializeField]
+        public GameObject ContextSubmenuItemAtom;
+
+        [SerializeField]
+        public GameObject ContextMenuSpacerItemAtom;
     }
 }
