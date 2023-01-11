@@ -51,6 +51,10 @@ namespace Assets.Scripts.System
             _pathState = pathState;
         }
 
+        /// <summary>
+        /// Save a dcl-edit beta scene
+        /// </summary>
+        /// <param name="sceneDirectoryState">The directory state of the scene</param>
         public void Save(SceneDirectoryState sceneDirectoryState)
         {
             DclSceneData sceneData = new DclSceneData(sceneDirectoryState.currentScene);
@@ -86,6 +90,10 @@ namespace Assets.Scripts.System
             }
         }
 
+        /// <summary>
+        /// Load a dcl-edit beta scene
+        /// </summary>
+        /// <param name="sceneDirectoryState">The directory state of the scene</param>
         public void Load(SceneDirectoryState sceneDirectoryState)
         {
             var scenePath = sceneDirectoryState.directoryPath;
@@ -134,6 +142,15 @@ namespace Assets.Scripts.System
             sceneDirectoryState.currentScene = scene;
         }
         
+        /// <summary>
+        /// Load a dcl-edit alpha scene
+        /// </summary>
+        /// <param name="sceneDirectoryState">The directory state of the scene</param>
+        public void LoadV1(SceneDirectoryState sceneDirectoryState)
+        {
+            loadFromVersion1System.Load(sceneDirectoryState);
+        }
+
         /**
          * <summary>
          * Creates a save file for a given entity
@@ -157,6 +174,11 @@ namespace Assets.Scripts.System
             return path;
         }
 
+        /// <summary>
+        /// Load an entity from a file into a scene
+        /// </summary>
+        /// <param name="scene">The scene into which the entity should be loaded</param>
+        /// <param name="absolutePath">The path from which to load the entity</param>
         public void LoadEntityFile(DclScene scene, string absolutePath)
         {
             var json = File.ReadAllText(absolutePath);
