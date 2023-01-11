@@ -1,5 +1,6 @@
 ﻿using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
@@ -10,9 +11,9 @@ namespace Assets.Scripts.Interaction
     {
         private GizmoState _gizmoState;
 
-        public Button _translateButton;
-        public Button _rotateButton;
-        public Button _scaleButton;
+        public GameObject _translateButton;
+        public GameObject _rotateButton;
+        public GameObject _scaleButton;
 
         [Inject]
         private void Construct(GizmoState gizmoState)
@@ -28,9 +29,9 @@ namespace Assets.Scripts.Interaction
 
         void UpdateVisuals()
         {
-            _translateButton.interactable = _gizmoState.CurrentMode != GizmoState.Mode.Translate;
-            _rotateButton.interactable = _gizmoState.CurrentMode != GizmoState.Mode.Rotate;
-            _scaleButton.interactable = _gizmoState.CurrentMode != GizmoState.Mode.Scale;
+            _translateButton.GetComponent<Button>().interactable = _gizmoState.CurrentMode != GizmoState.Mode.Translate;
+            _rotateButton.GetComponent<Button>().interactable = _gizmoState.CurrentMode != GizmoState.Mode.Rotate;
+            _scaleButton.GetComponent<Button>().interactable = _gizmoState.CurrentMode != GizmoState.Mode.Scale;
         }
 
         public void SetManipulatorTranslate()
