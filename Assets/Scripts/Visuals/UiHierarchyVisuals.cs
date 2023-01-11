@@ -17,8 +17,7 @@ namespace Assets.Scripts.Visuals
     {
 #pragma warning disable CS0649 // Warning: Uninitialized filed. Serialized fields will be initialized by Unity
 
-        [SerializeField]
-        private GameObject content;
+        [SerializeField] private GameObject content;
 
 #pragma warning restore CS0649
 
@@ -48,6 +47,7 @@ namespace Assets.Scripts.Visuals
         private HierarchyChangeSystem hierarchyChangeSystem;
         private ContextMenuSystem contextMenuSystem;
         private SceneManagerSystem sceneManagerSystem;
+        private CommandSystem commandSystem;
 
         [Inject]
         private void Construct(
@@ -55,13 +55,15 @@ namespace Assets.Scripts.Visuals
             Factory uiBuilderFactory,
             HierarchyChangeSystem hierarchyChangeSystem,
             ContextMenuSystem contextMenuSystem,
-            SceneManagerSystem sceneManagerSystem)
+            SceneManagerSystem sceneManagerSystem,
+            CommandSystem commandSystem)
         {
             this.events = events;
             this.uiBuilder = uiBuilderFactory.Create(content);
             this.hierarchyChangeSystem = hierarchyChangeSystem;
             this.contextMenuSystem = contextMenuSystem;
             this.sceneManagerSystem = sceneManagerSystem;
+            this.commandSystem = commandSystem;
 
             SetupEventListeners();
         }
@@ -93,7 +95,8 @@ namespace Assets.Scripts.Visuals
             uiBuilder.Update(mainPanelData);
         }
 
-        private void MakeHierarchyItemsRecursive([NotNull] DclScene scene, int level, IEnumerable<DclEntity> entities, PanelAtom.Data mainPanelData)
+        private void MakeHierarchyItemsRecursive([NotNull] DclScene scene, int level, IEnumerable<DclEntity> entities,
+            PanelAtom.Data mainPanelData)
         {
             foreach (var entity in entities)
             {
@@ -102,15 +105,14 @@ namespace Assets.Scripts.Visuals
                 var isSecondarySelection = scene.SelectionState.SecondarySelectedEntities.Contains(entity);
 
                 var style =
-                    isPrimarySelection ?
-                        TextHandler.TextStyle.PrimarySelection :
-                        isSecondarySelection ?
-                            TextHandler.TextStyle.SecondarySelection :
-                            TextHandler.TextStyle.Normal;
+                    isPrimarySelection ? TextHandler.TextStyle.PrimarySelection :
+                    isSecondarySelection ? TextHandler.TextStyle.SecondarySelection :
+                    TextHandler.TextStyle.Normal;
 
                 var isExpanded = hierarchyChangeSystem.IsExpanded(entity);
 
-                mainPanelData.AddHierarchyItem(entity.ShownName, level, entity.Children.Any(), isExpanded, style, new HierarchyItemHandler.UiHierarchyItemActions
+                mainPanelData.AddHierarchyItem(entity.ShownName, level, entity.Children.Any(), isExpanded, style,
+                    new HierarchyItemHandler.UiHierarchyItemActions
                     {
                         onArrowClick = () => { hierarchyChangeSystem.ClickedOnEntityExpandArrow(entity); },
                         onNameClick = () => { hierarchyChangeSystem.ClickedOnEntityInHierarchy(entity); }
@@ -131,7 +133,8 @@ namespace Assets.Scripts.Visuals
                                 new ContextMenuTextItem("Cone", () => Debug.Log("Add empty ")),
                             }),
                             new ContextMenuTextItem("Duplicate", () => Debug.Log("Duplicate entity")),
-                            new ContextMenuTextItem("Delete", () => Debug.Log("Delete entity"))
+                            new ContextMenuTextItem("Delete",
+                                () => commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateRemoveEntity(entity)))
                         });
                     });
 
