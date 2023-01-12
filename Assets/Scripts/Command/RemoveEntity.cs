@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using Assets.Scripts.Command.Utility;
 using Assets.Scripts.Events;
 using Assets.Scripts.SceneState;
@@ -11,6 +13,8 @@ namespace Assets.Scripts.Command
         private readonly DclEntity entity;
         private readonly List<List<DclEntity>> sortedEntities = new List<List<DclEntity>>();
         private readonly List<List<DclEntity>> sortedParents = new List<List<DclEntity>>();
+        private Guid primarySelectedEntityId;
+        private List<Guid> secondarySelectedEntityIds;
 
         public RemoveEntity(DclEntity entity)
         {
@@ -26,6 +30,9 @@ namespace Assets.Scripts.Command
 
         public override void Do(DclScene sceneState, EditorEvents editorEvents)
         {
+            primarySelectedEntityId = sceneState.SelectionState.PrimarySelectedEntity.Id;
+            secondarySelectedEntityIds = sceneState.SelectionState.SecondarySelectedEntities.Select(entity => entity.Id).ToList();
+            
             EntityUtility.DeleteEntity(sceneState, entity.Id);
             editorEvents.InvokeSelectionChangedEvent();
         }
@@ -33,9 +40,18 @@ namespace Assets.Scripts.Command
         public override void Undo(DclScene sceneState, EditorEvents editorEvents)
         {
             ReAddEntityAndChildren(sceneState);
+            
+            sceneState.SelectionState.PrimarySelectedEntity = sceneState.GetEntityById(primarySelectedEntityId);
+            sceneState.SelectionState.SecondarySelectedEntities =
+                secondarySelectedEntityIds.Select(sceneState.GetEntityById).ToList(); 
+            
             editorEvents.InvokeSelectionChangedEvent();
         }
 
+        /// <summary>
+        /// Goes through entity and parent hierarchies layer by layer, re-adds each entity and connects each to its previous parent.
+        /// </summary>
+        /// <param name="sceneState">Current state of the scene</param>
         private void ReAddEntityAndChildren(DclScene sceneState)
         {
             for (var i = sortedEntities.Count - 1; i >= 0; i--)
@@ -53,10 +69,14 @@ namespace Assets.Scripts.Command
             }
         }
 
-        private void GetChildrenInOrder(DclEntity parentEntity)
+        /// <summary>
+        /// Goes through the entity and it's children in breadth-first manner and saves the entity structure and the 'parent of each entity' structure inside of properties.
+        /// </summary>
+        /// <param name="entity">The root of the entity tree</param>
+        private void GetChildrenInOrder(DclEntity entity)
         {
             Queue<DclEntity> queue = new Queue<DclEntity>();
-            queue.Enqueue(parentEntity);
+            queue.Enqueue(entity);
 
             while (queue.Count > 0)
             {
