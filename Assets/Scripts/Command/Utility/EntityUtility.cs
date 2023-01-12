@@ -56,6 +56,12 @@ namespace Assets.Scripts.Command.Utility
         {
             foreach (var selectedEntity in scene.SelectionState.AllSelectedEntities)
             {
+                //This is the case when primaryselectedentity == null and no secondaryselectedentities exist
+                if (selectedEntity == null)
+                {
+                    return;
+                }
+                
                 var entity = scene.GetEntityById(entityId);
                 
                 if (selectedEntity.Id == entityId)

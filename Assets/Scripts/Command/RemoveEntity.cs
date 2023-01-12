@@ -30,7 +30,11 @@ namespace Assets.Scripts.Command
 
         public override void Do(DclScene sceneState, EditorEvents editorEvents)
         {
-            primarySelectedEntityId = sceneState.SelectionState.PrimarySelectedEntity.Id;
+            if (sceneState.SelectionState.PrimarySelectedEntity != null)
+            {
+                primarySelectedEntityId = sceneState.SelectionState.PrimarySelectedEntity.Id;
+            }
+            
             secondarySelectedEntityIds = sceneState.SelectionState.SecondarySelectedEntities.Select(entity => entity.Id).ToList();
             
             EntityUtility.DeleteEntity(sceneState, entity.Id);
