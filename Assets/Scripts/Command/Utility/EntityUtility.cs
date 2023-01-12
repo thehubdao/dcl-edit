@@ -1,5 +1,6 @@
 using Assets.Scripts.SceneState;
 using System;
+using System.Linq;
 
 namespace Assets.Scripts.Command.Utility
 {
@@ -13,12 +14,11 @@ namespace Assets.Scripts.Command.Utility
 
             return entity;
         }
-        
-        public static DclEntity AddEntity(DclScene scene, DclEntity entity)
-        {
-            scene.AddEntity(entity);
 
-            return entity;
+        public static void ReAddEntity(DclScene scene, DclEntity entity, DclEntity parent)
+        {
+            entity.Parent = parent;
+            scene.AddEntity(entity);
         }
 
         public static void DeleteEntity(DclScene scene, Guid id)
