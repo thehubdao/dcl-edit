@@ -23,6 +23,7 @@ namespace Assets.Scripts.Visuals
         private CommandSystem commandSystem;
         private SceneManagerSystem sceneManagerSystem;
         private ContextMenuSystem contextMenuSystem;
+        private AddComponentSystem addComponentSystem;
 
         [Inject]
         private void Construct(
@@ -32,7 +33,8 @@ namespace Assets.Scripts.Visuals
             EditorEvents editorEvents,
             CommandSystem commandSystem,
             SceneManagerSystem sceneManagerSystem,
-            ContextMenuSystem contextMenuSystem)
+            ContextMenuSystem contextMenuSystem,
+            AddComponentSystem addComponentSystem)
         {
             this.inputState = inputState;
             this.updatePropertiesSystem = updatePropertiesSystem;
@@ -41,6 +43,7 @@ namespace Assets.Scripts.Visuals
             this.commandSystem = commandSystem;
             this.sceneManagerSystem = sceneManagerSystem;
             this.contextMenuSystem = contextMenuSystem;
+            this.addComponentSystem = addComponentSystem;
 
             SetupEventListeners();
         }
@@ -243,6 +246,13 @@ namespace Assets.Scripts.Visuals
             {
                 var rect = go.GetComponent<RectTransform>();
 
+                var menuItems = new List<ContextMenuItem>();
+
+                foreach (var component in addComponentSystem.GetAvailableComponents())
+                {
+                    menuItems.Add(new ContextMenuTextItem(component.NameInCode, () => addComponentSystem.AddComponent(selectedEntity.Id, component)));
+                }
+
                 contextMenuSystem.OpenMenu(new List<ContextMenuState.Placement>
                 {
                     new ContextMenuState.Placement
@@ -255,10 +265,7 @@ namespace Assets.Scripts.Visuals
                         position = rect.position + new Vector3(rect.sizeDelta.x, -rect.sizeDelta.y, 0),
                         expandDirection = ContextMenuState.Placement.Direction.Left,
                     }
-                }, new List<ContextMenuItem>
-                {
-                    new ContextMenuTextItem("Some text", () => Debug.Log("Some Log"))
-                });
+                }, menuItems);
             });
 
             inspectorPanel.AddSpacer(50);
