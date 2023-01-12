@@ -4,11 +4,21 @@ using Assets.Scripts.SceneState;
 using Assets.Scripts.Utility;
 using UnityEditor;
 using UnityEngine;
+using Zenject;
 
 namespace Assets.Scripts.System
 {
     public class AddComponentSystem
     {
+        // Dependencies
+        private CommandSystem commandSystem;
+
+        [Inject]
+        private void Construct(CommandSystem commandSystem)
+        {
+            this.commandSystem = commandSystem;
+        }
+
         public List<DclComponent.ComponentDefinition> GetAvailableComponents()
         {
             return new List<DclComponent.ComponentDefinition>
@@ -21,9 +31,14 @@ namespace Assets.Scripts.System
             };
         }
 
+        public bool CanComponentBeAdded(DclEntity entity, DclComponent.ComponentDefinition component)
+        {
+            return entity.GetComponentBySlot(component.NameOfSlot) == null;
+        }
+
         public void AddComponent(Guid entityId, DclComponent.ComponentDefinition component)
         {
-            Debug.Log($"Adding {component.NameInCode} component to {entityId.Shortened()}");
+            commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateAddComponent(entityId, component));
         }
     }
 }

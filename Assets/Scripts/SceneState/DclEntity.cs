@@ -109,6 +109,13 @@ namespace Assets.Scripts.SceneState
                 null; // else return null
         }
 
+        public DclComponent GetComponentBySlot(string slot)
+        {
+            return Components.Exists(c => c.NameOfSlot == slot) ? // if component exists
+                Components.Find(c => c.NameOfSlot == slot) : // then return component
+                null; // else return null
+        }
+
         public DclComponent GetFirstComponentByName(params string[] names)
         {
             return Components.FirstOrNull(c => names.Contains(c.NameInCode));

@@ -250,7 +250,11 @@ namespace Assets.Scripts.Visuals
 
                 foreach (var component in addComponentSystem.GetAvailableComponents())
                 {
-                    menuItems.Add(new ContextMenuTextItem(component.NameInCode, () => addComponentSystem.AddComponent(selectedEntity.Id, component)));
+                    menuItems.Add(
+                        new ContextMenuTextItem(
+                            component.NameInCode,
+                            () => addComponentSystem.AddComponent(selectedEntity.Id, component),
+                            !addComponentSystem.CanComponentBeAdded(selectedEntity, component)));
                 }
 
                 contextMenuSystem.OpenMenu(new List<ContextMenuState.Placement>
