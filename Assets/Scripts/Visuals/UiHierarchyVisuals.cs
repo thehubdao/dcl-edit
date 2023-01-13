@@ -27,6 +27,8 @@ namespace Assets.Scripts.Visuals
 
 #pragma warning restore CS0649
 
+        private const float uiItemHeight = 30f;
+
         #region Mark for update
 
         private bool shouldUpdate = false;
@@ -35,7 +37,6 @@ namespace Assets.Scripts.Visuals
         {
             if (shouldUpdate)
             {
-                ExpandSelectedItem();
                 UpdateVisuals();
                 ScrollPanelToSelectedItem();
                 shouldUpdate = false;
@@ -92,6 +93,7 @@ namespace Assets.Scripts.Visuals
             }
             else
             {
+                ExpandSelectedItem(scene);
                 MakeHierarchyItemsRecursive(scene, 0, scene.EntitiesInSceneRoot, mainPanelData);
 
                 mainPanelData.AddSpacer(300);
@@ -151,38 +153,33 @@ namespace Assets.Scripts.Visuals
             }
         }
 
-        private void ExpandSelectedItem()
+        private void ExpandSelectedItem(DclScene scene)
         {
-            var selectedEntity = sceneManagerSystem.GetCurrentScene()?.SelectionState.PrimarySelectedEntity;
+            var selectedEntity = scene.SelectionState.PrimarySelectedEntity;
             hierarchyChangeSystem.ExpandParents(selectedEntity);
         }
 
-        private HierarchyItemHandler HierarchyPanelSelectedItem()
+        private (HierarchyItemHandler, int) HierarchyPanelSelectedItem()
         {
-            HierarchyItemHandler uiItemHandler = null;
-            foreach (var uiItem in scrollRect.content.GetChildren())
-            {
-                if (!uiItem.TryGetComponent<HierarchyItemHandler>(out var hierarchyItemHandler)) continue;
+            var list = content.GetComponentsInChildren<HierarchyItemHandler>();
 
-                if (hierarchyItemHandler.primarySelection)
-                    uiItemHandler = hierarchyItemHandler;
+            for (var i = 0; i < list.Length; i++)
+            {
+                if (list[i].primarySelection)
+                    return (list[i], i);
             }
 
-            return uiItemHandler;
+            return (null, 0);
         }
 
         private void ScrollPanelToSelectedItem()
         {
-            var selectedUiItem = HierarchyPanelSelectedItem();
+            var (selectedUiItem, index) = HierarchyPanelSelectedItem();
             if (selectedUiItem == null) return;
-
-            if (!selectedUiItem.TryGetComponent<RectTransform>(out var uiItemTransform)) return;
-            var uiItemPosition = uiItemTransform.localPosition;
-            var offset = scrollRect.viewport.rect.height * 0.5f;
 
             scrollRect.content.localPosition = new Vector2(
                 0,
-                0 - (uiItemPosition.y + offset)
+                uiItemHeight * index
             );
         }
     }

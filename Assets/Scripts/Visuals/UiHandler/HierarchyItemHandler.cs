@@ -22,7 +22,7 @@ namespace Assets.Scripts.Visuals.UiHandler
         [SerializeField]
         public RightClickHandler rightClickHandler;
 
-        public bool primarySelection { get; set; }
+        public bool primarySelection;
 
         public struct UiHierarchyItemActions
         {
