@@ -27,6 +27,7 @@ namespace Assets.Scripts.Visuals
 
 #pragma warning restore CS0649
 
+        private Vector3? prevScrollPosition;
         private const float uiItemHeight = 30f;
 
         #region Mark for update
@@ -159,7 +160,7 @@ namespace Assets.Scripts.Visuals
             hierarchyChangeSystem.ExpandParents(selectedEntity);
         }
 
-        private (HierarchyItemHandler, int) HierarchyPanelSelectedItem()
+        private (HierarchyItemHandler selectedItem, int index) HierarchyPanelSelectedItem()
         {
             var list = content.GetComponentsInChildren<HierarchyItemHandler>();
 
@@ -175,12 +176,25 @@ namespace Assets.Scripts.Visuals
         private void ScrollPanelToSelectedItem()
         {
             var (selectedUiItem, index) = HierarchyPanelSelectedItem();
-            if (selectedUiItem == null) return;
+            if (selectedUiItem == null)
+            {
+                if (!prevScrollPosition.HasValue) return;
+                
+                scrollRect.content.localPosition = prevScrollPosition.Value;
+                prevScrollPosition = null;
+                return;
+            }
 
-            scrollRect.content.localPosition = new Vector2(
-                0,
-                uiItemHeight * index
-            );
+            prevScrollPosition ??= scrollRect.content.localPosition;
+            var newVerticalPos = uiItemHeight * index;
+            
+            if (scrollRect.viewport.rect.height + scrollRect.content.localPosition.y < newVerticalPos || newVerticalPos < scrollRect.content.localPosition.y)
+            {
+                scrollRect.content.localPosition = new Vector2(
+                    0,
+                    uiItemHeight * index
+                );
+            }
         }
     }
 }
