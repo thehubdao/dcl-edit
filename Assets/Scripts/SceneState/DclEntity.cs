@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using Assets.Scripts.Utility;
 using JetBrains.Annotations;
 using UnityEngine;
@@ -83,7 +84,17 @@ namespace Assets.Scripts.SceneState
             component.Entity = this;
             Components.Add(component);
         }
-        
+
+        public void RemoveComponent(DclComponent.ComponentDefinition definition)
+        {
+            RemoveComponent(definition.NameInCode);
+        }
+
+        public void RemoveComponent(string nameInCode)
+        {
+            RemoveComponent(Components.Find(c => c.NameInCode == nameInCode));
+        }
+
         public void RemoveComponent(DclComponent component)
         {
             component.Entity = null;
@@ -95,6 +106,13 @@ namespace Assets.Scripts.SceneState
         {
             return Components.Exists(c => c.NameInCode == name) ? // if component exists
                 Components.Find(c => c.NameInCode == name) : // then return component
+                null; // else return null
+        }
+
+        public DclComponent GetComponentBySlot(string slot)
+        {
+            return Components.Exists(c => c.NameOfSlot == slot) ? // if component exists
+                Components.Find(c => c.NameOfSlot == slot) : // then return component
                 null; // else return null
         }
 
@@ -123,6 +141,12 @@ namespace Assets.Scripts.SceneState
         {
             return names.Any(name => Components.Exists(c => c.NameInCode == name));
         }
+
+        public bool IsComponentSlotOccupied(string nameOfSlot)
+        {
+            return Components.Exists(c => c.NameOfSlot == nameOfSlot);
+        }
+
         public DclEntity(Guid id, string name = "", Guid parentId = default, bool isExposed = false)
         {
             Id = id;

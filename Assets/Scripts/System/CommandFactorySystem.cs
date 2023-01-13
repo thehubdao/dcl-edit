@@ -57,7 +57,12 @@ public class CommandFactorySystem
     {
         return new AddModelAssetToScene(entityId, entityCustomName, assetId, positionInScene);
     }
-    
+
+    public AddComponent CreateAddComponent(Guid entityId, DclComponent.ComponentDefinition component)
+    {
+        return new AddComponent(entityId, component);
+    }
+
     public RemoveComponent CreateRemoveComponent(Guid entityId, DclComponent component)
     {
         return new RemoveComponent(entityId, component);
