@@ -126,14 +126,14 @@ namespace Assets.Scripts.System
 
                 public ParcelInformation(String decentralandParcel)
                 {
-                    String[] spearator = {","};
+                    String[] separator = {","};
                     Int32 count = 2;
 
                     // using the method
-                    String[] strlist = decentralandParcel.Split(spearator, count, StringSplitOptions.RemoveEmptyEntries);
+                    String[] strList = decentralandParcel.Split(separator, count, StringSplitOptions.RemoveEmptyEntries);
 
-                    var x = int.Parse(strlist[0], NumberStyles.HexNumber);
-                    var z = int.Parse(strlist[1], NumberStyles.HexNumber);
+                    var x = int.Parse(strList[0], NumberStyles.Integer);
+                    var z = int.Parse(strList[1], NumberStyles.Integer);
 
                     position = new Vector2Int(x, z);
                 }
