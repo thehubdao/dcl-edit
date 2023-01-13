@@ -125,6 +125,9 @@ public class DclEditorInstaller : MonoInstaller
 
         Container.BindInterfacesAndSelfTo<WebRequestSystem>().AsSingle();
 
+
+        Container.BindInterfacesAndSelfTo<SceneJsonReaderSystem>().AsSingle();
+
         Container.BindInterfacesAndSelfTo<NumberInputSystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<AssetThumbnailManagerSystem>().AsSingle();
