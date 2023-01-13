@@ -12,24 +12,30 @@ namespace Assets.Scripts.System
     {
         // Dependencies
         private CommandSystem commandSystem;
-        private SceneDirectoryState sceneState;
+        private SceneManagerSystem sceneManagerSystem;
         private EntityPresetSystem entityPresetSystem;
 
         [Inject]
         public void Construct(
             CommandSystem commandSystem,
-            SceneDirectoryState sceneState,
+            SceneManagerSystem sceneManagerSystem,
             EntityPresetSystem entityPresetSystem)
         {
             this.commandSystem = commandSystem;
-            this.sceneState = sceneState;
+            this.sceneManagerSystem = sceneManagerSystem;
             this.entityPresetSystem = entityPresetSystem;
         }
 
         // Add an empty entity with a specific parent
         public void AddEmptyEntity(DclEntity parent)
         {
-            var selectionState = sceneState.CurrentScene.SelectionState;
+            var scene = sceneManagerSystem.GetCurrentScene();
+            if (scene == null)
+            {
+                return;
+            }
+
+            var selectionState = scene.SelectionState;
             var command = commandSystem.CommandFactory.CreateAddEntity(
                 "Empty Entity",
                 parent.Id,

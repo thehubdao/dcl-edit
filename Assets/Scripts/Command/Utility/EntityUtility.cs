@@ -5,9 +5,9 @@ namespace Assets.Scripts.Command.Utility
 {
     public class EntityUtility
     {
-        public static DclEntity AddEntity(DclScene scene, Guid id, string name, DclEntity parent = null)
+        public static DclEntity AddEntity(DclScene scene, Guid id, string name, Guid parent = default)
         {
-            var entity = new DclEntity(id, name, parent?.Id ?? Guid.Empty);
+            var entity = new DclEntity(id, name, parent);
 
             scene.AddEntity(entity);
 
