@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Assets.Scripts.EditorState;
 using JetBrains.Annotations;
@@ -48,20 +49,32 @@ namespace Assets.Scripts.Visuals.UiBuilder
             NumberPropertyInput,
             BooleanPropertyInput,
             Vector3PropertyInput,
+            MenuBarButton,
             ContextMenu,
             ContextMenuItem,
             ContextSubmenuItem,
-            ContextMenuSpacerItem
+            ContextMenuSpacerItem,
+            Button,
+            AssetBrowserButton,
+            AssetBrowserFolder,
+            Grid
         }
 
 
         // Dependencies
         private UnityState unityState;
+        private AssetBrowserButtonHandler.Factory assetBrowserButtonHandlerFactory;
+        private AssetBrowserFolderHandler.Factory assetBrowserFolderHandlerFactory;
 
         [Inject]
-        public void Constructor(UnityState unityState)
+        public void Constructor(
+            UnityState unityState,
+            AssetBrowserButtonHandler.Factory assetBrowserButtonHandlerFactory,
+            AssetBrowserFolderHandler.Factory assetBrowserFolderHandlerFactory)
         {
             this.unityState = unityState;
+            this.assetBrowserButtonHandlerFactory = assetBrowserButtonHandlerFactory;
+            this.assetBrowserFolderHandlerFactory = assetBrowserFolderHandlerFactory;
         }
 
         #region Object Pool
@@ -82,19 +95,19 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
                     go.SetActive(true);
 
-                    return new AtomGameObject {atomType = type, gameObject = go};
+                    return new AtomGameObject { atomType = type, gameObject = go };
                 }
             }
 
             var instantiatedObject = InstantiateObject(type);
-            return new AtomGameObject {atomType = type, gameObject = instantiatedObject};
+            return new AtomGameObject { atomType = type, gameObject = instantiatedObject };
         }
 
         private GameObject InstantiateObject(AtomType type)
         {
             Stats.instantiateCount++;
 
-            return type switch
+            GameObject gameObject = type switch
             {
                 AtomType.Title => Object.Instantiate(unityState.TitleAtom),
                 AtomType.Text => Object.Instantiate(unityState.TextAtom),
@@ -107,12 +120,18 @@ namespace Assets.Scripts.Visuals.UiBuilder
                 AtomType.NumberPropertyInput => Object.Instantiate(unityState.NumberInputAtom),
                 AtomType.BooleanPropertyInput => Object.Instantiate(unityState.BooleanInputAtom),
                 AtomType.Vector3PropertyInput => Object.Instantiate(unityState.Vector3InputAtom),
+                AtomType.MenuBarButton => Object.Instantiate(unityState.MenuBarButtonAtom),
                 AtomType.ContextMenu => Object.Instantiate(unityState.ContextMenuAtom),
                 AtomType.ContextMenuItem => Object.Instantiate(unityState.ContextMenuItemAtom),
                 AtomType.ContextSubmenuItem => Object.Instantiate(unityState.ContextSubmenuItemAtom),
                 AtomType.ContextMenuSpacerItem => Object.Instantiate(unityState.ContextMenuSpacerItemAtom),
-                _ => null
+                AtomType.Button => Object.Instantiate(unityState.ButtonAtom),
+                AtomType.Grid => Object.Instantiate(unityState.GridAtom),
+                AtomType.AssetBrowserFolder => assetBrowserFolderHandlerFactory.Create().gameObject,
+                AtomType.AssetBrowserButton => assetBrowserButtonHandlerFactory.Create().gameObject,
+                _ => throw new ArgumentOutOfRangeException($"The type {type.ToString()} is not listed to instantiate.")
             };
+            return gameObject; ;
         }
 
         private GameObject InstantiateSpacerObject()

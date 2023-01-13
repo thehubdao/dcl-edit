@@ -1,7 +1,7 @@
-using System;
-using System.Collections.Generic;
 using Assets.Scripts.Visuals.UiHandler;
 using JetBrains.Annotations;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Assets.Scripts.Visuals.UiBuilder
@@ -12,7 +12,10 @@ namespace Assets.Scripts.Visuals.UiBuilder
         {
             public PanelHandler.LayoutDirection layoutDirection = PanelHandler.LayoutDirection.Vertical;
 
+            public bool useFullWidth = true;
+
             public AtomDataList childDates = new AtomDataList();
+
 
             public override bool Equals(Atom.Data other)
             {
@@ -77,8 +80,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
         protected void UpdateData(Data newPanelData)
         {
-            // make layout group
-            gameObject.gameObject.GetComponent<PanelHandler>().SetLayoutDirection(newPanelData.layoutDirection);
+            MakeLayoutGroup(newPanelData);
 
             var atomIndex = 0;
             var dataIndex = 0;
@@ -137,9 +139,14 @@ namespace Assets.Scripts.Visuals.UiBuilder
             }
         }
 
+        protected virtual void MakeLayoutGroup(Data newPanelData)
+        {
+            gameObject.gameObject.GetComponent<PanelHandler>().SetLayoutDirection(newPanelData.layoutDirection);
+        }
+
         protected virtual int totalBorderHeight { get; set; } = 0;
 
-        private Atom MakeChildAtom(Atom.Data childData)
+        protected Atom MakeChildAtom(Atom.Data childData)
         {
             return childData switch
             {
@@ -147,6 +154,8 @@ namespace Assets.Scripts.Visuals.UiBuilder
                 TextAtom.Data _ => new TextAtom(uiBuilder),
                 SpacerAtom.Data _ => new SpacerAtom(uiBuilder),
                 PanelWithBorderAtom.Data _ => new PanelWithBorderAtom(uiBuilder),
+                GridAtom.Data _ => new GridAtom(uiBuilder),
+                AssetBrowserFolderAtom.Data _ => new AssetBrowserFolderAtom(uiBuilder),
                 PanelAtom.Data _ => new PanelAtom(uiBuilder),
                 PanelHeaderAtom.Data _ => new PanelHeaderAtom(uiBuilder),
                 HierarchyItemAtom.Data _ => new HierarchyItemAtom(uiBuilder),
@@ -154,9 +163,12 @@ namespace Assets.Scripts.Visuals.UiBuilder
                 NumberPropertyAtom.Data _ => new NumberPropertyAtom(uiBuilder),
                 BooleanPropertyAtom.Data _ => new BooleanPropertyAtom(uiBuilder),
                 Vector3PropertyAtom.Data _ => new Vector3PropertyAtom(uiBuilder),
+                MenuBarButtonAtom.Data _ => new MenuBarButtonAtom(uiBuilder),
                 ContextMenuTextAtom.Data _ => new ContextMenuTextAtom(uiBuilder),
                 ContextSubmenuAtom.Data _ => new ContextSubmenuAtom(uiBuilder),
                 ContextMenuSpacerAtom.Data _ => new ContextMenuSpacerAtom(uiBuilder),
+                ButtonAtom.Data _ => new ButtonAtom(uiBuilder),
+                AssetBrowserButtonAtom.Data _ => new AssetBrowserButtonAtom(uiBuilder),
                 _ => throw new ArgumentException()
             };
         }
@@ -168,11 +180,16 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
     public static class PanelPanelHelper
     {
-        public static PanelAtom.Data AddPanel(this PanelAtom.Data panelAtomData, PanelHandler.LayoutDirection layoutDirection = PanelHandler.LayoutDirection.Vertical, [CanBeNull] AtomDataList childDates = null)
+        public static PanelAtom.Data AddPanel(
+            this PanelAtom.Data panelAtomData,
+            PanelHandler.LayoutDirection layoutDirection = PanelHandler.LayoutDirection.Vertical,
+            bool useFullWidth = true,
+            [CanBeNull] AtomDataList childDates = null)
         {
             var data = new PanelAtom.Data
             {
                 layoutDirection = layoutDirection,
+                useFullWidth = useFullWidth,
                 childDates = childDates ?? new AtomDataList()
             };
 

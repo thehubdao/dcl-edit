@@ -1,4 +1,5 @@
 using Assets.Scripts.EditorState;
+using Assets.Scripts.Events;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Zenject;
@@ -20,17 +21,36 @@ namespace Assets.Scripts.System
 
         private int _lastMouseDownCalculated = -1;
 
+        private float mousesensitivity;
+
         // Dependencies
         private InputSystemAsset _inputSystemAsset;
         private UnityState _unityState;
+        private SettingsSystem _settingsSystem;
+        private EditorEvents _editorEvents;
 
         [Inject]
-        private void Construct(UnityState unityState)
+        private void Construct(
+            UnityState unityState,
+            SettingsSystem settingsSystem,
+            EditorEvents editorEvents)
         {
             _inputSystemAsset = new InputSystemAsset();
             _inputSystemAsset.Modifier.Enable();
 
             _unityState = unityState;
+            _settingsSystem = settingsSystem;
+            _editorEvents = editorEvents;
+
+
+            // mouse sensitivity
+            SetMouseSensitivity();
+            _editorEvents.onSettingsChangedEvent += SetMouseSensitivity;
+        }
+
+        private void SetMouseSensitivity()
+        {
+            mousesensitivity = _settingsSystem.mouseSensitivity.Get();
         }
 
         private void RequireMouseDowns()
@@ -75,7 +95,7 @@ namespace Assets.Scripts.System
 
         public Vector2 GetMouseMovement()
         {
-            return Mouse.current.delta.ReadValue() / 20; // divide by 20 to get a similar value to the GetAxis of the old input system
+            return (Mouse.current.delta.ReadValue() / 20) * mousesensitivity; // divide by 20 to get a similar value to the GetAxis of the old input system
         }
 
         public Vector2 GetMousePosition()
@@ -104,19 +124,38 @@ namespace Assets.Scripts.System
         /// <returns></returns>
         public Vector2 GetMousePositionInScenePanel()
         {
-            // get the mouse position
-            var mousePosition = GetMousePosition();
-            // get the rectTransform from the Panel, the scene is currently visible in
-            var sceneImageRectTransform = _unityState.SceneImage.rectTransform;
-            // Get the position of the panel. This will give us the center of the panel, because the anchor is in the Center
-            var panelPosCenter = new Vector2(sceneImageRectTransform.position.x, sceneImageRectTransform.position.y);
-            // Calculate the bottom left corner position
-            var panelPos = panelPosCenter - (sceneImageRectTransform.rect.size / 2);
-            // Calculate the mouse position inside the panel
-            var mousePosInPanel = mousePosition - panelPos;
-            // convert the mouse position in panel into Viewport space
-            var mousePosViewport = _unityState.MainCamera.ScreenToViewportPoint(mousePosInPanel);
+            Vector3[] fourCorners = new Vector3[4];
+            _unityState.SceneImage.rectTransform.GetWorldCorners(fourCorners);
+
+            Vector2 mousePosInPanel = GetMousePosition() - new Vector2(fourCorners[0].x, fourCorners[0].y);
+            Vector3 mousePosViewport = _unityState.MainCamera.ScreenToViewportPoint(mousePosInPanel);
+
             return mousePosViewport;
+        }
+
+        public bool IsMouseOverScenePanel()
+        {
+            var mousePosViewport = GetMousePositionInScenePanel();
+            // Figure out, if the mouse is over the Game window
+            return mousePosViewport.x >= 0 &&
+                    mousePosViewport.x < 1 &&
+                    mousePosViewport.y >= 0 &&
+                    mousePosViewport.y < 1;
+        }
+
+        public Vector3 GetMousePositionInScene()
+        {
+            var mousePosition = GetMousePositionInScenePanel();
+            var mouseRay = _unityState.MainCamera.ViewportPointToRay(mousePosition);
+            var farClipPlane = _unityState.MainCamera.farClipPlane;
+            if (Physics.Raycast(mouseRay, out RaycastHit hit, farClipPlane))
+            {
+                return hit.point;
+            }
+            else
+            {
+                return mouseRay.GetPoint(farClipPlane);
+            }
         }
 
         // check for mouse buttons

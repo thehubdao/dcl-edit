@@ -1,17 +1,19 @@
-using System.Collections.Generic;
-using System.Linq;
 using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
 using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
 using Assets.Scripts.Visuals.UiBuilder;
 using Assets.Scripts.Visuals.UiHandler;
+using JetBrains.Annotations;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Zenject;
+using static Assets.Scripts.Visuals.UiBuilder.UiBuilder;
 
 namespace Assets.Scripts.Visuals
 {
-    public class UiHierarchyVisuals : MonoBehaviour, ISetupSceneEventListeners
+    public class UiHierarchyVisuals : MonoBehaviour
     {
 #pragma warning disable CS0649 // Warning: Uninitialized filed. Serialized fields will be initialized by Unity
 
@@ -43,28 +45,28 @@ namespace Assets.Scripts.Visuals
         // Dependencies
         private EditorEvents events;
         private UiBuilder.UiBuilder uiBuilder;
-        private SceneDirectoryState sceneDirectoryState;
-        private CommandSystem commandSystem;
         private HierarchyChangeSystem hierarchyChangeSystem;
         private ContextMenuSystem contextMenuSystem;
+        private SceneManagerSystem sceneManagerSystem;
 
         [Inject]
         private void Construct(
             EditorEvents events,
-            UiBuilder.UiBuilder.Factory uiBuilderFactory,
-            SceneDirectoryState scene, CommandSystem commandSystem,
+            Factory uiBuilderFactory,
             HierarchyChangeSystem hierarchyChangeSystem,
-            ContextMenuSystem contextMenuSystem)
+            ContextMenuSystem contextMenuSystem,
+            SceneManagerSystem sceneManagerSystem)
         {
             this.events = events;
-            uiBuilder = uiBuilderFactory.Create(content);
-            sceneDirectoryState = scene;
-            this.commandSystem = commandSystem;
+            this.uiBuilder = uiBuilderFactory.Create(content);
             this.hierarchyChangeSystem = hierarchyChangeSystem;
             this.contextMenuSystem = contextMenuSystem;
+            this.sceneManagerSystem = sceneManagerSystem;
+
+            SetupEventListeners();
         }
 
-        public void SetupSceneEventListeners()
+        public void SetupEventListeners()
         {
             events.onHierarchyChangedEvent += MarkForUpdate;
             events.onSelectionChangedEvent += MarkForUpdate;
@@ -73,23 +75,31 @@ namespace Assets.Scripts.Visuals
 
         private void UpdateVisuals()
         {
-            var mainPanelData = new PanelAtom.Data();
+            var mainPanelData = NewPanelData();
 
+            var scene = sceneManagerSystem.GetCurrentScene();
 
-            MakeHierarchyItemsRecursive(0, sceneDirectoryState.CurrentScene!.EntitiesInSceneRoot, mainPanelData);
+            if (scene == null)
+            {
+                mainPanelData.AddTitle("No scene loaded");
+            }
+            else
+            {
+                MakeHierarchyItemsRecursive(scene, 0, scene.EntitiesInSceneRoot, mainPanelData);
 
-            mainPanelData.AddSpacer(300);
+                mainPanelData.AddSpacer(300);
+            }
 
             uiBuilder.Update(mainPanelData);
         }
 
-        private void MakeHierarchyItemsRecursive(int level, IEnumerable<DclEntity> entities, PanelAtom.Data mainPanelData)
+        private void MakeHierarchyItemsRecursive([NotNull] DclScene scene, int level, IEnumerable<DclEntity> entities, PanelAtom.Data mainPanelData)
         {
             foreach (var entity in entities)
             {
-                var isPrimarySelection = sceneDirectoryState.CurrentScene!.SelectionState.PrimarySelectedEntity == entity;
+                var isPrimarySelection = scene.SelectionState.PrimarySelectedEntity == entity;
 
-                var isSecondarySelection = sceneDirectoryState.CurrentScene!.SelectionState.SecondarySelectedEntities.Contains(entity);
+                var isSecondarySelection = scene.SelectionState.SecondarySelectedEntities.Contains(entity);
 
                 var style =
                     isPrimarySelection ?
@@ -127,7 +137,7 @@ namespace Assets.Scripts.Visuals
 
                 if (isExpanded)
                 {
-                    MakeHierarchyItemsRecursive(level + 1, entity.Children, mainPanelData);
+                    MakeHierarchyItemsRecursive(scene, level + 1, entity.Children, mainPanelData);
                 }
             }
         }

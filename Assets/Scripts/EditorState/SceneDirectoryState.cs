@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Assets.Scripts.SceneState;
 using JetBrains.Annotations;
 using UnityEngine;
@@ -11,10 +12,11 @@ namespace Assets.Scripts.EditorState
     {
         /**
          * <summary>
-         * The Path of the scene directory
+         * The Path of the scene directory. This can be null and means that the scene was not saved before
          * </summary>
          */
-        public string DirectoryPath;
+        [CanBeNull]
+        public string directoryPath = null;
 
         /**
          * <summary>
@@ -27,7 +29,7 @@ namespace Assets.Scripts.EditorState
          */
         public bool IsSceneOpened()
         {
-            return CurrentScene != null;
+            return currentScene != null;
         }
 
         /**
@@ -36,7 +38,7 @@ namespace Assets.Scripts.EditorState
          * </summary>
          */
         [CanBeNull]
-        public DclScene CurrentScene;
+        public DclScene currentScene = null;
 
         /**
          * <summary>
@@ -44,6 +46,32 @@ namespace Assets.Scripts.EditorState
          * All files, that are in the scene directory but for what ever reason not part of the scene, will stay unharmed.
          * </summary>
          */
-        public List<string> LoadedFilePathsInScene = new List<string>();
+        public List<string> loadedFilePathsInScene = new List<string>();
+
+        /**
+         * <summary>
+         * The id of the scene
+         * </summary>
+         */
+        public Guid id;
+
+        public SceneDirectoryState()
+        {
+            id = Guid.NewGuid();
+        }
+
+        public SceneDirectoryState(string directoryPath, Guid id)
+        {
+            this.directoryPath = directoryPath;
+            this.id = id;
+        }
+
+        /// <summary>
+        /// Creates a new SceneDirectoryState and ads a Scene to it.
+        /// </summary>
+        public static SceneDirectoryState CreateNewSceneDirectoryState()
+        {
+            return new SceneDirectoryState { currentScene = new DclScene() };
+        }
     }
 }

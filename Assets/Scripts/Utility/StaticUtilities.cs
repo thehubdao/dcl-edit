@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
+using UnityEditor;
 using UnityEngine;
 
 namespace Assets.Scripts.Utility
@@ -40,7 +42,7 @@ namespace Assets.Scripts.Utility
         public static string Shortened(this Guid guid)
         {
             var guidString = guid.ToString();
-            return guidString.Substring(0,4) + " ... " + guidString.Substring(guidString.Length-4, 4);
+            return guidString.Substring(0, 4) + " ... " + guidString.Substring(guidString.Length - 4, 4);
         }
 
         public static string Indent(this string value, int level)
@@ -55,6 +57,31 @@ namespace Assets.Scripts.Utility
             builder.Append(value);
 
             return builder.ToString();
+        }
+
+        public static bool PathEqual(this string self, string other)
+        {
+            var selfPath = Path.GetDirectoryName(self) + Path.DirectorySeparatorChar + Path.GetFileName(self);
+            var otherPath = Path.GetDirectoryName(other) + Path.DirectorySeparatorChar + Path.GetFileName(other);
+
+            return selfPath.Equals(otherPath);
+        }
+
+#if UNITY_EDITOR
+        [MenuItem("Edit/Unlock Reload Assemblies")]
+        public static void UnlockAssemblies()
+        {
+            EditorApplication.UnlockReloadAssemblies();
+        }
+#endif // UNITY_EDITOR
+
+        public static void SetLayerRecursive(GameObject gameObject, LayerMask layer)
+        {
+            gameObject.layer = layer;
+            foreach (Transform child in gameObject.transform)
+            {
+                SetLayerRecursive(child.gameObject, layer);
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 using Assets.Scripts.Command;
 using System;
 using System.Collections.Generic;
+using Assets.Scripts.SceneState;
 using UnityEngine;
 
 public class CommandFactorySystem
@@ -44,5 +45,21 @@ public class CommandFactorySystem
     public ChangeSelection CreateChangeSelection(Guid oldPrimary, IEnumerable<Guid> oldSecondary, Guid newPrimary, IEnumerable<Guid> newSecondary)
     {
         return new ChangeSelection(oldPrimary, oldSecondary, newPrimary, newSecondary);
+    }
+
+    // Duplicate Entity
+    public DuplicateEntity CreateDuplicateEntity(Guid entityId)
+    {
+        return new DuplicateEntity(entityId);
+    }
+
+    public AddModelAssetToScene CreateAddModelAssetToScene(Guid entityId, string entityCustomName, Guid assetId, Vector3 positionInScene)
+    {
+        return new AddModelAssetToScene(entityId, entityCustomName, assetId, positionInScene);
+    }
+    
+    public RemoveComponent CreateRemoveComponent(Guid entityId, DclComponent component)
+    {
+        return new RemoveComponent(entityId, component);
     }
 }

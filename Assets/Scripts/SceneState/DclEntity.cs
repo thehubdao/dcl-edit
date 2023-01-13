@@ -4,6 +4,7 @@ using System.Linq;
 using Assets.Scripts.Utility;
 using JetBrains.Annotations;
 using UnityEngine;
+using static UnityEngine.EventSystems.EventTrigger;
 
 
 namespace Assets.Scripts.SceneState
@@ -82,6 +83,13 @@ namespace Assets.Scripts.SceneState
             component.Entity = this;
             Components.Add(component);
         }
+        
+        public void RemoveComponent(DclComponent component)
+        {
+            component.Entity = null;
+            if(!Components.Remove(component))
+                Debug.Log("No Component on Entity");
+        }
 
         public DclComponent GetComponentByName(string name)
         {
@@ -115,13 +123,54 @@ namespace Assets.Scripts.SceneState
         {
             return names.Any(name => Components.Exists(c => c.NameInCode == name));
         }
-
         public DclEntity(Guid id, string name = "", Guid parentId = default, bool isExposed = false)
         {
             Id = id;
             _customName = name;
             _parentId = parentId;
             IsExposed = isExposed;
+        }
+        public Guid GenerateSeededGuid(System.Random seed)
+        {
+            //var r = new System.Random(seed);
+            var guid = new byte[16];
+            seed.NextBytes(guid);
+
+            return new Guid(guid);
+        }
+
+        private System.Random _random;
+        public DclEntity DeepCopy(DclScene sceneState, System.Random random)
+        {
+            DclEntity deepcopyEntity = new DclEntity(Id, CustomName, _parentId, true);
+
+            if (random != null)
+            {
+                _random = random;
+            }
+
+            random ??= _random;
+
+            deepcopyEntity.Id = GenerateSeededGuid(random);
+
+            foreach (var component in this.Components)
+            {
+                DclComponent newComponent = component.DeepCopy();
+                newComponent.Entity = deepcopyEntity;
+                deepcopyEntity.AddComponent(newComponent);
+            }
+            
+            sceneState.AddEntity(deepcopyEntity);
+            
+            if (Children.ToList().Count > 0)
+            {
+                foreach (var child in Children.ToList())
+                {
+                    DclEntity newChild = child.DeepCopy(sceneState, random);
+                    newChild.Parent = deepcopyEntity;
+                }
+            }
+            return deepcopyEntity;
         }
     }
 }
