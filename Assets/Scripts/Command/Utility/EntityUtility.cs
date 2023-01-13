@@ -24,5 +24,10 @@ namespace Assets.Scripts.Command.Utility
             var transformComponent = new DclTransformComponent();
             entity.AddComponent(transformComponent);
         }
+
+        public static void AddComponent(DclEntity dclEntity, DclComponent.ComponentDefinition component)
+        {
+            dclEntity.AddComponent(new DclComponent(component));
+        }
     }
 }

@@ -26,8 +26,12 @@ namespace Assets.Scripts.System
             this.entityPresetSystem = entityPresetSystem;
         }
 
-        // Add an empty entity with a specific parent
-        public void AddEmptyEntity(DclEntity parent)
+        public IEnumerable<EntityPresetState.EntityPreset> GetPresets()
+        {
+            return entityPresetSystem.availablePresets;
+        }
+
+        public void AddEntityFromPreset(EntityPresetState.EntityPreset preset, Guid parentId)
         {
             var scene = sceneManagerSystem.GetCurrentScene();
             if (scene == null)
@@ -35,27 +39,12 @@ namespace Assets.Scripts.System
                 return;
             }
 
-            var selectionState = scene.SelectionState;
-            var command = commandSystem.CommandFactory.CreateAddEntity(
-                "Empty Entity",
-                parent.Id,
-                selectionState.PrimarySelectedEntity?.Id ?? Guid.Empty,
-                selectionState.SecondarySelectedEntities.Select(e => e.Id));
-            commandSystem.ExecuteCommand(command);
-        }
-
-        public IEnumerable<EntityPresetSystem.AvailablePreset> GetPresets()
-        {
-            return entityPresetSystem.availablePresets;
-        }
-
-        public void AddEntityFromPreset(int presetIndex)
-        {
-            var template = entityPresetSystem.GetTemplate(presetIndex);
-
-            Debug.Log($"Adding entity preset \"{entityPresetSystem.GetName(presetIndex)}\" (order: {presetIndex})");
-
-            // TODO: Duplicate entity in command
+            commandSystem.ExecuteCommand(
+                commandSystem.CommandFactory.CreateAddEntity(
+                    preset,
+                    parentId,
+                    scene.SelectionState.PrimarySelectedEntity.Id,
+                    scene.SelectionState.SecondarySelectedEntities.Select(e => e.Id)));
         }
     }
 }

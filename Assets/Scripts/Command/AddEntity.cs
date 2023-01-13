@@ -2,16 +2,16 @@ using Assets.Scripts.Command.Utility;
 using Assets.Scripts.Events;
 using Assets.Scripts.SceneState;
 using Assets.Scripts.Utility;
-using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Assets.Scripts.EditorState;
 
 namespace Assets.Scripts.Command
 {
     public class AddEntity : SceneState.Command
     {
-        private readonly string name;
+        private readonly EntityPresetState.EntityPreset preset;
 
         private readonly Guid parent;
 
@@ -19,10 +19,10 @@ namespace Assets.Scripts.Command
 
         private readonly SelectionUtility.SelectionWrapper oldSelection;
 
-        public AddEntity(Guid oldPrimarySelection, IEnumerable<Guid> oldSecondarySelection, string name = "", Guid? parent = default)
+        public AddEntity(Guid oldPrimarySelection, IEnumerable<Guid> oldSecondarySelection, EntityPresetState.EntityPreset preset, Guid parent = default)
         {
-            this.name = name;
-            this.parent = parent ?? default;
+            this.preset = preset;
+            this.parent = parent;
             id = Guid.NewGuid();
             oldSelection = new SelectionUtility.SelectionWrapper
             {
@@ -32,13 +32,19 @@ namespace Assets.Scripts.Command
         }
 
         public override string Name => "Add Entity";
-        public override string Description => $"Adding Entity \"{name}\" with id \"{id.Shortened()}\"" + (parent != default ? $" as Child to {parent.Shortened()}" : "");
+        public override string Description => $"Adding Entity \"{preset.name}\" with id \"{id.Shortened()}\"" + (parent != default ? $" as Child to {parent.Shortened()}" : "");
 
         public override void Do(DclScene sceneState, EditorEvents editorEvents)
         {
-            var e = EntityUtility.AddEntity(sceneState, id, name, parent);
+            var e = EntityUtility.AddEntity(sceneState, id, preset.name, parent);
 
             EntityUtility.AddDefaultTransformComponent(e);
+
+            foreach (var component in preset.components)
+            {
+                EntityUtility.AddComponent(e, component);
+            }
+
             SelectionUtility.SetSelection(sceneState, id);
 
             editorEvents.InvokeHierarchyChangedEvent();

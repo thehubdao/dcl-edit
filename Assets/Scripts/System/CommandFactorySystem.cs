@@ -1,6 +1,7 @@
 using Assets.Scripts.Command;
 using System;
 using System.Collections.Generic;
+using Assets.Scripts.EditorState;
 using Assets.Scripts.SceneState;
 using UnityEngine;
 
@@ -68,8 +69,8 @@ public class CommandFactorySystem
         return new RemoveComponent(entityId, component);
     }
 
-    public AddEntity CreateAddEntity(string name, Guid? parent, Guid oldPrimarySelection, IEnumerable<Guid> oldSecondarySelection)
+    public AddEntity CreateAddEntity(EntityPresetState.EntityPreset preset, Guid parent, Guid oldPrimarySelection, IEnumerable<Guid> oldSecondarySelection)
     {
-        return new AddEntity(oldPrimarySelection, oldSecondarySelection, name, parent);
+        return new AddEntity(oldPrimarySelection, oldSecondarySelection, preset, parent);
     }
 }

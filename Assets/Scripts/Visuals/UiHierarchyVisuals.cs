@@ -122,17 +122,9 @@ namespace Assets.Scripts.Visuals
                     {
                         var addEntityMenuItems = new List<ContextMenuItem>();
 
-                        var lastCategoryNumber = 0;
                         foreach (var preset in hierarchyContextMenuSystem.GetPresets())
                         {
-                            var categoryNumber = preset.index / 1000; // Implicit Floor
-                            if (categoryNumber > lastCategoryNumber)
-                            {
-                                addEntityMenuItems.Add(new ContextMenuSpacerItem());
-                                lastCategoryNumber = categoryNumber;
-                            }
-
-                            addEntityMenuItems.Add(new ContextMenuTextItem(preset.name, () => hierarchyContextMenuSystem.AddEntityFromPreset(preset.index)));
+                            addEntityMenuItems.Add(new ContextMenuTextItem(preset.name, () => hierarchyContextMenuSystem.AddEntityFromPreset(preset, entity.Id)));
                         }
 
                         contextMenuSystem.OpenMenu(clickPosition, new List<ContextMenuItem>

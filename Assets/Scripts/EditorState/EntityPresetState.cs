@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Assets.Scripts.SceneState;
+using Zenject;
 
 namespace Assets.Scripts.EditorState
 {
@@ -11,56 +12,73 @@ namespace Assets.Scripts.EditorState
             public List<DclComponent.ComponentDefinition> components;
         }
 
+        // Dependencies
+        private AvailableComponentsState availableComponentsState;
+
+        [Inject]
+        private void Construct(AvailableComponentsState availableComponentsState)
+        {
+            this.availableComponentsState = availableComponentsState;
+
+            FillBuildInPresets();
+        }
+
+
         public IEnumerable<EntityPreset> allEntityPresets => buildInPresets;
 
 
-        private readonly IReadOnlyList<EntityPreset> buildInPresets = new List<EntityPreset>
+        private IReadOnlyList<EntityPreset> buildInPresets;
+
+        private void FillBuildInPresets()
         {
-            new EntityPreset
+            buildInPresets = new List<EntityPreset>
             {
-                name = "Empty Entity",
-                components = new List<DclComponent.ComponentDefinition>()
-            },
-            new EntityPreset
-            {
-                name = "Box Entity",
-                components = new List<DclComponent.ComponentDefinition>
+                new EntityPreset
                 {
-                    new DclComponent.ComponentDefinition("BoxShape", "Shape")
-                }
-            },
-            new EntityPreset
-            {
-                name = "Sphere Entity",
-                components = new List<DclComponent.ComponentDefinition>
+                    name = "Empty Entity",
+                    components = new List<DclComponent.ComponentDefinition>()
+                },
+                new EntityPreset
                 {
-                    new DclComponent.ComponentDefinition("SphereShape", "Shape")
-                }
-            },
-            new EntityPreset
-            {
-                name = "Plane Entity",
-                components = new List<DclComponent.ComponentDefinition>
+                    name = "Box Entity",
+                    components = new List<DclComponent.ComponentDefinition>
+                    {
+                        availableComponentsState.GetComponentDefinitionByName("BoxShape")
+                    }
+                },
+                new EntityPreset
                 {
-                    new DclComponent.ComponentDefinition("PlaneShape", "Shape")
-                }
-            },
-            new EntityPreset
-            {
-                name = "Cylinder Entity",
-                components = new List<DclComponent.ComponentDefinition>
+                    name = "Sphere Entity",
+                    components = new List<DclComponent.ComponentDefinition>
+                    {
+                        availableComponentsState.GetComponentDefinitionByName("SphereShape")
+                    }
+                },
+                new EntityPreset
                 {
-                    new DclComponent.ComponentDefinition("CylinderShape", "Shape")
-                }
-            },
-            new EntityPreset
-            {
-                name = "Cone Entity",
-                components = new List<DclComponent.ComponentDefinition>
+                    name = "Plane Entity",
+                    components = new List<DclComponent.ComponentDefinition>
+                    {
+                        availableComponentsState.GetComponentDefinitionByName("PlaneShape")
+                    }
+                },
+                new EntityPreset
                 {
-                    new DclComponent.ComponentDefinition("ConeShape", "Shape")
+                    name = "Cylinder Entity",
+                    components = new List<DclComponent.ComponentDefinition>
+                    {   
+                        availableComponentsState.GetComponentDefinitionByName("CylinderShape")
+                    }
+                },
+                new EntityPreset
+                {
+                    name = "Cone Entity",
+                    components = new List<DclComponent.ComponentDefinition>
+                    {
+                        availableComponentsState.GetComponentDefinitionByName("ConeShape")
+                    }
                 }
-            }
-        };
+            };
+        }
     }
 }
