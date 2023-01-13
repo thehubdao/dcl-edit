@@ -468,9 +468,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 20aa3b53ce8f7e143a467574f2be2161, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  groundTemplate: {fileID: 712689250049334220, guid: cf30ed2a2f96e6c4faf3d0d8dc89ec68, type: 3}
-  createDistance: 10
-  destroyDistance: 13
+  _groundTemplate: {fileID: 712689250049334220, guid: cf30ed2a2f96e6c4faf3d0d8dc89ec68, type: 3}
+  _createDistance: 10
+  _destroyDistance: 13
 --- !u!1 &489313585
 GameObject:
   m_ObjectHideFlags: 0
