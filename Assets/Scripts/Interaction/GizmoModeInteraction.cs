@@ -1,19 +1,20 @@
 ﻿using Assets.Scripts.EditorState;
-using Assets.Scripts.Events;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Zenject;
 
 namespace Assets.Scripts.Interaction
 {
-    public class GizmoModeInteraction : MonoBehaviour
+    public class GizmoModeInteraction : MonoBehaviour, IPointerDownHandler, IPointerEnterHandler, IPointerExitHandler
     {
         private GizmoState _gizmoState;
 
         public GameObject _translateButton;
         public GameObject _rotateButton;
         public GameObject _scaleButton;
+
+        public bool IsMouseOverGizmoModeMenu { get; set; }
 
         [Inject]
         private void Construct(GizmoState gizmoState)
@@ -45,6 +46,20 @@ namespace Assets.Scripts.Interaction
         public void SetManipulatorScale()
         {
             _gizmoState.CurrentMode = GizmoState.Mode.Scale;
+        }
+        public void OnPointerDown(PointerEventData eventData)
+        {
+            this.gameObject.GetComponent<Button>().onClick.Invoke();
+        }
+
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            IsMouseOverGizmoModeMenu = true;
+        }
+
+        public void OnPointerExit(PointerEventData eventData)
+        {
+            IsMouseOverGizmoModeMenu = false;
         }
     }
 }
