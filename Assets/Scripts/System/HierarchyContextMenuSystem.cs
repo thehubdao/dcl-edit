@@ -43,7 +43,7 @@ namespace Assets.Scripts.System
                 commandSystem.CommandFactory.CreateAddEntity(
                     preset,
                     parentId,
-                    scene.SelectionState.PrimarySelectedEntity.Id,
+                    scene.SelectionState.PrimarySelectedEntity?.Id ?? Guid.Empty,
                     scene.SelectionState.SecondarySelectedEntities.Select(e => e.Id)));
         }
     }
