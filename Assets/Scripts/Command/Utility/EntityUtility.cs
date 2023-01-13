@@ -3,7 +3,7 @@ using System;
 
 namespace Assets.Scripts.Command.Utility
 {
-    public class EntityUtility
+    public static class EntityUtility
     {
         public static DclEntity AddEntity(DclScene scene, Guid id, string name, Guid parent = default)
         {

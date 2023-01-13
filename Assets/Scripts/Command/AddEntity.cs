@@ -36,13 +36,13 @@ namespace Assets.Scripts.Command
 
         public override void Do(DclScene sceneState, EditorEvents editorEvents)
         {
-            var e = EntityUtility.AddEntity(sceneState, id, preset.name, parent);
+            var entity = EntityUtility.AddEntity(sceneState, id, preset.name, parent);
 
-            EntityUtility.AddDefaultTransformComponent(e);
+            EntityUtility.AddDefaultTransformComponent(entity);
 
             foreach (var component in preset.components)
             {
-                EntityUtility.AddComponent(e, component);
+                EntityUtility.AddComponent(entity, component);
             }
 
             SelectionUtility.SetSelection(sceneState, id);
