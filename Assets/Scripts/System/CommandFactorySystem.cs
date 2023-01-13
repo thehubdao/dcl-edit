@@ -68,3 +68,4 @@ public class CommandFactorySystem
         return new RemoveEntity(entity);
     }
 }
+

@@ -17,9 +17,8 @@ namespace Assets.Scripts.Command.Utility
         public static DclEntity AddEntity(DclScene scene, Guid id, string name, DclEntity parent = null)
         {
             DclEntity entity = new DclEntity(id, name, parent?.Id ?? Guid.Empty);
-
             scene.AddEntity(entity);
-
+            
             return entity;
         }
 
@@ -33,7 +32,6 @@ namespace Assets.Scripts.Command.Utility
         {
             entity.Parent = parent;
             scene.AddEntity(entity);
-            //scene.SelectionState.PrimarySelectedEntity = entity;
         }
 
         /// <summary>
