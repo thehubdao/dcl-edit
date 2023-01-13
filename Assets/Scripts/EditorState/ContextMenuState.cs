@@ -31,19 +31,46 @@ namespace Assets.Scripts.EditorState
                 Left,
                 Right
             }
-            public Direction expandDirection;               // Which direction should the menu expand to when placed at this position.
+            public Direction expandDirection; // Which direction should the menu expand to when placed at this position.
             public Vector3 position;
+        }
+
+        /// <summary>
+        /// Sort all the items in the context menu and all sub menues by their sortingPriotiry.
+        /// </summary>
+        /// <param name="items">The context menu to sort.</param>
+        public static void SortItems(List<ContextMenuItem> items)
+        {
+            items.Sort(delegate (ContextMenuItem itemX, ContextMenuItem itemY) { return itemX.sortingPriotiry.CompareTo(itemY.sortingPriotiry); });
+
+            // sort sub menu recursively
+            foreach (var item in items)
+            {
+                if (item is ContextSubmenuItem)
+                {
+                    SortItems(((ContextSubmenuItem)item).items);
+                }
+            }
         }
     }
 
-    public abstract class ContextMenuItem { }
+    public abstract class ContextMenuItem
+    {
+        public int sortingPriotiry = 0;
+
+        public ContextMenuItem(int sortingPriority = 0)
+        {
+            this.sortingPriotiry = sortingPriority;
+        }
+    }
+
     public class ContextSubmenuItem : ContextMenuItem
     {
         public Guid submenuId;
         public string title;
         public List<ContextMenuItem> items;
 
-        public ContextSubmenuItem(string title, List<ContextMenuItem> subItems = null)
+        public ContextSubmenuItem(string title, List<ContextMenuItem> subItems = null, int sortingPriority = 0) : base(sortingPriority)
         {
             this.submenuId = Guid.NewGuid();
             this.title = title;
@@ -63,12 +90,16 @@ namespace Assets.Scripts.EditorState
         public UnityAction onClick;
         public bool isDisabled;
 
-        public ContextMenuTextItem(string title, UnityAction onClick, bool isDisabled = false)
+        public ContextMenuTextItem(string title, UnityAction onClick, bool isDisabled = false, int sortingPriority = 0) : base(sortingPriority)
         {
             this.title = title;
             this.onClick = onClick;
             this.isDisabled = isDisabled;
         }
     }
-    public class ContextMenuSpacerItem : ContextMenuItem { }
+    public class ContextMenuSpacerItem : ContextMenuItem
+    {
+        public ContextMenuSpacerItem(int sortingPriority = 0) : base(sortingPriority)
+        { }
+    }
 }
