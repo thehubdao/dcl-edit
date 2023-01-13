@@ -298,6 +298,14 @@
                     "interactions": "Press(behavior=1)"
                 },
                 {
+                    "name": "ToggleSnapping",
+                    "type": "Button",
+                    "id": "30c8f0b7-9c09-4d01-a673-b0dee31ee0f5",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Press(behavior=1)"
+                },
+                {
                     "name": "Translate",
                     "type": "Button",
                     "id": "ae1e3c65-3c80-4b5d-ae3a-fce036399c9c",
@@ -493,6 +501,39 @@
                     "processors": "",
                     "groups": "",
                     "action": "Duplicate",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "Button With One Modifier",
+                    "id": "778f8507-169a-4042-af00-b6ea206f84b5",
+                    "path": "ButtonWithOneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ToggleSnapping",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier",
+                    "id": "a7484515-d2ca-4056-8a25-5cf0d9c869df",
+                    "path": "<Keyboard>/ctrl",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ToggleSnapping",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "button",
+                    "id": "f1c2d4bf-b4c2-4325-ba6e-4209a6588ec7",
+                    "path": "<Keyboard>/m",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ToggleSnapping",
                     "isComposite": false,
                     "isPartOfComposite": true
                 }

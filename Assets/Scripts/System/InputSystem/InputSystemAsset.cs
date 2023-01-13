@@ -311,6 +311,14 @@ public class @InputSystemAsset : IInputActionCollection, IDisposable
                     ""interactions"": ""Press(behavior=1)""
                 },
                 {
+                    ""name"": ""ToggleSnapping"",
+                    ""type"": ""Button"",
+                    ""id"": ""30c8f0b7-9c09-4d01-a673-b0dee31ee0f5"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": ""Press(behavior=1)""
+                },
+                {
                     ""name"": ""Translate"",
                     ""type"": ""Button"",
                     ""id"": ""ae1e3c65-3c80-4b5d-ae3a-fce036399c9c"",
@@ -508,6 +516,39 @@ public class @InputSystemAsset : IInputActionCollection, IDisposable
                     ""action"": ""Duplicate"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Button With One Modifier"",
+                    ""id"": ""778f8507-169a-4042-af00-b6ea206f84b5"",
+                    ""path"": ""ButtonWithOneModifier"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ToggleSnapping"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier"",
+                    ""id"": ""a7484515-d2ca-4056-8a25-5cf0d9c869df"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ToggleSnapping"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""button"",
+                    ""id"": ""f1c2d4bf-b4c2-4325-ba6e-4209a6588ec7"",
+                    ""path"": ""<Keyboard>/m"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ToggleSnapping"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         },
@@ -591,6 +632,7 @@ public class @InputSystemAsset : IInputActionCollection, IDisposable
         m_Hotkeys_Undo = m_Hotkeys.FindAction("Undo", throwIfNotFound: true);
         m_Hotkeys_Redo = m_Hotkeys.FindAction("Redo", throwIfNotFound: true);
         m_Hotkeys_Save = m_Hotkeys.FindAction("Save", throwIfNotFound: true);
+        m_Hotkeys_ToggleSnapping = m_Hotkeys.FindAction("ToggleSnapping", throwIfNotFound: true);
         m_Hotkeys_Translate = m_Hotkeys.FindAction("Translate", throwIfNotFound: true);
         m_Hotkeys_Rotate = m_Hotkeys.FindAction("Rotate", throwIfNotFound: true);
         m_Hotkeys_Scale = m_Hotkeys.FindAction("Scale", throwIfNotFound: true);
@@ -717,6 +759,7 @@ public class @InputSystemAsset : IInputActionCollection, IDisposable
     private readonly InputAction m_Hotkeys_Undo;
     private readonly InputAction m_Hotkeys_Redo;
     private readonly InputAction m_Hotkeys_Save;
+    private readonly InputAction m_Hotkeys_ToggleSnapping;
     private readonly InputAction m_Hotkeys_Translate;
     private readonly InputAction m_Hotkeys_Rotate;
     private readonly InputAction m_Hotkeys_Scale;
@@ -728,6 +771,7 @@ public class @InputSystemAsset : IInputActionCollection, IDisposable
         public InputAction @Undo => m_Wrapper.m_Hotkeys_Undo;
         public InputAction @Redo => m_Wrapper.m_Hotkeys_Redo;
         public InputAction @Save => m_Wrapper.m_Hotkeys_Save;
+        public InputAction @ToggleSnapping => m_Wrapper.m_Hotkeys_ToggleSnapping;
         public InputAction @Translate => m_Wrapper.m_Hotkeys_Translate;
         public InputAction @Rotate => m_Wrapper.m_Hotkeys_Rotate;
         public InputAction @Scale => m_Wrapper.m_Hotkeys_Scale;
@@ -750,6 +794,9 @@ public class @InputSystemAsset : IInputActionCollection, IDisposable
                 @Save.started -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnSave;
                 @Save.performed -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnSave;
                 @Save.canceled -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnSave;
+                @ToggleSnapping.started -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnToggleSnapping;
+                @ToggleSnapping.performed -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnToggleSnapping;
+                @ToggleSnapping.canceled -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnToggleSnapping;
                 @Translate.started -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnTranslate;
                 @Translate.performed -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnTranslate;
                 @Translate.canceled -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnTranslate;
@@ -775,6 +822,9 @@ public class @InputSystemAsset : IInputActionCollection, IDisposable
                 @Save.started += instance.OnSave;
                 @Save.performed += instance.OnSave;
                 @Save.canceled += instance.OnSave;
+                @ToggleSnapping.started += instance.OnToggleSnapping;
+                @ToggleSnapping.performed += instance.OnToggleSnapping;
+                @ToggleSnapping.canceled += instance.OnToggleSnapping;
                 @Translate.started += instance.OnTranslate;
                 @Translate.performed += instance.OnTranslate;
                 @Translate.canceled += instance.OnTranslate;
@@ -853,6 +903,7 @@ public class @InputSystemAsset : IInputActionCollection, IDisposable
         void OnUndo(InputAction.CallbackContext context);
         void OnRedo(InputAction.CallbackContext context);
         void OnSave(InputAction.CallbackContext context);
+        void OnToggleSnapping(InputAction.CallbackContext context);
         void OnTranslate(InputAction.CallbackContext context);
         void OnRotate(InputAction.CallbackContext context);
         void OnScale(InputAction.CallbackContext context);

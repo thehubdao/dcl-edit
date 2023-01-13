@@ -28,6 +28,7 @@ namespace Assets.Scripts.Interaction
         private ContextMenuSystem contextMenuSystem;
         private SceneManagerSystem sceneManagerSystem;
         private GizmoToolInteraction gizmoToolInteraction;
+        private SettingsSystem settingsSystem;
 
         [Inject]
         private void Construct(
@@ -43,7 +44,8 @@ namespace Assets.Scripts.Interaction
             EntitySelectSystem entitySelectSystem,
             ContextMenuSystem contextMenuSystem,
             SceneManagerSystem sceneManagerSystem,
-            GizmoToolInteraction gizmoToolInteraction)
+            GizmoToolInteraction gizmoToolInteraction,
+            SettingsSystem settingsSystem)
         {
             this.sceneSaveSystem = sceneSaveSystem;
             this.commandSystem = commandSystem;
@@ -58,6 +60,7 @@ namespace Assets.Scripts.Interaction
             this.contextMenuSystem = contextMenuSystem;
             this.sceneManagerSystem = sceneManagerSystem;
             this.gizmoToolInteraction = gizmoToolInteraction;
+            this.settingsSystem = settingsSystem;
         }
 
 
@@ -325,6 +328,12 @@ namespace Assets.Scripts.Interaction
             if (inputSystemAsset.Hotkeys.Scale.triggered)
             {
                 gizmoState.CurrentMode = GizmoState.Mode.Scale;
+            }
+
+            // When pressing ToggleSnapping hot key, toggle snapping setting
+            if (inputSystemAsset.Hotkeys.ToggleSnapping.triggered)
+            {
+                settingsSystem.gizmoToolSnapping.Set(!settingsSystem.gizmoToolSnapping.Get());
             }
         }
 
