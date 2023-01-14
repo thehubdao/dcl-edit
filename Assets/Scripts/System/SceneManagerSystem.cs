@@ -18,8 +18,9 @@ namespace Assets.Scripts.System
     {
         // Dependencies
         private SceneManagerState sceneManagerState;
-        private PathState pathState;
-        private SceneLoadSaveSystem sceneLoadSaveSystem;
+        private IPathState pathState;
+        private ISceneLoadSystem sceneLoadSystem;
+        private ISceneSaveSystem sceneSaveSystem;
         private CheckVersionSystem checkVersionSystem;
         private WorkspaceSaveSystem workspaceSaveSystem;
         private TypeScriptGenerationSystem typeScriptGenerationSystem;
@@ -29,8 +30,9 @@ namespace Assets.Scripts.System
         [Inject]
         public void Construct(
             SceneManagerState sceneManagerState,
-            PathState pathState,
-            SceneLoadSaveSystem sceneLoadSaveSystem,
+            IPathState pathState,
+            ISceneLoadSystem sceneLoadSystem,
+            ISceneSaveSystem sceneSaveSystem,
             CheckVersionSystem checkVersionSystem,
             WorkspaceSaveSystem workspaceSaveSystem,
             TypeScriptGenerationSystem typeScriptGenerationSystem,
@@ -39,7 +41,8 @@ namespace Assets.Scripts.System
         {
             this.sceneManagerState = sceneManagerState;
             this.pathState = pathState;
-            this.sceneLoadSaveSystem = sceneLoadSaveSystem;
+            this.sceneLoadSystem = sceneLoadSystem;
+            this.sceneSaveSystem = sceneSaveSystem;
             this.checkVersionSystem = checkVersionSystem;
             this.workspaceSaveSystem = workspaceSaveSystem;
             this.typeScriptGenerationSystem = typeScriptGenerationSystem;
@@ -181,7 +184,7 @@ namespace Assets.Scripts.System
             }
             else
             {
-                sceneLoadSaveSystem.Save(sceneDirectoryState);
+                sceneSaveSystem.Save(sceneDirectoryState);
                 workspaceSaveSystem.Save(); // TODO: Save the workspace under proper conditions.
                 typeScriptGenerationSystem.GenerateTypeScript();
             }
@@ -296,12 +299,12 @@ namespace Assets.Scripts.System
             switch (sceneDirectoryState.dclEditVersion)
             {
                 case DclEditVersion.Alpha:
-                    sceneLoadSaveSystem.LoadV1(sceneDirectoryState);
+                    sceneLoadSystem.LoadV1(sceneDirectoryState);
                     break;
                 case DclEditVersion.Beta:
                     //TODO Implement a version check (i.e. 2.0)
                     //TODO Display a message, that the user should update dcl-edit and exit after user input 
-                    sceneLoadSaveSystem.Load(sceneDirectoryState);
+                    sceneLoadSystem.Load(sceneDirectoryState);
                     break;
                 default:
                     throw new ArgumentException("Scene directory state is neither alpha nor beta");

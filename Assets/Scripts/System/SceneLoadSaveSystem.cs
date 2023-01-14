@@ -26,6 +26,7 @@ namespace Assets.Scripts.System
     public interface ISceneLoadSystem
     {
         void Load(SceneDirectoryState sceneDirectoryState);
+        void LoadV1(SceneDirectoryState sceneDirectoryState);
     }
 
     public interface ISceneSaveSystem

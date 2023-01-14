@@ -36,9 +36,9 @@ public class DclEditorInstaller : MonoInstaller
 
     public override void InstallBindings()
     {
-        Container.BindInterfacesAndSelfTo<LoadFromVersion1System>().AsSingle();
+        Container.Bind<LoadFromVersion1System>().To<LoadFromVersion1System>().AsSingle();
 
-        Container.BindInterfacesAndSelfTo<SceneLoadSaveSystem>().AsSingle();
+        Container.Bind(typeof(ISceneLoadSystem), typeof(ISceneSaveSystem)).To<SceneLoadSaveSystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<CommandSystem>().AsSingle();
 
@@ -149,7 +149,7 @@ public class DclEditorInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<MenuBarState>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<MenuBarSystem>().AsSingle();
-        
+
         Container.BindInterfacesAndSelfTo<CheckVersionSystem>().AsSingle();
     }
 }
