@@ -37,7 +37,6 @@ namespace Assets.Scripts.System
     public class SceneLoadSaveSystem : ISceneLoadSystem, ISceneSaveSystem
     {
         // Dependencies
-        private IPathState _pathState;
         private LoadFromVersion1System loadFromVersion1System;
 
         [Inject]
@@ -47,10 +46,6 @@ namespace Assets.Scripts.System
             this.loadFromVersion1System = loadFromVersion1System;
         }
         
-        public SceneLoadSaveSystem(IPathState pathState)
-        {
-            _pathState = pathState;
-        }
 
         /// <summary>
         /// Save a dcl-edit beta scene

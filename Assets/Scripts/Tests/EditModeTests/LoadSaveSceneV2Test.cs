@@ -15,7 +15,7 @@ namespace Assets.Scripts.Tests.EditModeTests
         public void LoadScene()
         {
             var pathState = new MockPathState("simple-load-test");
-            var loadSaveSystem = new SceneLoadSaveSystem(pathState);
+            var loadSaveSystem = new SceneLoadSaveSystem();
             var sceneDirectoryState = new SceneDirectoryState();
             var scenePath = pathState.ProjectPath + "/dcl-edit/saves/v2/New Scene.dclscene";
 
@@ -62,8 +62,8 @@ namespace Assets.Scripts.Tests.EditModeTests
         [Test]
         public void LoadedFilePaths()
         {
-            var pathState = new MockPathState("simple-load-test", true);
-            var loadSaveSystem = new SceneLoadSaveSystem(pathState);
+            MockPathState pathState = new MockPathState("simple-load-test", true);
+            SceneLoadSaveSystem loadSaveSystem = new SceneLoadSaveSystem();
             var scenePath = pathState.ProjectPath + "/dcl-edit/saves/v2/New Scene.dclscene";
 
             // Load scene, add a entity, save, remove a entity, and save again. This should result in the original scene
