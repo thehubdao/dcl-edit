@@ -27,7 +27,7 @@ namespace Assets.Scripts.Tests.EditModeTests
 
             Assert.NotNull(scene);
 
-            Assert.AreEqual("New Scene", scene.name);
+            Assert.AreEqual("New Scene", sceneDirectoryState.name);
             Assert.AreEqual(2, scene.AllEntities.Count());
 
             var cubeEnt = scene.GetEntityById(Guid.Parse("733338c0-c576-4465-975b-248e9e5e7b63"));

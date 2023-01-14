@@ -1,9 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
 using Assets.Scripts.SceneState;
 using JetBrains.Annotations;
-using UnityEngine;
+using System;
+using System.Collections.Generic;
 
 
 namespace Assets.Scripts.EditorState
@@ -54,6 +52,8 @@ namespace Assets.Scripts.EditorState
          * </summary>
          */
         public Guid id;
+
+        public string name = "New Scene";
 
         public SceneDirectoryState()
         {

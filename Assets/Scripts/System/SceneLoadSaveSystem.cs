@@ -57,7 +57,6 @@ namespace Assets.Scripts.System
         /// <param name="sceneDirectoryState">The directory state of the scene</param>
         public void Save(SceneDirectoryState sceneDirectoryState)
         {
-            DclSceneData sceneData = new DclSceneData(sceneDirectoryState.currentScene);
             string sceneDirPath = sceneDirectoryState.directoryPath;
 
             // Create scene directory in case it does not exist
@@ -187,16 +186,6 @@ namespace Assets.Scripts.System
             entityData.MakeEntity(scene);
         }
 
-
-        public struct DclSceneData
-        {
-            public string name;
-
-            public DclSceneData(DclScene scene)
-            {
-                this.name = scene.name;
-            }
-        }
         public struct DclEntityData
         {
             public string customName;
