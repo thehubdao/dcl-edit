@@ -1,16 +1,13 @@
+using Assets.Scripts.EditorState;
+using Assets.Scripts.SceneState;
+using JetBrains.Annotations;
+using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
 using System.Linq;
-using Assets.Scripts.EditorState;
-using Assets.Scripts.SceneState;
-using Assets.Scripts.Utility;
-using JetBrains.Annotations;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using UnityEngine;
-using Zenject;
-using Exception = System.Exception;
 using USFB;
+using Zenject;
 
 namespace Assets.Scripts.System
 {
@@ -74,7 +71,7 @@ namespace Assets.Scripts.System
                 foreach (var path in betaSceneDirectoryPaths)
                 {
                     var sceneDirectoryState = LoadSceneDirectoryState(path);
-                    
+
                     if (!sceneManagerState.TryGetDirectoryState(sceneDirectoryState.directoryPath, out sceneDirectoryState))
                     {
                         sceneManagerState.AddSceneDirectoryState(sceneDirectoryState);
@@ -89,7 +86,7 @@ namespace Assets.Scripts.System
                 var sceneDirectoryState = doAlphaFilesExist
                     ? new SceneDirectoryState(null, Guid.NewGuid(), DclEditVersion.Alpha)
                     : SceneDirectoryState.CreateNewSceneDirectoryState();
-                
+
                 //Don't have to check for duplicates since non existing / alpha scenes get converted.
                 sceneManagerState.AddSceneDirectoryState(sceneDirectoryState);
             }
@@ -322,29 +319,8 @@ namespace Assets.Scripts.System
         /// <returns>The new loaded scene.</returns>
         private SceneDirectoryState LoadSceneDirectoryState(string path)
         {
-            var sceneFileJson = Path.Combine(path, "scene.json");
-
-            SceneFileContents sceneFileContents;
-            try
-            {
-                sceneFileContents = JsonConvert.DeserializeObject<SceneFileContents>(sceneFileJson);
-            }
-            catch (Exception)
-            {
-                sceneFileContents = new SceneFileContents
-                {
-                    id = Guid.Empty,
-                    relativePath = path,
-                    settings = new JObject()
-                };
-            }
-
-            if (sceneFileContents.id == Guid.Empty)
-            {
-                sceneFileContents.id = Guid.NewGuid();
-            }
-
-            SceneDirectoryState sceneDirectoryState = new SceneDirectoryState(sceneFileContents.relativePath, sceneFileContents.id, DclEditVersion.Beta);
+            SceneDirectoryState sceneDirectoryState = new SceneDirectoryState(path, Guid.NewGuid());
+            sceneLoadSystem.Load(sceneDirectoryState);
             sceneManagerState.AddSceneDirectoryState(sceneDirectoryState);
             return sceneDirectoryState;
         }
@@ -361,12 +337,13 @@ namespace Assets.Scripts.System
             menuBarSystem.AddMenuItem("File/Save Scene", SaveCurrentScene);
             menuBarSystem.AddMenuItem("File/Save Scene As...", SaveCurrentSceneAs);
         }
-        
-        private struct SceneFileContents
+
+        public struct SceneFileContents
         {
             public Guid id;
             public string relativePath;
             public JObject settings;
+            public DclEditVersion dclEditVersion;
         }
     }
 }
