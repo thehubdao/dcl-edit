@@ -21,6 +21,7 @@ namespace Assets.Scripts.System
         private IPathState pathState;
         private ISceneLoadSystem sceneLoadSystem;
         private ISceneSaveSystem sceneSaveSystem;
+        private SceneSettingState sceneSettingState;
         private CheckVersionSystem checkVersionSystem;
         private WorkspaceSaveSystem workspaceSaveSystem;
         private TypeScriptGenerationSystem typeScriptGenerationSystem;
@@ -33,6 +34,7 @@ namespace Assets.Scripts.System
             IPathState pathState,
             ISceneLoadSystem sceneLoadSystem,
             ISceneSaveSystem sceneSaveSystem,
+            SceneSettingState sceneSettingState,
             CheckVersionSystem checkVersionSystem,
             WorkspaceSaveSystem workspaceSaveSystem,
             TypeScriptGenerationSystem typeScriptGenerationSystem,
@@ -43,6 +45,7 @@ namespace Assets.Scripts.System
             this.pathState = pathState;
             this.sceneLoadSystem = sceneLoadSystem;
             this.sceneSaveSystem = sceneSaveSystem;
+            this.sceneSettingState = sceneSettingState;
             this.checkVersionSystem = checkVersionSystem;
             this.workspaceSaveSystem = workspaceSaveSystem;
             this.typeScriptGenerationSystem = typeScriptGenerationSystem;
@@ -186,6 +189,7 @@ namespace Assets.Scripts.System
             {
                 sceneSaveSystem.Save(sceneDirectoryState);
                 workspaceSaveSystem.Save(); // TODO: Save the workspace under proper conditions.
+                sceneSettingState.SaveSettings();
                 typeScriptGenerationSystem.GenerateTypeScript();
             }
         }
