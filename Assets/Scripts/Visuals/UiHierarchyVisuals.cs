@@ -92,7 +92,23 @@ namespace Assets.Scripts.Visuals
             {
                 MakeHierarchyItemsRecursive(scene, 0, scene.EntitiesInSceneRoot, mainPanelData);
 
-                mainPanelData.AddSpacer(300);
+                mainPanelData.AddSpacer(300, clickPosition =>
+                {
+                    contextMenuSystem.OpenMenu(clickPosition, new List<ContextMenuItem>
+                    {
+                        new ContextSubmenuItem("Add entity...", new List<ContextMenuItem>
+                        {
+                            new ContextMenuTextItem("Empty Entity", () => Debug.Log("Add empty Entity")),
+                            new ContextMenuSpacerItem(),
+                            new ContextMenuTextItem("Gltf Entity", () => Debug.Log("Add Gltf Entity")),
+                            new ContextMenuSpacerItem(),
+                            new ContextMenuTextItem("Cube", () => Debug.Log("Add empty ")),
+                            new ContextMenuTextItem("Sphere", () => Debug.Log("Add empty ")),
+                            new ContextMenuTextItem("Cylinder", () => Debug.Log("Add empty ")),
+                            new ContextMenuTextItem("Cone", () => Debug.Log("Add empty ")),
+                        }),
+                    });
+                });
             }
 
             uiBuilder.Update(mainPanelData);
