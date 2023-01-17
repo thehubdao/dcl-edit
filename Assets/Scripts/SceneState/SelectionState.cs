@@ -9,12 +9,10 @@ namespace Assets.Scripts.SceneState
         [CanBeNull]
         public DclEntity PrimarySelectedEntity { get; set; }
 
-        private readonly List<DclEntity> _secondarySelectedEntities = new List<DclEntity>();
-
-        public List<DclEntity> SecondarySelectedEntities => _secondarySelectedEntities;
+        public List<DclEntity> SecondarySelectedEntities { get; set; } = new List<DclEntity>();
 
         public IEnumerable<DclEntity> AllSelectedEntities =>
-            _secondarySelectedEntities
+            SecondarySelectedEntities
                 .Prepend(PrimarySelectedEntity);
     }
 }

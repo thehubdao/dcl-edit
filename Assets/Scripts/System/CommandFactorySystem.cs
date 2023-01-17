@@ -73,4 +73,10 @@ public class CommandFactorySystem
     {
         return new AddEntity(oldPrimarySelection, oldSecondarySelection, preset, parent);
     }
+
+    public RemoveEntity CreateRemoveEntity(DclEntity entity)
+    {
+        return new RemoveEntity(entity);
+    }
 }
+

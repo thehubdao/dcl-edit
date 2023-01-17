@@ -211,6 +211,20 @@ namespace Assets.Scripts.Interaction
                     commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateDuplicateEntity(selectedEntity.Id));
                 }
             }
+
+            //TODO Delete all selected entities
+            //When pressing Delete delete primary selected Entity
+            if (inputSystemAsset.Hotkeys.Delete.triggered)
+            {
+                var currentScene = sceneManagerSystem.GetCurrentScene();
+                var selectedEntity = currentScene?.SelectionState.PrimarySelectedEntity;
+                    
+                if (selectedEntity != null)
+                {
+                    commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateRemoveEntity(selectedEntity));    
+                }
+            }
+            
             // When pressing(down) Left mouse button, select the hovered entity
             if (inputHelper.IsLeftMouseButtonDown() && !pressingAlt && isMouseIn3DView)
             {
