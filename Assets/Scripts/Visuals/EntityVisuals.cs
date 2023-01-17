@@ -2,7 +2,6 @@ using System;
 using UnityEngine;
 using Zenject;
 using Assets.Scripts.SceneState;
-using Assets.Scripts.System;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -16,17 +15,17 @@ namespace Assets.Scripts.Visuals
         // Dependencies
         private GltfShapeVisuals.Factory gltfShapeVisualsFactory;
         private PrimitiveShapeVisuals.Factory primitiveShapeVisualsFactory;
-        private SceneManagerSystem sceneManagerSystem;
+        private MainSceneVisuals.Factory mainSceneVisualsFactory;
 
         [Inject]
         private void Construct(
             GltfShapeVisuals.Factory gltfShapeVisualsFactory,
             PrimitiveShapeVisuals.Factory primitiveShapeVisualsFactory,
-            SceneManagerSystem sceneManagerSystem)
+            MainSceneVisuals.Factory mainSceneVisualsFactory)
         {
             this.gltfShapeVisualsFactory = gltfShapeVisualsFactory;
             this.primitiveShapeVisualsFactory = primitiveShapeVisualsFactory;
-            this.sceneManagerSystem = sceneManagerSystem;
+            this.mainSceneVisualsFactory = mainSceneVisualsFactory;
         }
 
         public void Initialize(DclScene scene)
@@ -39,6 +38,7 @@ namespace Assets.Scripts.Visuals
             InitializeTransformComponent(entity);
             InitializeGltfShapeVisualsComponent(entity);
             InitializePrimitiveShapeComponent(entity);
+            InitializeMainSceneVisualsComponent(entity);
         }
 
         void InitializeTransformComponent(DclEntity entity)
@@ -49,10 +49,10 @@ namespace Assets.Scripts.Visuals
                 return;
             }
 
-                transform.localPosition = transformComponent.Position.Value;
-                transform.localRotation = transformComponent.Rotation.Value;
-                transform.localScale = transformComponent.Scale.Value;
-            }
+            transform.localPosition = transformComponent.Position.Value;
+            transform.localRotation = transformComponent.Rotation.Value;
+            transform.localScale = transformComponent.Scale.Value;
+        }
 
         void InitializeGltfShapeVisualsComponent(DclEntity entity)
         {
@@ -89,6 +89,46 @@ namespace Assets.Scripts.Visuals
             else if (primitiveShapeVisualization != null)
             {
                 primitiveShapeVisualization.Deactivate();
+            }
+        }
+
+        void InitializeMainSceneVisualsComponent(DclEntity entity)
+        {
+            DclComponent component = entity.GetFirstComponentByName("Scene", "Scene");
+            if (component != null)
+            {
+                DclSceneComponent dclSceneComponent = new DclSceneComponent(component);
+                MainSceneVisuals mainSceneVisuals = GetComponent<MainSceneVisuals>();
+                if (dclSceneComponent != null)
+                {
+                    Guid sceneId;
+                    try
+                    {
+                        sceneId = Guid.Parse(dclSceneComponent.sceneId.FixedValue);
+                    }
+                    catch
+                    {
+                        return;
+                    }
+
+                    if (mainSceneVisuals == null)
+                    {
+                        mainSceneVisuals = mainSceneVisualsFactory.Create();
+                        mainSceneVisuals.transform.SetParent(transform, false);
+                    }
+
+                    mainSceneVisuals.ShowScene(sceneId);
+
+                }
+                else if (mainSceneVisuals != null)
+                {
+                    // TODO let MainSceneVisuals handling destroying child entities and disabling components
+                    foreach (Transform child in transform)
+                    {
+                        Destroy(child.gameObject);
+                    }
+                    mainSceneVisuals.enabled = false;
+                }
             }
         }
     }
