@@ -48,7 +48,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
                 var btnHandler = gameObject.gameObject.GetComponent<ButtonHandler>();
                 btnHandler.text.text = newBtnData.text;
                 btnHandler.button.onClick.RemoveAllListeners();
-                btnHandler.button.onClick.AddListener(() => newBtnData.onClick(gameObject.gameObject));
+                btnHandler.button.onClick.AddListener(() => newBtnData.onClick(btnHandler.button.gameObject));
                 data = newBtnData;
             }
         }

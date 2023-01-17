@@ -17,8 +17,7 @@ namespace Assets.Scripts.Visuals
     {
 #pragma warning disable CS0649 // Warning: Uninitialized filed. Serialized fields will be initialized by Unity
 
-        [SerializeField]
-        private GameObject content;
+        [SerializeField] private GameObject content;
 
 #pragma warning restore CS0649
 
@@ -47,7 +46,9 @@ namespace Assets.Scripts.Visuals
         private UiBuilder.UiBuilder uiBuilder;
         private HierarchyChangeSystem hierarchyChangeSystem;
         private ContextMenuSystem contextMenuSystem;
+        private HierarchyContextMenuSystem hierarchyContextMenuSystem;
         private SceneManagerSystem sceneManagerSystem;
+        private CommandSystem commandSystem;
 
         [Inject]
         private void Construct(
@@ -55,13 +56,17 @@ namespace Assets.Scripts.Visuals
             Factory uiBuilderFactory,
             HierarchyChangeSystem hierarchyChangeSystem,
             ContextMenuSystem contextMenuSystem,
-            SceneManagerSystem sceneManagerSystem)
+            SceneManagerSystem sceneManagerSystem,
+            CommandSystem commandSystem,
+            HierarchyContextMenuSystem hierarchyContextMenuSystem)
         {
             this.events = events;
             this.uiBuilder = uiBuilderFactory.Create(content);
             this.hierarchyChangeSystem = hierarchyChangeSystem;
             this.contextMenuSystem = contextMenuSystem;
             this.sceneManagerSystem = sceneManagerSystem;
+            this.commandSystem = commandSystem;
+            this.hierarchyContextMenuSystem = hierarchyContextMenuSystem;
 
             SetupEventListeners();
         }
@@ -93,7 +98,8 @@ namespace Assets.Scripts.Visuals
             uiBuilder.Update(mainPanelData);
         }
 
-        private void MakeHierarchyItemsRecursive([NotNull] DclScene scene, int level, IEnumerable<DclEntity> entities, PanelAtom.Data mainPanelData)
+        private void MakeHierarchyItemsRecursive([NotNull] DclScene scene, int level, IEnumerable<DclEntity> entities,
+            PanelAtom.Data mainPanelData)
         {
             foreach (var entity in entities)
             {
@@ -102,36 +108,33 @@ namespace Assets.Scripts.Visuals
                 var isSecondarySelection = scene.SelectionState.SecondarySelectedEntities.Contains(entity);
 
                 var style =
-                    isPrimarySelection ?
-                        TextHandler.TextStyle.PrimarySelection :
-                        isSecondarySelection ?
-                            TextHandler.TextStyle.SecondarySelection :
-                            TextHandler.TextStyle.Normal;
+                    isPrimarySelection ? TextHandler.TextStyle.PrimarySelection :
+                    isSecondarySelection ? TextHandler.TextStyle.SecondarySelection :
+                    TextHandler.TextStyle.Normal;
 
                 var isExpanded = hierarchyChangeSystem.IsExpanded(entity);
 
-                mainPanelData.AddHierarchyItem(entity.ShownName, level, entity.Children.Any(), isExpanded, style, new HierarchyItemHandler.UiHierarchyItemActions
+                mainPanelData.AddHierarchyItem(entity.ShownName, level, entity.Children.Any(), isExpanded, style,
+                    new HierarchyItemHandler.UiHierarchyItemActions
                     {
                         onArrowClick = () => { hierarchyChangeSystem.ClickedOnEntityExpandArrow(entity); },
                         onNameClick = () => { hierarchyChangeSystem.ClickedOnEntityInHierarchy(entity); }
                     },
                     clickPosition =>
                     {
+                        var addEntityMenuItems = new List<ContextMenuItem>();
+
+                        foreach (var preset in hierarchyContextMenuSystem.GetPresets())
+                        {
+                            addEntityMenuItems.Add(new ContextMenuTextItem(preset.name, () => hierarchyContextMenuSystem.AddEntityFromPreset(preset, entity.Id)));
+                        }
+
                         contextMenuSystem.OpenMenu(clickPosition, new List<ContextMenuItem>
                         {
-                            new ContextSubmenuItem("Add entity...", new List<ContextMenuItem>
-                            {
-                                new ContextMenuTextItem("Empty Entity", () => Debug.Log("Add empty Entity")),
-                                new ContextMenuSpacerItem(),
-                                new ContextMenuTextItem("Gltf Entity", () => Debug.Log("Add Gltf Entity")),
-                                new ContextMenuSpacerItem(),
-                                new ContextMenuTextItem("Cube", () => Debug.Log("Add empty ")),
-                                new ContextMenuTextItem("Sphere", () => Debug.Log("Add empty ")),
-                                new ContextMenuTextItem("Cylinder", () => Debug.Log("Add empty ")),
-                                new ContextMenuTextItem("Cone", () => Debug.Log("Add empty ")),
-                            }),
-                            new ContextMenuTextItem("Duplicate", () => Debug.Log("Duplicate entity")),
-                            new ContextMenuTextItem("Delete", () => Debug.Log("Delete entity"))
+                            new ContextSubmenuItem("Add entity...", addEntityMenuItems),
+                            new ContextMenuTextItem("Duplicate", () => Debug.Log("Duplicate entity"), true),
+                            new ContextMenuTextItem("Delete",
+                                () => commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateRemoveEntity(entity)))
                         });
                     });
 

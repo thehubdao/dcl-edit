@@ -2,35 +2,62 @@ using Assets.Scripts.Command.Utility;
 using Assets.Scripts.Events;
 using Assets.Scripts.SceneState;
 using Assets.Scripts.Utility;
-using JetBrains.Annotations;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using Assets.Scripts.EditorState;
 
 namespace Assets.Scripts.Command
 {
     public class AddEntity : SceneState.Command
     {
-        private string _name;
-        [CanBeNull] private DclEntity _parent;
-        private Guid _id;
+        private readonly EntityPresetState.EntityPreset preset;
 
-        public AddEntity(string name = "", DclEntity parent = null)
+        private readonly Guid parent;
+
+        private readonly Guid id;
+
+        private readonly SelectionUtility.SelectionWrapper oldSelection;
+
+        public AddEntity(Guid oldPrimarySelection, IEnumerable<Guid> oldSecondarySelection, EntityPresetState.EntityPreset preset, Guid parent = default)
         {
-            _name = name;
-            _parent = parent;
-            _id = Guid.NewGuid();
+            this.preset = preset;
+            this.parent = parent;
+            id = Guid.NewGuid();
+            oldSelection = new SelectionUtility.SelectionWrapper
+            {
+                Primary = oldPrimarySelection,
+                Secondary = oldSecondarySelection.ToList()
+            };
         }
 
         public override string Name => "Add Entity";
-        public override string Description => $"Adding Entity \"{_name}\" with id \"{_id.Shortened()}\"" + (_parent != null ? $" as Child to {_parent.CustomName}" : "");
+        public override string Description => $"Adding Entity \"{preset.name}\" with id \"{id.Shortened()}\"" + (parent != default ? $" as Child to {parent.Shortened()}" : "");
 
         public override void Do(DclScene sceneState, EditorEvents editorEvents)
         {
-            EntityUtility.AddEntity(sceneState, _id, _name, _parent);
+            var entity = EntityUtility.AddEntity(sceneState, id, preset.name, parent);
+
+            EntityUtility.AddDefaultTransformComponent(entity);
+
+            foreach (var component in preset.components)
+            {
+                EntityUtility.AddComponent(entity, component);
+            }
+
+            SelectionUtility.SetSelection(sceneState, id);
+
+            editorEvents.InvokeHierarchyChangedEvent();
+            editorEvents.InvokeSelectionChangedEvent();
         }
 
         public override void Undo(DclScene sceneState, EditorEvents editorEvents)
         {
-            EntityUtility.DeleteEntity(sceneState, _id);
+            EntityUtility.DeleteEntity(sceneState, id);
+            SelectionUtility.SetSelection(sceneState, oldSelection);
+
+            editorEvents.InvokeHierarchyChangedEvent();
+            editorEvents.InvokeSelectionChangedEvent();
         }
     }
 }

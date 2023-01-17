@@ -130,6 +130,8 @@ public class DclEditorInstaller : MonoInstaller
 
         Container.BindInterfacesAndSelfTo<NumberInputSystem>().AsSingle();
 
+        Container.BindInterfacesAndSelfTo<HierarchyContextMenuSystem>().AsSingle();
+
         Container.BindInterfacesAndSelfTo<AssetThumbnailManagerSystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<AssetThumbnailGeneratorSystem>().FromComponentInNewPrefab(_assetThumbnailGeneratorPrefab).AsSingle();
@@ -150,6 +152,14 @@ public class DclEditorInstaller : MonoInstaller
 
         Container.BindInterfacesAndSelfTo<MenuBarSystem>().AsSingle();
 
+        Container.BindInterfacesAndSelfTo<AddComponentSystem>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<AvailableComponentsState>().AsSingle();
+        
         Container.BindInterfacesAndSelfTo<CheckVersionSystem>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<EntityPresetSystem>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<EntityPresetState>().AsSingle();
     }
 }
