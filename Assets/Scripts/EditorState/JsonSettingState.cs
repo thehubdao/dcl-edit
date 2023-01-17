@@ -11,11 +11,11 @@ namespace Assets.Scripts.EditorState
     public abstract class JsonSettingState
     {
         // Dependencies
-        protected PathState _pathState;
+        protected IPathState _pathState;
         protected SceneManagerState sceneManagerState;
 
         [Inject]
-        private void Constructor(PathState pathState, SceneManagerState sceneManagerState)
+        public void Construct(IPathState pathState, SceneManagerState sceneManagerState)
         {
             _pathState = pathState;
             this.sceneManagerState = sceneManagerState;
@@ -50,7 +50,7 @@ namespace Assets.Scripts.EditorState
             }
         }
 
-        protected abstract void SaveSettings();
+        public abstract void SaveSettings();
         protected abstract void LoadSettings();
     }
 
@@ -60,7 +60,7 @@ namespace Assets.Scripts.EditorState
 
         private string _projectSettingPath => _projectSettingDirectoryPath + "settings.json";
 
-        protected override void SaveSettings()
+        public override void SaveSettings()
         {
             if (!Directory.Exists(_projectSettingDirectoryPath))
             {
@@ -87,7 +87,7 @@ namespace Assets.Scripts.EditorState
 
     public class SceneSettingState : JsonSettingState
     {
-        protected override void SaveSettings()
+        public override void SaveSettings()
         {
             if (!sceneManagerState.GetCurrentDirectoryState()?.IsSceneOpened() ?? true)
             {

@@ -6,8 +6,6 @@ namespace Assets.Scripts.SceneState
 {
     public class DclScene
     {
-        public string name = "New Scene";
-
         private Dictionary<Guid, DclEntity> _allEntities = new Dictionary<Guid, DclEntity>();
         private Dictionary<Guid, DclEntity> _allFloatingEntities = new Dictionary<Guid, DclEntity>();
 

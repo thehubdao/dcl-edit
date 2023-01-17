@@ -113,9 +113,9 @@ namespace Assets.Scripts.System
 
         private GenerationInfo? GatherInfo()
         {
-            var scene = sceneManagerSystem.GetCurrentScene();
+            SceneDirectoryState sceneDirectoryState = sceneManagerSystem.GetCurrentDirectoryState();
 
-            if (scene == null)
+            if (sceneDirectoryState.currentScene == null)
             {
                 return null;
             }
@@ -132,11 +132,11 @@ namespace Assets.Scripts.System
 
                 var sceneInfo = new SceneInfo()
                 {
-                    symbol = exposeEntitySystem.GenerateValidSymbol(scene.name),
+                    symbol = exposeEntitySystem.GenerateValidSymbol(sceneDirectoryState.name),
                     gatheredEntityInfos = new List<EntityInfo>()
                 };
 
-                foreach (var entity in scene.AllEntities.Select(pair => pair.Value))
+                foreach (var entity in sceneDirectoryState.currentScene.AllEntities.Select(pair => pair.Value))
                 {
                     var internalEntitySymbol = exposeEntitySystem.GenerateValidSymbol(obfuscate ? "e" : entity.CustomName);
 

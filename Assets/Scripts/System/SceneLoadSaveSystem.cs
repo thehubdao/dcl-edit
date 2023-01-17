@@ -1,3 +1,4 @@
+using Assets.Scripts.EditorState;
 using Assets.Scripts.SceneState;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -5,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Assets.Scripts.EditorState;
 using UnityEngine;
 using Zenject;
 using Debug = UnityEngine.Debug;
@@ -26,6 +26,7 @@ namespace Assets.Scripts.System
     public interface ISceneLoadSystem
     {
         void Load(SceneDirectoryState sceneDirectoryState);
+        void LoadV1(SceneDirectoryState sceneDirectoryState);
     }
 
     public interface ISceneSaveSystem
@@ -36,7 +37,6 @@ namespace Assets.Scripts.System
     public class SceneLoadSaveSystem : ISceneLoadSystem, ISceneSaveSystem
     {
         // Dependencies
-        private IPathState _pathState;
         private LoadFromVersion1System loadFromVersion1System;
 
         [Inject]
@@ -45,11 +45,7 @@ namespace Assets.Scripts.System
         {
             this.loadFromVersion1System = loadFromVersion1System;
         }
-        
-        public SceneLoadSaveSystem(IPathState pathState)
-        {
-            _pathState = pathState;
-        }
+
 
         /// <summary>
         /// Save a dcl-edit beta scene
@@ -57,91 +53,100 @@ namespace Assets.Scripts.System
         /// <param name="sceneDirectoryState">The directory state of the scene</param>
         public void Save(SceneDirectoryState sceneDirectoryState)
         {
-            DclSceneData sceneData = new DclSceneData(sceneDirectoryState.currentScene);
-            string sceneDirPath = sceneDirectoryState.directoryPath;
+            try
+            {
+                // Create scene directory in case it does not exist
+                DirectoryInfo sceneDir = Directory.CreateDirectory(sceneDirectoryState.directoryPath);
 
-            // Create scene directory in case it does not exist
-            DirectoryInfo sceneDir = Directory.CreateDirectory(sceneDirPath);
-
-            // Clear scene directory from files, that are regenerated
-            foreach (FileInfo file in sceneDir
-                         .GetFiles()
-                         .Where(f => sceneDirectoryState.loadedFilePathsInScene.Contains(NormalizePath(f.FullName))))
+                // Clear scene directory from files, that are regenerated
+                foreach (FileInfo file in sceneDir
+                             .GetFiles()
+                             .Where(f => sceneDirectoryState.loadedFilePathsInScene.Contains(NormalizePath(f.FullName))))
                 // Only delete files that were loaded into the scene.
                 // This prevents the deletion of faulty entity files and files the user added manually into the scene folder
-            {
-                file.Delete();
+                {
+                    file.Delete();
+                }
+
+                sceneDirectoryState.loadedFilePathsInScene.Clear();
+
+                // Create scene metadata file
+                SceneManagerSystem.SceneFileContents sceneFileContents = new SceneManagerSystem.SceneFileContents
+                {
+                    id = sceneDirectoryState.id,
+                    relativePath = sceneDirectoryState.directoryPath,
+                    settings = new JObject(),
+                    dclEditVersion = DclEditVersion.Beta
+                };
+                string sceneFilePath = Path.Combine(sceneDirectoryState.directoryPath, "scene.json");
+                string sceneFileContentsJson = JsonConvert.SerializeObject(sceneFileContents);
+                File.WriteAllText(sceneFilePath, sceneFileContentsJson);
+
+                sceneDirectoryState.loadedFilePathsInScene.Add(NormalizePath(sceneFilePath));
+
+                // Create entity files
+                foreach (var entity in sceneDirectoryState.currentScene!.AllEntities.Select(pair => pair.Value))
+                {
+                    var newPath = CreateEntityFile(entity, sceneDirectoryState.directoryPath);
+
+                    sceneDirectoryState.loadedFilePathsInScene.Add(NormalizePath(newPath));
+                }
             }
-
-            sceneDirectoryState.loadedFilePathsInScene.Clear();
-
-            // Create scene metadata file
-            string metadataFilePath = $"{sceneDirPath}/scene.json";
-            File.WriteAllText(metadataFilePath, "");
-
-            sceneDirectoryState.loadedFilePathsInScene.Add(NormalizePath(metadataFilePath));
-
-            // Create entity files
-            foreach (var entity in sceneDirectoryState.currentScene!.AllEntities.Select(pair => pair.Value))
+            catch (Exception e)
             {
-                var newPath = CreateEntityFile(entity, sceneDirPath);
-
-                sceneDirectoryState.loadedFilePathsInScene.Add(NormalizePath(newPath));
+                Debug.LogWarning($"Error while saving scene (path: '{sceneDirectoryState.directoryPath}'): {e}");
             }
         }
 
         /// <summary>
-        /// Load a dcl-edit beta scene
+        /// Tries to load a scene from the path in the given SceneDirectoryState. If a scene can be found, the
+        /// SceneDirectoryState object is filled.
         /// </summary>
-        /// <param name="sceneDirectoryState">The directory state of the scene</param>
+        /// <param name="sceneDirectoryState"></param>
         public void Load(SceneDirectoryState sceneDirectoryState)
         {
-            var scenePath = sceneDirectoryState.directoryPath;
+            string pathToSceneMetadataFile = Path.Combine(sceneDirectoryState.directoryPath, "scene.json");
 
-            // return if path isn't directory
-            if (!Directory.Exists(scenePath))
+            // Read scene metadata
+            try
             {
-                Debug.LogError("trying to load non existing scene");
-                return;
+                string sceneFileJson = File.ReadAllText(pathToSceneMetadataFile);
+                SceneManagerSystem.SceneFileContents sceneFileContents = JsonConvert.DeserializeObject<SceneManagerSystem.SceneFileContents>(sceneFileJson);
+                sceneDirectoryState.id = sceneFileContents.id;
+                sceneDirectoryState.loadedFilePathsInScene.Add("scene.json");
             }
-
-            // path should end with ".dclscene"
-            if (!scenePath.EndsWith(".dclscene") && !scenePath.EndsWith(".dclscene/"))
+            catch (Exception e)
             {
-                Debug.LogWarning("scene folders should end with \".dclscene\"");
+                Debug.LogWarning($"Error while loading scene (path: '{sceneDirectoryState.directoryPath}'): {e}");
+                sceneDirectoryState.id = Guid.NewGuid();
             }
+            // Directory name ends in .dclscene, so GetFileNameWithoutExtension returns the name of the directory
+            sceneDirectoryState.name = Path.GetFileNameWithoutExtension(new DirectoryInfo(sceneDirectoryState.directoryPath).Name);
+            sceneDirectoryState.currentScene = new DclScene();
 
-            var scene = new DclScene();
 
-            var directoryInfo = new DirectoryInfo(scenePath);
-            foreach (var fileName in directoryInfo.GetFiles().Select(fi => fi.Name))
+            // Read entity files
+            try
             {
-                if (!fileName.EndsWith(".json"))
+                DirectoryInfo sceneDirInfo = new DirectoryInfo(sceneDirectoryState.directoryPath);
+                foreach (var fileName in sceneDirInfo.GetFiles().Select(fi => fi.Name))
                 {
-                    continue;
-                }
+                    if (!fileName.EndsWith(".json") || fileName == "scene.json")
+                    {
+                        continue;
+                    }
 
-                if (fileName == "scene.json")
-                {
-                    sceneDirectoryState.loadedFilePathsInScene.Add("scene.json");
-                    continue;
-                }
-
-                try
-                {
-                    LoadEntityFile(scene, directoryInfo.FullName + "/" + fileName);
+                    LoadEntityFile(sceneDirectoryState.currentScene, Path.Combine(sceneDirInfo.FullName, fileName));
 
                     sceneDirectoryState.loadedFilePathsInScene.Add(fileName);
                 }
-                catch (Exception e)
-                {
-                    Debug.LogError(e.Message);
-                }
             }
-
-            sceneDirectoryState.currentScene = scene;
+            catch (Exception e)
+            {
+                Debug.LogWarning($"Error while loading entity files (path: '{sceneDirectoryState.directoryPath}'): {e}");
+            }
         }
-        
+
         /// <summary>
         /// Load a dcl-edit alpha scene
         /// </summary>
@@ -163,15 +168,27 @@ namespace Assets.Scripts.System
          */
         public string CreateEntityFile(DclEntity entity, string sceneDirectoryPath)
         {
-            DclEntityData data = new DclEntityData(entity);
-            string dataJson = JsonConvert.SerializeObject(data, Formatting.Indented);
+            try
+            {
+                // Search and remove existing entity files that contain the entities ID
+                string[] foundFiles = Directory.GetFiles(sceneDirectoryPath, "*" + entity.Id.ToString() + ".json");
+                foreach (string file in foundFiles)
+                {
+                    File.Delete(file);
+                }
 
-            string filename = data.customName.Replace(' ', '_') + "-" + data.guid.ToString() + ".json";
-
-            var path = $"{sceneDirectoryPath}/{filename}";
-            File.WriteAllText(path, dataJson);
-
-            return path;
+                // Write entity data to file
+                DclEntityData data = new DclEntityData(entity);
+                string dataJson = JsonConvert.SerializeObject(data, Formatting.Indented);
+                string filename = data.customName.Replace(' ', '_') + "-" + data.guid.ToString() + ".json";
+                string path = $"{sceneDirectoryPath}/{filename}";
+                File.WriteAllText(path, dataJson);
+                return path;
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         /// <summary>
@@ -187,16 +204,6 @@ namespace Assets.Scripts.System
             entityData.MakeEntity(scene);
         }
 
-
-        public struct DclSceneData
-        {
-            public string name;
-
-            public DclSceneData(DclScene scene)
-            {
-                this.name = scene.name;
-            }
-        }
         public struct DclEntityData
         {
             public string customName;
