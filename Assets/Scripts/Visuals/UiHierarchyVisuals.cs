@@ -47,6 +47,7 @@ namespace Assets.Scripts.Visuals
         private UiBuilder.UiBuilder uiBuilder;
         private HierarchyChangeSystem hierarchyChangeSystem;
         private ContextMenuSystem contextMenuSystem;
+        private HierarchyContextMenuSystem hierarchyContextMenuSystem;
         private SceneManagerSystem sceneManagerSystem;
 
         [Inject]
@@ -55,13 +56,15 @@ namespace Assets.Scripts.Visuals
             Factory uiBuilderFactory,
             HierarchyChangeSystem hierarchyChangeSystem,
             ContextMenuSystem contextMenuSystem,
-            SceneManagerSystem sceneManagerSystem)
+            SceneManagerSystem sceneManagerSystem,
+            HierarchyContextMenuSystem hierarchyContextMenuSystem)
         {
             this.events = events;
             this.uiBuilder = uiBuilderFactory.Create(content);
             this.hierarchyChangeSystem = hierarchyChangeSystem;
             this.contextMenuSystem = contextMenuSystem;
             this.sceneManagerSystem = sceneManagerSystem;
+            this.hierarchyContextMenuSystem = hierarchyContextMenuSystem;
 
             SetupEventListeners();
         }
@@ -117,21 +120,18 @@ namespace Assets.Scripts.Visuals
                     },
                     clickPosition =>
                     {
+                        var addEntityMenuItems = new List<ContextMenuItem>();
+
+                        foreach (var preset in hierarchyContextMenuSystem.GetPresets())
+                        {
+                            addEntityMenuItems.Add(new ContextMenuTextItem(preset.name, () => hierarchyContextMenuSystem.AddEntityFromPreset(preset, entity.Id)));
+                        }
+
                         contextMenuSystem.OpenMenu(clickPosition, new List<ContextMenuItem>
                         {
-                            new ContextSubmenuItem("Add entity...", new List<ContextMenuItem>
-                            {
-                                new ContextMenuTextItem("Empty Entity", () => Debug.Log("Add empty Entity")),
-                                new ContextMenuSpacerItem(),
-                                new ContextMenuTextItem("Gltf Entity", () => Debug.Log("Add Gltf Entity")),
-                                new ContextMenuSpacerItem(),
-                                new ContextMenuTextItem("Cube", () => Debug.Log("Add empty ")),
-                                new ContextMenuTextItem("Sphere", () => Debug.Log("Add empty ")),
-                                new ContextMenuTextItem("Cylinder", () => Debug.Log("Add empty ")),
-                                new ContextMenuTextItem("Cone", () => Debug.Log("Add empty ")),
-                            }),
-                            new ContextMenuTextItem("Duplicate", () => Debug.Log("Duplicate entity")),
-                            new ContextMenuTextItem("Delete", () => Debug.Log("Delete entity"))
+                            new ContextSubmenuItem("Add entity...", addEntityMenuItems),
+                            new ContextMenuTextItem("Duplicate", () => Debug.Log("Duplicate entity"), true),
+                            new ContextMenuTextItem("Delete", () => Debug.Log("Delete entity"), true)
                         });
                     });
 

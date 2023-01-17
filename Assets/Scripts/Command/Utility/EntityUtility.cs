@@ -3,11 +3,11 @@ using System;
 
 namespace Assets.Scripts.Command.Utility
 {
-    public class EntityUtility
+    public static class EntityUtility
     {
-        public static DclEntity AddEntity(DclScene scene, Guid id, string name, DclEntity parent = null)
+        public static DclEntity AddEntity(DclScene scene, Guid id, string name, Guid parent = default)
         {
-            DclEntity entity = new DclEntity(id, name, parent?.Id ?? Guid.Empty);
+            var entity = new DclEntity(id, name, parent);
 
             scene.AddEntity(entity);
 
@@ -17,6 +17,17 @@ namespace Assets.Scripts.Command.Utility
         public static void DeleteEntity(DclScene scene, Guid id)
         {
             scene.RemoveEntity(id);
+        }
+
+        public static void AddDefaultTransformComponent(DclEntity entity)
+        {
+            var transformComponent = new DclTransformComponent();
+            entity.AddComponent(transformComponent);
+        }
+
+        public static void AddComponent(DclEntity dclEntity, DclComponent.ComponentDefinition component)
+        {
+            dclEntity.AddComponent(new DclComponent(component));
         }
     }
 }
