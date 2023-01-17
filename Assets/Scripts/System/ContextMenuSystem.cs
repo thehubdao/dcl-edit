@@ -54,11 +54,11 @@ namespace Assets.Scripts.System
             _editorEvents.InvokeUpdateContextMenuEvent();
         }
 
-        //TODO: specify: <param name="menuId"></param>
+
         /// <summary>
         /// Open the given context menu.
         /// </summary>
-        /// <param name="menuId"></param>
+        /// <param name="menuId">The submenu will have this id.</param>
         /// <param name="possiblePlacements">The Placement options for the context menu.</param>
         /// <param name="items">All the menu items for the context menu.</param>
         public void OpenSubmenu(Guid menuId, List<ContextMenuState.Placement> possiblePlacements, List<ContextMenuItem> items)
@@ -81,8 +81,7 @@ namespace Assets.Scripts.System
         public void OpenMenuSorted(Vector3 position, List<ContextMenuItem> items)
         {
             ContextMenuState.SortItems(items);
-
-            OpenMenuSorted(position, items);
+            OpenMenu(position, items);
         }
 
         /// <summary>
@@ -93,22 +92,20 @@ namespace Assets.Scripts.System
         public void OpenMenuSorted(List<ContextMenuState.Placement> possiblePlacements, List<ContextMenuItem> items)
         {
             ContextMenuState.SortItems(items);
-
             OpenMenu(possiblePlacements, items);
         }
 
-        //TODO: specify: <param name="menuId"></param>
+
         /// <summary>
         /// Open the given context menu and sort all its items by their sorting priotiry.
         /// </summary>
-        /// <param name="menuId"></param>
+        /// <param name="menuId">The submenu will have this id.</param>
         /// <param name="possiblePlacements">The Placement options for the context menu.</param>
         /// <param name="items">All the menu items for the context menu.</param>
         public void OpenSubmenuSorted(Guid menuId, List<ContextMenuState.Placement> possiblePlacements, List<ContextMenuItem> items)
         {
             ContextMenuState.SortItems(items);
-
-            OpenSubmenuSorted(menuId, possiblePlacements, items);
+            OpenSubmenu(menuId, possiblePlacements, items);
         }
 
         public void CloseMenu()
