@@ -11,6 +11,8 @@ namespace Assets.Scripts.Visuals
 {
     public class MainSceneVisuals : MonoBehaviour
     {
+        public Guid sceneId { get; private set; }
+
         // Dependencies
         private EntitySelectInteraction.Factory entitySelectInteractionFactory;
         private SceneManagerSystem sceneManagerSystem;
@@ -28,6 +30,7 @@ namespace Assets.Scripts.Visuals
         public void ShowScene(Guid sceneId)
         {
             var scene = sceneManagerSystem.GetScene(sceneId);
+            this.sceneId = sceneId;
 
             // TODO: be smarter about caching and stuff
             foreach (var child in transform.GetChildren())

@@ -104,10 +104,28 @@ namespace Assets.Scripts.Visuals
                     Guid sceneId;
                     try
                     {
+                        // Return instantly because the empty string is the default id value. No error should be
+                        // thrown when a new component is added
+                        if (dclSceneComponent.sceneId.FixedValue == "")
+                        {
+                            return;
+                        }
+
                         sceneId = Guid.Parse(dclSceneComponent.sceneId.FixedValue);
+
+                        // Check for cyclic child scenes
+                        MainSceneVisuals[] parentMainSceneVisuals = GetComponentsInParent<MainSceneVisuals>();
+                        foreach (MainSceneVisuals parentScene in parentMainSceneVisuals)
+                        {
+                            if (parentScene.sceneId == sceneId)
+                            {
+                                throw new ArgumentException($"Cyclic scene found, you tried to load a parent scene or the scene itself as a child scene. Scene ID: {sceneId}");
+                            }
+                        }
                     }
-                    catch
+                    catch (Exception e)
                     {
+                        Debug.LogWarning(e);
                         return;
                     }
 
