@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Assets.Scripts.Command.Utility
 {
-    public class EntityUtility
+    public static class EntityUtility
     {
         /// <summary>
         /// Add a new entity to the scene
@@ -14,9 +14,9 @@ namespace Assets.Scripts.Command.Utility
         /// <param name="name">The name of the entity</param>
         /// <param name="parent">The parent of the entity</param>
         /// <returns>Reference to new entity</returns>
-        public static DclEntity AddEntity(DclScene scene, Guid id, string name, DclEntity parent = null)
+        public static DclEntity AddEntity(DclScene scene, Guid id, string name, Guid parent = default)
         {
-            DclEntity entity = new DclEntity(id, name, parent?.Id ?? Guid.Empty);
+            DclEntity entity = new DclEntity(id, name, parent);
             scene.AddEntity(entity);
             
             return entity;
@@ -91,6 +91,17 @@ namespace Assets.Scripts.Command.Utility
             
             scene.SelectionState.AllSelectedEntities.ToList().Remove(entity);
             scene.SelectionState.SecondarySelectedEntities.ToList().Remove(entity);
+        }
+
+        public static void AddDefaultTransformComponent(DclEntity entity)
+        {
+            var transformComponent = new DclTransformComponent();
+            entity.AddComponent(transformComponent);
+        }
+
+        public static void AddComponent(DclEntity dclEntity, DclComponent.ComponentDefinition component)
+        {
+            dclEntity.AddComponent(new DclComponent(component));
         }
     }
 }

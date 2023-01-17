@@ -8,5 +8,6 @@ namespace Assets.Scripts.Visuals.UiHandler
     {
         public TextMeshProUGUI Title;
         public Button CloseButton;
+        public GameObject CloseButtonContainer;
     }
 }

@@ -67,6 +67,10 @@ Assets/dev_project_path.txt.meta
 Assets/panel_layout.txt
 Assets/panel_layout.txt.meta
 
+# A place to put userscripts or tools that are not related to the project
+/[Aa]ssets/[Uu]ser/
+/[Aa]ssets/[Uu]ser.meta
+
 CodeCoverage/
 
 Packages/com.svermeulen.extenject/OptionalExtras/SampleGame1 (Beginner)/

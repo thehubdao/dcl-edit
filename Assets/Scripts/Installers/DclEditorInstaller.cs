@@ -10,10 +10,6 @@ using Zenject;
 
 public class DclEditorInstaller : MonoInstaller
 {
-    [Header("Scene Loading and Saving")]
-    [SerializeField]
-    private bool _loadSceneFromVersion1 = false;
-
     [Header("Prefabs")]
     [SerializeField]
     private GameObject _entityVisualPrefab;
@@ -40,15 +36,9 @@ public class DclEditorInstaller : MonoInstaller
 
     public override void InstallBindings()
     {
-        if (_loadSceneFromVersion1)
-        {
-            Container.Bind<ISceneLoadSystem>().To<LoadFromVersion1System>().AsSingle();
-            Container.Bind<ISceneSaveSystem>().To<SceneLoadSaveSystem>().AsSingle();
-        }
-        else
-        {
-            Container.BindInterfacesAndSelfTo<SceneLoadSaveSystem>().AsSingle();
-        }
+        Container.BindInterfacesAndSelfTo<LoadFromVersion1System>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<SceneLoadSaveSystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<CommandSystem>().AsSingle();
 
@@ -135,7 +125,12 @@ public class DclEditorInstaller : MonoInstaller
 
         Container.BindInterfacesAndSelfTo<WebRequestSystem>().AsSingle();
 
+
+        Container.BindInterfacesAndSelfTo<SceneJsonReaderSystem>().AsSingle();
+
         Container.BindInterfacesAndSelfTo<NumberInputSystem>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<HierarchyContextMenuSystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<AssetThumbnailManagerSystem>().AsSingle();
 
@@ -156,5 +151,15 @@ public class DclEditorInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<MenuBarState>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<MenuBarSystem>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<AddComponentSystem>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<AvailableComponentsState>().AsSingle();
+        
+        Container.BindInterfacesAndSelfTo<CheckVersionSystem>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<EntityPresetSystem>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<EntityPresetState>().AsSingle();
     }
 }
