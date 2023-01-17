@@ -1,11 +1,9 @@
-using System;
-using Assets.Scripts.Events;
 using Assets.Scripts.Interaction;
+using Assets.Scripts.System;
 using Assets.Scripts.Utility;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Assets.Scripts.SceneState;
-using Assets.Scripts.System;
 using UnityEngine;
 using Zenject;
 
@@ -67,7 +65,7 @@ namespace Assets.Scripts.Visuals
             // update entity visuals
             foreach (var visual in visuals)
             {
-                visual.UpdateVisuals();
+                visual.Initialize(scene);
             }
         }
 

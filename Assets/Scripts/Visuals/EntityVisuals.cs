@@ -1,7 +1,8 @@
 using System;
-using Assets.Scripts.System;
 using UnityEngine;
 using Zenject;
+using Assets.Scripts.SceneState;
+using Assets.Scripts.System;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -28,32 +29,36 @@ namespace Assets.Scripts.Visuals
             this.sceneManagerSystem = sceneManagerSystem;
         }
 
-        public void OnAssetDataUpdatedCallback()
+        public void Initialize(DclScene scene)
         {
-            UpdateVisuals();
-        }
-
-        public void UpdateVisuals()
-        {
-            var currentScene = sceneManagerSystem.GetCurrentScene();
-
-            var entity = currentScene?.GetEntityById(id) ?? currentScene?.GetFloatingEntityById(id);
+            var entity = scene?.GetEntityById(id) ?? scene?.GetFloatingEntityById(id);
 
             if (entity == null)
                 return;
 
-            // Transform
+            InitializeTransformComponent(entity);
+            InitializeGltfShapeVisualsComponent(entity);
+            InitializePrimitiveShapeComponent(entity);
+        }
+
+        void InitializeTransformComponent(DclEntity entity)
+        {
             var transformComponent = entity.GetTransformComponent();
-            if (transformComponent != null)
+            if (transformComponent == null)
             {
+                return;
+            }
+
                 transform.localPosition = transformComponent.Position.Value;
                 transform.localRotation = transformComponent.Rotation.Value;
                 transform.localScale = transformComponent.Scale.Value;
             }
 
-            // GLTF Shape
+        void InitializeGltfShapeVisualsComponent(DclEntity entity)
+        {
             var gltfShapeComponent = entity.GetComponentByName("GLTFShape");
             var gltfShapeVisualization = GetComponent<GltfShapeVisuals>(); // returns null if component isn't found
+
             if (gltfShapeComponent != null)
             {
                 if (gltfShapeVisualization == null)
@@ -67,8 +72,10 @@ namespace Assets.Scripts.Visuals
             {
                 gltfShapeVisualization.Deactivate();
             }
+        }
 
-            // Primitive Shape
+        void InitializePrimitiveShapeComponent(DclEntity entity)
+        {
             var primitiveShapeComponent =
                 entity.GetFirstComponentByName("BoxShape", "SphereShape", "CylinderShape", "PlaneShape", "ConeShape");
             var primitiveShapeVisualization = GetComponent<PrimitiveShapeVisuals>(); // returns null if component isn't found
