@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -37,11 +38,16 @@ namespace Assets.Scripts.EditorState
 
         /// <summary>
         /// Sort all the items in the context menu and all sub menues by their sortingPriotiry.
+        /// The Sort is stable, so elements with the same sorting priority stay in order.
         /// </summary>
         /// <param name="items">The context menu to sort.</param>
         public static void SortItems(List<ContextMenuItem> items)
         {
-            items.Sort(delegate (ContextMenuItem itemX, ContextMenuItem itemY) { return itemX.sortingPriotiry.CompareTo(itemY.sortingPriotiry); });
+            // use System.Linq.OrderBy sorting because it is stable unlike the System.Collections.Generic.Sort.
+            List<ContextMenuItem>  itemsSorted = items.OrderBy(item => item.sortingPriotiry).ToList();
+            // inset sorted items into the original list, so the reference to the list does not change.
+            items.Clear();
+            items.AddRange(itemsSorted);
 
             // sort sub menu recursively
             foreach (var item in items)

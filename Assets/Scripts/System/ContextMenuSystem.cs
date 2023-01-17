@@ -42,12 +42,13 @@ namespace Assets.Scripts.System
         }
 
         /// <summary>
-        /// Open the given context menu.
+        /// Open the given context menu and sort all its items by their sorting priotiry.
         /// </summary>
         /// <param name="possiblePlacements">The Placement options for the context menu.</param>
         /// <param name="items">All the menu items for the context menu.</param>
         public void OpenMenu(List<ContextMenuState.Placement> possiblePlacements, List<ContextMenuItem> items)
         {
+            ContextMenuState.SortItems(items);
             var data = new ContextMenuState.Data(Guid.NewGuid(), items, possiblePlacements);
             _state.menuData.Clear();
             _state.menuData.Push(data);
@@ -71,41 +72,6 @@ namespace Assets.Scripts.System
             var data = new ContextMenuState.Data(menuId, items, possiblePlacements);
             _state.menuData.Push(data);
             _editorEvents.InvokeUpdateContextMenuEvent();
-        }
-
-        /// <summary>
-        /// Open the given context menu and sort all its items by their sorting priotiry.
-        /// </summary>
-        /// <param name="position">The position used as origin for the context menu.</param>
-        /// <param name="items">All the menu items for the context menu.</param>
-        public void OpenMenuSorted(Vector3 position, List<ContextMenuItem> items)
-        {
-            ContextMenuState.SortItems(items);
-            OpenMenu(position, items);
-        }
-
-        /// <summary>
-        /// Open the given context menu and sort all its items by their sorting priotiry.
-        /// </summary>
-        /// <param name="possiblePlacements">The Placement options for the context menu.</param>
-        /// <param name="items">All the menu items for the context menu.</param>
-        public void OpenMenuSorted(List<ContextMenuState.Placement> possiblePlacements, List<ContextMenuItem> items)
-        {
-            ContextMenuState.SortItems(items);
-            OpenMenu(possiblePlacements, items);
-        }
-
-
-        /// <summary>
-        /// Open the given context menu and sort all its items by their sorting priotiry.
-        /// </summary>
-        /// <param name="menuId">The submenu will have this id.</param>
-        /// <param name="possiblePlacements">The Placement options for the context menu.</param>
-        /// <param name="items">All the menu items for the context menu.</param>
-        public void OpenSubmenuSorted(Guid menuId, List<ContextMenuState.Placement> possiblePlacements, List<ContextMenuItem> items)
-        {
-            ContextMenuState.SortItems(items);
-            OpenSubmenu(menuId, possiblePlacements, items);
         }
 
         public void CloseMenu()

@@ -78,7 +78,6 @@ namespace Assets.Scripts.EditorState
             if (path.Depth == 1)
             {
                 AddToNewContextMenuItems(items, path, onClick);
-                ContextMenuState.SortItems(items);
             }
             else
             {
@@ -98,7 +97,6 @@ namespace Assets.Scripts.EditorState
                 {
                     // switch to adding items
                     AddToNewContextMenuItems(items, path, onClick);
-                    ContextMenuState.SortItems(items);
                 }
             }
         }
