@@ -19,6 +19,8 @@ namespace Assets.Scripts.Visuals
 
         [SerializeField] private GameObject content;
 
+        [SerializeField] private HierarchyViewportHandler hierarchyViewportHandler;
+
 #pragma warning restore CS0649
 
         #region Mark for update
@@ -68,14 +70,35 @@ namespace Assets.Scripts.Visuals
             this.commandSystem = commandSystem;
             this.hierarchyContextMenuSystem = hierarchyContextMenuSystem;
 
+
+            SetupRightClickHandler();
             SetupEventListeners();
         }
 
-        public void SetupEventListeners()
+        private void SetupEventListeners()
         {
             events.onHierarchyChangedEvent += MarkForUpdate;
             events.onSelectionChangedEvent += MarkForUpdate;
             MarkForUpdate();
+        }
+
+        private void SetupRightClickHandler()
+        {
+            hierarchyViewportHandler.rightClickHandler.onRightClick = clickPosition =>
+            {
+                var addEntityMenuItems = new List<ContextMenuItem>();
+
+                foreach (var preset in hierarchyContextMenuSystem.GetPresets())
+                {
+                    addEntityMenuItems.Add(new ContextMenuTextItem(preset.name,
+                        () => hierarchyContextMenuSystem.AddEntityFromPreset(preset)));
+                }
+
+                contextMenuSystem.OpenMenu(clickPosition, new List<ContextMenuItem>
+                {
+                    new ContextSubmenuItem("Add entity...", addEntityMenuItems),
+                });
+            };
         }
 
         private void UpdateVisuals()
@@ -94,19 +117,17 @@ namespace Assets.Scripts.Visuals
 
                 mainPanelData.AddSpacer(300, clickPosition =>
                 {
+                    var addEntityMenuItems = new List<ContextMenuItem>();
+
+                    foreach (var preset in hierarchyContextMenuSystem.GetPresets())
+                    {
+                        addEntityMenuItems.Add(new ContextMenuTextItem(preset.name,
+                            () => hierarchyContextMenuSystem.AddEntityFromPreset(preset)));
+                    }
+
                     contextMenuSystem.OpenMenu(clickPosition, new List<ContextMenuItem>
                     {
-                        new ContextSubmenuItem("Add entity...", new List<ContextMenuItem>
-                        {
-                            new ContextMenuTextItem("Empty Entity", () => Debug.Log("Add empty Entity")),
-                            new ContextMenuSpacerItem(),
-                            new ContextMenuTextItem("Gltf Entity", () => Debug.Log("Add Gltf Entity")),
-                            new ContextMenuSpacerItem(),
-                            new ContextMenuTextItem("Cube", () => Debug.Log("Add empty ")),
-                            new ContextMenuTextItem("Sphere", () => Debug.Log("Add empty ")),
-                            new ContextMenuTextItem("Cylinder", () => Debug.Log("Add empty ")),
-                            new ContextMenuTextItem("Cone", () => Debug.Log("Add empty ")),
-                        }),
+                        new ContextSubmenuItem("Add entity...", addEntityMenuItems),
                     });
                 });
             }
@@ -142,7 +163,8 @@ namespace Assets.Scripts.Visuals
 
                         foreach (var preset in hierarchyContextMenuSystem.GetPresets())
                         {
-                            addEntityMenuItems.Add(new ContextMenuTextItem(preset.name, () => hierarchyContextMenuSystem.AddEntityFromPreset(preset, entity.Id)));
+                            addEntityMenuItems.Add(new ContextMenuTextItem(preset.name,
+                                () => hierarchyContextMenuSystem.AddEntityFromPreset(preset, entity.Id)));
                         }
 
                         contextMenuSystem.OpenMenu(clickPosition, new List<ContextMenuItem>
@@ -150,7 +172,8 @@ namespace Assets.Scripts.Visuals
                             new ContextSubmenuItem("Add entity...", addEntityMenuItems),
                             new ContextMenuTextItem("Duplicate", () => Debug.Log("Duplicate entity"), true),
                             new ContextMenuTextItem("Delete",
-                                () => commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateRemoveEntity(entity)))
+                                () => commandSystem.ExecuteCommand(
+                                    commandSystem.CommandFactory.CreateRemoveEntity(entity)))
                         });
                     });
 
