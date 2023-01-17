@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using Zenject;
 using Assets.Scripts.SceneState;
+using Assets.Scripts.System;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -16,19 +17,22 @@ namespace Assets.Scripts.Visuals
         private GltfShapeVisuals.Factory gltfShapeVisualsFactory;
         private PrimitiveShapeVisuals.Factory primitiveShapeVisualsFactory;
         private MainSceneVisuals.Factory mainSceneVisualsFactory;
+        private SceneManagerSystem sceneManagerSystem;
 
         [Inject]
         private void Construct(
             GltfShapeVisuals.Factory gltfShapeVisualsFactory,
             PrimitiveShapeVisuals.Factory primitiveShapeVisualsFactory,
-            MainSceneVisuals.Factory mainSceneVisualsFactory)
+            MainSceneVisuals.Factory mainSceneVisualsFactory,
+            SceneManagerSystem sceneManagerSystem)
         {
             this.gltfShapeVisualsFactory = gltfShapeVisualsFactory;
             this.primitiveShapeVisualsFactory = primitiveShapeVisualsFactory;
             this.mainSceneVisualsFactory = mainSceneVisualsFactory;
+            this.sceneManagerSystem = sceneManagerSystem;
         }
 
-        public void Initialize(DclScene scene)
+        public void Initialize(DclScene scene, Guid? overrideSelectionId = null)
         {
             var entity = scene?.GetEntityById(id) ?? scene?.GetFloatingEntityById(id);
 
@@ -38,7 +42,8 @@ namespace Assets.Scripts.Visuals
             InitializeTransformComponent(entity);
             InitializeGltfShapeVisualsComponent(entity);
             InitializePrimitiveShapeComponent(entity);
-            InitializeMainSceneVisualsComponent(entity);
+            InitializeMainSceneVisualsComponent(entity, overrideSelectionId ?? entity.Id);
+            InitializePrimarySelectionOutlineForOverrideEntity(overrideSelectionId);
         }
 
         void InitializeTransformComponent(DclEntity entity)
@@ -92,7 +97,7 @@ namespace Assets.Scripts.Visuals
             }
         }
 
-        void InitializeMainSceneVisualsComponent(DclEntity entity)
+        void InitializeMainSceneVisualsComponent(DclEntity entity, Guid overrideSelectionId)
         {
             DclComponent component = entity.GetFirstComponentByName("Scene", "Scene");
             if (component != null)
@@ -135,7 +140,7 @@ namespace Assets.Scripts.Visuals
                         mainSceneVisuals.transform.SetParent(transform, false);
                     }
 
-                    mainSceneVisuals.ShowScene(sceneId);
+                    mainSceneVisuals.ShowScene(sceneId, overrideSelectionId);
 
                 }
                 else if (mainSceneVisuals != null)
@@ -147,6 +152,41 @@ namespace Assets.Scripts.Visuals
                     }
                     mainSceneVisuals.enabled = false;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Draw outline around this entity too if the entity with the given override id is selected.
+        /// </summary>
+        /// <param name="overrideSelectionId"></param>
+        void InitializePrimarySelectionOutlineForOverrideEntity(Guid? overrideSelectionId)
+        {
+            if (!overrideSelectionId.HasValue)
+            {
+                return;
+            }
+
+            DclScene rootScene = sceneManagerSystem.GetCurrentScene();
+            if (rootScene == null)
+            {
+                return;
+            }
+
+            ShapeVisuals shapeVisuals = GetComponent<ShapeVisuals>();
+            if (shapeVisuals == null)
+            {
+                return;
+            }
+
+            DclEntity overrideEntity = rootScene.GetEntityById(overrideSelectionId.Value);
+            if (overrideEntity == null)
+            {
+                return;
+            }
+
+            if (rootScene.SelectionState.PrimarySelectedEntity == overrideEntity)
+            {
+                shapeVisuals.ShowPrimarySelectionOutline();
             }
         }
     }
