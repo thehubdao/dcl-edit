@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts.EditorState;
+using Assets.Scripts.Events;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -8,7 +9,9 @@ namespace Assets.Scripts.Interaction
 {
     public class GizmoModeInteraction : MonoBehaviour, IPointerDownHandler, IPointerEnterHandler, IPointerExitHandler
     {
+        //Dependencies
         private GizmoState _gizmoState;
+        private EditorEvents _editorEvents;
 
         public GameObject _translateButton;
         public GameObject _rotateButton;
@@ -17,18 +20,24 @@ namespace Assets.Scripts.Interaction
         public bool IsMouseOverGizmoModeMenu { get; set; }
 
         [Inject]
-        private void Construct(GizmoState gizmoState)
+        private void Construct(GizmoState gizmoState, EditorEvents editorEvents)
         {
             _gizmoState = gizmoState;
+            _editorEvents = editorEvents;
+            SetupListeners();
         }
 
-        public void Start()
+        void Start()
         {
-            GizmoState.onUpdate.AddListener(UpdateVisuals);
             UpdateVisuals();
         }
 
-        void UpdateVisuals()
+        public void SetupListeners()
+        {
+            _editorEvents.onUpdateGizmoModeMenu += UpdateVisuals;
+        }
+
+        private void UpdateVisuals()
         {
             _translateButton.GetComponent<Button>().interactable = _gizmoState.CurrentMode != GizmoState.Mode.Translate;
             _rotateButton.GetComponent<Button>().interactable = _gizmoState.CurrentMode != GizmoState.Mode.Rotate;

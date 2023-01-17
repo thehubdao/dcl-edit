@@ -1,5 +1,4 @@
 using Assets.Scripts.Events;
-using UnityEngine.Events;
 using Zenject;
 
 namespace Assets.Scripts.EditorState
@@ -8,8 +7,6 @@ namespace Assets.Scripts.EditorState
     {
         // Dependencies
         private EditorEvents _editorEvents;
-
-        public static UnityEvent onUpdate = new UnityEvent();
 
         [Inject]
         private void Construct(EditorEvents editorEvents)
@@ -32,7 +29,7 @@ namespace Assets.Scripts.EditorState
             set
             {
                 _currentMode = value;
-                onUpdate.Invoke();
+                _editorEvents.InvokeGizmoModeChangeEvent();
                 _editorEvents.InvokeSelectionChangedEvent();
             }
         }
