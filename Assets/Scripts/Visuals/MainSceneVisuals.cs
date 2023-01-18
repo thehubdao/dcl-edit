@@ -31,11 +31,7 @@ namespace Assets.Scripts.Visuals
         {
             var scene = sceneManagerSystem.GetScene(sceneId);
 
-            // TODO: be smarter about caching and stuff
-            foreach (var child in transform.GetChildren())
-            {
-                Destroy(child.gameObject);
-            }
+            entitySelectInteractionFactory.ReturnAllObjectsToPool();
 
             List<EntityVisuals> visuals = new List<EntityVisuals>();
 

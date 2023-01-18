@@ -9,7 +9,7 @@ using UnityEditor;
 
 namespace Assets.Scripts.Interaction
 {
-    public class EntitySelectInteraction : MonoBehaviour
+    public class EntitySelectInteraction : PooledGameObject<EntitySelectInteraction>
     {
         public Guid id;
 
@@ -27,7 +27,7 @@ namespace Assets.Scripts.Interaction
             entitySelectSystem.ClickedOnEntity(id);
         }
 
-        public class Factory : PlaceholderFactory<EntitySelectInteraction>
+        public class Factory : GameObjectPoolFactory<EntitySelectInteraction>
         {
         }
     }
