@@ -37,6 +37,19 @@ namespace Assets.Scripts.System
             this.editorEvents = editorEvents;
             this.loadGltfFromFileSystem = loadGltfFromFileSystem;
             this.assetThumbnailGeneratorSystem = assetThumbnailGeneratorSystem;
+
+            CheckAssetDirectoryExists();
+        }
+
+        //TODO Change when asset loading is changed
+        private void CheckAssetDirectoryExists()
+        {
+            string directoryPath = pathState.ProjectPath + relativePathInProject;
+            
+            if (!Directory.Exists(directoryPath))
+            {
+                Directory.CreateDirectory(directoryPath);
+            }
         }
 
 
