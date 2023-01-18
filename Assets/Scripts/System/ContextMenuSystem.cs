@@ -30,19 +30,38 @@ namespace Assets.Scripts.System
             }
         }
 
+        /// <summary>
+        /// Open the given context menu.
+        /// </summary>
+        /// <param name="position">The position used as origin for the context menu.</param>
+        /// <param name="items">All the menu items for the context menu.</param>
         public void OpenMenu(Vector3 position, List<ContextMenuItem> items)
         {
             var placement = new ContextMenuState.Placement { expandDirection = ContextMenuState.Placement.Direction.Any, position = position };
             OpenMenu(new List<ContextMenuState.Placement> { placement }, items);
         }
+
+        /// <summary>
+        /// Open the given context menu and sort all its items by their sorting priotiry.
+        /// </summary>
+        /// <param name="possiblePlacements">The Placement options for the context menu.</param>
+        /// <param name="items">All the menu items for the context menu.</param>
         public void OpenMenu(List<ContextMenuState.Placement> possiblePlacements, List<ContextMenuItem> items)
         {
+            ContextMenuState.SortItems(items);
             var data = new ContextMenuState.Data(Guid.NewGuid(), items, possiblePlacements);
             _state.menuData.Clear();
             _state.menuData.Push(data);
             _editorEvents.InvokeUpdateContextMenuEvent();
         }
 
+
+        /// <summary>
+        /// Open the given context menu.
+        /// </summary>
+        /// <param name="menuId">The submenu will have this id.</param>
+        /// <param name="possiblePlacements">The Placement options for the context menu.</param>
+        /// <param name="items">All the menu items for the context menu.</param>
         public void OpenSubmenu(Guid menuId, List<ContextMenuState.Placement> possiblePlacements, List<ContextMenuItem> items)
         {
             // Check if menu is already open
@@ -67,7 +86,7 @@ namespace Assets.Scripts.System
         /// <param name="id"></param>
         public void CloseMenusUntil(Guid id)
         {
-            if (_state.menuData.Peek().menuId == id) { return; }               // Menu is already at the top
+            if (_state.menuData.Peek().menuId == id) { return; } // Menu is already at the top
             while (_state.menuData.Count > 0)
             {
                 if (_state.menuData.Peek().menuId == id) { break; }

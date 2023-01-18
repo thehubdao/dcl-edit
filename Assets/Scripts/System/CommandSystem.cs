@@ -10,16 +10,21 @@ namespace Assets.Scripts.System
         public CommandFactorySystem CommandFactory { get; private set; }
         private EditorEvents editorEvents;
         private SceneManagerSystem sceneManagerSystem;
+        private MenuBarSystem menuBarSystem;
 
         [Inject]
         public void Construct(
             CommandFactorySystem commandFactory,
             EditorEvents editorEvents,
-            SceneManagerSystem sceneManagerSystem)
+            SceneManagerSystem sceneManagerSystem,
+            MenuBarSystem menuBarSystem)
         {
             CommandFactory = commandFactory;
             this.editorEvents = editorEvents;
             this.sceneManagerSystem = sceneManagerSystem;
+            this.menuBarSystem = menuBarSystem;
+
+            CreateMenuBarItems();
         }
 
         public void ExecuteCommand<T>(T command) where T : SceneState.Command
@@ -79,6 +84,12 @@ namespace Assets.Scripts.System
                 commandState.CurrentCommandIndex++;
                 commandState.CommandHistory[commandState.CurrentCommandIndex].Do(sceneManagerSystem.GetCurrentScene(), editorEvents);
             }
+        }
+
+        private void CreateMenuBarItems()
+        {
+            menuBarSystem.AddMenuItem("Edit#2/Undo#1", UndoCommand);
+            menuBarSystem.AddMenuItem("Edit#2/Redo#2", RedoCommand);
         }
     }
 }
