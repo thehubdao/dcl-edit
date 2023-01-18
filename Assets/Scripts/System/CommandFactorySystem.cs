@@ -69,7 +69,7 @@ public class CommandFactorySystem
         return new RemoveComponent(entityId, component);
     }
 
-    public AddEntity CreateAddEntity(EntityPresetState.EntityPreset preset, Guid parent, Guid oldPrimarySelection, IEnumerable<Guid> oldSecondarySelection)
+    public AddEntity CreateAddEntity(EntityPresetState.EntityPreset preset, Guid oldPrimarySelection, IEnumerable<Guid> oldSecondarySelection, Guid parent = default)
     {
         return new AddEntity(oldPrimarySelection, oldSecondarySelection, preset, parent);
     }

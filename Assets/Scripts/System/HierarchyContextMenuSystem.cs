@@ -31,7 +31,7 @@ namespace Assets.Scripts.System
             return entityPresetSystem.availablePresets;
         }
 
-        public void AddEntityFromPreset(EntityPresetState.EntityPreset preset, Guid parentId)
+        public void AddEntityFromPreset(EntityPresetState.EntityPreset preset, Guid parentId = default)
         {
             var scene = sceneManagerSystem.GetCurrentScene();
             if (scene == null)
@@ -43,8 +43,8 @@ namespace Assets.Scripts.System
                 commandSystem.CommandFactory.CreateAddEntity(
                     preset,
                     parentId,
-                    scene.SelectionState.PrimarySelectedEntity?.Id ?? Guid.Empty,
-                    scene.SelectionState.SecondarySelectedEntities.Select(e => e.Id)));
+                    scene.SelectionState.SecondarySelectedEntities.Select(e => e.Id),
+                    scene.SelectionState.PrimarySelectedEntity?.Id ?? Guid.Empty));
         }
     }
 }
