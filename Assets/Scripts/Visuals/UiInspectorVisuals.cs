@@ -193,9 +193,19 @@ namespace Assets.Scripts.Visuals
 
                             break;
                         }
-                        case DclComponent.DclComponentProperty.PropertyType.Boolean: // not supported yet
+                        case DclComponent.DclComponentProperty.PropertyType.Boolean:
                         {
-                            componentPanel.AddText("Boolean property not supported yet");
+                            var boolActions = new StringPropertyAtom.UiPropertyActions<bool>
+                            {
+                                OnChange = (value) => updatePropertiesSystem.UpdateFixedProperty(propertyIdentifier, value),
+                                OnSubmit = (value) => updatePropertiesSystem.UpdateFixedProperty(propertyIdentifier, value)
+                                // OnInvalid, OnAbort not required for a checkbox
+                            };
+
+                            componentPanel.AddBooleanProperty(
+                                property.PropertyName,
+                                property.GetConcrete<bool>().Value,
+                                boolActions);                                    
                             break;
                         }
                         case DclComponent.DclComponentProperty.PropertyType.Vector3:
