@@ -26,6 +26,12 @@ namespace Assets.Scripts.EditorState
         [SerializeField]
         public GameObject GizmoModeMenu;
 
+        [SerializeField]
+        public GameObject SnappingButton;
+
+        [SerializeField]
+        public GameObject RelationSwitcher;
+
         [Header("Assets")]
         [SerializeField]
         public Mesh BoxMesh;

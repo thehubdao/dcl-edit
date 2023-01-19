@@ -55,5 +55,11 @@ namespace Assets.Scripts.Events
 
         public event Action onUpdateGizmoModeMenu;
         public void InvokeGizmoModeChangeEvent() => onUpdateGizmoModeMenu?.Invoke();
+
+        public event Action onUpdateRelationSwitcher;
+        public void InvokeRelationSwitcherChangeEvent() => onUpdateRelationSwitcher?.Invoke();
+
+        public event Action onUpdateSnappingButton;
+        public void InvokeSnappingButtonChangeEvent() => onUpdateSnappingButton?.Invoke();
     }
 }

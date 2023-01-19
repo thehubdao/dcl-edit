@@ -132,6 +132,8 @@ namespace Assets.Scripts.Interaction
             bool isMouseOverGameWindow;
             bool isMouseOverContextMenu;
             bool isMouseOverGizmoModeMenu;
+            bool isMouseOverSnappingButtonMenu;
+            bool isMouseOverRelationSwitcherMenu;
             {
                 var mousePosViewport = inputHelper.GetMousePositionInScenePanel();
                 // Get the ray from the Camera, that corresponds to the mouse position in the panel
@@ -143,6 +145,8 @@ namespace Assets.Scripts.Interaction
                                         mousePosViewport.y < 1;
                 isMouseOverContextMenu = contextMenuSystem.IsMouseOverMenu();
                 isMouseOverGizmoModeMenu = unityState.GizmoModeMenu.GetComponent<GizmoModeInteraction>().IsMouseOverGizmoModeMenu;
+                isMouseOverSnappingButtonMenu = unityState.SnappingButton.GetComponent<SnappingButtonInteraction>().IsMouseOverSnapppingButtonMenu;
+                isMouseOverRelationSwitcherMenu = unityState.RelationSwitcher.GetComponent<RelationSwitcherInteraction>().IsMouseOverRelationSwitcherMenu;
             }
 
 
@@ -150,7 +154,7 @@ namespace Assets.Scripts.Interaction
 
 
             // Figure out, if the mouse is over the 3D viewport (not hovering over any UI)
-            var isMouseIn3DView = /*!EventSystem.current.IsPointerOverGameObject() &&*/ isMouseOverGameWindow && !isMouseOverContextMenu && !isMouseOverGizmoModeMenu;
+            var isMouseIn3DView = /*!EventSystem.current.IsPointerOverGameObject() &&*/ isMouseOverGameWindow && !isMouseOverContextMenu && !isMouseOverGizmoModeMenu && !isMouseOverSnappingButtonMenu && !isMouseOverRelationSwitcherMenu;
 
             // The position the mouse currently points to in the 3D viewport
             Vector3? mousePositionIn3DView = null;
