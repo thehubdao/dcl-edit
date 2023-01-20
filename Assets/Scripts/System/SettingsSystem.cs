@@ -317,5 +317,6 @@ namespace Assets.Scripts.System
 
         public StringUserSetting panelSize;
         public BooleanUserSetting gizmoToolSnapping;
+        public IntUserSetting gizmoToolRelation;
     }
 }
