@@ -48,6 +48,11 @@ namespace Assets.Scripts.Visuals
             }
         }
 
+        public void ShowPrimarySelectionOutline()
+        {
+            SetRenderingLayerRecursive(gameObject, LayerMask.NameToLayer("Outline2"));
+        }
+
         protected void SetRenderingLayerRecursive(GameObject o, int layer)
         {
             if (HasRenderer(o))
