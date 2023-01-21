@@ -125,5 +125,8 @@ namespace Assets.Scripts.EditorState
 
         [SerializeField]
         public GameObject ContextMenuSpacerItemAtom;
+
+        [SerializeField]
+        public GameObject SpacerAtom;
     }
 }

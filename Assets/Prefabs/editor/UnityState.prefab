@@ -79,3 +79,4 @@ MonoBehaviour:
   ContextMenuItemAtom: {fileID: 7252716371144921517, guid: f3e20cb956778e94b84cf06eb3365b7d, type: 3}
   ContextSubmenuItemAtom: {fileID: 7092327081975487917, guid: 64a24d68977842740b7c550a18b8b6c9, type: 3}
   ContextMenuSpacerItemAtom: {fileID: 1012576247357608871, guid: 395030571d765984c8e17050dab03b59, type: 3}
+  SpacerAtom: {fileID: 889315105189934788, guid: ef30d5a0efda96d4b88473330665ddc2, type: 3}
