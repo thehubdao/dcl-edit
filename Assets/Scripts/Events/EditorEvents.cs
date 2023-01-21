@@ -52,5 +52,8 @@ namespace Assets.Scripts.Events
 
         public event Action onUiChangedEvent;
         public void InvokeUiChangedEvent() => onUiChangedEvent?.Invoke();
+
+        public event Action onUpdateGizmoModeMenu;
+        public void InvokeGizmoModeChangeEvent() => onUpdateGizmoModeMenu?.Invoke();
     }
 }
