@@ -49,7 +49,10 @@ namespace Assets.Scripts.Visuals
 
         private void RemoveChildGameObjects()
         {
-            entitySelectInteractionFactory.ReturnAllObjectsToPool();
+            foreach (var interaction in GetComponentsInChildren<EntitySelectInteraction>())
+            {
+                interaction.DestroyToPool();
+            }
         }
 
         private List<EntityVisuals> GenerateEntityVisuals(DclScene scene, Guid? overrideSelectionId)
