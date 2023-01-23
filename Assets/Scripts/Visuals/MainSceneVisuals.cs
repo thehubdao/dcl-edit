@@ -49,9 +49,9 @@ namespace Assets.Scripts.Visuals
 
         private void RemoveChildGameObjects()
         {
-            foreach (var child in transform.GetChildren())
+            foreach (var interaction in GetComponentsInChildren<EntitySelectInteraction>())
             {
-                Destroy(child.gameObject);
+                interaction.DestroyToPool();
             }
         }
 
