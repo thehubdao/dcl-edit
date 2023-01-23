@@ -123,34 +123,43 @@ namespace Assets.Scripts.System
 
         private GenerationInfo? GatherInfo()
         {
-            //SceneDirectoryState sceneDirectoryState = sceneManagerSystem.GetCurrentDirectoryState();
-
-            //if (sceneDirectoryState.currentScene == null)
-            //{
-            //    return null;
-            //}
-
             var generationInfo = new GenerationInfo()
             {
                 gatheredSceneInfos = new List<SceneInfo>(),
                 usedComponentInfos = new List<UsedComponentInfo>()
             };
 
+            // Gather scene names
+            var sceneNames = new Dictionary<Guid, string>();
+
             foreach (var sceneDirectoryState in sceneManagerState.allSceneDirectoryStates)
             {
-                generationInfo.gatheredSceneInfos.Add(GatherSceneInfo(sceneDirectoryState, generationInfo.usedComponentInfos));
+                string name;
+                var i = 0;
+                do
+                {
+                    i++;
+                    name = exposeEntitySystem.GenerateValidSymbol(sceneDirectoryState.name) + (i > 1 ? i.ToString() : "");
+                } while (sceneNames.ContainsValue(name));
+
+                sceneNames.Add(sceneDirectoryState.id, name);
+            }
+
+            foreach (var sceneDirectoryState in sceneManagerState.allSceneDirectoryStates)
+            {
+                generationInfo.gatheredSceneInfos.Add(GatherSceneInfo(sceneDirectoryState, generationInfo.usedComponentInfos, sceneNames));
             }
 
             return generationInfo;
         }
 
-        private SceneInfo GatherSceneInfo(SceneDirectoryState sceneDirectoryState, ICollection<UsedComponentInfo> usedComponentInfos)
+        private SceneInfo GatherSceneInfo(SceneDirectoryState sceneDirectoryState, ICollection<UsedComponentInfo> usedComponentInfos, IReadOnlyDictionary<Guid, string> sceneNames)
         {
             var uniqueSymbols = new List<string>();
 
             var sceneInfo = new SceneInfo()
             {
-                symbol = exposeEntitySystem.GenerateValidSymbol(sceneDirectoryState.name),
+                symbol = sceneNames[sceneDirectoryState.id],
                 gatheredEntityInfos = new List<EntityInfo>()
             };
 
@@ -158,13 +167,13 @@ namespace Assets.Scripts.System
 
             foreach (var entity in dclScene.AllEntities.Select(pair => pair.Value))
             {
-                sceneInfo.gatheredEntityInfos.Add(GatherEntityInfo(entity, usedComponentInfos, uniqueSymbols));
+                sceneInfo.gatheredEntityInfos.Add(GatherEntityInfo(entity, usedComponentInfos, uniqueSymbols, sceneNames));
             }
 
             return sceneInfo;
         }
 
-        private EntityInfo GatherEntityInfo(DclEntity entity, ICollection<UsedComponentInfo> usedComponentInfos, ICollection<string> uniqueSymbols)
+        private EntityInfo GatherEntityInfo(DclEntity entity, ICollection<UsedComponentInfo> usedComponentInfos, ICollection<string> uniqueSymbols, IReadOnlyDictionary<Guid, string> sceneNames)
         {
             var internalEntitySymbol = exposeEntitySystem.GenerateValidSymbol(obfuscate ? "e" : entity.CustomName);
 
@@ -196,16 +205,56 @@ namespace Assets.Scripts.System
 
             foreach (var component in entity.Components)
             {
-                entityInfo.gatheredComponentInfos.Add(GatherComponentInfo(component, internalEntitySymbol, usedComponentInfos, uniqueSymbols));
+                entityInfo.gatheredComponentInfos.Add(GatherComponentInfo(component, internalEntitySymbol, usedComponentInfos, uniqueSymbols, sceneNames));
             }
 
             return entityInfo;
         }
 
-        private EntityComponentInfo GatherComponentInfo(DclComponent component, string internalEntitySymbol, ICollection<UsedComponentInfo> usedComponentInfos, ICollection<string> uniqueSymbols)
+        private EntityComponentInfo GatherComponentInfo(DclComponent component, string internalEntitySymbol, ICollection<UsedComponentInfo> usedComponentInfos, ICollection<string> uniqueSymbols, IReadOnlyDictionary<Guid, string> sceneNames)
         {
+            var specialComponent = component.NameInCode switch
+            {
+                "Transform" => EntityComponentInfo.SpecialComponent.Transform,
+                "Scene" => EntityComponentInfo.SpecialComponent.ChildScene,
+                _ => EntityComponentInfo.SpecialComponent.NotSpecial
+            };
+
             // Create unique internal symbol
             var internalEntityComponentSymbol = obfuscate ? "c" : (internalEntitySymbol + component.NameInCode);
+
+
+            if (specialComponent == EntityComponentInfo.SpecialComponent.ChildScene)
+            {
+                var sceneComponent = new DclSceneComponent(component);
+
+                var sceneName = sceneNames[Guid.Parse(sceneComponent.sceneId.Value)];
+
+                {
+                    if (!usedComponentInfos
+                            .Select(ci => ci.symbol)
+                            .Contains(sceneName))
+                    {
+                        usedComponentInfos.Add(new UsedComponentInfo()
+                        {
+                            symbol = sceneName,
+                            withTypeSymbol = $"WithChildScene{sceneName}",
+                            inEntitySymbol = "childScene",
+                            specialComponent = specialComponent
+                        });
+                    }
+                }
+
+                return new EntityComponentInfo()
+                {
+                    symbol = $"{sceneName}",
+                    withTypeSymbol = $"WithChildScene{sceneName}",
+                    inEntitySymbol = "childScene",
+                    internalScriptSymbol = internalEntityComponentSymbol,
+                    specialComponent = specialComponent,
+                    gatheredPropertyInfos = new List<PropertyInfo>()
+                };
+            }
 
             // make the internal symbol unique within the generated scene
             {
@@ -227,13 +276,6 @@ namespace Assets.Scripts.System
                 char.ToLower(component.NameInCode[0])
                 + component.NameInCode.Substring(1);
 
-
-            var specialComponent = component.NameInCode switch
-            {
-                "Transform" => EntityComponentInfo.SpecialComponent.Transform,
-                "Scene" => EntityComponentInfo.SpecialComponent.ChildScene,
-                _ => EntityComponentInfo.SpecialComponent.NotSpecial
-            };
 
             // Generate component info
 
@@ -378,7 +420,7 @@ export type DceEntity = {
                 }
             */
 
-            foreach (var componentInfo in generationInfo.usedComponentInfos.Where(ci => ci.specialComponent == EntityComponentInfo.SpecialComponent.NotSpecial))
+            foreach (var componentInfo in generationInfo.usedComponentInfos.Where(ci => ci.specialComponent != EntityComponentInfo.SpecialComponent.Transform))
             {
                 generatedScript.AppendLine($"export type {componentInfo.withTypeSymbol} = {{".Indent(0));
                 generatedScript.AppendLine($"{componentInfo.inEntitySymbol}: {componentInfo.symbol}".Indent(1));
@@ -407,7 +449,7 @@ export type DceEntity = {
 
                     foreach (var componentInfo in entityInfo
                                  .gatheredComponentInfos
-                                 .Where(componentInfo => componentInfo.specialComponent == EntityComponentInfo.SpecialComponent.NotSpecial)) // Exclude special components
+                                 .Where(componentInfo => componentInfo.specialComponent != EntityComponentInfo.SpecialComponent.Transform)) // Exclude Special Components
                     {
                         generatedScript.Append($" & {componentInfo.withTypeSymbol}");
                     }
@@ -541,24 +583,31 @@ export type DceEntity = {
                     // components
                     foreach (var componentInfo in entityInfo.gatheredComponentInfos)
                     {
-                        // Temporary solution TODO: Change it
-                        generatedScript.AppendLine(componentInfo.symbol == "GLTFShape" ?
-                            $"const {componentInfo.internalScriptSymbol} = new {componentInfo.symbol}(\"\")".Indent(2) : // use empty initializer until assets can be used here
-                            $"const {componentInfo.internalScriptSymbol} = new {componentInfo.symbol}()".Indent(2));
-
-                        // properties. Ignore properties without valid value
-                        foreach (var propertyInfo in componentInfo.gatheredPropertyInfos.Where(pi => pi.value != null))
+                        if (componentInfo.specialComponent == EntityComponentInfo.SpecialComponent.ChildScene)
                         {
-                            generatedScript.AppendLine($"{componentInfo.internalScriptSymbol}.{propertyInfo.symbol} = {propertyInfo.value}".Indent(2));
-                        }
-
-                        if (obfuscate)
-                        {
-                            generatedScript.AppendLine($"o({entityInfo.internalScriptSymbol},{componentInfo.internalScriptSymbol})".Indent(2));
+                            generatedScript.AppendLine($"const {componentInfo.internalScriptSymbol} = SceneFactory.create{componentInfo.symbol}({entityInfo.internalScriptSymbol})".Indent(2));
                         }
                         else
                         {
-                            generatedScript.AppendLine($"{entityInfo.internalScriptSymbol}.addComponent({componentInfo.internalScriptSymbol})".Indent(2));
+                            // Temporary solution TODO: Change it
+                            generatedScript.AppendLine(componentInfo.symbol == "GLTFShape" ?
+                                $"const {componentInfo.internalScriptSymbol} = new {componentInfo.symbol}(\"\")".Indent(2) : // use empty initializer until assets can be used here
+                                $"const {componentInfo.internalScriptSymbol} = new {componentInfo.symbol}()".Indent(2));
+
+                            // properties. Ignore properties without valid value
+                            foreach (var propertyInfo in componentInfo.gatheredPropertyInfos.Where(pi => pi.value != null))
+                            {
+                                generatedScript.AppendLine($"{componentInfo.internalScriptSymbol}.{propertyInfo.symbol} = {propertyInfo.value}".Indent(2));
+                            }
+
+                            if (obfuscate)
+                            {
+                                generatedScript.AppendLine($"o({entityInfo.internalScriptSymbol},{componentInfo.internalScriptSymbol})".Indent(2));
+                            }
+                            else
+                            {
+                                generatedScript.AppendLine($"{entityInfo.internalScriptSymbol}.addComponent({componentInfo.internalScriptSymbol})".Indent(2));
+                            }
                         }
                     }
 
