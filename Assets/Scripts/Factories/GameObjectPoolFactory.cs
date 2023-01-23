@@ -1,70 +1,71 @@
-using JetBrains.Annotations;
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using UnityEngine;
 using Zenject;
 
-
-public class GameObjectPoolFactory<TComponent> : PlaceholderFactory<TComponent> where TComponent : PooledGameObject<TComponent>
+namespace Assets.Scripts.Factories
 {
-    //Globals
-    private Stack<PooledGameObject<TComponent>> availableObjects = new Stack<PooledGameObject<TComponent>>();
-    private List<PooledGameObject<TComponent>> allObjects = new List<PooledGameObject<TComponent>>();
-    public Transform PoolParent { get; private set; }
-
-
-    [Inject]
-    void Construct()
+    public class GameObjectPoolFactory<TComponent> : PlaceholderFactory<TComponent> where TComponent : PooledGameObject<TComponent>
     {
-        PoolParent = new GameObject($"GameObjectPool - {nameof(TComponent)}").transform;
-        PoolParent.gameObject.SetActive(false);
-    }
+        //Globals
+        private readonly Stack<PooledGameObject<TComponent>> availableObjects = new Stack<PooledGameObject<TComponent>>();
+        private readonly List<PooledGameObject<TComponent>> allObjects = new List<PooledGameObject<TComponent>>();
+        public Transform poolParent { get; private set; }
 
-    [NotNull]
-    public override TComponent Create()
-    {
-        PooledGameObject<TComponent> instance;
 
-        // get object from pool or instantiate new one
-        if (availableObjects.Count > 0)
+        [Inject]
+        void Construct()
         {
-            instance = availableObjects.Pop();
-            instance.InstantiateFromPool();
-        }
-        else
-        {
-            instance = IncreaseCapacity();
+            poolParent = new GameObject($"GameObjectPool - {nameof(TComponent)}").transform;
+            poolParent.gameObject.SetActive(false);
         }
 
-        return (TComponent)instance;
-    }
-
-    public void ReturnAllObjectsToPool()
-    {
-        foreach (PooledGameObject<TComponent> poolsObjects in allObjects)
+        [NotNull]
+        public override TComponent Create()
         {
-            if (!poolsObjects.IsInPool)
+            PooledGameObject<TComponent> instance;
+
+            // get object from pool or instantiate new one
+            if (availableObjects.Count > 0)
             {
-                poolsObjects.DestroyToPool();
+                instance = availableObjects.Pop();
+                instance.InstantiateFromPool();
+            }
+            else
+            {
+                instance = IncreaseCapacity();
+            }
+
+            return (TComponent) instance;
+        }
+
+        public void ReturnAllObjectsToPool()
+        {
+            foreach (PooledGameObject<TComponent> poolsObjects in allObjects)
+            {
+                if (!poolsObjects.isInPool)
+                {
+                    poolsObjects.DestroyToPool();
+                }
             }
         }
-    }
 
-    public void OnGameObjectReturnToPool(PooledGameObject<TComponent> instance, Action isInPoolSetter)
-    {
-        instance.transform.parent = PoolParent;
-        isInPoolSetter();
-        availableObjects.Push(instance);
-    }
+        public void OnGameObjectReturnToPool(PooledGameObject<TComponent> instance, Action isInPoolSetter)
+        {
+            instance.transform.parent = poolParent;
+            isInPoolSetter();
+            availableObjects.Push(instance);
+        }
 
-    private PooledGameObject<TComponent> IncreaseCapacity()
-    {
-        PooledGameObject<TComponent> instance = base.Create();
+        private PooledGameObject<TComponent> IncreaseCapacity()
+        {
+            PooledGameObject<TComponent> instance = base.Create();
 
-        instance.OwnPool = this;
-        allObjects.Add(instance);
+            instance.ownPool = this;
+            allObjects.Add(instance);
 
-        return instance;
+            return instance;
+        }
     }
 }

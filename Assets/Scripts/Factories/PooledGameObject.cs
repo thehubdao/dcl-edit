@@ -2,54 +2,73 @@ using System.Collections;
 using UnityEditor;
 using UnityEngine;
 
-public class PooledGameObject<TComponent> : MonoBehaviour where TComponent : PooledGameObject<TComponent>
+namespace Assets.Scripts.Factories
 {
-    //Globals
-    private GameObjectPoolFactory<TComponent> ownPool = null;
-    public GameObjectPoolFactory<TComponent> OwnPool { get { return ownPool; } set { if (ownPool != null) { throw new System.Exception("Pool Cannot be changed."); } ownPool = value; } }
-    public bool IsInPool { get; private set; } = false;
-
-
-    public GameObject InstantiateFromPool()
+    public class PooledGameObject<TComponent> : MonoBehaviour where TComponent : PooledGameObject<TComponent>
     {
-        ResetGameObject();
+        //Globals
+        private GameObjectPoolFactory<TComponent> ownPoolInternal = null;
 
-        //reset transform
-        transform.parent = null;
-        transform.localPosition = Vector3.zero;
-        transform.localRotation = Quaternion.identity;
-        transform.localScale = Vector3.one;
-        
-        IsInPool = false;
+        public GameObjectPoolFactory<TComponent> ownPool
+        {
+            get => ownPoolInternal;
+            set
+            {
+                if (ownPoolInternal != null)
+                {
+                    throw new System.Exception("Pool Cannot be changed.");
+                }
 
-        return gameObject;
-    }
+                ownPoolInternal = value;
+            }
+        }
 
-    public void DestroyToPool()
-    {
-        OwnPool.OnGameObjectReturnToPool(this, () => IsInPool = false);
-    }
+        public bool isInPool { get; private set; } = false;
 
-    public void DestroyToPool(float t)
-    {
-        StartCoroutine(DestroyToPoolDelayed(t));
-    }
 
-    private IEnumerator DestroyToPoolDelayed(float t)
-    {
-        yield return new WaitForSeconds(t);
-        DestroyToPool();
-    }
+        public GameObject InstantiateFromPool()
+        {
+            ResetGameObject();
 
-    protected virtual void ResetGameObject() { }
+            //reset transform
+            transform.parent = null;
+            transform.localPosition = Vector3.zero;
+            transform.localRotation = Quaternion.identity;
+            transform.localScale = Vector3.one;
+
+            isInPool = false;
+
+            return gameObject;
+        }
+
+        public void DestroyToPool()
+        {
+            ownPool.OnGameObjectReturnToPool(this, () => isInPool = false);
+        }
+
+        public void DestroyToPool(float t)
+        {
+            StartCoroutine(DestroyToPoolDelayed(t));
+        }
+
+        private IEnumerator DestroyToPoolDelayed(float t)
+        {
+            yield return new WaitForSeconds(t);
+            DestroyToPool();
+        }
+
+        protected virtual void ResetGameObject()
+        {
+        }
 
 #if UNITY_EDITOR
-    private void OnDestroy()
-    {
-        if (EditorApplication.isPlayingOrWillChangePlaymode)
+        private void OnDestroy()
         {
-            Debug.LogError("Pooled GameObject Destroyed", this);
+            if (EditorApplication.isPlayingOrWillChangePlaymode)
+            {
+                Debug.LogError("Pooled GameObject Destroyed", this);
+            }
         }
-    }
 #endif
+    }
 }
