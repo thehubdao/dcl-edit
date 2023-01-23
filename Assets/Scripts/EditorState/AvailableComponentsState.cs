@@ -1,7 +1,6 @@
+using Assets.Scripts.SceneState;
 using System.Collections.Generic;
 using System.Linq;
-using Assets.Scripts.SceneState;
-using UnityEngine;
 
 namespace Assets.Scripts.EditorState
 {
@@ -57,6 +56,11 @@ namespace Assets.Scripts.EditorState
                 category = "Build in/Shape",
                 componentDefinition = new DclComponent.ComponentDefinition("ConeShape", "Shape")
             },
+            new AvailableComponent
+            {
+                category = "Build in",
+                componentDefinition = DclSceneComponent.sceneComponentDefinition
+            }
         };
 
         public DclComponent.ComponentDefinition GetComponentDefinitionByName(string name)

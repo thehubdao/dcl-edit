@@ -1,4 +1,8 @@
+using System;
+using JetBrains.Annotations;
+using UnityEngine;
 using UnityEngine.UI;
+using Visuals.UiHandler;
 
 namespace Assets.Scripts.Visuals.UiBuilder
 {
@@ -7,6 +11,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
         public new class Data : Atom.Data
         {
             public int height;
+            [CanBeNull] public Action<Vector3> rightClickAction;
 
             public override bool Equals(Atom.Data other)
             {
@@ -15,7 +20,9 @@ namespace Assets.Scripts.Visuals.UiBuilder
                     return false;
                 }
 
-                return height == otherSpacer.height;
+                return
+                    height.Equals(otherSpacer.height) &&
+                    rightClickAction == otherSpacer.rightClickAction;
             }
         }
 
@@ -37,9 +44,13 @@ namespace Assets.Scripts.Visuals.UiBuilder
             // Stage 2: Check for updated data and update, if data was changed
             if (!newSpacerData.Equals(data))
             {
+                // Update data
+                var spacerHandler = gameObject.gameObject.GetComponent<SpacerHandler>();
                 var le = gameObject.gameObject.GetComponent<LayoutElement>();
+                
                 le.minHeight = newSpacerData.height;
-
+                spacerHandler.rightClickHandler.onRightClick = newSpacerData.rightClickAction;
+                
                 data = newSpacerData;
             }
         }
@@ -58,11 +69,12 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
     public static class SpacerPanelHelper
     {
-        public static SpacerAtom.Data AddSpacer(this PanelAtom.Data panelAtomData, int height)
+        public static SpacerAtom.Data AddSpacer(this PanelAtom.Data panelAtomData, int height, Action<Vector3> rightClickAction = null)
         {
             var data = new SpacerAtom.Data
             {
-                height = height
+                height = height,
+                rightClickAction = rightClickAction
             };
 
             panelAtomData.childDates.Add(data);

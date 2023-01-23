@@ -75,3 +75,6 @@ CodeCoverage/
 
 Packages/com.svermeulen.extenject/OptionalExtras/SampleGame1 (Beginner)/
 /.vscode/settings.json
+
+# Rider IDE
+.idea

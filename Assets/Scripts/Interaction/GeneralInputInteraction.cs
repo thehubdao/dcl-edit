@@ -41,7 +41,8 @@ namespace Assets.Scripts.Interaction
             EditorEvents editorEvents,
             EntitySelectSystem entitySelectSystem,
             ContextMenuSystem contextMenuSystem,
-            SceneManagerSystem sceneManagerSystem)
+            SceneManagerSystem sceneManagerSystem
+            )
         {
             this.sceneSaveSystem = sceneSaveSystem;
             this.commandSystem = commandSystem;
@@ -130,6 +131,7 @@ namespace Assets.Scripts.Interaction
             Ray mouseRay;
             bool isMouseOverGameWindow;
             bool isMouseOverContextMenu;
+            bool isMouseOverGizmoModeMenu;
             {
                 var mousePosViewport = inputHelper.GetMousePositionInScenePanel();
                 // Get the ray from the Camera, that corresponds to the mouse position in the panel
@@ -140,14 +142,15 @@ namespace Assets.Scripts.Interaction
                                         mousePosViewport.y >= 0 &&
                                         mousePosViewport.y < 1;
                 isMouseOverContextMenu = contextMenuSystem.IsMouseOverMenu();
+                isMouseOverGizmoModeMenu = unityState.GizmoModeMenu.GetComponent<GizmoModeInteraction>().IsMouseOverGizmoModeMenu;
             }
 
 
-            
+
 
 
             // Figure out, if the mouse is over the 3D viewport (not hovering over any UI)
-            var isMouseIn3DView = /*!EventSystem.current.IsPointerOverGameObject() &&*/ isMouseOverGameWindow && !isMouseOverContextMenu;
+            var isMouseIn3DView = /*!EventSystem.current.IsPointerOverGameObject() &&*/ isMouseOverGameWindow && !isMouseOverContextMenu && !isMouseOverGizmoModeMenu;
 
             // The position the mouse currently points to in the 3D viewport
             Vector3? mousePositionIn3DView = null;
