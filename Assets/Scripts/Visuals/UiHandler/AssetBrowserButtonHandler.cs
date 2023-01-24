@@ -1,7 +1,6 @@
 using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
 using Assets.Scripts.System;
-using Assets.Scripts.Visuals.UiHandler;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -35,11 +34,16 @@ public class AssetBrowserButtonHandler : ButtonHandler
         this.assetThumbnailManagerSystem = assetThumbnailManagerSystem;
     }
 
-    public void Init(AssetMetadata metadata, ScrollRect scrollViewRect = null)
+    public void Init(AssetMetadata metadata, bool isInDialog, ScrollRect scrollViewRect = null)
     {
         this.metadata = metadata;
 
         assetButtonInteraction.assetMetadata = metadata;
+
+        // Set on click interaction
+        button.onClick.RemoveAllListeners();
+        if (isInDialog) button.onClick.AddListener(assetButtonDialogInteraction.OnClick);
+        else button.onClick.AddListener(assetButtonInteraction.OnClick);
 
         text.text = metadata.assetDisplayName;
 
@@ -61,7 +65,7 @@ public class AssetBrowserButtonHandler : ButtonHandler
 
         editorEvents.onAssetThumbnailUpdatedEvent += OnAssetThumbnailUpdatedCallback;
 
-        if(scrollViewRect != null)
+        if (scrollViewRect != null)
         {
             this.scrollViewRect = scrollViewRect;
             scrollViewRect.onValueChanged.AddListener(ShowThumbnailWhenVisible);
@@ -70,12 +74,6 @@ public class AssetBrowserButtonHandler : ButtonHandler
         // TODO: unsubscribe from assetthumbnailupdated and scrollviewupdated on destroy
 
         ShowThumbnailWhenVisible(Vector2.zero);
-
-        // Check if this asset browser button is in a dialog or in the asset browser tab
-        button.onClick.RemoveAllListeners();
-        AssetBrowserDialogHandler dialogHandler = GetComponentInParent<AssetBrowserDialogHandler>();
-        if (dialogHandler) button.onClick.AddListener(assetButtonDialogInteraction.OnClick);
-        else button.onClick.AddListener(assetButtonInteraction.OnClick);
     }
 
 

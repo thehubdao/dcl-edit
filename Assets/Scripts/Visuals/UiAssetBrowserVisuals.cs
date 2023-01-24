@@ -14,6 +14,8 @@ namespace Assets.Scripts.Visuals
 {
     public class UiAssetBrowserVisuals : MonoBehaviour
     {
+        [SerializeField] bool isDialog = false;
+
         [SerializeField]
         private ScrollRect scrollViewRect;
 
@@ -172,7 +174,7 @@ namespace Assets.Scripts.Visuals
             var grid = panel.AddGrid(indentationLevel);
             foreach (AssetMetadata asset in hierarchyItem.assets)
             {
-                grid.AddAssetBrowserButton(asset, scrollViewRect);
+                grid.AddAssetBrowserButton(asset, isDialog, scrollViewRect);
             }
         }
 

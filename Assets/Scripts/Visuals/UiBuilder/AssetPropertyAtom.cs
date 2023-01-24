@@ -1,8 +1,6 @@
-using System;
 using Assets.Scripts.EditorState;
-using Assets.Scripts.Visuals.PropertyHandler;
 using JetBrains.Annotations;
-using UnityEngine;
+using System;
 
 namespace Assets.Scripts.Visuals.UiBuilder
 {
@@ -78,22 +76,9 @@ namespace Assets.Scripts.Visuals.UiBuilder
             // Stage 2: Check for updated data and update, if data was changed
             if (!newAssetPropertyData.Equals(data))
             {
-                // Update data
-                /*
-                var stringPropertyHandler = gameObject.gameObject.GetComponent<StringPropertyHandler>();
-
-                stringPropertyHandler.ResetActions();
-
-                stringPropertyHandler.propertyNameText.text = newStringPropertyData.name;
-                stringPropertyHandler.stringInput.SetCurrentText(newStringPropertyData.currentContents);
-                stringPropertyHandler.stringInput.SetPlaceHolder(newStringPropertyData.placeholder);
-
-                // setup actions
-                stringPropertyHandler.SetActions(newStringPropertyData.actions);
-                */
                 var assetPropertyHandler = gameObject.gameObject.GetComponent<AssetPropertyHandler>();
                 assetPropertyHandler.propertyNameText.text = newAssetPropertyData.propertyName;
-                assetPropertyHandler.assetBrowserButtonHandler.Init(newAssetPropertyData.assetMetadata, null);
+                assetPropertyHandler.assetBrowserButtonHandler.Init(newAssetPropertyData.assetMetadata, false, null);
             }
         }
 

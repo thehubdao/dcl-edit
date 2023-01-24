@@ -1,5 +1,4 @@
 using Assets.Scripts.EditorState;
-using UnityEngine;
 using UnityEngine.UI;
 
 namespace Assets.Scripts.Visuals.UiBuilder
@@ -9,6 +8,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
         public new class Data : Atom.Data
         {
             public AssetMetadata metadata;
+            public bool isInDialog;
             public ScrollRect scrollViewRect;
 
             public override bool Equals(Atom.Data other)
@@ -52,7 +52,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
             {
                 // Update data
                 var btnHandler = gameObject.gameObject.GetComponent<AssetBrowserButtonHandler>();
-                btnHandler.Init(newBtnData.metadata, newBtnData.scrollViewRect);
+                btnHandler.Init(newBtnData.metadata, newBtnData.isInDialog, newBtnData.scrollViewRect);
                 data = newBtnData;
             }
         }
@@ -74,12 +74,14 @@ namespace Assets.Scripts.Visuals.UiBuilder
         public static AssetBrowserButtonAtom.Data AddAssetBrowserButton(
             this PanelAtom.Data panelAtomData,
             AssetMetadata metadata,
+            bool isInDialog = false,
             ScrollRect scrollViewRect = null
             )
         {
             var data = new AssetBrowserButtonAtom.Data
             {
                 metadata = metadata,
+                isInDialog = isInDialog,
                 scrollViewRect = scrollViewRect
             };
 

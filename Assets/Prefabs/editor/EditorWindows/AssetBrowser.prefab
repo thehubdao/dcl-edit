@@ -52,13 +52,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41ee57d2e008083439f269c45ea6f6c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isDialog: 0
   scrollViewRect: {fileID: 1756567713157760669}
   headerContent: {fileID: 8320216665168417033}
   scrollViewContent: {fileID: 1756567712722818233}
   footerContent: {fileID: 8320216664067674236}
-  assetButtonPrefab: {fileID: 9199737783199215851, guid: 5fbffa0ef7a6dae40aee2be1808b6979, type: 3}
-  assetBrowserFolderPrefab: {fileID: 569288621326271914, guid: bdf698fa20b9d9842917888e8bea6558, type: 3}
-  assetGridPrefab: {fileID: 4422393104943835944, guid: b75c20faed760924ca2e299a52b58318, type: 3}
 --- !u!1 &8320216664067674236
 GameObject:
   m_ObjectHideFlags: 0

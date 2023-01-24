@@ -729,6 +729,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: AssetBrowser
       objectReference: {fileID: 0}
+    - target: {fileID: 8320216663454323935, guid: e169a43dc39c86a498ed554c217ef464, type: 3}
+      propertyPath: isDialog
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e169a43dc39c86a498ed554c217ef464, type: 3}
 --- !u!224 &5914184162991463923 stripped
