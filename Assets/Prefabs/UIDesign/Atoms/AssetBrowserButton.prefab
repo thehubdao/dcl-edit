@@ -393,8 +393,10 @@ MonoBehaviour:
   button: {fileID: 9199737783199215849}
   text: {fileID: 7958016555338386204}
   maskedImage: {fileID: 4534782707941783284}
-  assetTypeIndicator: {fileID: 5138599711966974024}
+  assetTypeIndicatorImage: {fileID: 5138599711966974024}
   assetButtonInteraction: {fileID: 5522565053440742496}
+  modelTypeIndicator: {fileID: 21300000, guid: fe476aebf1136394a9100229fa339276, type: 3}
+  imageTypeIndicatorTexture: {fileID: 21300000, guid: 0ebbff0ce96e9244ea03a1752ad226fd, type: 3}
 --- !u!114 &5522565053440742496
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -94,22 +94,7 @@ public class AssetBrowserFolderHandler : MonoBehaviour
             GridAtom.Data grid = panel.AddGrid();
             foreach (AssetMetadata asset in hierarchyItem.assets)
             {
-                Texture2D typeIndicator = null;
-                switch (asset.assetType)
-                {
-                    case AssetMetadata.AssetType.Unknown:
-                        break;
-                    case AssetMetadata.AssetType.Model:
-                        typeIndicator = unityState.AssetTypeModelIcon;
-                        break;
-                    case AssetMetadata.AssetType.Image:
-                        typeIndicator = unityState.AssetTypeImageIcon;
-                        break;
-                    default:
-                        break;
-                }
-
-                grid.AddAssetBrowserButton(asset, typeIndicator, scrollViewRect);
+                grid.AddAssetBrowserButton(asset, scrollViewRect);
             }
         }
 

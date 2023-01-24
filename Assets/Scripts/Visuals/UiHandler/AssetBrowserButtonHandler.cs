@@ -11,9 +11,13 @@ public class AssetBrowserButtonHandler : ButtonHandler
 {
     public AssetMetadata metadata;
     public Image maskedImage;       // Uses a child object with an image component. This allows setting an image that is influenced by the buttons mask.
-    public Image assetTypeIndicator;
+    public Image assetTypeIndicatorImage;
     public AssetButtonInteraction assetButtonInteraction;
     private ScrollRect scrollViewRect;
+
+    [Header("Asset Type Indicator Textures")]
+    public Sprite modelTypeIndicator;
+    public Sprite imageTypeIndicator;
 
     // Dependencies
     EditorEvents editorEvents;
@@ -26,10 +30,9 @@ public class AssetBrowserButtonHandler : ButtonHandler
         this.assetThumbnailManagerSystem = assetThumbnailManagerSystem;
     }
 
-    public void Init(AssetMetadata metadata, Texture2D typeIndicator, ScrollRect scrollViewRect)
+    public void Init(AssetMetadata metadata, ScrollRect scrollViewRect = null)
     {
         this.metadata = metadata;
-        this.scrollViewRect = scrollViewRect;
 
         assetButtonInteraction.assetMetadata = metadata;
 
@@ -37,15 +40,27 @@ public class AssetBrowserButtonHandler : ButtonHandler
 
         maskedImage.sprite = null;          // Clear thumbnail. There might be one still set because the prefab gets reused from the pool
 
-        if (typeIndicator != null)
+        switch (metadata.assetType)
         {
-            assetTypeIndicator.sprite = Sprite.Create(typeIndicator, new Rect(0, 0, typeIndicator.width, typeIndicator.height), new Vector2(0.5f, 0.5f), 100);
+            case AssetMetadata.AssetType.Unknown:
+                break;
+            case AssetMetadata.AssetType.Model:
+                assetTypeIndicatorImage.sprite = modelTypeIndicator;
+                break;
+            case AssetMetadata.AssetType.Image:
+                assetTypeIndicatorImage.sprite = imageTypeIndicator;
+                break;
+            default:
+                break;
         }
 
-
-
         editorEvents.onAssetThumbnailUpdatedEvent += OnAssetThumbnailUpdatedCallback;
-        scrollViewRect.onValueChanged.AddListener(ShowThumbnailWhenVisible);
+
+        if(scrollViewRect != null)
+        {
+            this.scrollViewRect = scrollViewRect;
+            scrollViewRect.onValueChanged.AddListener(ShowThumbnailWhenVisible);
+        }
 
         // TODO: unsubscribe from assetthumbnailupdated and scrollviewupdated on destroy
 
@@ -56,6 +71,12 @@ public class AssetBrowserButtonHandler : ButtonHandler
 
     private bool IsVisibleInScrollView()
     {
+        // If not placed inside a scroll view, the content is always displayed.
+        if (scrollViewRect == null)
+        {
+            return true;
+        }
+
         var myRect = GetComponent<RectTransform>();
 
         var viewportTop = scrollViewRect.viewport.position.y;
