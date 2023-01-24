@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18107186, g: 0.22664857, b: 0.3072961, a: 1}
+  m_IndirectSpecularColor: {r: 0.18107164, g: 0.22664806, b: 0.30729565, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -812,6 +812,34 @@ PrefabInstance:
     - target: {fileID: 5677096274617207365, guid: 44790cf12ccd011459f749712f90a90b, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5677096275781094988, guid: 44790cf12ccd011459f749712f90a90b, type: 3}
+      propertyPath: initialPanelsAnchoredSerialized.Array.data[1].panel.tabs.Array.data[0].minimumSize.x
+      value: 300
+      objectReference: {fileID: 0}
+    - target: {fileID: 5677096275781094988, guid: 44790cf12ccd011459f749712f90a90b, type: 3}
+      propertyPath: initialPanelsAnchoredSerialized.Array.data[1].panel.tabs.Array.data[0].minimumSize.y
+      value: 300
+      objectReference: {fileID: 0}
+    - target: {fileID: 5677096275781094988, guid: 44790cf12ccd011459f749712f90a90b, type: 3}
+      propertyPath: initialPanelsAnchoredSerialized.Array.data[2].panel.tabs.Array.data[0].minimumSize.x
+      value: 350
+      objectReference: {fileID: 0}
+    - target: {fileID: 5677096275781094988, guid: 44790cf12ccd011459f749712f90a90b, type: 3}
+      propertyPath: initialPanelsAnchoredSerialized.Array.data[2].panel.tabs.Array.data[0].minimumSize.y
+      value: 300
+      objectReference: {fileID: 0}
+    - target: {fileID: 5677096275781094988, guid: 44790cf12ccd011459f749712f90a90b, type: 3}
+      propertyPath: initialPanelsAnchoredSerialized.Array.data[2].panel.tabs.Array.data[1].minimumSize.x
+      value: 350
+      objectReference: {fileID: 0}
+    - target: {fileID: 5677096275781094988, guid: 44790cf12ccd011459f749712f90a90b, type: 3}
+      propertyPath: initialPanelsAnchoredSerialized.Array.data[2].panel.tabs.Array.data[1].minimumSize.y
+      value: 300
+      objectReference: {fileID: 0}
+    - target: {fileID: 5677096275781094988, guid: 44790cf12ccd011459f749712f90a90b, type: 3}
+      propertyPath: initialPanelsAnchoredSerialized.Array.data[2].panel.tabs.Array.data[2].minimumSize.x
+      value: 400
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 44790cf12ccd011459f749712f90a90b, type: 3}
