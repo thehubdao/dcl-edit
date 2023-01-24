@@ -163,6 +163,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
                 NumberPropertyAtom.Data _ => new NumberPropertyAtom(uiBuilder),
                 BooleanPropertyAtom.Data _ => new BooleanPropertyAtom(uiBuilder),
                 Vector3PropertyAtom.Data _ => new Vector3PropertyAtom(uiBuilder),
+                AssetPropertyAtom.Data _ => new AssetPropertyAtom(uiBuilder),
                 MenuBarButtonAtom.Data _ => new MenuBarButtonAtom(uiBuilder),
                 ContextMenuTextAtom.Data _ => new ContextMenuTextAtom(uiBuilder),
                 ContextSubmenuAtom.Data _ => new ContextSubmenuAtom(uiBuilder),

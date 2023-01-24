@@ -27,6 +27,7 @@ namespace Assets.Scripts.Visuals
         private ContextMenuSystem contextMenuSystem;
         private AddComponentSystem addComponentSystem;
         private AvailableComponentsState availableComponentsState;
+        private AssetManagerSystem assetManagerSystem;
 
         [Inject]
         private void Construct(
@@ -38,7 +39,8 @@ namespace Assets.Scripts.Visuals
             SceneManagerSystem sceneManagerSystem,
             ContextMenuSystem contextMenuSystem,
             AddComponentSystem addComponentSystem,
-            AvailableComponentsState availableComponentsState)
+            AvailableComponentsState availableComponentsState,
+            AssetManagerSystem assetManagerSystem)
         {
             this.inputState = inputState;
             this.updatePropertiesSystem = updatePropertiesSystem;
@@ -49,6 +51,7 @@ namespace Assets.Scripts.Visuals
             this.contextMenuSystem = contextMenuSystem;
             this.addComponentSystem = addComponentSystem;
             this.availableComponentsState = availableComponentsState;
+            this.assetManagerSystem = assetManagerSystem;
 
             SetupEventListeners();
         }
@@ -246,7 +249,13 @@ namespace Assets.Scripts.Visuals
                         }
                         case DclComponent.DclComponentProperty.PropertyType.Asset: // not supported yet
                         {
-                            componentPanel.AddText("Asset property not supported yet");
+                                var assetActions = new StringPropertyAtom.UiPropertyActions<Guid>
+                                {
+
+                                };
+                            var assetMetadata = assetManagerSystem.GetMetadataById(property.GetConcrete<Guid>().Value);
+                                componentPanel.AddAssetProperty(property.PropertyName, assetMetadata,assetActions);
+
                             break;
                         }
                         default:

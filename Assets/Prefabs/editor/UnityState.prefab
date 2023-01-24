@@ -75,6 +75,7 @@ MonoBehaviour:
   NumberInputAtom: {fileID: 5812454901384158741, guid: 643cb13cbab094b42887dae813c93af2, type: 3}
   BooleanInputAtom: {fileID: 5233136792266491960, guid: 42f6030112784864f9dc60d33b26df8a, type: 3}
   Vector3InputAtom: {fileID: 5341960638517146307, guid: 45f07c32725cf3c419e1758b1f6b2ab0, type: 3}
+  AssetInputAtom: {fileID: 5233136792266491960, guid: 9aeedfab69e086447af12228dac519fb, type: 3}
   MenuBarButtonAtom: {fileID: 7265437177802612862, guid: 8f16b9e78189d6944a0c4a38ec29bc83, type: 3}
   ContextMenuItemAtom: {fileID: 7252716371144921517, guid: f3e20cb956778e94b84cf06eb3365b7d, type: 3}
   ContextSubmenuItemAtom: {fileID: 7092327081975487917, guid: 64a24d68977842740b7c550a18b8b6c9, type: 3}
