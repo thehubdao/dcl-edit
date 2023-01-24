@@ -19,10 +19,14 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
     public static class GridPanelHelper
     {
-        public static GridAtom.Data AddGrid(this PanelAtom.Data panelAtomData, [CanBeNull] AtomDataList childDates = null)
+        public static GridAtom.Data AddGrid(
+            this PanelAtom.Data panelAtomData,
+            int indentationLevel = 0,
+            [CanBeNull] AtomDataList childDates = null)
         {
             var data = new GridAtom.Data
             {
+                indentationLevel = indentationLevel,
                 childDates = childDates ?? new AtomDataList()
             };
 

@@ -3,6 +3,7 @@ using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Assets.Scripts.Visuals.UiBuilder
 {
@@ -13,6 +14,8 @@ namespace Assets.Scripts.Visuals.UiBuilder
             public PanelHandler.LayoutDirection layoutDirection = PanelHandler.LayoutDirection.Vertical;
 
             public bool useFullWidth = true;
+
+            public int indentationLevel;
 
             public AtomDataList childDates = new AtomDataList();
 
@@ -49,7 +52,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
         {
             UiBuilder.Stats.atomsUpdatedCount++;
 
-            var newPanelData = (Data) newData;
+            var newPanelData = (Data)newData;
 
             if (gameObject == null)
             {
@@ -137,6 +140,8 @@ namespace Assets.Scripts.Visuals.UiBuilder
                 childAtoms[atomIndex].Remove();
                 childAtoms.RemoveAt(atomIndex);
             }
+
+            gameObject.gameObject.GetComponent<LayoutGroup>().padding.left = newPanelData.indentationLevel * 20;
         }
 
         protected virtual void MakeLayoutGroup(Data newPanelData)
@@ -184,12 +189,14 @@ namespace Assets.Scripts.Visuals.UiBuilder
         public static PanelAtom.Data AddPanel(
             this PanelAtom.Data panelAtomData,
             PanelHandler.LayoutDirection layoutDirection = PanelHandler.LayoutDirection.Vertical,
+            int indentationLevel = 0,
             bool useFullWidth = true,
             [CanBeNull] AtomDataList childDates = null)
         {
             var data = new PanelAtom.Data
             {
                 layoutDirection = layoutDirection,
+                indentationLevel = indentationLevel,
                 useFullWidth = useFullWidth,
                 childDates = childDates ?? new AtomDataList()
             };
