@@ -3,6 +3,7 @@ using Assets.Scripts.Events;
 using Assets.Scripts.System;
 using Assets.Scripts.Visuals.UiBuilder;
 using Assets.Scripts.Visuals.UiHandler;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -15,6 +16,7 @@ namespace Assets.Scripts.Visuals
     public class UiAssetBrowserVisuals : MonoBehaviour
     {
         [SerializeField] bool isDialog = false;
+        public Action<Guid> assetButtonOnClickOverride = null;
 
         [SerializeField]
         private ScrollRect scrollViewRect;
@@ -79,6 +81,12 @@ namespace Assets.Scripts.Visuals
         {
             editorEvents.onAssetMetadataCacheUpdatedEvent += UpdateVisuals;
             editorEvents.onUiChangedEvent += UpdateVisuals;
+        }
+
+        private void OnDestroy()
+        {
+            editorEvents.onAssetMetadataCacheUpdatedEvent -= UpdateVisuals;
+            editorEvents.onUiChangedEvent -= UpdateVisuals;
         }
 
 
@@ -172,9 +180,10 @@ namespace Assets.Scripts.Visuals
             if (hierarchyItem.assets.Count == 0) return;
 
             var grid = panel.AddGrid(indentationLevel);
+            bool enableDragAndDrop = assetButtonOnClickOverride == null;
             foreach (AssetMetadata asset in hierarchyItem.assets)
             {
-                grid.AddAssetBrowserButton(asset, !isDialog);
+                grid.AddAssetBrowserButton(asset, enableDragAndDrop, assetButtonOnClickOverride, scrollViewRect);
             }
         }
 

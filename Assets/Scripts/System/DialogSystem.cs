@@ -5,11 +5,13 @@ using Zenject;
 public class DialogSystem
 {
     // Dependencies
+    private DialogState dialogState;
     private EditorEvents editorEvents;
 
     [Inject]
-    void Construct(EditorEvents editorEvents)
+    void Construct(DialogState dialogState, EditorEvents editorEvents)
     {
+        this.dialogState = dialogState;
         this.editorEvents = editorEvents;
     }
 
@@ -19,6 +21,14 @@ public class DialogSystem
     /// <param name="targetEntityId"></param>
     public void OpenAssetDialog(Guid targetEntityId)
     {
-        UnityEngine.Debug.Log("Open Asset Dialog");
+        dialogState.currentDialog = DialogState.DialogType.Asset;
+        dialogState.targetEntityId = targetEntityId;
+        editorEvents.InvokeDialogChangedEvent();
+    }
+
+    public void CloseCurrentDialog()
+    {
+        dialogState.currentDialog = DialogState.DialogType.None;
+        editorEvents.InvokeDialogChangedEvent();
     }
 }

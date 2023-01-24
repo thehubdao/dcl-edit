@@ -4,7 +4,6 @@ using Assets.Scripts.System;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.UI;
 using Zenject;
 
@@ -13,10 +12,7 @@ public class AssetBrowserButtonHandler : ButtonHandler
     public AssetMetadata metadata;
     public Image maskedImage;       // Uses a child object with an image component. This allows setting an image that is influenced by the buttons mask.
     public Image assetTypeIndicatorImage;
-
-    [Header("Interactions")]
     public AssetButtonInteraction assetButtonInteraction;
-    public AssetButtonDialogInteraction assetButtonDialogInteraction;
 
     private ScrollRect scrollViewRect;
 
@@ -35,17 +31,13 @@ public class AssetBrowserButtonHandler : ButtonHandler
         this.assetThumbnailManagerSystem = assetThumbnailManagerSystem;
     }
 
-    public void Init(AssetMetadata metadata, bool enableDragAndDrop, UnityAction onClick, ScrollRect scrollViewRect = null)
+    public void Init(AssetMetadata metadata, bool enableDragAndDrop, Action<Guid> onClick, ScrollRect scrollViewRect = null)
     {
         this.metadata = metadata;
-
         assetButtonInteraction.assetMetadata = metadata;
-
         assetButtonInteraction.enableDragAndDrop = enableDragAndDrop;
-
-        // Set on click interaction
         button.onClick.RemoveAllListeners();
-        if (onClick != null) button.onClick.AddListener(onClick);
+        if (onClick != null) button.onClick.AddListener(() => onClick(metadata.assetId));
         else button.onClick.AddListener(assetButtonInteraction.OnClick);
 
         text.text = metadata.assetDisplayName;
@@ -79,7 +71,10 @@ public class AssetBrowserButtonHandler : ButtonHandler
         ShowThumbnailWhenVisible(Vector2.zero);
     }
 
-
+    private void OnDestroy()
+    {
+        editorEvents.onAssetThumbnailUpdatedEvent -= OnAssetThumbnailUpdatedCallback;
+    }
 
     private bool IsVisibleInScrollView()
     {

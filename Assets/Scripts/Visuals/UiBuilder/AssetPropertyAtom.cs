@@ -1,5 +1,5 @@
 using Assets.Scripts.EditorState;
-using UnityEngine.Events;
+using System;
 
 namespace Assets.Scripts.Visuals.UiBuilder
 {
@@ -9,7 +9,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
         {
             public string propertyName;
             public AssetMetadata assetMetadata;
-            public UnityAction onClick;
+            public Action<Guid> onClick;
 
             public override bool Equals(Atom.Data other)
             {
@@ -74,7 +74,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
             this PanelAtom.Data panelAtomData,
             string propertyName,
             AssetMetadata assetMetadata,
-            UnityAction onClick)
+            Action<Guid> onClick)
         {
             var data = new AssetPropertyAtom.Data
             {

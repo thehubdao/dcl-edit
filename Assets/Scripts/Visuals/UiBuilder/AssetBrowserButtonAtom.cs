@@ -1,5 +1,5 @@
 using Assets.Scripts.EditorState;
-using UnityEngine.Events;
+using System;
 using UnityEngine.UI;
 
 namespace Assets.Scripts.Visuals.UiBuilder
@@ -10,7 +10,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
         {
             public AssetMetadata metadata;
             public bool enableDragAndDrop;
-            public UnityAction onClick;
+            public Action<Guid> onClick;
             public ScrollRect scrollViewRect;
 
             public override bool Equals(Atom.Data other)
@@ -80,7 +80,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
             this PanelAtom.Data panelAtomData,
             AssetMetadata metadata,
             bool enableDragAndDrop,
-            UnityAction onClick = null,
+            Action<Guid> onClick = null,
             ScrollRect scrollViewRect = null
             )
         {

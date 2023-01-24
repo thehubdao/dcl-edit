@@ -52,5 +52,9 @@ namespace Assets.Scripts.Events
 
         public event Action onUiChangedEvent;
         public void InvokeUiChangedEvent() => onUiChangedEvent?.Invoke();
+
+
+        public event Action onDialogChangedEvent;
+        public void InvokeDialogChangedEvent() => onDialogChangedEvent?.Invoke();
     }
 }
