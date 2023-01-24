@@ -1,6 +1,7 @@
 using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
 using Assets.Scripts.System;
+using Assets.Scripts.Visuals.UiHandler;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,7 +13,11 @@ public class AssetBrowserButtonHandler : ButtonHandler
     public AssetMetadata metadata;
     public Image maskedImage;       // Uses a child object with an image component. This allows setting an image that is influenced by the buttons mask.
     public Image assetTypeIndicatorImage;
+
+    [Header("Interactions")]
     public AssetButtonInteraction assetButtonInteraction;
+    public AssetButtonDialogInteraction assetButtonDialogInteraction;
+
     private ScrollRect scrollViewRect;
 
     [Header("Asset Type Indicator Textures")]
@@ -65,6 +70,12 @@ public class AssetBrowserButtonHandler : ButtonHandler
         // TODO: unsubscribe from assetthumbnailupdated and scrollviewupdated on destroy
 
         ShowThumbnailWhenVisible(Vector2.zero);
+
+        // Check if this asset browser button is in a dialog or in the asset browser tab
+        button.onClick.RemoveAllListeners();
+        AssetBrowserDialogHandler dialogHandler = GetComponentInParent<AssetBrowserDialogHandler>();
+        if (dialogHandler) button.onClick.AddListener(assetButtonDialogInteraction.OnClick);
+        else button.onClick.AddListener(assetButtonInteraction.OnClick);
     }
 
 
