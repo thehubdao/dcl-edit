@@ -145,7 +145,7 @@ GameObject:
   - component: {fileID: 3510888265014933841}
   - component: {fileID: 4379107990400726707}
   m_Layer: 5
-  m_Name: AssetBrowserDialog
+  m_Name: AssetDialog
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

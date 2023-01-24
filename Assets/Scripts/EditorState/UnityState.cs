@@ -125,5 +125,10 @@ namespace Assets.Scripts.EditorState
 
         [SerializeField]
         public GameObject ContextMenuSpacerItemAtom;
+
+
+        [Header("Dialog Windows")]
+        [SerializeField]
+        public GameObject assetDialog;
     }
 }
