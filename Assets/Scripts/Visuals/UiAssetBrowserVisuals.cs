@@ -174,7 +174,7 @@ namespace Assets.Scripts.Visuals
             var grid = panel.AddGrid(indentationLevel);
             foreach (AssetMetadata asset in hierarchyItem.assets)
             {
-                grid.AddAssetBrowserButton(asset, isDialog, scrollViewRect);
+                grid.AddAssetBrowserButton(asset, !isDialog);
             }
         }
 

@@ -1,4 +1,5 @@
 using Assets.Scripts.EditorState;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace Assets.Scripts.Visuals.UiBuilder
@@ -8,7 +9,8 @@ namespace Assets.Scripts.Visuals.UiBuilder
         public new class Data : Atom.Data
         {
             public AssetMetadata metadata;
-            public bool isInDialog;
+            public bool enableDragAndDrop;
+            public UnityAction onClick;
             public ScrollRect scrollViewRect;
 
             public override bool Equals(Atom.Data other)
@@ -22,6 +24,9 @@ namespace Assets.Scripts.Visuals.UiBuilder
                 {
                     return false;
                 }
+
+                if (enableDragAndDrop != otherBtn.enableDragAndDrop) return false;
+                if (onClick != otherBtn.onClick) return false;
 
                 if (scrollViewRect != otherBtn.scrollViewRect)
                 {
@@ -52,7 +57,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
             {
                 // Update data
                 var btnHandler = gameObject.gameObject.GetComponent<AssetBrowserButtonHandler>();
-                btnHandler.Init(newBtnData.metadata, newBtnData.isInDialog, newBtnData.scrollViewRect);
+                btnHandler.Init(newBtnData.metadata, newBtnData.enableDragAndDrop, newBtnData.onClick, newBtnData.scrollViewRect);
                 data = newBtnData;
             }
         }
@@ -74,14 +79,16 @@ namespace Assets.Scripts.Visuals.UiBuilder
         public static AssetBrowserButtonAtom.Data AddAssetBrowserButton(
             this PanelAtom.Data panelAtomData,
             AssetMetadata metadata,
-            bool isInDialog = false,
+            bool enableDragAndDrop,
+            UnityAction onClick = null,
             ScrollRect scrollViewRect = null
             )
         {
             var data = new AssetBrowserButtonAtom.Data
             {
                 metadata = metadata,
-                isInDialog = isInDialog,
+                onClick = onClick,
+                enableDragAndDrop = enableDragAndDrop,
                 scrollViewRect = scrollViewRect
             };
 

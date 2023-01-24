@@ -28,6 +28,7 @@ namespace Assets.Scripts.Visuals
         private AddComponentSystem addComponentSystem;
         private AvailableComponentsState availableComponentsState;
         private AssetManagerSystem assetManagerSystem;
+        private DialogSystem dialogSystem;
 
         [Inject]
         private void Construct(
@@ -40,7 +41,8 @@ namespace Assets.Scripts.Visuals
             ContextMenuSystem contextMenuSystem,
             AddComponentSystem addComponentSystem,
             AvailableComponentsState availableComponentsState,
-            AssetManagerSystem assetManagerSystem)
+            AssetManagerSystem assetManagerSystem,
+            DialogSystem dialogSystem)
         {
             this.inputState = inputState;
             this.updatePropertiesSystem = updatePropertiesSystem;
@@ -52,6 +54,7 @@ namespace Assets.Scripts.Visuals
             this.addComponentSystem = addComponentSystem;
             this.availableComponentsState = availableComponentsState;
             this.assetManagerSystem = assetManagerSystem;
+            this.dialogSystem = dialogSystem;
 
             SetupEventListeners();
         }
@@ -248,13 +251,12 @@ namespace Assets.Scripts.Visuals
                             break;
                         }
                         case DclComponent.DclComponentProperty.PropertyType.Asset: // not supported yet
-                        {
-                                var assetActions = new StringPropertyAtom.UiPropertyActions<Guid>
-                                {
-
-                                };
-                            var assetMetadata = assetManagerSystem.GetMetadataById(property.GetConcrete<Guid>().Value);
-                                componentPanel.AddAssetProperty(property.PropertyName, assetMetadata,assetActions);
+                            {
+                                var assetMetadata = assetManagerSystem.GetMetadataById(property.GetConcrete<Guid>().Value);
+                                componentPanel.AddAssetProperty(
+                                    property.PropertyName,
+                                    assetMetadata,
+                                    () => dialogSystem.OpenAssetDialog(selectedEntity.Id));
 
                             break;
                         }

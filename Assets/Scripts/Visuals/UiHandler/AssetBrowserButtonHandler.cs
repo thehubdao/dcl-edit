@@ -4,6 +4,7 @@ using Assets.Scripts.System;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 using Zenject;
 
@@ -34,15 +35,17 @@ public class AssetBrowserButtonHandler : ButtonHandler
         this.assetThumbnailManagerSystem = assetThumbnailManagerSystem;
     }
 
-    public void Init(AssetMetadata metadata, bool isInDialog, ScrollRect scrollViewRect = null)
+    public void Init(AssetMetadata metadata, bool enableDragAndDrop, UnityAction onClick, ScrollRect scrollViewRect = null)
     {
         this.metadata = metadata;
 
         assetButtonInteraction.assetMetadata = metadata;
 
+        assetButtonInteraction.enableDragAndDrop = enableDragAndDrop;
+
         // Set on click interaction
         button.onClick.RemoveAllListeners();
-        if (isInDialog) button.onClick.AddListener(assetButtonDialogInteraction.OnClick);
+        if (onClick != null) button.onClick.AddListener(onClick);
         else button.onClick.AddListener(assetButtonInteraction.OnClick);
 
         text.text = metadata.assetDisplayName;
