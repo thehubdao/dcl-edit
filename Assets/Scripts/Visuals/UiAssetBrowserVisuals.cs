@@ -5,6 +5,7 @@ using Assets.Scripts.Visuals.UiBuilder;
 using Assets.Scripts.Visuals.UiHandler;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
@@ -28,17 +29,10 @@ namespace Assets.Scripts.Visuals
         private GameObject footerContent;
         private UiBuilder.UiBuilder footerUiBuilder;
 
-        [SerializeField]
-        private GameObject assetButtonPrefab;
-        [SerializeField]
-        private GameObject assetBrowserFolderPrefab;
-        [SerializeField]
-        private GameObject assetGridPrefab;
-
-
         // Dependencies
         private EditorEvents editorEvents;
         private AssetBrowserSystem assetBrowserSystem;
+        private AssetBrowserState assetBrowserState;
         private AssetManagerSystem assetManagerSystem;
         private ContextMenuSystem contextMenuSystem;
 
@@ -48,6 +42,7 @@ namespace Assets.Scripts.Visuals
             UiBuilder.UiBuilder.Factory uiBuilderFactory,
             EditorEvents editorEvents,
             AssetBrowserSystem assetBrowserSystem,
+            AssetBrowserState assetBrowserState,
             AssetManagerSystem assetManagerSystem,
             ContextMenuSystem contextMenuSystem)
         {
@@ -56,6 +51,7 @@ namespace Assets.Scripts.Visuals
             footerUiBuilder = uiBuilderFactory.Create(footerContent);
             this.editorEvents = editorEvents;
             this.assetBrowserSystem = assetBrowserSystem;
+            this.assetBrowserState = assetBrowserState;
             this.assetManagerSystem = assetManagerSystem;
             this.contextMenuSystem = contextMenuSystem;
 
@@ -133,21 +129,18 @@ namespace Assets.Scripts.Visuals
             headerUiBuilder.Update(headerData);
         }
 
-
         private void UpdateContent()
         {
             var panel = new PanelAtom.Data();
-
             var assetHierarchy = assetBrowserSystem.GetFilteredAssetHierarchy();
 
-            foreach (var item in assetHierarchy)
+            foreach (AssetHierarchyItem hierarchyItem in assetHierarchy)
             {
-                panel.AddAssetBrowserFolder(item, scrollViewRect);
+                BuildHierarchy(hierarchyItem, panel);
             }
 
             contentUiBuilder.Update(panel);
         }
-
 
         private void UpdateFooter()
         {
@@ -159,6 +152,34 @@ namespace Assets.Scripts.Visuals
 
             footerData.AddButton("Refresh", _ => assetManagerSystem.CacheAllAssetMetadata());
             footerUiBuilder.Update(footerData);
+        }
+
+
+        private void BuildHierarchy(AssetHierarchyItem hierarchyItem, PanelAtom.Data panel)
+        {
+            int indentationLevel = GetIndentationLevel(hierarchyItem);
+            panel.AddAssetBrowserFolder(hierarchyItem, indentationLevel);
+
+            if (!assetBrowserState.expandedFoldersPaths.Contains(hierarchyItem.path)) return;
+
+            foreach (AssetHierarchyItem dir in hierarchyItem.childDirectories)
+            {
+                BuildHierarchy(dir, panel);
+            }
+
+            if (hierarchyItem.assets.Count == 0) return;
+
+            var grid = panel.AddGrid(indentationLevel);
+            foreach (AssetMetadata asset in hierarchyItem.assets)
+            {
+                grid.AddAssetBrowserButton(asset, scrollViewRect);
+            }
+        }
+
+        int GetIndentationLevel(AssetHierarchyItem hierarchyItem)
+        {
+            string[] directories = hierarchyItem.path.Split(Path.AltDirectorySeparatorChar);
+            return directories.Length - 1;
         }
     }
 }
