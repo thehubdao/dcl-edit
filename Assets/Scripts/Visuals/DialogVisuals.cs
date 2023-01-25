@@ -6,9 +6,10 @@ using Assets.Scripts.Visuals;
 using Assets.Scripts.Visuals.UiHandler;
 using System;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using Zenject;
 
-public class DialogVisuals : MonoBehaviour
+public class DialogVisuals : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     // Dependencies
     DialogSystem dialogSystem;
@@ -72,5 +73,15 @@ public class DialogVisuals : MonoBehaviour
 
             dialogSystem.CloseCurrentDialog();
         };
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        if (dialogState.currentDialog != DialogState.DialogType.None) dialogState.mouseOverDialogWindow = true;
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        dialogState.mouseOverDialogWindow = false;
     }
 }

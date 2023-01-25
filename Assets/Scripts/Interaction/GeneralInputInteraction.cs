@@ -27,6 +27,7 @@ namespace Assets.Scripts.Interaction
         private EntitySelectSystem entitySelectSystem;
         private ContextMenuSystem contextMenuSystem;
         private SceneManagerSystem sceneManagerSystem;
+        private DialogSystem dialogSystem;
 
         [Inject]
         private void Construct(
@@ -41,7 +42,8 @@ namespace Assets.Scripts.Interaction
             EditorEvents editorEvents,
             EntitySelectSystem entitySelectSystem,
             ContextMenuSystem contextMenuSystem,
-            SceneManagerSystem sceneManagerSystem)
+            SceneManagerSystem sceneManagerSystem,
+            DialogSystem dialogSystem)
         {
             this.sceneSaveSystem = sceneSaveSystem;
             this.commandSystem = commandSystem;
@@ -55,6 +57,7 @@ namespace Assets.Scripts.Interaction
             this.entitySelectSystem = entitySelectSystem;
             this.contextMenuSystem = contextMenuSystem;
             this.sceneManagerSystem = sceneManagerSystem;
+            this.dialogSystem = dialogSystem;
         }
 
 
@@ -141,13 +144,14 @@ namespace Assets.Scripts.Interaction
                                         mousePosViewport.y < 1;
                 isMouseOverContextMenu = contextMenuSystem.IsMouseOverMenu();
             }
+            bool isMouseOverDialog = dialogSystem.IsMouseOverDialog();
 
 
             
 
 
             // Figure out, if the mouse is over the 3D viewport (not hovering over any UI)
-            var isMouseIn3DView = /*!EventSystem.current.IsPointerOverGameObject() &&*/ isMouseOverGameWindow && !isMouseOverContextMenu;
+            var isMouseIn3DView = /*!EventSystem.current.IsPointerOverGameObject() &&*/ isMouseOverGameWindow && !isMouseOverContextMenu && !isMouseOverDialog;
 
             // The position the mouse currently points to in the 3D viewport
             Vector3? mousePositionIn3DView = null;

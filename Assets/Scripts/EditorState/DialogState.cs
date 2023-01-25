@@ -9,4 +9,5 @@ public class DialogState
     }
     public DialogType currentDialog = DialogType.None;
     public Guid targetEntityId;
+    public bool mouseOverDialogWindow;
 }

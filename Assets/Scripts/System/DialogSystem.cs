@@ -31,4 +31,6 @@ public class DialogSystem
         dialogState.currentDialog = DialogState.DialogType.None;
         editorEvents.InvokeDialogChangedEvent();
     }
+
+    public bool IsMouseOverDialog() => dialogState.mouseOverDialogWindow;
 }
