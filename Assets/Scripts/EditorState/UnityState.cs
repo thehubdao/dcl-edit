@@ -115,6 +115,9 @@ namespace Assets.Scripts.EditorState
         public GameObject Vector3InputAtom;
 
         [SerializeField]
+        public GameObject AssetInputAtom;
+
+        [SerializeField]
         public GameObject MenuBarButtonAtom;
 
         [SerializeField]
@@ -125,8 +128,13 @@ namespace Assets.Scripts.EditorState
 
         [SerializeField]
         public GameObject ContextMenuSpacerItemAtom;
-
+        
         [SerializeField]
         public GameObject SpacerAtom;
+
+
+        [Header("Dialog Windows")]
+        [SerializeField]
+        public GameObject assetDialog;
     }
 }
