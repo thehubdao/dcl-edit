@@ -11,7 +11,7 @@ namespace Assets.Scripts.System
         private SettingsSystem _settingsSystem;
 
         // this is used in addition to the gizmo scale setting, so a gizmo scale of 1.0 is reasonable.
-        private const float scaleFactor = 0.2f;
+        private const float scaleFactor = 0.1f;
 
         [Inject]
         private void Construct(CameraState cameraState, SettingsSystem settingsSystem)

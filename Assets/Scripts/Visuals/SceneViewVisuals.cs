@@ -1,6 +1,7 @@
 using Assets.Scripts.Events;
 using Assets.Scripts.System;
 using UnityEngine;
+using UnityEngine.Profiling;
 using Zenject;
 
 namespace Assets.Scripts.Visuals
@@ -36,6 +37,8 @@ namespace Assets.Scripts.Visuals
 
         private void UpdateVisuals()
         {
+            Profiler.BeginSample("SceneViewVisuals");
+
             var currentScene = sceneManagerSystem.GetCurrentDirectoryState();
 
             if (currentScene == null)
@@ -50,6 +53,8 @@ namespace Assets.Scripts.Visuals
             }
 
             currentMainSceneVisuals.ShowScene(currentScene.id);
+
+            Profiler.EndSample();
         }
     }
 }

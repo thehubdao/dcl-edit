@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Assets.Scripts.EditorState;
 using JetBrains.Annotations;
 using UnityEngine;
-using UnityEngine.UI;
 using Zenject;
 using Object = UnityEngine.Object;
 
@@ -112,7 +111,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
             {
                 AtomType.Title => Object.Instantiate(unityState.TitleAtom),
                 AtomType.Text => Object.Instantiate(unityState.TextAtom),
-                AtomType.Spacer => InstantiateSpacerObject(),
+                AtomType.Spacer => Object.Instantiate(unityState.SpacerAtom),
                 AtomType.Panel => Object.Instantiate(unityState.PanelAtom),
                 AtomType.PanelWithBorder => Object.Instantiate(unityState.PanelWithBorderAtom),
                 AtomType.PanelHeader => Object.Instantiate(unityState.PanelHeaderAtom),
@@ -134,14 +133,6 @@ namespace Assets.Scripts.Visuals.UiBuilder
                 _ => throw new ArgumentOutOfRangeException($"The type {type.ToString()} is not listed to instantiate.")
             };
             return gameObject; ;
-        }
-
-        private GameObject InstantiateSpacerObject()
-        {
-            var spacer = new GameObject("Spacer");
-            spacer.AddComponent<RectTransform>();
-            spacer.AddComponent<LayoutElement>();
-            return spacer;
         }
 
         public void ReturnAtomsToPool([CanBeNull] AtomGameObject atomGameObject)
