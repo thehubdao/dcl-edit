@@ -15,7 +15,6 @@ namespace Assets.Scripts.Visuals
 {
     public class UiAssetBrowserVisuals : MonoBehaviour
     {
-        [SerializeField] bool isDialog = false;
         public Action<Guid> assetButtonOnClickOverride = null;
 
         [SerializeField]
