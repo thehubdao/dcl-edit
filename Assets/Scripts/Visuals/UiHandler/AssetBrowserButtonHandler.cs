@@ -145,6 +145,8 @@ public class AssetBrowserButtonHandler : ButtonHandler
 
     public void SetImage(Texture2D tex)
     {
+        if (maskedImage == null) return;
+
         if (tex != null)
         {
             maskedImage.sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f), 100);

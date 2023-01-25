@@ -134,6 +134,7 @@ namespace Assets.Scripts.Interaction
             bool isMouseOverGameWindow;
             bool isMouseOverContextMenu;
             bool isMouseOverGizmoModeMenu;
+            bool isMouseOverDialog;
             {
                 var mousePosViewport = inputHelper.GetMousePositionInScenePanel();
                 // Get the ray from the Camera, that corresponds to the mouse position in the panel
@@ -145,8 +146,8 @@ namespace Assets.Scripts.Interaction
                                         mousePosViewport.y < 1;
                 isMouseOverContextMenu = contextMenuSystem.IsMouseOverMenu();
                 isMouseOverGizmoModeMenu = unityState.GizmoModeMenu.GetComponent<GizmoModeInteraction>().IsMouseOverGizmoModeMenu;
+                isMouseOverDialog = dialogSystem.IsMouseOverDialog();
             }
-            bool isMouseOverDialog = dialogSystem.IsMouseOverDialog();
 
 
 
