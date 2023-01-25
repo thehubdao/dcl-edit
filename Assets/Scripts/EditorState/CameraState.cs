@@ -129,6 +129,25 @@ namespace Assets.Scripts.EditorState
             // Move back from pivot
             MoveFixed(-moveToPivot);
         }
+        
+        public void LookAtFixed(Vector3 target)
+        {
+            LookAtFixed(target.x, target.y, target.z);
+        }
+
+        public void LookAtFixed(float targetX, float targetY, float targetZ)
+        {
+            var lookAtYaw = Vector2.Angle(
+                Vector2.up,
+                new Vector2(targetX - Position.x, targetY - Position.z));
+            
+            var lookAtPitch = Vector2.Angle(
+                Vector2.right,
+                new Vector2(targetX - Position.x, targetZ - Position.y));
+            
+            Yaw = lookAtYaw;
+            Pitch = lookAtPitch;
+        }
 
         // The main camera, through with the user sees the scene
         //[NonSerialized]
