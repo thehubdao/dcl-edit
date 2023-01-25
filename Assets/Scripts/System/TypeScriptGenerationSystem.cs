@@ -7,8 +7,10 @@ using System.Text;
 using Assets.Scripts.EditorState;
 using Assets.Scripts.SceneState;
 using Assets.Scripts.Utility;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using Zenject;
+using static Assets.Scripts.SceneState.DclComponent.DclComponentProperty.PropertyDefinition.Flags;
 using Debug = UnityEngine.Debug;
 
 // Warning 0162 warns about unreachable code.
@@ -26,18 +28,24 @@ namespace Assets.Scripts.System
         private IPathState pathState;
         private SceneManagerState sceneManagerState;
         private SceneManagerSystem sceneManagerSystem;
+        private AssetManagerSystem assetManagerSystem;
+        private AvailableComponentsState availableComponentsState;
 
         [Inject]
         private void Construct(
             ExposeEntitySystem exposeEntitySystem,
             IPathState pathState,
             SceneManagerState sceneManagerState,
-            SceneManagerSystem sceneManagerSystem)
+            SceneManagerSystem sceneManagerSystem,
+            AssetManagerSystem assetManagerSystem,
+            AvailableComponentsState availableComponentsState)
         {
             this.exposeEntitySystem = exposeEntitySystem;
             this.pathState = pathState;
             this.sceneManagerState = sceneManagerState;
             this.sceneManagerSystem = sceneManagerSystem;
+            this.assetManagerSystem = assetManagerSystem;
+            this.availableComponentsState = availableComponentsState;
         }
 
         private const bool obfuscate = false;
@@ -46,6 +54,7 @@ namespace Assets.Scripts.System
         {
             public List<SceneInfo> gatheredSceneInfos;
             public List<UsedComponentInfo> usedComponentInfos;
+            public Dictionary<Guid, string> neededAssets;
         }
 
         private struct SceneInfo
@@ -100,6 +109,7 @@ namespace Assets.Scripts.System
         {
             public string symbol;
             public string value;
+            public bool isConstructorParameter;
         }
 
 
@@ -126,7 +136,8 @@ namespace Assets.Scripts.System
             var generationInfo = new GenerationInfo()
             {
                 gatheredSceneInfos = new List<SceneInfo>(),
-                usedComponentInfos = new List<UsedComponentInfo>()
+                usedComponentInfos = new List<UsedComponentInfo>(),
+                neededAssets = new Dictionary<Guid, string>()
             };
 
             // Gather scene names
@@ -147,13 +158,13 @@ namespace Assets.Scripts.System
 
             foreach (var sceneDirectoryState in sceneManagerState.allSceneDirectoryStates)
             {
-                generationInfo.gatheredSceneInfos.Add(GatherSceneInfo(sceneDirectoryState, generationInfo.usedComponentInfos, sceneNames));
+                generationInfo.gatheredSceneInfos.Add(GatherSceneInfo(sceneDirectoryState, generationInfo.usedComponentInfos, sceneNames, generationInfo.neededAssets));
             }
 
             return generationInfo;
         }
 
-        private SceneInfo GatherSceneInfo(SceneDirectoryState sceneDirectoryState, ICollection<UsedComponentInfo> usedComponentInfos, IReadOnlyDictionary<Guid, string> sceneNames)
+        private SceneInfo GatherSceneInfo(SceneDirectoryState sceneDirectoryState, ICollection<UsedComponentInfo> usedComponentInfos, IReadOnlyDictionary<Guid, string> sceneNames, Dictionary<Guid, string> neededAssets)
         {
             var uniqueSymbols = new List<string>();
 
@@ -167,13 +178,13 @@ namespace Assets.Scripts.System
 
             foreach (var entity in dclScene.AllEntities.Select(pair => pair.Value))
             {
-                sceneInfo.gatheredEntityInfos.Add(GatherEntityInfo(entity, usedComponentInfos, uniqueSymbols, sceneNames));
+                sceneInfo.gatheredEntityInfos.Add(GatherEntityInfo(entity, usedComponentInfos, uniqueSymbols, sceneNames, neededAssets));
             }
 
             return sceneInfo;
         }
 
-        private EntityInfo GatherEntityInfo(DclEntity entity, ICollection<UsedComponentInfo> usedComponentInfos, ICollection<string> uniqueSymbols, IReadOnlyDictionary<Guid, string> sceneNames)
+        private EntityInfo GatherEntityInfo(DclEntity entity, ICollection<UsedComponentInfo> usedComponentInfos, ICollection<string> uniqueSymbols, IReadOnlyDictionary<Guid, string> sceneNames, Dictionary<Guid, string> neededAssets)
         {
             var internalEntitySymbol = exposeEntitySystem.GenerateValidSymbol(obfuscate ? "e" : entity.CustomName);
 
@@ -205,13 +216,13 @@ namespace Assets.Scripts.System
 
             foreach (var component in entity.Components)
             {
-                entityInfo.gatheredComponentInfos.Add(GatherComponentInfo(component, internalEntitySymbol, usedComponentInfos, uniqueSymbols, sceneNames));
+                entityInfo.gatheredComponentInfos.Add(GatherComponentInfo(component, internalEntitySymbol, usedComponentInfos, uniqueSymbols, sceneNames, neededAssets));
             }
 
             return entityInfo;
         }
 
-        private EntityComponentInfo GatherComponentInfo(DclComponent component, string internalEntitySymbol, ICollection<UsedComponentInfo> usedComponentInfos, ICollection<string> uniqueSymbols, IReadOnlyDictionary<Guid, string> sceneNames)
+        private EntityComponentInfo GatherComponentInfo(DclComponent component, string internalEntitySymbol, ICollection<UsedComponentInfo> usedComponentInfos, ICollection<string> uniqueSymbols, IReadOnlyDictionary<Guid, string> sceneNames, Dictionary<Guid, string> neededAssets)
         {
             var specialComponent = component.NameInCode switch
             {
@@ -292,7 +303,7 @@ namespace Assets.Scripts.System
             // Generate Property info
             foreach (var property in component.Properties)
             {
-                componentInfo.gatheredPropertyInfos.Add(GatherPropertyInfo(property));
+                componentInfo.gatheredPropertyInfos.Add(GatherPropertyInfo(component, property, neededAssets));
             }
 
 
@@ -316,9 +327,10 @@ namespace Assets.Scripts.System
             return componentInfo;
         }
 
-        private PropertyInfo GatherPropertyInfo(DclComponent.DclComponentProperty property)
+        private PropertyInfo GatherPropertyInfo(DclComponent component, DclComponent.DclComponentProperty property, Dictionary<Guid, string> neededAssets)
         {
             string value;
+
 
             switch (property.Type)
             {
@@ -348,17 +360,31 @@ namespace Assets.Scripts.System
                     value = $"new Quaternion({quaternion.x.ToString(CultureInfo.InvariantCulture)}, {quaternion.y.ToString(CultureInfo.InvariantCulture)}, {quaternion.z.ToString(CultureInfo.InvariantCulture)}, {quaternion.w.ToString(CultureInfo.InvariantCulture)})";
                     break;
                 case DclComponent.DclComponentProperty.PropertyType.Asset:
-                    value = null;
+                    value = $"\"{BuildOrGetAsset(property.GetConcrete<Guid>().FixedValue, neededAssets)}\"";
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
 
+
             return new PropertyInfo()
             {
                 symbol = property.PropertyName,
-                value = value
+                value = value,
+                isConstructorParameter = (availableComponentsState.GetComponentDefinitionByName(component.NameInCode).GetPropertyDefinitionByName(property.PropertyName).flags & ParseInConstructor) > 0
             };
+        }
+
+        private string BuildOrGetAsset(Guid id, Dictionary<Guid, string> neededAssets)
+        {
+            if (neededAssets.TryGetValue(id, out var asset))
+            {
+                return asset;
+            }
+
+            var assetPath = assetManagerSystem.CopyAssetTo(id, "Some path");
+            neededAssets.Add(id, assetPath);
+            return assetPath;
         }
 
         private string GenerateActualScript(GenerationInfo generationInfo)
@@ -590,12 +616,24 @@ export type DceEntity = {
                         else
                         {
                             // Temporary solution TODO: Change it
-                            generatedScript.AppendLine(componentInfo.symbol == "GLTFShape" ?
-                                $"const {componentInfo.internalScriptSymbol} = new {componentInfo.symbol}(\"\")".Indent(2) : // use empty initializer until assets can be used here
-                                $"const {componentInfo.internalScriptSymbol} = new {componentInfo.symbol}()".Indent(2));
+                            //generatedScript.AppendLine(componentInfo.symbol == "GLTFShape" ?
+                            //    $"const {componentInfo.internalScriptSymbol} = new {componentInfo.symbol}(\"\")".Indent(2) : // use empty initializer until assets can be used here
+                            //    $"const {componentInfo.internalScriptSymbol} = new {componentInfo.symbol}()".Indent(2));
+
+                            // setup component constructor
+                            // get constructor parameters
+                            var constructorParameters =
+                                componentInfo
+                                    .gatheredPropertyInfos
+                                    .Where(pi => pi.isConstructorParameter)
+                                    .Select(pi => pi.value)
+                                    .AggregateOrDefault((left, right) => $"{left}, {right}", "");
+
+                            // construct component
+                            generatedScript.AppendLine($"const {componentInfo.internalScriptSymbol} = new {componentInfo.symbol}({constructorParameters})".Indent(2));
 
                             // properties. Ignore properties without valid value
-                            foreach (var propertyInfo in componentInfo.gatheredPropertyInfos.Where(pi => pi.value != null))
+                            foreach (var propertyInfo in componentInfo.gatheredPropertyInfos.Where(pi => !pi.isConstructorParameter).Where(pi => pi.value != null))
                             {
                                 generatedScript.AppendLine($"{componentInfo.internalScriptSymbol}.{propertyInfo.symbol} = {propertyInfo.value}".Indent(2));
                             }

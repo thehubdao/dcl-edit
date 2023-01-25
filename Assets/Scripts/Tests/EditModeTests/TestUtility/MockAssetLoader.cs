@@ -85,6 +85,11 @@ namespace Assets.Scripts.Tests.EditModeTests.TestUtility
             return null;
         }
 
+        public string CopyAssetTo(Guid id)
+        {
+            return null;
+        }
+
         public AssetMetadata GetMetadataById(Guid id)
         {
             if (loaderState.assetMetadataCache.TryGetValue(id, out AssetMetadataFile file))

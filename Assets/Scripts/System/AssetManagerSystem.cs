@@ -88,5 +88,19 @@ namespace Assets.Scripts.System
                 }
             }
         }
+
+        public string CopyAssetTo(Guid id, string destPath)
+        {
+            foreach (var loaderSystem in _assetLoaderSystems)
+            {
+                var result = loaderSystem.CopyAssetTo(id);
+                if (result != null)
+                {
+                    return result;
+                }
+            }
+
+            return null;
+        }
     }
 }

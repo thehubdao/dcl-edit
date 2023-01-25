@@ -328,6 +328,22 @@ namespace Assets.Scripts.System
 
             return new AssetData(id, AssetData.State.IsLoading);
         }
+
+        public string CopyAssetTo(Guid id)
+        {
+            // check if id is a builder asset else return null
+            if (!_loaderState.Data.TryGetValue(id, out var data))
+            {
+                return null;
+            }
+
+            foreach (var s in data.contentsPathToHash.Select(p => p.Value).Append(data.modelPath))
+            {
+                //Debug.Log(s);
+            }
+
+            return null;
+        }
     }
 
     class BuilderAssetGltfDataLoader : IDataLoader
@@ -352,7 +368,7 @@ namespace Assets.Scripts.System
         {
             if (relativeFilePath == null)
             {
-                throw new ArgumentNullException("relativeFilePath");
+                throw new ArgumentNullException(nameof(relativeFilePath));
             }
 
             var fullPath = Path.Combine(directory, relativeFilePath);

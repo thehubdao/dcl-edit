@@ -13,5 +13,6 @@ namespace Assets.Scripts.System
         AssetMetadata GetMetadataById(Guid id);
         AssetThumbnail GetThumbnailById(Guid id);
         AssetData GetDataById(Guid id);
+        string CopyAssetTo(Guid id);
     }
 }
