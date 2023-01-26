@@ -129,15 +129,6 @@ namespace Assets.Scripts.EditorState
             // Move back from pivot
             MoveFixed(-moveToPivot);
         }
-        
-        public void LookAtFixed(Vector3 target)
-        {
-            var direction = (target - Position).normalized;
-            var lookAtRotation = Quaternion.LookRotation(direction, Vector3.up);
-            
-            Yaw = lookAtRotation.eulerAngles.y;
-            Pitch = lookAtRotation.eulerAngles.x;
-        }
 
         // The main camera, through with the user sees the scene
         //[NonSerialized]
