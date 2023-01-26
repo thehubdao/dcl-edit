@@ -15,19 +15,30 @@ namespace Assets.Scripts.SceneState
         {
             public class PropertyDefinition
             {
+                [Flags]
+                public enum Flags
+                {
+                    None = 0,
+                    ParseInConstructor = 0b1,
+                }
+
                 public string name;
                 public PropertyType type;
                 public dynamic defaultValue;
+                public Flags flags;
 
-                public PropertyDefinition(string name, PropertyType type, dynamic defaultValue)
+                public PropertyDefinition(string name, PropertyType type, dynamic defaultValue, params Flags[] flags)
                 {
-                    if(defaultValue == null){
+                    if (defaultValue == null)
+                    {
                         throw new ArgumentException("Default value cannot be null");
                     }
+
 
                     this.name = name;
                     this.type = type;
                     this.defaultValue = defaultValue;
+                    this.flags = flags.Aggregate(Flags.None, (left, right) => left | right);
 
                     if (!ValidateDefaultValue())
                     {
@@ -108,12 +119,13 @@ namespace Assets.Scripts.SceneState
             public DclComponentProperty DeepCopy(DclComponentProperty other)
             {
                 Type propertyType = other.GetType();
-              
+
                 if (propertyType == typeof(DclComponentProperty<Vector3>))
                 {
                     return new DclComponentProperty<Vector3>(other.PropertyName, other.GetConcrete<Vector3>().Value);
                 }
-                else if (propertyType == typeof(DclComponentProperty<Quaternion>)) {
+                else if (propertyType == typeof(DclComponentProperty<Quaternion>))
+                {
                     return new DclComponentProperty<Quaternion>(other.PropertyName, other.GetConcrete<Quaternion>().Value);
                 }
                 else if (propertyType == typeof(DclComponentProperty<Guid>))
@@ -136,6 +148,7 @@ namespace Assets.Scripts.SceneState
                 {
                     return new DclComponentProperty<bool>(other.PropertyName, other.GetConcrete<bool>().Value);
                 }
+
                 return other;
             }
 
@@ -216,7 +229,7 @@ namespace Assets.Scripts.SceneState
             }
         }
 
-        #endregion
+        #endregion // Property
 
         #region Definition
 
@@ -234,9 +247,14 @@ namespace Assets.Scripts.SceneState
                 NameOfSlot = nameOfSlot;
                 this.properties = properties.ToList();
             }
+
+            public DclComponentProperty.PropertyDefinition GetPropertyDefinitionByName(string name)
+            {
+                return properties.Find(pd => pd.name == name);
+            }
         }
 
-        #endregion
+        #endregion // Definition
 
         public DclEntity Entity = null;
 
@@ -252,18 +270,20 @@ namespace Assets.Scripts.SceneState
                 Properties.Find(p => p.PropertyName == name) :
                 null;
         }
+
         public DclComponent DeepCopy()
         {
-            DclComponent deepcopyComponent = new DclComponent(NameInCode,NameOfSlot);
+            DclComponent deepcopyComponent = new DclComponent(NameInCode, NameOfSlot);
             deepcopyComponent.Properties.Clear();
             foreach (var prop in Properties)
             {
                 DclComponentProperty componentProperty = prop.DeepCopy(prop);
                 deepcopyComponent.Properties.Add(componentProperty);
             }
+
             return deepcopyComponent;
-        }        
-        
+        }
+
         public DclComponent(ComponentDefinition definition)
         {
             NameInCode = definition.NameInCode;
