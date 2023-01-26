@@ -344,6 +344,7 @@ namespace Assets.Scripts.System
             public string relativePath;
             public JObject settings;
             public DclEditVersion dclEditVersion;
+            public string dclEditVersionNumber;
         }
     }
 }

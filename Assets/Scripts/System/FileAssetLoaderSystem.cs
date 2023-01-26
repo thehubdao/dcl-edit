@@ -246,7 +246,7 @@ namespace Assets.Scripts.System
                     ),
                     metadata.thumbnail);
 
-                string json = JsonConvert.SerializeObject(contents);
+                string json = JsonConvert.SerializeObject(contents, Formatting.Indented);
 
                 File.WriteAllText(metadata.metadataFilePath, json);
             }
