@@ -1,6 +1,7 @@
 using Assets.Scripts.EditorState;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Assets.Scripts.System
 {
@@ -13,6 +14,6 @@ namespace Assets.Scripts.System
         AssetMetadata GetMetadataById(Guid id);
         AssetThumbnail GetThumbnailById(Guid id);
         AssetData GetDataById(Guid id);
-        string CopyAssetTo(Guid id);
+        Task<string> CopyAssetTo(Guid id);
     }
 }

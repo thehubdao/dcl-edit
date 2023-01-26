@@ -2,6 +2,7 @@ using Assets.Scripts.EditorState;
 using Assets.Scripts.System;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Assets.Scripts.Tests.EditModeTests.TestUtility
@@ -85,7 +86,7 @@ namespace Assets.Scripts.Tests.EditModeTests.TestUtility
             return null;
         }
 
-        public string CopyAssetTo(Guid id)
+        public Task<string> CopyAssetTo(Guid id)
         {
             return null;
         }

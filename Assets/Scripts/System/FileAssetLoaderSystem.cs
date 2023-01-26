@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using Assets.Scripts.Utility;
 using UnityEngine;
 using Zenject;
@@ -132,14 +133,14 @@ namespace Assets.Scripts.System
             return LoadAssetData(id);
         }
 
-        public string CopyAssetTo(Guid id)
+        public Task<string> CopyAssetTo(Guid id)
         {
             if (loaderState.assetMetadataCache.TryGetValue(id, out var metadataFile))
             {
-                return StaticUtilities.MakeRelativePath(pathState.ProjectPath, metadataFile.assetFilePath);
+                return Task.FromResult(StaticUtilities.MakeRelativePath(pathState.ProjectPath, metadataFile.assetFilePath));
             }
 
-            return null;
+            return Task.FromResult<string>(null);
         }
 
         public bool SetThumbnailById(Guid id, Texture2D newThumbnail)

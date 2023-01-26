@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Assets.Scripts.EditorState;
 using Assets.Scripts.SceneState;
 using Assets.Scripts.Utility;
@@ -113,9 +114,9 @@ namespace Assets.Scripts.System
         }
 
 
-        public void GenerateTypeScript()
+        public async Task GenerateTypeScript()
         {
-            var generationInfo = GatherInfo();
+            var generationInfo = await GatherInfo();
             if (!generationInfo.HasValue)
             {
                 Debug.LogError("Script generation: gathering info failed");
@@ -129,9 +130,11 @@ namespace Assets.Scripts.System
             Directory.CreateDirectory(scriptsFolderPath);
 
             File.WriteAllText(scriptsFolderPath + "scenes.ts", script);
+
+            Debug.Log("Script generation done");
         }
 
-        private GenerationInfo? GatherInfo()
+        private async Task<GenerationInfo?> GatherInfo()
         {
             var generationInfo = new GenerationInfo()
             {
@@ -158,13 +161,13 @@ namespace Assets.Scripts.System
 
             foreach (var sceneDirectoryState in sceneManagerState.allSceneDirectoryStates)
             {
-                generationInfo.gatheredSceneInfos.Add(GatherSceneInfo(sceneDirectoryState, generationInfo.usedComponentInfos, sceneNames, generationInfo.neededAssets));
+                generationInfo.gatheredSceneInfos.Add(await GatherSceneInfo(sceneDirectoryState, generationInfo.usedComponentInfos, sceneNames, generationInfo.neededAssets));
             }
 
             return generationInfo;
         }
 
-        private SceneInfo GatherSceneInfo(SceneDirectoryState sceneDirectoryState, ICollection<UsedComponentInfo> usedComponentInfos, IReadOnlyDictionary<Guid, string> sceneNames, Dictionary<Guid, string> neededAssets)
+        private async Task<SceneInfo> GatherSceneInfo(SceneDirectoryState sceneDirectoryState, ICollection<UsedComponentInfo> usedComponentInfos, IReadOnlyDictionary<Guid, string> sceneNames, Dictionary<Guid, string> neededAssets)
         {
             var uniqueSymbols = new List<string>();
 
@@ -178,13 +181,13 @@ namespace Assets.Scripts.System
 
             foreach (var entity in dclScene.AllEntities.Select(pair => pair.Value))
             {
-                sceneInfo.gatheredEntityInfos.Add(GatherEntityInfo(entity, usedComponentInfos, uniqueSymbols, sceneNames, neededAssets));
+                sceneInfo.gatheredEntityInfos.Add(await GatherEntityInfo(entity, usedComponentInfos, uniqueSymbols, sceneNames, neededAssets));
             }
 
             return sceneInfo;
         }
 
-        private EntityInfo GatherEntityInfo(DclEntity entity, ICollection<UsedComponentInfo> usedComponentInfos, ICollection<string> uniqueSymbols, IReadOnlyDictionary<Guid, string> sceneNames, Dictionary<Guid, string> neededAssets)
+        private async Task<EntityInfo> GatherEntityInfo(DclEntity entity, ICollection<UsedComponentInfo> usedComponentInfos, ICollection<string> uniqueSymbols, IReadOnlyDictionary<Guid, string> sceneNames, Dictionary<Guid, string> neededAssets)
         {
             var internalEntitySymbol = exposeEntitySystem.GenerateValidSymbol(obfuscate ? "e" : entity.CustomName);
 
@@ -216,13 +219,13 @@ namespace Assets.Scripts.System
 
             foreach (var component in entity.Components)
             {
-                entityInfo.gatheredComponentInfos.Add(GatherComponentInfo(component, internalEntitySymbol, usedComponentInfos, uniqueSymbols, sceneNames, neededAssets));
+                entityInfo.gatheredComponentInfos.Add(await GatherComponentInfo(component, internalEntitySymbol, usedComponentInfos, uniqueSymbols, sceneNames, neededAssets));
             }
 
             return entityInfo;
         }
 
-        private EntityComponentInfo GatherComponentInfo(DclComponent component, string internalEntitySymbol, ICollection<UsedComponentInfo> usedComponentInfos, ICollection<string> uniqueSymbols, IReadOnlyDictionary<Guid, string> sceneNames, Dictionary<Guid, string> neededAssets)
+        private async Task<EntityComponentInfo> GatherComponentInfo(DclComponent component, string internalEntitySymbol, ICollection<UsedComponentInfo> usedComponentInfos, ICollection<string> uniqueSymbols, IReadOnlyDictionary<Guid, string> sceneNames, Dictionary<Guid, string> neededAssets)
         {
             var specialComponent = component.NameInCode switch
             {
@@ -303,7 +306,7 @@ namespace Assets.Scripts.System
             // Generate Property info
             foreach (var property in component.Properties)
             {
-                componentInfo.gatheredPropertyInfos.Add(GatherPropertyInfo(component, property, neededAssets));
+                componentInfo.gatheredPropertyInfos.Add(await GatherPropertyInfo(component, property, neededAssets));
             }
 
 
@@ -327,7 +330,7 @@ namespace Assets.Scripts.System
             return componentInfo;
         }
 
-        private PropertyInfo GatherPropertyInfo(DclComponent component, DclComponent.DclComponentProperty property, Dictionary<Guid, string> neededAssets)
+        private async Task<PropertyInfo> GatherPropertyInfo(DclComponent component, DclComponent.DclComponentProperty property, Dictionary<Guid, string> neededAssets)
         {
             string value;
 
@@ -360,7 +363,7 @@ namespace Assets.Scripts.System
                     value = $"new Quaternion({quaternion.x.ToString(CultureInfo.InvariantCulture)}, {quaternion.y.ToString(CultureInfo.InvariantCulture)}, {quaternion.z.ToString(CultureInfo.InvariantCulture)}, {quaternion.w.ToString(CultureInfo.InvariantCulture)})";
                     break;
                 case DclComponent.DclComponentProperty.PropertyType.Asset:
-                    value = $"\"{BuildOrGetAsset(property.GetConcrete<Guid>().FixedValue, neededAssets)}\"";
+                    value = $"\"{await BuildOrGetAsset(property.GetConcrete<Guid>().FixedValue, neededAssets)}\"";
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -375,14 +378,14 @@ namespace Assets.Scripts.System
             };
         }
 
-        private string BuildOrGetAsset(Guid id, Dictionary<Guid, string> neededAssets)
+        private async Task<string> BuildOrGetAsset(Guid id, Dictionary<Guid, string> neededAssets)
         {
             if (neededAssets.TryGetValue(id, out var asset))
             {
                 return asset;
             }
 
-            var assetPath = assetManagerSystem.CopyAssetTo(id, "Some path");
+            var assetPath = await assetManagerSystem.CopyAssetTo(id, "Some path");
             neededAssets.Add(id, assetPath);
             return assetPath;
         }

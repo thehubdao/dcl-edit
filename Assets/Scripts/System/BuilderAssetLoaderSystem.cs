@@ -94,16 +94,18 @@ namespace Assets.Scripts.System
         private EditorEvents _editorEvents;
         private LoadGltfFromFileSystem _loadGltfFromFileSystem;
         private IWebRequestSystem _webRequestSystem;
+        private IPathState _pathState;
 
         private BuilderAssetDownLoader assetDownLoader;
 
         [Inject]
-        public void Construct(BuilderAssetLoaderState loaderState, EditorEvents editorEvents, LoadGltfFromFileSystem loadGltfFromFileSystem, IWebRequestSystem webRequestSystem)
+        public void Construct(BuilderAssetLoaderState loaderState, EditorEvents editorEvents, LoadGltfFromFileSystem loadGltfFromFileSystem, IWebRequestSystem webRequestSystem, IPathState pathState)
         {
             _loaderState = loaderState;
             _editorEvents = editorEvents;
             _loadGltfFromFileSystem = loadGltfFromFileSystem;
             _webRequestSystem = webRequestSystem;
+            _pathState = pathState;
 
             this.assetDownLoader = new BuilderAssetDownLoader(modelCachePath, webRequestSystem);
         }
@@ -287,7 +289,8 @@ namespace Assets.Scripts.System
             return inTexture;
         }
 
-        private readonly string modelCachePath = Application.persistentDataPath + "/cache/builder";
+        private string modelCachePath => Path.Combine(Application.persistentDataPath, "dcl-edit/builder_assets/");
+        public string modelBuildPath => Path.Combine(_pathState.ProjectPath, "dcl-edit/build/builder_assets/");
 
         public AssetData GetDataById(Guid id)
         {
@@ -329,7 +332,7 @@ namespace Assets.Scripts.System
             return new AssetData(id, AssetData.State.IsLoading);
         }
 
-        public string CopyAssetTo(Guid id)
+        public async Task<string> CopyAssetTo(Guid id)
         {
             // check if id is a builder asset else return null
             if (!_loaderState.Data.TryGetValue(id, out var data))
@@ -337,12 +340,23 @@ namespace Assets.Scripts.System
                 return null;
             }
 
-            foreach (var s in data.contentsPathToHash.Select(p => p.Value).Append(data.modelPath))
+            // Copy all files into the build path
+            foreach (var (path, hash) in data.contentsPathToHash)
             {
-                //Debug.Log(s);
+                var filePath = await assetDownLoader.GetFileFromHash(hash);
+
+                var destFileName = Path.Combine(modelBuildPath, path);
+                Directory.CreateDirectory(Path.GetDirectoryName(destFileName) ?? throw new InvalidOperationException());
+                File.Copy(filePath, destFileName, true);
             }
 
-            return null;
+            var modelFilePathTask = assetDownLoader.GetFileFromHash(data.contentsPathToHash[data.modelPath]);
+            if (!modelFilePathTask.IsCompleted)
+            {
+                modelFilePathTask.Wait();
+            }
+
+            return StaticUtilities.MakeRelativePath(_pathState.ProjectPath, Path.Combine(modelBuildPath, data.modelPath));
         }
     }
 

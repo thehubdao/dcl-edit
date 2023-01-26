@@ -2,6 +2,7 @@ using Assets.Scripts.EditorState;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 using Zenject;
 
@@ -89,11 +90,11 @@ namespace Assets.Scripts.System
             }
         }
 
-        public string CopyAssetTo(Guid id, string destPath)
+        public async Task<string> CopyAssetTo(Guid id, string destPath)
         {
             foreach (var loaderSystem in _assetLoaderSystems)
             {
-                var result = loaderSystem.CopyAssetTo(id);
+                var result = await loaderSystem.CopyAssetTo(id);
                 if (result != null)
                 {
                     return result;
