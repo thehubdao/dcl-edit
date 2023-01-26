@@ -166,7 +166,7 @@ namespace Assets.Scripts.SceneState
         private System.Random _random;
         public DclEntity DeepCopy(DclScene sceneState, System.Random random)
         {
-            DclEntity deepcopyEntity = new DclEntity(Id, CustomName, _parentId, true);
+            DclEntity deepcopyEntity = new DclEntity(Id, CustomName, _parentId, false); // copied entity should never be exposed
 
             if (random != null)
             {
