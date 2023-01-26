@@ -132,21 +132,11 @@ namespace Assets.Scripts.EditorState
         
         public void LookAtFixed(Vector3 target)
         {
-            LookAtFixed(target.x, target.y, target.z);
-        }
-
-        public void LookAtFixed(float targetX, float targetY, float targetZ)
-        {
-            var lookAtYaw = Vector2.Angle(
-                Vector2.up,
-                new Vector2(targetX - Position.x, targetY - Position.z));
+            var direction = (target - Position).normalized;
+            var lookAtRotation = Quaternion.LookRotation(direction, Vector3.up);
             
-            var lookAtPitch = Vector2.Angle(
-                Vector2.right,
-                new Vector2(targetX - Position.x, targetZ - Position.y));
-            
-            Yaw = lookAtYaw;
-            Pitch = lookAtPitch;
+            Yaw = lookAtRotation.eulerAngles.y;
+            Pitch = lookAtRotation.eulerAngles.x;
         }
 
         // The main camera, through with the user sees the scene
