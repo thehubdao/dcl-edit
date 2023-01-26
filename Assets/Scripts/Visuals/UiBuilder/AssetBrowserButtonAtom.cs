@@ -1,5 +1,5 @@
 using Assets.Scripts.EditorState;
-using UnityEngine;
+using System;
 using UnityEngine.UI;
 
 namespace Assets.Scripts.Visuals.UiBuilder
@@ -9,7 +9,8 @@ namespace Assets.Scripts.Visuals.UiBuilder
         public new class Data : Atom.Data
         {
             public AssetMetadata metadata;
-            public Texture2D typeIndicator;
+            public bool enableDragAndDrop;
+            public Action<Guid> onClick;
             public ScrollRect scrollViewRect;
 
             public override bool Equals(Atom.Data other)
@@ -24,10 +25,8 @@ namespace Assets.Scripts.Visuals.UiBuilder
                     return false;
                 }
 
-                if (typeIndicator != otherBtn.typeIndicator)
-                {
-                    return false;
-                }
+                if (enableDragAndDrop != otherBtn.enableDragAndDrop) return false;
+                if (onClick != otherBtn.onClick) return false;
 
                 if (scrollViewRect != otherBtn.scrollViewRect)
                 {
@@ -58,7 +57,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
             {
                 // Update data
                 var btnHandler = gameObject.gameObject.GetComponent<AssetBrowserButtonHandler>();
-                btnHandler.Init(newBtnData.metadata, newBtnData.typeIndicator, newBtnData.scrollViewRect);
+                btnHandler.Init(newBtnData.metadata, newBtnData.enableDragAndDrop, newBtnData.onClick, newBtnData.scrollViewRect);
                 data = newBtnData;
             }
         }
@@ -80,14 +79,16 @@ namespace Assets.Scripts.Visuals.UiBuilder
         public static AssetBrowserButtonAtom.Data AddAssetBrowserButton(
             this PanelAtom.Data panelAtomData,
             AssetMetadata metadata,
-            Texture2D typeIndicator,
-            ScrollRect scrollViewRect
+            bool enableDragAndDrop,
+            Action<Guid> onClick = null,
+            ScrollRect scrollViewRect = null
             )
         {
             var data = new AssetBrowserButtonAtom.Data
             {
                 metadata = metadata,
-                typeIndicator = typeIndicator,
+                onClick = onClick,
+                enableDragAndDrop = enableDragAndDrop,
                 scrollViewRect = scrollViewRect
             };
 

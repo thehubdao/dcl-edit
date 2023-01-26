@@ -1,8 +1,8 @@
-using System;
 using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
 using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
+using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using Zenject;
@@ -10,6 +10,7 @@ using Zenject;
 public class AssetButtonInteraction : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     public AssetMetadata assetMetadata;
+    public bool enableDragAndDrop;
     private DclEntity newEntity;
     private bool entityInScene;
     private Vector3 mousePositionInScene;
@@ -51,10 +52,16 @@ public class AssetButtonInteraction : MonoBehaviour, IBeginDragHandler, IDragHan
         }
     }
 
-    public void OnBeginDrag(PointerEventData eventData) => newEntity = SetupEntity();
+    public void OnBeginDrag(PointerEventData eventData)
+    {
+        if (!enableDragAndDrop) return;
+        newEntity = SetupEntity();
+    }
 
     public void OnDrag(PointerEventData eventData)
     {
+        if (!enableDragAndDrop) return;
+
         var currentScene = sceneManagerSystem.GetCurrentScene();
 
         if (currentScene == null)
@@ -83,8 +90,9 @@ public class AssetButtonInteraction : MonoBehaviour, IBeginDragHandler, IDragHan
 
     public void OnEndDrag(PointerEventData eventData)
     {
+        if (!enableDragAndDrop) return;
         if (!inputHelperSystem.IsMouseOverScenePanel()) return;
-        
+
         AddEntityToScene(mousePositionInScene);
     }
 
@@ -118,5 +126,5 @@ public class AssetButtonInteraction : MonoBehaviour, IBeginDragHandler, IDragHan
             case AssetMetadata.AssetType.Image:
                 break;
         }
-    } 
+    }
 }

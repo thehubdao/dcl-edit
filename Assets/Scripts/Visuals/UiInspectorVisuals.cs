@@ -27,6 +27,8 @@ namespace Assets.Scripts.Visuals
         private ContextMenuSystem contextMenuSystem;
         private AddComponentSystem addComponentSystem;
         private AvailableComponentsState availableComponentsState;
+        private AssetManagerSystem assetManagerSystem;
+        private DialogSystem dialogSystem;
 
         [Inject]
         private void Construct(
@@ -38,7 +40,9 @@ namespace Assets.Scripts.Visuals
             SceneManagerSystem sceneManagerSystem,
             ContextMenuSystem contextMenuSystem,
             AddComponentSystem addComponentSystem,
-            AvailableComponentsState availableComponentsState)
+            AvailableComponentsState availableComponentsState,
+            AssetManagerSystem assetManagerSystem,
+            DialogSystem dialogSystem)
         {
             this.inputState = inputState;
             this.updatePropertiesSystem = updatePropertiesSystem;
@@ -49,6 +53,8 @@ namespace Assets.Scripts.Visuals
             this.contextMenuSystem = contextMenuSystem;
             this.addComponentSystem = addComponentSystem;
             this.availableComponentsState = availableComponentsState;
+            this.assetManagerSystem = assetManagerSystem;
+            this.dialogSystem = dialogSystem;
 
             SetupEventListeners();
         }
@@ -245,8 +251,13 @@ namespace Assets.Scripts.Visuals
                             break;
                         }
                         case DclComponent.DclComponentProperty.PropertyType.Asset: // not supported yet
-                        {
-                            componentPanel.AddText("Asset property not supported yet");
+                            {
+                                var assetMetadata = assetManagerSystem.GetMetadataById(property.GetConcrete<Guid>().Value);
+                                componentPanel.AddAssetProperty(
+                                    property.PropertyName,
+                                    assetMetadata,
+                                    (_) => dialogSystem.OpenAssetDialog(selectedEntity.Id));
+
                             break;
                         }
                         default:

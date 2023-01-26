@@ -55,6 +55,7 @@ MonoBehaviour:
   header: {fileID: 5914830228607229683}
   headerText: {fileID: 7653724580197155377}
   expandIcon: {fileID: 7395457280913301948}
+  layoutGroup: {fileID: 2827788213991788455}
 --- !u!114 &2827788213991788455
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -68,7 +69,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
-    m_Left: 10
+    m_Left: 0
     m_Right: 0
     m_Top: 0
     m_Bottom: 0
@@ -337,7 +338,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8024071907148859789, guid: 940a8e80e3325354b9baed45c93a96f0, type: 3}
       propertyPath: m_margin.x
-      value: 10
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8024071907148859789, guid: 940a8e80e3325354b9baed45c93a96f0, type: 3}
       propertyPath: m_HorizontalAlignment

@@ -1,5 +1,4 @@
 using Assets.Scripts.EditorState;
-using UnityEngine.UI;
 
 namespace Assets.Scripts.Visuals.UiBuilder
 {
@@ -8,7 +7,6 @@ namespace Assets.Scripts.Visuals.UiBuilder
         public new class Data : PanelAtom.Data
         {
             public AssetHierarchyItem hierarchyItem;
-            public ScrollRect scrollViewRect;
 
             public override bool Equals(Atom.Data other)
             {
@@ -22,17 +20,14 @@ namespace Assets.Scripts.Visuals.UiBuilder
                     return false;
                 }
 
-                if (scrollViewRect != otherFolder.scrollViewRect)
-                {
-                    return false;
-                }
-
                 return base.Equals(other);
             }
         }
 
         public override void Update(Atom.Data newData)
         {
+            base.Update(newData);
+
             UiBuilder.Stats.atomsUpdatedCount++;
 
             var newFolderData = (Data)newData;
@@ -49,7 +44,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
             {
                 // Update data
                 var handler = gameObject.gameObject.GetComponent<AssetBrowserFolderHandler>();
-                handler.Initialize(newFolderData.hierarchyItem, newFolderData.scrollViewRect);
+                handler.Initialize(newFolderData.hierarchyItem);
                 data = newFolderData;
             }
         }
@@ -67,14 +62,15 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
     public static class AssetFolderPanelHelper
     {
-        public static AssetBrowserFolderAtom.Data AddAssetBrowserFolder(this PanelAtom.Data panelAtomData,
+        public static AssetBrowserFolderAtom.Data AddAssetBrowserFolder(
+            this PanelAtom.Data panelAtomData,
             AssetHierarchyItem hierarchyItem,
-            ScrollRect scrollViewRect)
+            int indentationLevel)
         {
             var data = new AssetBrowserFolderAtom.Data
             {
                 hierarchyItem = hierarchyItem,
-                scrollViewRect = scrollViewRect
+                indentationLevel = indentationLevel
             };
 
             panelAtomData.childDates.Add(data);

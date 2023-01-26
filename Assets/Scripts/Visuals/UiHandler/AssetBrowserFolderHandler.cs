@@ -1,5 +1,5 @@
 using Assets.Scripts.EditorState;
-using Assets.Scripts.Visuals.UiBuilder;
+using Assets.Scripts.Events;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,131 +11,45 @@ public class AssetBrowserFolderHandler : MonoBehaviour
     public TextMeshProUGUI headerText;
     public RectTransform expandIcon;
     private AssetHierarchyItem hierarchyItem;
-    private ScrollRect scrollViewRect;
-    private bool expanded = false;
-
 
     // Dependencies
-    private UiBuilder uiBuilder;
-    UnityState unityState;
     AssetBrowserState assetBrowserState;
-
+    EditorEvents editorEvents;
 
     [Inject]
-    void Construct(UiBuilder.Factory uiBuilderFactory, UnityState unityState, AssetBrowserState assetBrowserState)
+    void Construct(AssetBrowserState assetBrowserState, EditorEvents editorEvents)
     {
-        uiBuilder = uiBuilderFactory.Create(gameObject);
-        this.unityState = unityState;
         this.assetBrowserState = assetBrowserState;
+        this.editorEvents = editorEvents;
     }
 
-
-    public void Initialize(AssetHierarchyItem hierarchyItem, ScrollRect scrollViewRect)
+    public void Initialize(AssetHierarchyItem hierarchyItem)
     {
         this.hierarchyItem = hierarchyItem;
         headerText.text = hierarchyItem.name;
-        this.scrollViewRect = scrollViewRect;
 
-        // Check if folder was expanded before the UI rebuild
-        if (assetBrowserState.expandedFoldersPaths.Contains(hierarchyItem.path))
-        {
-            SetExpanded(true);
-        }
-        else
-        {
-            SetExpanded(false);
-        }
+        var scale = expandIcon.localScale;
+        scale.y = IsExpanded() ? -1 : 1;        // Flip icon vertically if expanded
+        expandIcon.localScale = scale;
     }
 
-
-    public void SetExpanded(bool expanded)
+    private void SetExpanded(bool expanded)
     {
-        this.expanded = expanded;
-
-        // Flip icon vertically
-        var scale = expandIcon.localScale;
-        scale.y = expanded ? -1 : 1;
-        expandIcon.localScale = scale;
-
         if (expanded)
         {
             assetBrowserState.expandedFoldersPaths.Add(hierarchyItem.path);
-            BuildFolderHierarchy();
         }
         else
         {
             // Mark all folders as closed that are at the current position or further down in the asset hierarchy
             assetBrowserState.expandedFoldersPaths.RemoveAll((path) => path.Contains(hierarchyItem.path));
-            ClearFolderHierarchy();
         }
+        editorEvents.InvokeUiChangedEvent();
     }
 
-    public void ToggleExpanded()
-    {
-        expanded = !expanded;
-        SetExpanded(expanded);
-    }
+    public void ToggleExpanded() => SetExpanded(!IsExpanded());
 
-
-    private void BuildFolderHierarchy()
-    {
-        PanelAtom.Data panel = new PanelAtom.Data();
-
-        foreach (AssetHierarchyItem subfolder in hierarchyItem.childDirectories)
-        {
-            if (!subfolder.IsEmpty())
-            {
-                panel.AddAssetBrowserFolder(subfolder, scrollViewRect);
-            }
-        }
-
-        if (hierarchyItem.assets.Count > 0)
-        {
-            GridAtom.Data grid = panel.AddGrid();
-            foreach (AssetMetadata asset in hierarchyItem.assets)
-            {
-                Texture2D typeIndicator = null;
-                switch (asset.assetType)
-                {
-                    case AssetMetadata.AssetType.Unknown:
-                        break;
-                    case AssetMetadata.AssetType.Model:
-                        typeIndicator = unityState.AssetTypeModelIcon;
-                        break;
-                    case AssetMetadata.AssetType.Image:
-                        typeIndicator = unityState.AssetTypeImageIcon;
-                        break;
-                    default:
-                        break;
-                }
-
-                grid.AddAssetBrowserButton(asset, typeIndicator, scrollViewRect);
-            }
-        }
-
-        uiBuilder.Update(panel);
-    }
-
-
-    private void ClearFolderHierarchy()
-    {
-        foreach (var handler in GetComponentsInChildren<AssetBrowserFolderHandler>())
-        {
-            if (handler != this)
-            {
-                handler.RemoveSingleFolder();
-            }
-        }
-
-        uiBuilder.Update(new PanelAtom.Data());
-    }
-
-
-    public void RemoveSingleFolder()
-    {
-        uiBuilder.Update(new PanelAtom.Data());
-    }
-
+    private bool IsExpanded() => assetBrowserState.expandedFoldersPaths.Contains(hierarchyItem.path);
 
     public class Factory : PlaceholderFactory<AssetBrowserFolderHandler>
     {
