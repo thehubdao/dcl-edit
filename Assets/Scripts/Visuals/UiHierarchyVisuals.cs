@@ -170,7 +170,9 @@ namespace Assets.Scripts.Visuals
                         contextMenuSystem.OpenMenu(clickPosition, new List<ContextMenuItem>
                         {
                             new ContextSubmenuItem("Add entity...", addEntityMenuItems),
-                            new ContextMenuTextItem("Duplicate", () => Debug.Log("Duplicate entity"), true),
+                            new ContextMenuTextItem("Duplicate", 
+                                () => commandSystem.ExecuteCommand(
+                                    commandSystem.CommandFactory.CreateDuplicateEntity(entity.Id))),
                             new ContextMenuTextItem("Delete",
                                 () => commandSystem.ExecuteCommand(
                                     commandSystem.CommandFactory.CreateRemoveEntity(entity)))
