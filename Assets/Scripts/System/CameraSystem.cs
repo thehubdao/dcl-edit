@@ -53,6 +53,7 @@ namespace Assets.Scripts.System
             cameraState.Pitch = 30;
             cameraState.Yaw = newAngle;
 
+            cameraState.Position = parcelBounds.center;
             cameraState.MoveFixed(new Vector3(0, 0, -1 * parcelBounds.size.magnitude));
         }
     }
