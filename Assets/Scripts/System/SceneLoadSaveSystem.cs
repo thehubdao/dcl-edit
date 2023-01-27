@@ -59,7 +59,6 @@ namespace Assets.Scripts.System
                 DirectoryInfo sceneDir = Directory.CreateDirectory(sceneDirectoryState.directoryPath!);
 
                 // Clear scene directory from files, that are regenerated
-
                 foreach (var path in sceneDirectoryState.loadedFilePathsInScene.Select(p => Path.Combine(sceneDirectoryState.directoryPath, p)))
                 {
                     if (File.Exists(path))
@@ -67,7 +66,6 @@ namespace Assets.Scripts.System
                         File.Delete(path);
                     }
                 }
-
                 sceneDirectoryState.loadedFilePathsInScene.Clear();
 
                 // Create scene metadata file
