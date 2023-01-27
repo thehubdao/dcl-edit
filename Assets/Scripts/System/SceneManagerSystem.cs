@@ -102,6 +102,19 @@ namespace Assets.Scripts.System
         }
 
         /// <summary>
+        /// Set last opened scene on start up
+        /// </summary>
+        public void SetLastOpenedSceneAsCurrentScene(int value)
+        {
+            if (value == 1)
+            {
+                Debug.Log("Setting last opened scene");
+                return;
+            }
+            Debug.Log("No last opened scene loaded");
+        }
+
+        /// <summary>
         /// Create a new scene and set it as current scene
         /// </summary>
         public void SetNewScneneAsCurrentScene()

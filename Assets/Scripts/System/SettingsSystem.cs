@@ -261,6 +261,9 @@ namespace Assets.Scripts.System
             applicationTargetFramerate = new IntClampedUserSetting(this, "Maximum frame rate", 120, 5, 1000);
             userSettings.Add(applicationTargetFramerate);
 
+            openLastOpenedScene = new IntUserSetting(this, "Open last opened scene on start up", 0);
+            userSettings.Add(openLastOpenedScene);
+
             ShownSettings.Add("User Settings", userSettings);
 
 
@@ -286,6 +289,7 @@ namespace Assets.Scripts.System
         public IntUserSetting TestInteger;
         public StringUserSetting TestString;
         public IntClampedUserSetting applicationTargetFramerate;
+        public IntUserSetting openLastOpenedScene;
 
         public Vec3ProjectSetting TestProjVec3;
         public StringProjectSetting TestProjString;
