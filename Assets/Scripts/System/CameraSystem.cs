@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Assets.Scripts.EditorState;
@@ -46,10 +45,10 @@ namespace Assets.Scripts.System
             // Debug.DrawRay(Vector3.zero, parcelBounds.center, Color.magenta, 600);
             // Debug.DrawRay(parcelBounds.center, Vector3.up, Color.red, 600);
 
-            // Yaw to averageCenter from origin (it works since plot location is on plain x,z)
+            // Yaw to bounds center from origin (it works since plot location is on plain x,z)
             var newAngle = Vector2.Angle(Vector2.up, new Vector2(parcelBounds.center.x, parcelBounds.center.z));
             
-            // Move Camera up
+            // Default watch angle
             cameraState.Pitch = 30;
             cameraState.Yaw = newAngle;
 
