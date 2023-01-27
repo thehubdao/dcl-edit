@@ -167,6 +167,7 @@ namespace Assets.Scripts.System
                 if (metadataFile == null)
                 {
                     metadataFile = GenerateMetadataFromAsset(assetFile);
+                    if (metadataFile == null) continue;
                     WriteMetadataToFile(metadataFile);
                 }
 
@@ -208,8 +209,8 @@ namespace Assets.Scripts.System
                         assetType = AssetMetadata.AssetType.Image;
                         break;
                     default:
-                        assetType = AssetMetadata.AssetType.Unknown;
-                        break;
+                        // Asset type unknown
+                        return null;
                 }
 
                 return new AssetMetadataFile(
