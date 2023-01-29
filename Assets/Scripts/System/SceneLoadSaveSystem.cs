@@ -56,18 +56,16 @@ namespace Assets.Scripts.System
             try
             {
                 // Create scene directory in case it does not exist
-                DirectoryInfo sceneDir = Directory.CreateDirectory(sceneDirectoryState.directoryPath);
+                DirectoryInfo sceneDir = Directory.CreateDirectory(sceneDirectoryState.directoryPath!);
 
                 // Clear scene directory from files, that are regenerated
-                foreach (FileInfo file in sceneDir
-                             .GetFiles()
-                             .Where(f => sceneDirectoryState.loadedFilePathsInScene.Contains(NormalizePath(f.FullName))))
-                // Only delete files that were loaded into the scene.
-                // This prevents the deletion of faulty entity files and files the user added manually into the scene folder
+                foreach (var path in sceneDirectoryState.loadedFilePathsInScene.Select(p => Path.Combine(sceneDirectoryState.directoryPath, p)))
                 {
-                    file.Delete();
+                    if (File.Exists(path))
+                    {
+                        File.Delete(path);
+                    }
                 }
-
                 sceneDirectoryState.loadedFilePathsInScene.Clear();
 
                 // Create scene metadata file
