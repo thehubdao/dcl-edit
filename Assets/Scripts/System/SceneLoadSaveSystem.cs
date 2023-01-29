@@ -74,7 +74,7 @@ namespace Assets.Scripts.System
                     id = sceneDirectoryState.id,
                     relativePath = sceneDirectoryState.directoryPath,
                     settings = new JObject(),
-                    dclEditVersion = DclEditVersion.Beta
+                    dclEditVersionNumber = Application.version
                 };
                 string sceneFilePath = Path.Combine(sceneDirectoryState.directoryPath, "scene.json");
                 string sceneFileContentsJson = JsonConvert.SerializeObject(sceneFileContents);
@@ -209,6 +209,7 @@ namespace Assets.Scripts.System
             public Guid? parentGuid;
             public bool isExposed;
             public List<DclComponentData> components;
+            public string dclEditVersionNumber;
 
             public DclEntityData(DclEntity entity)
             {
@@ -216,6 +217,7 @@ namespace Assets.Scripts.System
                 this.guid = entity.Id;
                 this.parentGuid = entity.Parent?.Id;
                 isExposed = entity.IsExposed;
+                dclEditVersionNumber = Application.version;
 
                 this.components = new List<DclComponentData>();
                 foreach (DclComponent component in entity.Components)

@@ -28,6 +28,7 @@ namespace Assets.Scripts.EditorState
             public Contents(MetaContents metadata, [CanBeNull] Texture2D thumbnail)
             {
                 this.metadata = metadata;
+                dclEditVersionNumber = Application.version;
 
                 this.thumbnail =
                     thumbnail == null ?
@@ -36,6 +37,7 @@ namespace Assets.Scripts.EditorState
             }
 
             public MetaContents metadata;
+            public string dclEditVersionNumber;
             public string thumbnail;
         }
 
