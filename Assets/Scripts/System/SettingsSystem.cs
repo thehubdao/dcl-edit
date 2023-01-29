@@ -252,27 +252,11 @@ namespace Assets.Scripts.System
             gizmoSize = new FloatClampedUserSetting(this, "Gizmo Size", 1.0f, 0.1f, 10.0f);
             userSettings.Add(gizmoSize);
 
-            TestInteger = new IntUserSetting(this, "Test integer", 123);
-            userSettings.Add(TestInteger);
-
-            TestString = new StringUserSetting(this, "Test text", "Hello world!");
-            userSettings.Add(TestString);
-
             applicationTargetFramerate = new IntClampedUserSetting(this, "Maximum frame rate", 120, 5, 1000);
             userSettings.Add(applicationTargetFramerate);
 
             ShownSettings.Add("User Settings", userSettings);
 
-
-            var projectSettings = new List<ISetting>();
-
-            ShownSettings.Add("Project Settings", projectSettings);
-
-
-            var sceneSettings = new List<ISetting>();
-
-            ShownSettings.Add("Scene Settings", sceneSettings);
-            
             //Hidden Settings
             //Saves Panel Size
             panelSize = new StringUserSetting(this, "Panel Size","");
