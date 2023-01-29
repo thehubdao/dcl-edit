@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using Assets.Scripts.EditorState;
 using UnityEngine;
 using Zenject;
@@ -7,12 +9,14 @@ namespace Assets.Scripts.System
     public class CameraSystem
     {
         // Dependencies
-        private CameraState _cameraState;
+        private CameraState cameraState;
+        private SceneJsonReaderSystem sceneJsonReaderSystem;
 
         [Inject]
-        private void Construct(CameraState cameraState)
+        private void Construct(CameraState cameraState, SceneJsonReaderSystem sceneJsonReaderSystem)
         {
-            _cameraState = cameraState;
+            this.cameraState = cameraState;
+            this.sceneJsonReaderSystem = sceneJsonReaderSystem;
         }
 
         public void CameraStartup()
@@ -22,36 +26,34 @@ namespace Assets.Scripts.System
 
         public void ChooseReasonableStartPosition()
         {
-            // Calculate average parcel center
-            var averageCenter = Vector2.zero;
+            var decentralandSceneData = sceneJsonReaderSystem.GetSceneData(false);
+            var baseParcelPosition = decentralandSceneData?.GetBaseParcelInformation().GetPosition() ?? new Vector2Int(0, 0);
+            var parcels = decentralandSceneData?.GetParcelsInformation()
+                                        .Select(p => p.GetPosition())
+                                        .ToList()
+                                    ?? new List<Vector2Int> {new Vector2Int(0, 0)};
 
-            // TODO: look for the used parcels
-            //foreach (var parcel in DclSceneManager.sceneJson.scene.Parcels)
-            //{
-            //    var nulledParcel = parcel - DclSceneManager.sceneJson.scene.Base;
-            //    averageCenter += (Vector2)nulledParcel * 16 + new Vector2(8, 8);
-            //}
-            //
-            //if (DclSceneManager.sceneJson.scene.Parcels.Length > 0)
-            //    averageCenter /= DclSceneManager.sceneJson.scene.Parcels.Length;
-            //
-            //var averageCenterWorldPoint = new Vector3(averageCenter.x, 0, averageCenter.y);
-            ////Debug.DrawRay(averageCenterWorldPoint,Vector3.up,Color.red,10);
-            //
-            //Position = averageCenterWorldPoint;
+            var parcelBounds = new Bounds(Vector2.zero, Vector2.zero);
+            
+            foreach (var parcel in parcels)
+            {
+                var local = parcel - baseParcelPosition;
+                var toAdd = new Vector3(local.x, 0, local.y) * 16 + new Vector3(16, 0, 16);
+                parcelBounds.Encapsulate(toAdd);
+            }
+            
+            // Debug.DrawRay(Vector3.zero, parcelBounds.center, Color.magenta, 600);
+            // Debug.DrawRay(parcelBounds.center, Vector3.up, Color.red, 600);
 
-            // Move Camera up
-            _cameraState.Yaw = 45;
-            _cameraState.Pitch = 30;
+            // Yaw to bounds center from origin (it works since plot location is on plain x,z)
+            var newAngle = Vector2.Angle(Vector2.up, new Vector2(parcelBounds.center.x, parcelBounds.center.z));
+            
+            // Default watch angle
+            cameraState.Pitch = 30;
+            cameraState.Yaw = newAngle;
 
-            //var dist = Mathf.Log(DclSceneManager.sceneJson.scene.Parcels.Length, 2);
-
-            //if (dist < 0)
-            //    dist = 0;
-
-            _cameraState.MoveFixed(new Vector3(0, 0, -10 * ( /*dist*/ 1 + 1)));
-
-            _cameraState.Pitch = 45;
+            cameraState.Position = parcelBounds.center;
+            cameraState.MoveFixed(new Vector3(0, 0, -1 * parcelBounds.size.magnitude));
         }
     }
 }
