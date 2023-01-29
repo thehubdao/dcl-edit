@@ -83,9 +83,9 @@ namespace Assets.Scripts.System
             {
                 var doAlphaFilesExist = checkVersionSystem.CheckForAlpha();
 
-                var sceneDirectoryState = doAlphaFilesExist
-                    ? new SceneDirectoryState(null, Guid.NewGuid(), DclEditVersion.Alpha)
-                    : SceneDirectoryState.CreateNewSceneDirectoryState();
+                var sceneDirectoryState = doAlphaFilesExist ?
+                    new SceneDirectoryState(null, Guid.NewGuid(), DclEditVersion.Alpha) :
+                    SceneDirectoryState.CreateNewSceneDirectoryState();
 
                 //Don't have to check for duplicates since non existing / alpha scenes get converted.
                 sceneManagerState.AddSceneDirectoryState(sceneDirectoryState);
@@ -109,7 +109,6 @@ namespace Assets.Scripts.System
             SceneDirectoryState newScene = SceneDirectoryState.CreateNewSceneDirectoryState();
             sceneManagerState.AddSceneDirectoryState(newScene);
             SetCurrentScene(newScene.id);
-
         }
 
         /// <summary>
@@ -343,7 +342,6 @@ namespace Assets.Scripts.System
             public Guid id;
             public string relativePath;
             public JObject settings;
-            public DclEditVersion dclEditVersion;
             public string dclEditVersionNumber;
         }
     }

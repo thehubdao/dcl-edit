@@ -62,8 +62,8 @@ namespace Assets.Scripts.System
                 foreach (FileInfo file in sceneDir
                              .GetFiles()
                              .Where(f => sceneDirectoryState.loadedFilePathsInScene.Contains(NormalizePath(f.FullName))))
-                // Only delete files that were loaded into the scene.
-                // This prevents the deletion of faulty entity files and files the user added manually into the scene folder
+                    // Only delete files that were loaded into the scene.
+                    // This prevents the deletion of faulty entity files and files the user added manually into the scene folder
                 {
                     file.Delete();
                 }
@@ -76,7 +76,6 @@ namespace Assets.Scripts.System
                     id = sceneDirectoryState.id,
                     relativePath = sceneDirectoryState.directoryPath,
                     settings = new JObject(),
-                    dclEditVersion = DclEditVersion.Beta,
                     dclEditVersionNumber = Application.version
                 };
                 string sceneFilePath = Path.Combine(sceneDirectoryState.directoryPath, "scene.json");
