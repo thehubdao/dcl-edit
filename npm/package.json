@@ -1,6 +1,6 @@
 {
-  "name": "dcl-edit",
-  "version": "0.4.1",
+  "name": "dcl-edit-beta",
+  "version": "0.9.4",
   "description": "A scene editor for the Decentraland SDK",
   "main": "./index.js",
   "scripts": {
@@ -9,7 +9,7 @@
     "preinstall": "node ./uninstall.js"
   },
   "bin": {
-    "dcl-edit": "./run.js"
+    "dcl-edit-beta": "./run.js"
   },
   "author": "",
   "license": "MIT",
