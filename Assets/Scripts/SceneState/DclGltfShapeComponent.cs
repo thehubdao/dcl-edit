@@ -1,8 +1,18 @@
 using Assets.Scripts.SceneState;
 using System;
+using static Assets.Scripts.SceneState.DclComponent.DclComponentProperty.PropertyDefinition.Flags;
 
 public class DclGltfShapeComponent : DclComponent
 {
+    public static readonly ComponentDefinition gltfShapeComponentDefinition =
+        new ComponentDefinition(
+            "GLTFShape",
+            "Shape",
+            new DclComponentProperty.PropertyDefinition("asset", DclComponentProperty.PropertyType.Asset, Guid.Empty, ParseInConstructor),
+            new DclComponentProperty.PropertyDefinition("visible", DclComponentProperty.PropertyType.Boolean, true),
+            new DclComponentProperty.PropertyDefinition("withCollisions", DclComponentProperty.PropertyType.Boolean, true),
+            new DclComponentProperty.PropertyDefinition("isPointerBlocker", DclComponentProperty.PropertyType.Boolean, true));
+
     public DclGltfShapeComponent(Guid assetId, bool visible = true, bool withCollisions = true, bool isPointerBlocker = true) : base("GLTFShape", "Shape")
     {
         Properties.Add(new DclComponentProperty<Guid>("asset", assetId));
@@ -24,44 +34,6 @@ public class DclGltfShapeComponent : DclComponent
 
     public bool Validate()
     {
-        if (NameInCode != "GLTFShape")
-            return false;
-
-        if (NameOfSlot != "Shape")
-            return false;
-
-        var assetProp = GetPropertyByName("asset");
-
-        if (assetProp == null)
-            return false;
-
-        if (assetProp.Type != DclComponentProperty.PropertyType.Asset)
-            return false;
-
-        var visibleProp = GetPropertyByName("visible");
-
-        if (visibleProp == null)
-            return false;
-
-        if (visibleProp.Type != DclComponentProperty.PropertyType.Boolean)
-            return false;
-
-        var withColProp = GetPropertyByName("withCollisions");
-
-        if (withColProp == null)
-            return false;
-
-        if (withColProp.Type != DclComponentProperty.PropertyType.Boolean)
-            return false;
-
-        var isPtrBlckrProp = GetPropertyByName("isPointerBlocker");
-
-        if (isPtrBlckrProp == null)
-            return false;
-
-        if (isPtrBlckrProp.Type != DclComponentProperty.PropertyType.Boolean)
-            return false;
-
-        return true;
+        return IsFollowingDefinition(gltfShapeComponentDefinition);
     }
 }

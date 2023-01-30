@@ -186,7 +186,9 @@ namespace Assets.Scripts.System
                 sceneSaveSystem.Save(sceneDirectoryState);
                 workspaceSaveSystem.Save(); // TODO: Save the workspace under proper conditions.
                 sceneSettingState.SaveSettings();
+#pragma warning disable CS4014 // This should run as coroutine
                 typeScriptGenerationSystem.GenerateTypeScript();
+#pragma warning restore CS4014
             }
         }
 

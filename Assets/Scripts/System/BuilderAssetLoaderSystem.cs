@@ -90,32 +90,34 @@ namespace Assets.Scripts.System
         private bool thumbnailRequestCoroutineRunning = false;
 
         // Dependencies
-        private BuilderAssetLoaderState _loaderState;
-        private EditorEvents _editorEvents;
-        private LoadGltfFromFileSystem _loadGltfFromFileSystem;
-        private IWebRequestSystem _webRequestSystem;
+        private BuilderAssetLoaderState loaderState;
+        private EditorEvents editorEvents;
+        private LoadGltfFromFileSystem loadGltfFromFileSystem;
+        private IWebRequestSystem webRequestSystem;
+        private IPathState pathState;
 
         private BuilderAssetDownLoader assetDownLoader;
 
         [Inject]
-        public void Construct(BuilderAssetLoaderState loaderState, EditorEvents editorEvents, LoadGltfFromFileSystem loadGltfFromFileSystem, IWebRequestSystem webRequestSystem)
+        public void Construct(BuilderAssetLoaderState loaderState, EditorEvents editorEvents, LoadGltfFromFileSystem loadGltfFromFileSystem, IWebRequestSystem webRequestSystem, IPathState pathState)
         {
-            _loaderState = loaderState;
-            _editorEvents = editorEvents;
-            _loadGltfFromFileSystem = loadGltfFromFileSystem;
-            _webRequestSystem = webRequestSystem;
+            this.loaderState = loaderState;
+            this.editorEvents = editorEvents;
+            this.loadGltfFromFileSystem = loadGltfFromFileSystem;
+            this.webRequestSystem = webRequestSystem;
+            this.pathState = pathState;
 
             this.assetDownLoader = new BuilderAssetDownLoader(modelCachePath, webRequestSystem);
         }
 
         public void ClearAllData()
         {
-            _loaderState.Data.Clear();
-            _loaderState.loadedModels.Clear();
-            _loaderState.LoadedThumbnails.Clear();
-            _loaderState.thumbnailRequestQueue.Clear();
-            _loaderState.assetHierarchy.assets = new List<AssetMetadata>();
-            _loaderState.assetHierarchy.childDirectories = new List<AssetHierarchyItem>();
+            loaderState.Data.Clear();
+            loaderState.loadedModels.Clear();
+            loaderState.LoadedThumbnails.Clear();
+            loaderState.thumbnailRequestQueue.Clear();
+            loaderState.assetHierarchy.assets = new List<AssetMetadata>();
+            loaderState.assetHierarchy.childDirectories = new List<AssetHierarchyItem>();
         }
 
         public void CacheAllAssetMetadata()
@@ -123,13 +125,13 @@ namespace Assets.Scripts.System
             ClearAllData();
 
             // load all asset metadata from the official builder
-            _webRequestSystem.Get("https://builder-api.decentraland.org/v1/assetPacks?owner=default", request =>
+            webRequestSystem.Get("https://builder-api.decentraland.org/v1/assetPacks?owner=default", request =>
             {
                 var assetData = JsonConvert.DeserializeObject<AssetPacks>(request.webRequest.downloadHandler.text);
 
                 foreach (AssetPacksData assetPack in assetData.data)
                 {
-                    string assetPackPath = _loaderState.assetHierarchy.path + "/" + assetPack.title;
+                    string assetPackPath = loaderState.assetHierarchy.path + "/" + assetPack.title;
                     AssetHierarchyItem assetPackHierarchyItem = new AssetHierarchyItem(assetPack.title, assetPackPath);
 
                     // Builder assets are in categories which are identified by a string name. E.g. "category":"decorations"
@@ -150,7 +152,7 @@ namespace Assets.Scripts.System
                         categories[asset.category].assets.Add(new AssetMetadata(asset.name, id, AssetMetadata.AssetType.Model));
 
 
-                        _loaderState.Data.Add(id, new BuilderAssetLoaderState.DataStorage
+                        loaderState.Data.Add(id, new BuilderAssetLoaderState.DataStorage
                         {
                             Id = id,
                             Name = asset.name,
@@ -166,24 +168,24 @@ namespace Assets.Scripts.System
                         assetPackHierarchyItem.childDirectories.Add(category.Value);
                     }
 
-                    _loaderState.assetHierarchy.childDirectories.Add(assetPackHierarchyItem);
+                    loaderState.assetHierarchy.childDirectories.Add(assetPackHierarchyItem);
                 }
 
-                _editorEvents.InvokeAssetMetadataCacheUpdatedEvent();
+                editorEvents.InvokeAssetMetadataCacheUpdatedEvent();
             });
         }
 
-        public AssetHierarchyItem GetHierarchy() => _loaderState.assetHierarchy;
+        public AssetHierarchyItem GetHierarchy() => loaderState.assetHierarchy;
 
 
         public IEnumerable<Guid> GetAllAssetIds()
         {
-            return _loaderState.Data.Keys;
+            return loaderState.Data.Keys;
         }
 
         public AssetMetadata GetMetadataById(Guid id)
         {
-            if (_loaderState.Data.TryGetValue(id, out var data))
+            if (loaderState.Data.TryGetValue(id, out var data))
             {
                 return new AssetMetadata(data.Name, id, AssetMetadata.AssetType.Model);
             }
@@ -194,7 +196,7 @@ namespace Assets.Scripts.System
         public AssetThumbnail GetThumbnailById(Guid id)
         {
             // check if id is a builder asset else return null
-            if (!_loaderState.Data.TryGetValue(id, out var data))
+            if (!loaderState.Data.TryGetValue(id, out var data))
             {
                 return null;
             }
@@ -206,7 +208,7 @@ namespace Assets.Scripts.System
             if (data.ThumbnailCacheState == BuilderAssetLoaderState.DataStorage.CacheState.Loaded)
             {
                 // if hash is loaded, return the Thumbnail
-                var thumbnail = _loaderState.LoadedThumbnails[hash];
+                var thumbnail = loaderState.LoadedThumbnails[hash];
                 return new AssetThumbnail(id, AssetData.State.IsAvailable, thumbnail);
             }
 
@@ -218,9 +220,9 @@ namespace Assets.Scripts.System
 
             // Download and load thumbnail
             {
-                if (!_loaderState.thumbnailRequestQueue.Contains(id))
+                if (!loaderState.thumbnailRequestQueue.Contains(id))
                 {
-                    _loaderState.thumbnailRequestQueue.Enqueue(id);
+                    loaderState.thumbnailRequestQueue.Enqueue(id);
                     if (!thumbnailRequestCoroutineRunning)
                     {
                         var unityState = GameObject.Find("UnityState").GetComponent<UnityState>();  // This is currently only used to have a GameObject on which a coroutine can be started
@@ -254,7 +256,7 @@ namespace Assets.Scripts.System
             // get thumbnail hash from asset id
             var hash = data.ThumbnailHash;
 
-            _loaderState.LoadedThumbnails.Add(hash, thumbnail);
+            loaderState.LoadedThumbnails.Add(hash, thumbnail);
             data.ThumbnailCacheState = BuilderAssetLoaderState.DataStorage.CacheState.Loaded;
 
         }
@@ -262,15 +264,15 @@ namespace Assets.Scripts.System
         private IEnumerator ThumbnailRequestCoroutine()
         {
             thumbnailRequestCoroutineRunning = true;
-            while (_loaderState.thumbnailRequestQueue.Count > 0)
+            while (loaderState.thumbnailRequestQueue.Count > 0)
             {
-                var id = _loaderState.thumbnailRequestQueue.Dequeue();
-                if (_loaderState.Data.TryGetValue(id, out var data))
+                var id = loaderState.thumbnailRequestQueue.Dequeue();
+                if (loaderState.Data.TryGetValue(id, out var data))
                 {
                     var loadingTask = LoadThumbnailAsync(data);
                     yield return new WaitUntil(() => loadingTask.IsCompleted);
 
-                    _editorEvents.InvokeThumbnailDataUpdatedEvent(new List<Guid> { data.Id });
+                    editorEvents.InvokeThumbnailDataUpdatedEvent(new List<Guid> { data.Id });
 
                     yield return null;
                 }
@@ -287,12 +289,13 @@ namespace Assets.Scripts.System
             return inTexture;
         }
 
-        private readonly string modelCachePath = Application.persistentDataPath + "/cache/builder";
+        private string modelCachePath => Path.Combine(Application.persistentDataPath, "dcl-edit/builder_assets/");
+        public string modelBuildPath => Path.Combine(pathState.ProjectPath, "dcl-edit/build/builder_assets/");
 
         public AssetData GetDataById(Guid id)
         {
             // check if id is a builder asset else return null
-            if (!_loaderState.Data.TryGetValue(id, out var data))
+            if (!loaderState.Data.TryGetValue(id, out var data))
             {
                 return null;
             }
@@ -301,7 +304,7 @@ namespace Assets.Scripts.System
             if (data.DataCacheState == BuilderAssetLoaderState.DataStorage.CacheState.Loaded)
             {
                 // if hash is loaded, return instance of loaded model
-                var copy = Object.Instantiate(_loaderState.loadedModels[data.Id]);
+                var copy = Object.Instantiate(loaderState.loadedModels[data.Id]);
                 copy.SetActive(true);
                 copy.transform.SetParent(null);
                 return new ModelAssetData(id, copy);
@@ -316,17 +319,52 @@ namespace Assets.Scripts.System
             // if model isn't loaded, load model and return isLoading
             data.DataCacheState = BuilderAssetLoaderState.DataStorage.CacheState.Loading;
 
-            _loadGltfFromFileSystem.LoadGltfFromPath(Path.GetFileName(data.modelPath), go =>
+            loadGltfFromFileSystem.LoadGltfFromPath(Path.GetFileName(data.modelPath), go =>
             {
-                _loaderState.loadedModels.Add(data.Id, go);
+                loaderState.loadedModels.Add(data.Id, go);
 
                 data.DataCacheState = BuilderAssetLoaderState.DataStorage.CacheState.Loaded;
 
                 var updatedIds = new List<Guid> { id };
-                _editorEvents.InvokeAssetDataUpdatedEvent(updatedIds);
+                editorEvents.InvokeAssetDataUpdatedEvent(updatedIds);
             }, new BuilderAssetGltfDataLoader(Path.GetDirectoryName(data.modelPath!), data.contentsPathToHash, assetDownLoader));
 
             return new AssetData(id, AssetData.State.IsLoading);
+        }
+
+        public async Task<string> CopyAssetTo(Guid id)
+        {
+            // check if id is a builder asset else return null
+            if (!loaderState.Data.TryGetValue(id, out var data))
+            {
+                return null;
+            }
+
+            // Copy all files into the build path
+            foreach (var (path, hash) in data.contentsPathToHash)
+            {
+                try
+                {
+                    var filePath = await assetDownLoader.GetFileFromHash(hash);
+
+                    var destFileName = Path.Combine(modelBuildPath, path);
+                    Directory.CreateDirectory(Path.GetDirectoryName(destFileName) ?? throw new InvalidOperationException());
+                    File.Copy(filePath, destFileName, true);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError($"Error while copying file {path} with hash {hash} to build path {modelBuildPath}.");
+                    Debug.LogException(e);
+                }
+            }
+
+            var modelFilePathTask = assetDownLoader.GetFileFromHash(data.contentsPathToHash[data.modelPath]);
+            if (!modelFilePathTask.IsCompleted)
+            {
+                modelFilePathTask.Wait();
+            }
+
+            return StaticUtilities.MakeRelativePath(pathState.ProjectPath, Path.Combine(modelBuildPath, data.modelPath));
         }
     }
 
@@ -352,7 +390,7 @@ namespace Assets.Scripts.System
         {
             if (relativeFilePath == null)
             {
-                throw new ArgumentNullException("relativeFilePath");
+                throw new ArgumentNullException(nameof(relativeFilePath));
             }
 
             var fullPath = Path.Combine(directory, relativeFilePath);

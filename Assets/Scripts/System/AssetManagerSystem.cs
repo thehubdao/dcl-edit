@@ -2,6 +2,7 @@ using Assets.Scripts.EditorState;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 using Zenject;
 
@@ -87,6 +88,20 @@ namespace Assets.Scripts.System
                     GameObject.Destroy(child.gameObject);
                 }
             }
+        }
+
+        public async Task<string> CopyAssetTo(Guid id, string destPath)
+        {
+            foreach (var loaderSystem in _assetLoaderSystems)
+            {
+                var result = await loaderSystem.CopyAssetTo(id);
+                if (result != null)
+                {
+                    return result;
+                }
+            }
+
+            return null;
         }
     }
 }
