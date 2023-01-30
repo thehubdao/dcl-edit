@@ -41,49 +41,49 @@ namespace Assets.Scripts.EditorState
         {
             new AvailableComponent
             {
-                category = "Build in",
+                category = "Built-in",
                 availableInAddComponentMenu = false,
                 componentDefinition = DclTransformComponent.transformComponentDefinition
             },
             new AvailableComponent
             {
-                category = "Build in/Shape",
+                category = "Built-in/Shape",
                 availableInAddComponentMenu = true,
                 componentDefinition = new DclComponent.ComponentDefinition("BoxShape", "Shape")
             },
             new AvailableComponent
             {
-                category = "Build in/Shape",
+                category = "Built-in/Shape",
                 availableInAddComponentMenu = true,
                 componentDefinition = new DclComponent.ComponentDefinition("SphereShape", "Shape")
             },
             new AvailableComponent
             {
-                category = "Build in/Shape",
+                category = "Built-in/Shape",
                 availableInAddComponentMenu = true,
                 componentDefinition = new DclComponent.ComponentDefinition("PlaneShape", "Shape")
             },
             new AvailableComponent
             {
-                category = "Build in/Shape",
+                category = "Built-in/Shape",
                 availableInAddComponentMenu = true,
                 componentDefinition = new DclComponent.ComponentDefinition("CylinderShape", "Shape")
             },
             new AvailableComponent
             {
-                category = "Build in/Shape",
+                category = "Built-in/Shape",
                 availableInAddComponentMenu = true,
                 componentDefinition = new DclComponent.ComponentDefinition("ConeShape", "Shape")
             },
             new AvailableComponent
             {
-                category = "Build in/Shape",
+                category = "Built-in/Shape",
                 availableInAddComponentMenu = false,
                 componentDefinition = DclGltfShapeComponent.gltfShapeComponentDefinition
             },
             new AvailableComponent
             {
-                category = "Build in",
+                category = "Built-in",
                 availableInAddComponentMenu = true,
                 componentDefinition = DclSceneComponent.sceneComponentDefinition
             }
