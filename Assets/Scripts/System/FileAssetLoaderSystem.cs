@@ -4,6 +4,8 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
+using Assets.Scripts.Utility;
 using UnityEngine;
 using Zenject;
 using Object = UnityEngine.Object;
@@ -100,25 +102,25 @@ namespace Assets.Scripts.System
 
         public AssetThumbnail GetThumbnailById(Guid id)
         {
-            if (assetMetadataCache.TryGetValue(id, out var metadata))
+            if (!assetMetadataCache.TryGetValue(id, out var metadata))
             {
-                if (metadata.thumbnail == null)
-                {
-                    assetThumbnailGeneratorSystem.Generate(id, thumbnail =>
-                    {
-                        metadata.thumbnail = thumbnail;
-                        WriteMetadataToFile(metadata);
+                return null; // sorry but this id is in another loader system. Mamma Mia!
+            }
 
-                        editorEvents.InvokeThumbnailDataUpdatedEvent(new List<Guid> { id });
-                    });
-
-                    return new AssetThumbnail(id, AssetData.State.IsLoading, null); // Thumbnail needs to be generated
-                }
-
+            if (metadata.thumbnail != null)
+            {
                 return new AssetThumbnail(id, AssetData.State.IsAvailable, metadata.thumbnail); // Thumbnail is available
             }
 
-            return null; // sorry but this id is in another loader system. Mamma Mia!
+            assetThumbnailGeneratorSystem.Generate(id, thumbnail =>
+            {
+                metadata.thumbnail = thumbnail;
+                WriteMetadataToFile(metadata);
+
+                editorEvents.InvokeThumbnailDataUpdatedEvent(new List<Guid> {id});
+            });
+
+            return new AssetThumbnail(id, AssetData.State.IsLoading, null); // Thumbnail needs to be generated
         }
 
         public AssetData GetDataById(Guid id)
@@ -129,6 +131,16 @@ namespace Assets.Scripts.System
             }
 
             return LoadAssetData(id);
+        }
+
+        public Task<string> CopyAssetTo(Guid id)
+        {
+            if (loaderState.assetMetadataCache.TryGetValue(id, out var metadataFile))
+            {
+                return Task.FromResult(StaticUtilities.MakeRelativePath(pathState.ProjectPath, metadataFile.assetFilePath));
+            }
+
+            return Task.FromResult<string>(null);
         }
 
         public bool SetThumbnailById(Guid id, Texture2D newThumbnail)

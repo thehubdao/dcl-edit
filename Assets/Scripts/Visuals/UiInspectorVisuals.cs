@@ -308,7 +308,7 @@ namespace Assets.Scripts.Visuals
                     return categoryList;
                 }
 
-                foreach (var component in availableComponentsState.allAvailableComponents)
+                foreach (var component in availableComponentsState.allAvailableComponents.Where(c => c.availableInAddComponentMenu))
                 {
                     var categoryMenu = GetCategoryList(component.category);
 

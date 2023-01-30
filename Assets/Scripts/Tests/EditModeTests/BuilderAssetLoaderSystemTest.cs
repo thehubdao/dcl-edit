@@ -23,6 +23,7 @@ namespace Assets.Scripts.Tests.EditModeTests
             var editorEvent = new EditorEvents();
             var loadGltf = new LoadGltfFromFileSystem();
             var webRequest = new WebRequestSystem();
+            var mockPathState = new MockPathState("simple-load-test", true);
 
             // Get Unity State
             loadGltf.Construct(Object.FindObjectOfType<UnityState>());
@@ -33,7 +34,7 @@ namespace Assets.Scripts.Tests.EditModeTests
             var assetDataUpdatedEvent = new MockEventActionListener();
             editorEvent.onAssetDataUpdatedEvent += assetDataUpdatedEvent.Called;
 
-            loaderSystem.Construct(loaderState, editorEvent, loadGltf, webRequest);
+            loaderSystem.Construct(loaderState, editorEvent, loadGltf, webRequest, mockPathState);
 
             loaderSystem.CacheAllAssetMetadata();
 
@@ -110,6 +111,7 @@ namespace Assets.Scripts.Tests.EditModeTests
             var editorEvent = new EditorEvents();
             var loadGltf = new LoadGltfFromFileSystem();
             var webRequest = new MockWebRequestSystem();
+            var pathState = new MockPathState("simple-load-test", true);
 
             // Get Unity State
             loadGltf.Construct(Object.FindObjectOfType<UnityState>());
@@ -117,7 +119,7 @@ namespace Assets.Scripts.Tests.EditModeTests
             var assetCachedAction = new MockEventActionListener();
             editorEvent.onAssetMetadataCacheUpdatedEvent += assetCachedAction.Called;
 
-            loaderSystem.Construct(loaderState, editorEvent, loadGltf, webRequest);
+            loaderSystem.Construct(loaderState, editorEvent, loadGltf, webRequest, pathState);
 
             loaderSystem.CacheAllAssetMetadata();
 
@@ -147,6 +149,7 @@ namespace Assets.Scripts.Tests.EditModeTests
             var editorEvent = new EditorEvents();
             var loadGltf = new LoadGltfFromFileSystem();
             var webRequest = new MockWebRequestSystem();
+            var pathState = new MockPathState("simple-load-test", true);
 
             // Get Unity State
             loadGltf.Construct(Object.FindObjectOfType<UnityState>());
@@ -154,7 +157,7 @@ namespace Assets.Scripts.Tests.EditModeTests
             var assetCachedAction = new MockEventActionListener();
             editorEvent.onAssetMetadataCacheUpdatedEvent += assetCachedAction.Called;
 
-            loaderSystem.Construct(loaderState, editorEvent, loadGltf, webRequest);
+            loaderSystem.Construct(loaderState, editorEvent, loadGltf, webRequest, pathState);
 
             loaderSystem.CacheAllAssetMetadata();
 
@@ -184,6 +187,7 @@ namespace Assets.Scripts.Tests.EditModeTests
             var editorEvent = new EditorEvents();
             var loadGltf = new LoadGltfFromFileSystem();
             var webRequest = new MockWebRequestSystem();
+            var pathState = new MockPathState("simple-load-test", true);
 
             // Get Unity State
             loadGltf.Construct(Object.FindObjectOfType<UnityState>());
@@ -194,7 +198,7 @@ namespace Assets.Scripts.Tests.EditModeTests
             var assetThumbnailCachedAction = new MockEventActionListener();
             editorEvent.onAssetThumbnailUpdatedEvent += assetThumbnailCachedAction.Called;
 
-            loaderSystem.Construct(loaderState, editorEvent, loadGltf, webRequest);
+            loaderSystem.Construct(loaderState, editorEvent, loadGltf, webRequest, pathState);
 
             loaderSystem.CacheAllAssetMetadata();
 
@@ -225,6 +229,7 @@ namespace Assets.Scripts.Tests.EditModeTests
             var editorEvent = new EditorEvents();
             var loadGltf = new LoadGltfFromFileSystem();
             var webRequest = new MockWebRequestSystem();
+            var pathState = new MockPathState("simple-load-test", true);
 
             // Get Unity State
             loadGltf.Construct(Object.FindObjectOfType<UnityState>());
@@ -235,7 +240,7 @@ namespace Assets.Scripts.Tests.EditModeTests
             var assetDataCachedAction = new MockEventActionListener();
             editorEvent.onAssetDataUpdatedEvent += assetDataCachedAction.Called;
 
-            loaderSystem.Construct(loaderState, editorEvent, loadGltf, webRequest);
+            loaderSystem.Construct(loaderState, editorEvent, loadGltf, webRequest, pathState);
 
             loaderSystem.CacheAllAssetMetadata();
 
