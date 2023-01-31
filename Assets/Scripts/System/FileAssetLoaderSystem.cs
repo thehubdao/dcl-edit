@@ -189,10 +189,33 @@ namespace Assets.Scripts.System
 
             foreach (string subdir in subdirs)
             {
+                // Treat scenes as assets instead of directories
+                if (Path.GetExtension(subdir) == ".dclscene")
+                {
+                    AssetMetadata sceneMetadata = ReadSceneDirectory(subdir);
+                    if (sceneMetadata != null) assets.Add(sceneMetadata);
+                    continue;
+                }
+
                 childDirectories.Add(ScanDirectory(subdir, pathInHierarchy));
             }
 
             return new AssetHierarchyItem(dirname, pathInHierarchy, childDirectories, assets);
+        }
+
+        private AssetMetadata ReadSceneDirectory(string pathToScene)
+        {
+            try
+            {
+                string contents = File.ReadAllText(Path.Combine(pathToScene, "scene.json"));
+                SceneManagerSystem.SceneFileContents sceneFileContents = JsonConvert.DeserializeObject<SceneManagerSystem.SceneFileContents>(contents);
+                return new AssetMetadata(Path.GetFileNameWithoutExtension(pathToScene), sceneFileContents.id, AssetMetadata.AssetType.Scene);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+                return null;
+            }
         }
 
         /// <summary>
