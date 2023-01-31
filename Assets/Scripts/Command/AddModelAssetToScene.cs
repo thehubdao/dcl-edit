@@ -6,45 +6,28 @@ using UnityEngine;
 
 namespace Assets.Scripts.Command
 {
-    public class AddModelAssetToScene : SceneState.Command
+    public class AddModelAssetToScene : AddAssetToScene
     {
-        public override string Name => "Add image asset to scene";
-        public override string Description => $"Drag and drop a model asset from the asset manager into the scene: entity name: \"{_entityCustomName}\", id: \"{_entityId}\".";
+        public override string Name => "Add model asset to scene";
+        public override string Description => $"Drag and drop a model asset from the asset browser into the scene: entity name: \"{entityCustomName}\", id: \"{entityId}\".";
 
-        Guid _entityId;
-        string _entityCustomName;
-        Guid _assetId;
-        Vector3 _positionInScene;
-
-        public AddModelAssetToScene(Guid entityId, string entityCustomName, Guid assetId, Vector3 positionInScene)
-        {
-            _entityId = entityId;
-            _entityCustomName = entityCustomName;
-            _assetId = assetId;
-            _positionInScene = positionInScene;
-        }
+        public AddModelAssetToScene(Guid entityId, string entityCustomName, Guid assetId, Vector3 positionInScene) : base(entityId, entityCustomName, assetId, positionInScene) { }
 
         public override void Do(DclScene sceneState, EditorEvents editorEvents)
         {
-            var newEntity = EntityUtility.AddEntity(sceneState, _entityId, _entityCustomName);
-
-            var transformComponent = new DclTransformComponent(_positionInScene);
-            newEntity.AddComponent(transformComponent);
-
-            var gltfShape = new DclGltfShapeComponent(_assetId);
-            newEntity.AddComponent(gltfShape);
+            var newEntity = EntityUtility.AddEntity(sceneState, entityId, entityCustomName);
+            AddTransformComponent(newEntity);
+            AddGltfShapeComponent(newEntity);
 
             editorEvents.InvokeHierarchyChangedEvent();
-            
-            sceneState.SelectionState.SecondarySelectedEntities.Clear();
-            sceneState.SelectionState.PrimarySelectedEntity = newEntity;
-            editorEvents.InvokeSelectionChangedEvent();
+
+            SelectEntity(sceneState, editorEvents, newEntity);
         }
 
-        public override void Undo(DclScene sceneState, EditorEvents editorEvents)
+        private void AddGltfShapeComponent(DclEntity entity)
         {
-            EntityUtility.DeleteEntity(sceneState, _entityId);
-            editorEvents.InvokeHierarchyChangedEvent();
+            var gltfShape = new DclGltfShapeComponent(assetId);
+            entity.AddComponent(gltfShape);
         }
     }
 }
