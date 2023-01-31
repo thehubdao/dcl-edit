@@ -59,6 +59,11 @@ public class CommandFactorySystem
         return new AddModelAssetToScene(entityId, entityCustomName, assetId, positionInScene);
     }
 
+    public AddSceneAssetToScene CreateAddSceneAssetToScene(Guid entityId, string entityCustomName, Guid assetId, Vector3 positionInScene)
+    {
+        return new AddSceneAssetToScene(entityId, entityCustomName, assetId, positionInScene);
+    }
+
     public AddComponent CreateAddComponent(Guid entityId, DclComponent.ComponentDefinition component)
     {
         return new AddComponent(entityId, component);
