@@ -20,7 +20,7 @@ namespace Assets.Scripts.Visuals
             _unityState = unityState;
         }
 
-        public override void UpdateVisuals(DclEntity entity)
+        public override void UpdateVisuals(DclScene scene, DclEntity entity)
         {
             var meshRenderer = GetComponent<MeshRenderer>();
             var meshFilter = GetComponent<MeshFilter>();

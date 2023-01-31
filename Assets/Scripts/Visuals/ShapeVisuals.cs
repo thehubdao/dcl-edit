@@ -20,7 +20,7 @@ namespace Assets.Scripts.Visuals
         }
 
 
-        public virtual void UpdateVisuals(DclEntity entity)
+        public virtual void UpdateVisuals(DclScene scene, DclEntity entity)
         {
         }
 
