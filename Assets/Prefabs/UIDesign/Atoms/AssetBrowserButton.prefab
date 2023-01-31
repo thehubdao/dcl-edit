@@ -383,9 +383,9 @@ MonoBehaviour:
   maskedImage: {fileID: 4534782707941783284}
   assetTypeIndicatorImage: {fileID: 5138599711966974024}
   assetButtonInteraction: {fileID: 5522565053440742496}
-  assetButtonDialogInteraction: {fileID: 0}
   modelTypeIndicator: {fileID: 21300000, guid: fe476aebf1136394a9100229fa339276, type: 3}
   imageTypeIndicator: {fileID: 21300000, guid: 0ebbff0ce96e9244ea03a1752ad226fd, type: 3}
+  sceneTypeIndicator: {fileID: 21300000, guid: 1661184fe66d1b549b019069599645d5, type: 3}
 --- !u!114 &5522565053440742496
 MonoBehaviour:
   m_ObjectHideFlags: 0

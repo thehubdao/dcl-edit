@@ -19,6 +19,7 @@ public class AssetBrowserButtonHandler : ButtonHandler
     [Header("Asset Type Indicator Textures")]
     public Sprite modelTypeIndicator;
     public Sprite imageTypeIndicator;
+    public Sprite sceneTypeIndicator;
 
     // Dependencies
     EditorEvents editorEvents;
@@ -53,6 +54,9 @@ public class AssetBrowserButtonHandler : ButtonHandler
                 break;
             case AssetMetadata.AssetType.Image:
                 assetTypeIndicatorImage.sprite = imageTypeIndicator;
+                break;
+            case AssetMetadata.AssetType.Scene:
+                assetTypeIndicatorImage.sprite = sceneTypeIndicator;
                 break;
             default:
                 break;
