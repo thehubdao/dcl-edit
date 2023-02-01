@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
+using System.Text;
 using Assets.Scripts.Utility;
 using JetBrains.Annotations;
 using UnityEngine;
-using static UnityEngine.EventSystems.EventTrigger;
 
 
 namespace Assets.Scripts.SceneState
@@ -38,7 +37,7 @@ namespace Assets.Scripts.SceneState
         /// Might be Empty.
         public string CustomName
         {
-            get => _customName;
+            get => FilterName(_customName);
             set
             {
                 _customName = value;
@@ -98,7 +97,7 @@ namespace Assets.Scripts.SceneState
         public void RemoveComponent(DclComponent component)
         {
             component.Entity = null;
-            if(!Components.Remove(component))
+            if (!Components.Remove(component))
                 Debug.Log("No Component on Entity");
         }
 
@@ -183,9 +182,9 @@ namespace Assets.Scripts.SceneState
                 newComponent.Entity = deepcopyEntity;
                 deepcopyEntity.AddComponent(newComponent);
             }
-            
+
             sceneState.AddEntity(deepcopyEntity);
-            
+
             if (Children.ToList().Count > 0)
             {
                 foreach (var child in Children.ToList())
@@ -195,6 +194,44 @@ namespace Assets.Scripts.SceneState
                 }
             }
             return deepcopyEntity;
+        }
+
+        /// <summary>
+        /// Filters a string to not contain any character, that is not allowed in file names
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public string FilterName(string name)
+        {
+            // remove all invalid characters
+            var filteredName = new StringBuilder();
+            foreach (var c in name)
+            {
+                switch (c)
+                {
+                    case '<': // less than
+                    case '>': // greater than
+                    case ':': // colon - sometimes works, but is actually NTFS Alternate Data Streams
+                    case '"': // double quote
+                    case '/': // forward slash
+                    case '\\': // backslash
+                    case '|': // vertical bar or pipe
+                    case '?': // question mark
+                    case '*': // asterisk
+                        break;
+                    default:
+                        if(c < (char)32) // control characters
+                        {
+                            break;
+                        }
+
+                        filteredName.Append(c);
+                        break;
+                }
+            }
+
+            // return the filtered and trimmed string
+            return filteredName.ToString().Trim();
         }
     }
 }
