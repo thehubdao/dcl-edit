@@ -5,6 +5,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 using USFB;
 using Zenject;
@@ -243,19 +244,20 @@ namespace Assets.Scripts.System
                 return;
             }
 
-            //remove any potential scene that will be overridden
+            Guid newId = default;
+            // remove any potential scene that will be overridden
             if (sceneManagerState.TryGetDirectoryState(newPath, out SceneDirectoryState sceneDirectoryStateToOverride))
             {
-                sceneManagerState.RemoveSceneDirectoryState(sceneDirectoryStateToOverride);
+                newId = sceneDirectoryStateToOverride.id;
+                DeleteScene(sceneDirectoryStateToOverride);
             }
 
-            sceneDirectoryState.directoryPath = newPath;
-            SaveScene(sceneDirectoryState);
+            SceneDirectoryState sceneDirectoryStateCopy = sceneDirectoryState.DeepCopy(newId);
+            sceneDirectoryStateCopy.directoryPath = newPath;
 
-            if (oldPath != null)
-            {
-                LoadSceneDirectoryState(oldPath);
-            }
+            SaveScene(sceneDirectoryStateCopy);
+            sceneDirectoryStateCopy = LoadSceneDirectoryState(newPath); // keep loaded scenes updated
+            SetCurrentScene(sceneDirectoryStateCopy.id);
         }
 
         [CanBeNull]
@@ -329,6 +331,15 @@ namespace Assets.Scripts.System
         public SceneDirectoryState GetCurrentDirectoryState()
         {
             return sceneManagerState.GetCurrentDirectoryState();
+        }
+
+        /// <summary>
+        /// Deletes the Scene and delets all associated Files.
+        /// </summary>
+        private void DeleteScene(SceneDirectoryState sceneDirectoryState)
+        {
+            sceneSaveSystem.Delete(sceneDirectoryState);
+            sceneManagerState.RemoveSceneDirectoryState(sceneDirectoryState);
         }
 
         private void CreateMenuBarItems()
