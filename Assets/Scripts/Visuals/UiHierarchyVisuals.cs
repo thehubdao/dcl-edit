@@ -113,8 +113,15 @@ namespace Assets.Scripts.Visuals
             }
             else
             {
-                MakeHierarchyItemsRecursive(scene, 0, scene.EntitiesInSceneRoot, mainPanelData);
-
+                if (scene.EntitiesInSceneRoot.Count() == 0)
+                {
+                    mainPanelData.AddTitle("No Entities");
+                }
+                else
+                {
+                    MakeHierarchyItemsRecursive(scene, 0, scene.EntitiesInSceneRoot, mainPanelData);
+                }
+                
                 mainPanelData.AddSpacer(300, clickPosition =>
                 {
                     var addEntityMenuItems = new List<ContextMenuItem>();
