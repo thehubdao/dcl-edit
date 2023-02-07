@@ -104,20 +104,31 @@ namespace Assets.Scripts.System
         /// <summary>
         /// Set last opened scene on start up
         /// </summary>
-        public void SetLastOpenedSceneAsCurrentScene(int value)
+        public void SetLastOpenedSceneAsCurrentScene(SettingsSystem.StringUserSetting openLastOpenedScene)
         {
-            if (value == 1)
+            Guid lastSceneIndex;
+
+            if (Guid.TryParse(openLastOpenedScene.Get(), out lastSceneIndex))
             {
-                Debug.Log("Setting last opened scene");
-                return;
+                var lastSceneDirectoryState = new SceneDirectoryState(null, lastSceneIndex, DclEditVersion.Alpha);
+                sceneManagerState.AddSceneDirectoryState(lastSceneDirectoryState);
+                //SaveCurrentScene();
+                SaveScene(lastSceneDirectoryState);
+                SetCurrentScene(lastSceneIndex);
+                openLastOpenedScene.Set(lastSceneIndex.ToString());
             }
-            Debug.Log("No last opened scene loaded");
+            else if (lastSceneIndex == Guid.Empty)
+            {
+                SetNewSceneAsCurrentScene();
+                var newSceneIndex = sceneManagerState.currentSceneIndex;
+                openLastOpenedScene.Set(newSceneIndex.ToString());
+            }
         }
 
         /// <summary>
         /// Create a new scene and set it as current scene
         /// </summary>
-        public void SetNewScneneAsCurrentScene()
+        public void SetNewSceneAsCurrentScene()
         {
             SceneDirectoryState newScene = SceneDirectoryState.CreateNewSceneDirectoryState();
             sceneManagerState.AddSceneDirectoryState(newScene);
@@ -345,7 +356,7 @@ namespace Assets.Scripts.System
 
         private void CreateMenuBarItems()
         {
-            menuBarSystem.AddMenuItem("File#1/New Scene#1", SetNewScneneAsCurrentScene);
+            menuBarSystem.AddMenuItem("File#1/New Scene#1", SetNewSceneAsCurrentScene);
             menuBarSystem.AddMenuItem("File#1/Open Scene#2", SetDialogAsCurrentScene);
             menuBarSystem.AddMenuItem("File#1/Save Scene#3", SaveCurrentScene);
             menuBarSystem.AddMenuItem("File#1/Save Scene As...#4", SaveCurrentSceneAs);
