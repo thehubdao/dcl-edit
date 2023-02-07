@@ -244,6 +244,9 @@ namespace Assets.Scripts.System
                 return;
             }
 
+            // Strip path inside a dcl scene folder. This allows to save as a already existing scene.
+            newPath = newPath.Substring(0, newPath.IndexOf(".dclscene") + 9);
+
             Guid newId = default;
             // remove any potential scene that will be overridden
             if (sceneManagerState.TryGetDirectoryState(newPath, out SceneDirectoryState sceneDirectoryStateToOverride))
