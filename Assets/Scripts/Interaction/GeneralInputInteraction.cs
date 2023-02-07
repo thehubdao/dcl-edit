@@ -212,9 +212,10 @@ namespace Assets.Scripts.Interaction
             if (inputSystemAsset.Hotkeys.Duplicate.triggered)
             {
                 var currentScene = sceneManagerSystem.GetCurrentScene();
-                if (currentScene != null)
+                var selectedEntity = currentScene?.SelectionState.PrimarySelectedEntity;
+
+                if (selectedEntity != null)
                 {
-                    var selectedEntity = currentScene.SelectionState.PrimarySelectedEntity;
                     commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateDuplicateEntity(selectedEntity.Id));
                 }
             }
