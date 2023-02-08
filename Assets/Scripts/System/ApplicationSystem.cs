@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace Assets.Scripts.System
 {
@@ -15,19 +18,28 @@ namespace Assets.Scripts.System
         // Dependencies
         private SettingsSystem settingsSystem;
         private EditorEvents editorEvents;
+        private MenuBarSystem menuBarSystem;
 
         [Inject]
         private void Construct(
             SettingsSystem settingsSystem,
-            EditorEvents editorEvents)
+            EditorEvents editorEvents,
+            MenuBarSystem menuBarSystem)
         {
             this.settingsSystem = settingsSystem;
             this.editorEvents = editorEvents;
+            this.menuBarSystem = menuBarSystem;
+
+            CreateMenuBarItems();
 
             // subscribe events
             this.editorEvents.onSettingsChangedEvent += SetApplicationTargetFramerate;
         }
 
+        private void CreateMenuBarItems()
+        {
+            menuBarSystem.AddMenuItem("File#1/Exit#1000", QuitApplication);
+        }
 
         /// <summary>
         /// Specifies the frame rate at which Unity tries to render your game.
@@ -39,6 +51,19 @@ namespace Assets.Scripts.System
         public void SetApplicationTargetFramerate()
         {
             Application.targetFrameRate = settingsSystem.applicationTargetFramerate.Get();
+        }
+
+        /// <summary>
+        /// Close the application
+        /// </summary>
+        private void QuitApplication()
+        {
+            //TODO: Check for unsaved content
+#if UNITY_EDITOR
+            EditorApplication.isPlaying = false;
+#else
+            Application.Quit();
+#endif
         }
     }
 }
