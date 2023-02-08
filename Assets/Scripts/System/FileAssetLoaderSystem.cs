@@ -192,8 +192,12 @@ namespace Assets.Scripts.System
                 // Treat scenes as assets instead of directories
                 if (Path.GetExtension(subdir) == ".dclscene")
                 {
-                    AssetMetadata sceneMetadata = ReadSceneDirectory(subdir);
-                    if (sceneMetadata != null) assets.Add(sceneMetadata);
+                    var sceneMetadataFile = ReadSceneDirectory(subdir);
+                    if (sceneMetadataFile != null)
+                    {
+                        assetMetadataCache[sceneMetadataFile.assetMetadata.assetId] = sceneMetadataFile;
+                        assets.Add(sceneMetadataFile.assetMetadata);
+                    }
                     continue;
                 }
 
@@ -203,13 +207,20 @@ namespace Assets.Scripts.System
             return new AssetHierarchyItem(dirname, pathInHierarchy, childDirectories, assets);
         }
 
-        private AssetMetadata ReadSceneDirectory(string pathToScene)
+        private AssetMetadataFile ReadSceneDirectory(string pathToScene)
         {
             try
             {
-                string contents = File.ReadAllText(Path.Combine(pathToScene, "scene.json"));
-                SceneManagerSystem.SceneFileContents sceneFileContents = JsonConvert.DeserializeObject<SceneManagerSystem.SceneFileContents>(contents);
-                return new AssetMetadata(Path.GetFileNameWithoutExtension(pathToScene), sceneFileContents.id, AssetMetadata.AssetType.Scene);
+                string sceneName = Path.GetFileNameWithoutExtension(pathToScene);
+                string pathToSceneFile = Path.Combine(pathToScene, "scene.json");
+                string rawContents = File.ReadAllText(pathToSceneFile);
+                SceneManagerSystem.SceneFileContents sceneFileContents = JsonConvert.DeserializeObject<SceneManagerSystem.SceneFileContents>(rawContents);
+                var contents = new AssetMetadataFile.Contents(
+                    new AssetMetadataFile.MetaContents(sceneName, sceneFileContents.id, AssetMetadata.AssetType.Scene, sceneName),
+                    null
+                );
+                var metadataFile = new AssetMetadataFile(contents, pathToSceneFile);
+                return metadataFile;
             }
             catch (Exception e)
             {
@@ -273,18 +284,25 @@ namespace Assets.Scripts.System
         {
             try
             {
-                var contents = new AssetMetadataFile.Contents(
-                    new AssetMetadataFile.MetaContents(
-                        metadata.assetFilename,
-                        metadata.assetMetadata.assetId,
-                        metadata.assetMetadata.assetType,
-                        metadata.assetMetadata.assetDisplayName
-                    ),
-                    metadata.thumbnail);
+                switch (metadata.assetMetadata.assetType)
+                {
+                    case AssetMetadata.AssetType.Scene:
+                        // TODO write scene metadata to file
+                        break;
+                    default:
+                        var contents = new AssetMetadataFile.Contents(
+                        new AssetMetadataFile.MetaContents(
+                            metadata.assetFilename,
+                            metadata.assetMetadata.assetId,
+                            metadata.assetMetadata.assetType,
+                            metadata.assetMetadata.assetDisplayName
+                        ),
+                        metadata.thumbnail);
+                        string json = JsonConvert.SerializeObject(contents, Formatting.Indented);
+                        File.WriteAllText(metadata.metadataFilePath, json);
+                        break;
+                }
 
-                string json = JsonConvert.SerializeObject(contents, Formatting.Indented);
-
-                File.WriteAllText(metadata.metadataFilePath, json);
             }
             catch (Exception e)
             {
