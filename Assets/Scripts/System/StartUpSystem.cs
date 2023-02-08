@@ -13,7 +13,7 @@ namespace Assets.Scripts.System
         private AssetManagerSystem assetManagerSystem;
         private WorkspaceSaveSystem workspaceSaveSystem;
         private IPathState pathState;
-        private FrameTimeSystem frameTimeSystem;
+        private ApplicationSystem frameTimeSystem;
         private SceneManagerSystem sceneManagerSystem;
         private SceneViewSystem sceneViewSystem;
 
@@ -22,7 +22,7 @@ namespace Assets.Scripts.System
             AssetManagerSystem assetManagerSystem,
             WorkspaceSaveSystem workspaceSaveSystem,
             IPathState pathState,
-            FrameTimeSystem frameTimeSystem,
+            ApplicationSystem frameTimeSystem,
             SceneManagerSystem sceneManagerSystem,
             SceneViewSystem sceneViewSystem)
         {

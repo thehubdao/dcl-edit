@@ -8,27 +8,27 @@ using Zenject;
 namespace Assets.Scripts.System
 {
     /// <summary>
-    /// System to handle topics related to global timing and framerates.
+    /// System to handle topics related to the application itself.
     /// </summary>
-    public class FrameTimeSystem
+    public class ApplicationSystem
     {
         // Dependencies
-        private SettingsSystem _settingsSystem;
-        private EditorEvents _editorEvents;
+        private SettingsSystem settingsSystem;
+        private EditorEvents editorEvents;
 
         [Inject]
         private void Construct(
             SettingsSystem settingsSystem,
             EditorEvents editorEvents)
         {
-            _settingsSystem = settingsSystem;
-            _editorEvents = editorEvents;
+            this.settingsSystem = settingsSystem;
+            this.editorEvents = editorEvents;
 
             // subscribe events
-            _editorEvents.onSettingsChangedEvent += SetApplicationTargetFramerate;
+            this.editorEvents.onSettingsChangedEvent += SetApplicationTargetFramerate;
         }
 
-        
+
         /// <summary>
         /// Specifies the frame rate at which Unity tries to render your game.
         /// </summary>
@@ -38,8 +38,7 @@ namespace Assets.Scripts.System
         /// </param>
         public void SetApplicationTargetFramerate()
         {
-            Application.targetFrameRate = _settingsSystem.applicationTargetFramerate.Get();
+            Application.targetFrameRate = settingsSystem.applicationTargetFramerate.Get();
         }
     }
-
 }
