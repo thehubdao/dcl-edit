@@ -242,7 +242,7 @@ namespace Assets.Scripts.System
             {
                 var sceneComponent = new DclSceneComponent(component);
 
-                var sceneName = sceneNames[Guid.Parse(sceneComponent.sceneId.Value)];
+                var sceneName = sceneNames[sceneComponent.sceneId.Value];
 
                 {
                     if (!usedComponentInfos

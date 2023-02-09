@@ -109,14 +109,14 @@ namespace Assets.Scripts.Visuals
                     Guid sceneId;
                     try
                     {
-                        // Return instantly because the empty string is the default id value. No error should be
+                        // Return instantly because the empty GUID is the default id value. No error should be
                         // thrown when a new component is added
-                        if (dclSceneComponent.sceneId.FixedValue == "")
+                        if (dclSceneComponent.sceneId.FixedValue == Guid.Empty)
                         {
                             return;
                         }
 
-                        sceneId = Guid.Parse(dclSceneComponent.sceneId.FixedValue);
+                        sceneId = dclSceneComponent.sceneId.FixedValue;
 
                         // Check for cyclic child scenes
                         MainSceneVisuals[] parentMainSceneVisuals = GetComponentsInParent<MainSceneVisuals>();
