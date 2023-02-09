@@ -37,30 +37,11 @@ public class AssetBrowserButtonHandler : ButtonHandler
         this.metadata = metadata;
         assetButtonInteraction.assetMetadata = metadata;
         assetButtonInteraction.enableDragAndDrop = enableDragAndDrop;
-        button.onClick.RemoveAllListeners();
-        if (onClick != null) button.onClick.AddListener(() => onClick(metadata.assetId));
-        else button.onClick.AddListener(assetButtonInteraction.OnClick);
-
-        text.text = metadata.assetDisplayName;
-
         maskedImage.sprite = null;          // Clear thumbnail. There might be one still set because the prefab gets reused from the pool
 
-        switch (metadata.assetType)
-        {
-            case AssetMetadata.AssetType.Unknown:
-                break;
-            case AssetMetadata.AssetType.Model:
-                assetTypeIndicatorImage.sprite = modelTypeIndicator;
-                break;
-            case AssetMetadata.AssetType.Image:
-                assetTypeIndicatorImage.sprite = imageTypeIndicator;
-                break;
-            case AssetMetadata.AssetType.Scene:
-                assetTypeIndicatorImage.sprite = sceneTypeIndicator;
-                break;
-            default:
-                break;
-        }
+        SetText(metadata);
+        SetTypeIndicator(metadata);
+        SetOnClickAction(metadata, onClick);
 
         editorEvents.onAssetThumbnailUpdatedEvent += OnAssetThumbnailUpdatedCallback;
 
@@ -79,6 +60,67 @@ public class AssetBrowserButtonHandler : ButtonHandler
     {
         editorEvents.onAssetThumbnailUpdatedEvent -= OnAssetThumbnailUpdatedCallback;
     }
+
+    #region Initialization
+    private void SetTypeIndicator(AssetMetadata metadata)
+    {
+        if (metadata == null)
+        {
+            assetTypeIndicatorImage.sprite = null;
+            assetTypeIndicatorImage.enabled = false;
+            return;
+        }
+
+        assetTypeIndicatorImage.enabled = true;
+        switch (this.metadata.assetType)
+        {
+            case AssetMetadata.AssetType.Unknown:
+                break;
+            case AssetMetadata.AssetType.Model:
+                assetTypeIndicatorImage.sprite = modelTypeIndicator;
+                break;
+            case AssetMetadata.AssetType.Image:
+                assetTypeIndicatorImage.sprite = imageTypeIndicator;
+                break;
+            case AssetMetadata.AssetType.Scene:
+                assetTypeIndicatorImage.sprite = sceneTypeIndicator;
+                break;
+            default:
+                break;
+        }
+    }
+    private void SetText(AssetMetadata metadata)
+    {
+        if (metadata == null)
+        {
+            text.text = "None";
+            return;
+        }
+
+        text.text = this.metadata.assetDisplayName;
+    }
+    private void SetOnClickAction(AssetMetadata metadata, Action<Guid> onClick)
+    {
+        button.onClick.RemoveAllListeners();
+
+        if (onClick == null)
+        {
+            button.onClick.AddListener(assetButtonInteraction.OnClick);
+            return;
+        }
+
+        if (metadata == null)
+        {
+            button.onClick.AddListener(() => onClick(Guid.Empty));
+            return;
+        }
+
+        button.onClick.AddListener(() => onClick(metadata.assetId));
+    }
+    #endregion
+
+
+
 
     private bool IsVisibleInScrollView()
     {
@@ -99,6 +141,8 @@ public class AssetBrowserButtonHandler : ButtonHandler
 
     private void ShowThumbnailWhenVisible(Vector2 _)
     {
+        if (metadata == null) return;
+
         if (IsVisibleInScrollView())
         {
             if (maskedImage.sprite == null)
@@ -137,6 +181,8 @@ public class AssetBrowserButtonHandler : ButtonHandler
 
     public void OnAssetThumbnailUpdatedCallback(List<Guid> ids)
     {
+        if (metadata == null) return;
+
         if (ids.Contains(metadata.assetId))
         {
             var thumbnail = assetThumbnailManagerSystem.GetThumbnailById(metadata.assetId);
