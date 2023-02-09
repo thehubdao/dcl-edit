@@ -2,7 +2,6 @@ using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
 using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
-using Assets.Scripts.Visuals;
 using Assets.Scripts.Visuals.UiHandler;
 using System;
 using UnityEngine;
@@ -17,6 +16,7 @@ public class DialogVisuals : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     UnityState unityState;
     EditorEvents editorEvents;
     SceneManagerSystem sceneManagerSystem;
+    CommandSystem commandSystem;
 
     [Inject]
     void Construct(
@@ -24,13 +24,15 @@ public class DialogVisuals : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         DialogState dialogState,
         UnityState unityState,
         EditorEvents editorEvents,
-        SceneManagerSystem sceneManagerSystem)
+        SceneManagerSystem sceneManagerSystem,
+        CommandSystem commandSystem)
     {
         this.dialogSystem = dialogSystem;
         this.dialogState = dialogState;
         this.unityState = unityState;
         this.editorEvents = editorEvents;
         this.sceneManagerSystem = sceneManagerSystem;
+        this.commandSystem = commandSystem;
 
         editorEvents.onDialogChangedEvent += UpdateDialog;
     }
@@ -65,13 +67,25 @@ public class DialogVisuals : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         handler.assetBrowserVisuals.assetButtonOnClickOverride = (Guid assetId) =>
         {
             DclScene scene = sceneManagerSystem.GetCurrentScene();
-            DclEntity entity = scene.GetEntityById(dialogState.targetEntityId);
-            var shapeComponent = entity.GetComponentBySlot("Shape");
-            if (shapeComponent != null) entity.RemoveComponent(shapeComponent);
-            entity.AddComponent(new DclGltfShapeComponent(assetId));
-            editorEvents.InvokeSelectionChangedEvent();
+
+            // Update the target component with the new asset
+            var sceneProperty = dialogState.targetComponent.GetPropertyByName("scene");
+            var assetProperty = dialogState.targetComponent.GetPropertyByName("asset");
+            if (sceneProperty != null)
+            {
+                var oldValue = sceneProperty.GetConcrete<Guid>().FixedValue;
+                var identifier = new DclPropertyIdentifier(dialogState.targetComponent.Entity.Id, dialogState.targetComponent.NameInCode, "scene");
+                commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateChangePropertyCommand(identifier, oldValue, assetId));
+            }
+            if (assetProperty != null)
+            {
+                var oldValue = assetProperty.GetConcrete<Guid>().FixedValue;
+                var identifier = new DclPropertyIdentifier(dialogState.targetComponent.Entity.Id, dialogState.targetComponent.NameInCode, "asset");
+                commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateChangePropertyCommand(identifier, oldValue, assetId));
+            }
 
             dialogSystem.CloseCurrentDialog();
+            editorEvents.InvokeSelectionChangedEvent();
         };
     }
 

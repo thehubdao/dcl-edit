@@ -1,4 +1,5 @@
 using Assets.Scripts.Events;
+using Assets.Scripts.SceneState;
 using System;
 using Zenject;
 
@@ -16,13 +17,14 @@ public class DialogSystem
     }
 
     /// <summary>
-    /// Lets the user select an asset which will then be added to a GLTFShapeComponent on the entity with the targetEntityId.
+    /// Lets the user select an asset which will then be added to a component on the entity with the targetEntityId.
     /// </summary>
     /// <param name="targetEntityId"></param>
-    public void OpenAssetDialog(Guid targetEntityId)
+    /// <param name="component">The component which this asset will be added to.</param>
+    public void OpenAssetDialog(DclComponent component)
     {
         dialogState.currentDialog = DialogState.DialogType.Asset;
-        dialogState.targetEntityId = targetEntityId;
+        dialogState.targetComponent = component;
         editorEvents.InvokeDialogChangedEvent();
     }
 
