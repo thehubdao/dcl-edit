@@ -66,7 +66,19 @@ namespace Assets.Scripts.SceneState
 
                 return position;
             }
+            set
+            {
+                if (Entity.Parent != null)
+                {
+                    Position.SetFloatingValue(Entity.Parent.GetTransformComponent().InverseTransformPoint(value));
+                }
+                else
+                {
+                    Position.SetFloatingValue(value);
+                }
+            }
         }
+
         public Quaternion GlobalRotation
         {
             get
