@@ -25,28 +25,28 @@ namespace Assets.Scripts.SceneState
             Entity = c.Entity;
         }
 
-        public DclComponentProperty<Vector3> Position => GetPropertyByName("position")?.GetConcrete<Vector3>();
+        public DclComponentProperty<Vector3> position => GetPropertyByName("position")?.GetConcrete<Vector3>();
 
-        public DclComponentProperty<Quaternion> Rotation => GetPropertyByName("rotation")?.GetConcrete<Quaternion>();
+        public DclComponentProperty<Quaternion> rotation => GetPropertyByName("rotation")?.GetConcrete<Quaternion>();
 
-        public DclComponentProperty<Vector3> Scale => GetPropertyByName("scale")?.GetConcrete<Vector3>();
+        public DclComponentProperty<Vector3> scale => GetPropertyByName("scale")?.GetConcrete<Vector3>();
 
-        public Matrix4x4 GlobalTransformMatrix
+        public Matrix4x4 globalTransformMatrix
         {
             get
             {
                 if (Entity.Parent == null)
                 {
                     Matrix4x4 transformMatrix = new Matrix4x4();
-                    transformMatrix.SetTRS(Position.Value, Rotation.Value, Scale.Value);
+                    transformMatrix.SetTRS(position.Value, rotation.Value, scale.Value);
                     return transformMatrix;
                 }
-                
+
                 var parentTransform = Entity.Parent.GetTransformComponent();
-                var parentMatrix = parentTransform.GlobalTransformMatrix;
+                var parentMatrix = parentTransform.globalTransformMatrix;
 
                 Matrix4x4 localMatrix = new Matrix4x4();
-                localMatrix.SetTRS(Position.Value, Rotation.Value, Scale.Value);
+                localMatrix.SetTRS(position.Value, rotation.Value, scale.Value);
 
                 var globalMatrix = parentMatrix * localMatrix;
 
@@ -54,15 +54,15 @@ namespace Assets.Scripts.SceneState
             }
         }
 
-        public Vector3 GlobalPosition
+        public Vector3 globalPosition
         {
             get
             {
                 Vector3 position;
-                position.x = GlobalTransformMatrix.m03;
-                position.y = GlobalTransformMatrix.m13;
-                position.z = GlobalTransformMatrix.m23;
-                position /= GlobalTransformMatrix.m33;
+                position.x = globalTransformMatrix.m03;
+                position.y = globalTransformMatrix.m13;
+                position.z = globalTransformMatrix.m23;
+                position /= globalTransformMatrix.m33;
 
                 return position;
             }
@@ -70,40 +70,36 @@ namespace Assets.Scripts.SceneState
             {
                 if (Entity.Parent != null)
                 {
-                    Position.SetFloatingValue(Entity.Parent.GetTransformComponent().InverseTransformPoint(value));
+                    position.SetFloatingValue(Entity.Parent.GetTransformComponent().InverseTransformPoint(value));
                 }
                 else
                 {
-                    Position.SetFloatingValue(value);
+                    position.SetFloatingValue(value);
                 }
             }
         }
 
-        public Quaternion GlobalRotation
+        public Quaternion globalRotation
         {
-            get
-            {
-                return Entity.Parent == null
-                    ? Rotation.Value
-                    : Entity.Parent.GetTransformComponent().GlobalRotation * Rotation.Value;
-            }
+            get { return Entity.Parent == null ? rotation.Value : Entity.Parent.GetTransformComponent().globalRotation * rotation.Value; }
         }
-        public Matrix4x4 GlobalFixedTransformMatrix
+
+        public Matrix4x4 globalFixedTransformMatrix
         {
             get
             {
                 if (Entity.Parent == null)
                 {
                     Matrix4x4 transformMatrix = new Matrix4x4();
-                    transformMatrix.SetTRS(Position.FixedValue, Rotation.FixedValue, Scale.FixedValue);
+                    transformMatrix.SetTRS(position.FixedValue, rotation.FixedValue, scale.FixedValue);
                     return transformMatrix;
                 }
 
                 var parentTransform = Entity.Parent.GetTransformComponent();
-                var parentMatrix = parentTransform.GlobalFixedTransformMatrix;
+                var parentMatrix = parentTransform.globalFixedTransformMatrix;
 
                 Matrix4x4 localMatrix = new Matrix4x4();
-                localMatrix.SetTRS(Position.FixedValue, Rotation.FixedValue, Scale.FixedValue);
+                localMatrix.SetTRS(position.FixedValue, rotation.FixedValue, scale.FixedValue);
 
                 var globalMatrix = parentMatrix * localMatrix;
 
@@ -111,26 +107,23 @@ namespace Assets.Scripts.SceneState
             }
         }
 
-        public Vector3 GlobalFixedPosition
+        public Vector3 globalFixedPosition
         {
             get
             {
                 Vector3 position;
-                position.x = GlobalFixedTransformMatrix.m03;
-                position.y = GlobalFixedTransformMatrix.m13;
-                position.z = GlobalFixedTransformMatrix.m23;
-                position /= GlobalFixedTransformMatrix.m33;
+                position.x = globalFixedTransformMatrix.m03;
+                position.y = globalFixedTransformMatrix.m13;
+                position.z = globalFixedTransformMatrix.m23;
+                position /= globalFixedTransformMatrix.m33;
 
                 return position;
             }
         }
 
-        public Quaternion GlobalFixedRotation
+        public Quaternion globalFixedRotation
         {
-            get
-            {
-                return GlobalFixedTransformMatrix.rotation;
-            }
+            get { return globalFixedTransformMatrix.rotation; }
         }
 
         public bool Validate()
@@ -145,7 +138,7 @@ namespace Assets.Scripts.SceneState
         /// <returns></returns>
         public Vector3 InverseTransformPoint(Vector3 position)
         {
-            return GlobalTransformMatrix.inverse.MultiplyPoint(position);
+            return globalTransformMatrix.inverse.MultiplyPoint(position);
         }
     }
 }

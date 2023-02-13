@@ -84,7 +84,7 @@ public class AssetButtonInteraction : MonoBehaviour, IBeginDragHandler, IDragHan
         }
 
         mousePositionInScene = inputHelperSystem.GetMousePositionInScene();
-        newEntity.GetTransformComponent().Position.SetFloatingValue(mousePositionInScene);
+        newEntity.GetTransformComponent().position.SetFloatingValue(mousePositionInScene);
         editorEvents.InvokeHierarchyChangedEvent();
     }
 

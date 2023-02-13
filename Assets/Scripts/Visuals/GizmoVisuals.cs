@@ -85,8 +85,8 @@ namespace Assets.Scripts.Visuals
             activeGizmo.SetActive(true);
 
             var selectedTransform = selectedEntity.GetTransformComponent();
-            activeGizmo.transform.position = selectedTransform.GlobalPosition;
-            activeGizmo.transform.rotation = selectedTransform.GlobalRotation;
+            activeGizmo.transform.position = selectedTransform.globalPosition;
+            activeGizmo.transform.rotation = selectedTransform.globalRotation;
         }
 
         private void HideGizmo()

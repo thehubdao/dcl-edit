@@ -14,9 +14,9 @@ namespace Assets.Scripts.Tests.EditModeTests
             var testTransform = new DclTransformComponent(new Vector3(1, 2, 3), Quaternion.Euler(4, 5, 6), new Vector3(7, 8, 9));
 
             // get properties from build in shortcuts
-            CustomAsserts.AreEqualVector(new Vector3(1, 2, 3), testTransform.Position.Value);
-            Assert.AreEqual(Quaternion.Euler(4, 5, 6), testTransform.Rotation.Value);
-            CustomAsserts.AreEqualVector(new Vector3(7, 8, 9), testTransform.Scale.Value);
+            CustomAsserts.AreEqualVector(new Vector3(1, 2, 3), testTransform.position.Value);
+            Assert.AreEqual(Quaternion.Euler(4, 5, 6), testTransform.rotation.Value);
+            CustomAsserts.AreEqualVector(new Vector3(7, 8, 9), testTransform.scale.Value);
 
             // get properties from raw component
             var testComponent = (DclComponent) testTransform;
@@ -32,14 +32,14 @@ namespace Assets.Scripts.Tests.EditModeTests
             var testTransform = new DclTransformComponent(new Vector3(1, 2, 3), Quaternion.Euler(4, 5, 6), new Vector3(7, 8, 9));
 
             // set properties
-            testTransform.Position.SetFloatingValue(new Vector3(10, 11, 12));
-            testTransform.Rotation.SetFloatingValue(Quaternion.Euler(13, 14, 15));
-            testTransform.Scale.SetFloatingValue(new Vector3(16, 17, 18));
+            testTransform.position.SetFloatingValue(new Vector3(10, 11, 12));
+            testTransform.rotation.SetFloatingValue(Quaternion.Euler(13, 14, 15));
+            testTransform.scale.SetFloatingValue(new Vector3(16, 17, 18));
 
             // get properties from build in shortcuts
-            CustomAsserts.AreEqualVector(new Vector3(10, 11, 12), testTransform.Position.Value);
-            Assert.AreEqual(Quaternion.Euler(13, 14, 15), testTransform.Rotation.Value);
-            CustomAsserts.AreEqualVector(new Vector3(16, 17, 18), testTransform.Scale.Value);
+            CustomAsserts.AreEqualVector(new Vector3(10, 11, 12), testTransform.position.Value);
+            Assert.AreEqual(Quaternion.Euler(13, 14, 15), testTransform.rotation.Value);
+            CustomAsserts.AreEqualVector(new Vector3(16, 17, 18), testTransform.scale.Value);
 
             // get properties from raw component
             var testComponent = (DclComponent) testTransform;
@@ -58,19 +58,19 @@ namespace Assets.Scripts.Tests.EditModeTests
             var testTransform = new DclTransformComponent(sourceComponent);
 
             // get properties from build in shortcuts
-            CustomAsserts.AreEqualVector(new Vector3(1, 2, 3), testTransform.Position.Value);
-            Assert.AreEqual(Quaternion.Euler(4, 5, 6), testTransform.Rotation.Value);
-            CustomAsserts.AreEqualVector(new Vector3(7, 8, 9), testTransform.Scale.Value);
+            CustomAsserts.AreEqualVector(new Vector3(1, 2, 3), testTransform.position.Value);
+            Assert.AreEqual(Quaternion.Euler(4, 5, 6), testTransform.rotation.Value);
+            CustomAsserts.AreEqualVector(new Vector3(7, 8, 9), testTransform.scale.Value);
 
             // set properties
-            testTransform.Position.SetFloatingValue(new Vector3(10, 11, 12));
-            testTransform.Rotation.SetFloatingValue(Quaternion.Euler(13, 14, 15));
-            testTransform.Scale.SetFloatingValue(new Vector3(16, 17, 18));
+            testTransform.position.SetFloatingValue(new Vector3(10, 11, 12));
+            testTransform.rotation.SetFloatingValue(Quaternion.Euler(13, 14, 15));
+            testTransform.scale.SetFloatingValue(new Vector3(16, 17, 18));
 
             // get properties from source transform
-            CustomAsserts.AreEqualVector(new Vector3(10, 11, 12), sourceTransform.Position.Value);
-            Assert.AreEqual(Quaternion.Euler(13, 14, 15), sourceTransform.Rotation.Value);
-            CustomAsserts.AreEqualVector(new Vector3(16, 17, 18), sourceTransform.Scale.Value);
+            CustomAsserts.AreEqualVector(new Vector3(10, 11, 12), sourceTransform.position.Value);
+            Assert.AreEqual(Quaternion.Euler(13, 14, 15), sourceTransform.rotation.Value);
+            CustomAsserts.AreEqualVector(new Vector3(16, 17, 18), sourceTransform.scale.Value);
         }
 
         [Test]
@@ -84,7 +84,7 @@ namespace Assets.Scripts.Tests.EditModeTests
             var testTransform = new DclTransformComponent(new Vector3(1, 2, 3), Quaternion.Euler(4, 5, 6), new Vector3(7, 8, 9));
             testEntity.AddComponent(testTransform);
 
-            CustomAsserts.AreEqualVector(new Vector3(1, 2, 3), testTransform.GlobalPosition);
+            CustomAsserts.AreEqualVector(new Vector3(1, 2, 3), testTransform.globalPosition);
         }
 
         [Test]
@@ -104,15 +104,15 @@ namespace Assets.Scripts.Tests.EditModeTests
             var testTransform = new DclTransformComponent(new Vector3(10, 11, 12), Quaternion.identity, Vector3.one);
             testEntity.AddComponent(testTransform);
 
-            CustomAsserts.AreEqualVector(new Vector3(11, 13, 15), testTransform.GlobalPosition);
+            CustomAsserts.AreEqualVector(new Vector3(11, 13, 15), testTransform.globalPosition);
 
-            parentTransform.Scale.SetFloatingValue(new Vector3(2, 2, 2));
+            parentTransform.scale.SetFloatingValue(new Vector3(2, 2, 2));
 
-            CustomAsserts.AreEqualVector(new Vector3(21, 24, 27), testTransform.GlobalPosition);
+            CustomAsserts.AreEqualVector(new Vector3(21, 24, 27), testTransform.globalPosition);
 
-            parentTransform.Rotation.SetFloatingValue(Quaternion.Euler(0, -90, 0));
+            parentTransform.rotation.SetFloatingValue(Quaternion.Euler(0, -90, 0));
 
-            CustomAsserts.AreEqualVector(new Vector3(-23, 24, 23), testTransform.GlobalPosition);
+            CustomAsserts.AreEqualVector(new Vector3(-23, 24, 23), testTransform.globalPosition);
         }
 
         [Test]
@@ -127,14 +127,14 @@ namespace Assets.Scripts.Tests.EditModeTests
             testEntity.AddComponent(testTransform);
 
             // set local position
-            testTransform.Position.SetFloatingValue(new Vector3(10, 11, 12));
+            testTransform.position.SetFloatingValue(new Vector3(10, 11, 12));
 
-            CustomAsserts.AreEqualVector(new Vector3(10, 11, 12), testTransform.Position.Value);
+            CustomAsserts.AreEqualVector(new Vector3(10, 11, 12), testTransform.position.Value);
 
             // set global position
-            testTransform.GlobalPosition = new Vector3(20, 21, 22);
+            testTransform.globalPosition = new Vector3(20, 21, 22);
 
-            CustomAsserts.AreEqualVector(new Vector3(20, 21, 22), testTransform.GlobalPosition);
+            CustomAsserts.AreEqualVector(new Vector3(20, 21, 22), testTransform.globalPosition);
         }
 
         [Test]
@@ -155,16 +155,16 @@ namespace Assets.Scripts.Tests.EditModeTests
             testEntity.AddComponent(testTransform);
 
             // set local position
-            testTransform.Position.SetFloatingValue(new Vector3(20, 21, 22));
+            testTransform.position.SetFloatingValue(new Vector3(20, 21, 22));
 
-            CustomAsserts.AreEqualVector(new Vector3(20, 21, 22), testTransform.Position.Value); // Check local
-            CustomAsserts.AreEqualVector(new Vector3(21, 23, 25), testTransform.GlobalPosition); // Check global
+            CustomAsserts.AreEqualVector(new Vector3(20, 21, 22), testTransform.position.Value); // Check local
+            CustomAsserts.AreEqualVector(new Vector3(21, 23, 25), testTransform.globalPosition); // Check global
 
             // set global position
-            testTransform.GlobalPosition = new Vector3(30, 31, 32);
+            testTransform.globalPosition = new Vector3(30, 31, 32);
 
-            CustomAsserts.AreEqualVector(new Vector3(29, 29, 29), testTransform.Position.Value); // Check local
-            CustomAsserts.AreEqualVector(new Vector3(30, 31, 32), testTransform.GlobalPosition); // Check global
+            CustomAsserts.AreEqualVector(new Vector3(29, 29, 29), testTransform.position.Value); // Check local
+            CustomAsserts.AreEqualVector(new Vector3(30, 31, 32), testTransform.globalPosition); // Check global
         }
 
         [Test]
@@ -184,10 +184,10 @@ namespace Assets.Scripts.Tests.EditModeTests
             var testTransform = new DclTransformComponent(new Vector3(0, 0, 0), Quaternion.identity, Vector3.one);
             testEntity.AddComponent(testTransform);
 
-            testTransform.GlobalPosition = new Vector3(9, 0, 8);
+            testTransform.globalPosition = new Vector3(9, 0, 8);
 
-            CustomAsserts.AreEqualVector(new Vector3(0, 0, 1), testTransform.Position.Value); // Check local
-            CustomAsserts.AreEqualVector(new Vector3(9, 0, 8), testTransform.GlobalPosition); // Check global
+            CustomAsserts.AreEqualVector(new Vector3(0, 0, 1), testTransform.position.Value); // Check local
+            CustomAsserts.AreEqualVector(new Vector3(9, 0, 8), testTransform.globalPosition); // Check global
         }
 
         [Test]
@@ -207,10 +207,10 @@ namespace Assets.Scripts.Tests.EditModeTests
             var testTransform = new DclTransformComponent(new Vector3(0, 0, 0), Quaternion.identity, Vector3.one);
             testEntity.AddComponent(testTransform);
 
-            testTransform.GlobalPosition = new Vector3(2, 0, 4);
+            testTransform.globalPosition = new Vector3(2, 0, 4);
 
-            CustomAsserts.AreEqualVector(new Vector3(1, 0, 8), testTransform.Position.Value); // Check local
-            CustomAsserts.AreEqualVector(new Vector3(2, 0, 4), testTransform.GlobalPosition); // Check global
+            CustomAsserts.AreEqualVector(new Vector3(1, 0, 8), testTransform.position.Value); // Check local
+            CustomAsserts.AreEqualVector(new Vector3(2, 0, 4), testTransform.globalPosition); // Check global
         }
 
         [Test]
@@ -230,10 +230,10 @@ namespace Assets.Scripts.Tests.EditModeTests
             var testTransform = new DclTransformComponent(new Vector3(0, 0, 0), Quaternion.identity, Vector3.one);
             testEntity.AddComponent(testTransform);
 
-            testTransform.GlobalPosition = new Vector3(2, 0, 4);
+            testTransform.globalPosition = new Vector3(2, 0, 4);
 
-            CustomAsserts.AreEqualVector(new Vector3(-2, 0, 4), testTransform.Position.Value); // Check local
-            CustomAsserts.AreEqualVector(new Vector3(2, 0, 4), testTransform.GlobalPosition); // Check global
+            CustomAsserts.AreEqualVector(new Vector3(-2, 0, 4), testTransform.position.Value); // Check local
+            CustomAsserts.AreEqualVector(new Vector3(2, 0, 4), testTransform.globalPosition); // Check global
 
             // add a third entity to test the global position of the child
             var testEntity2 = new DclEntity(Guid.NewGuid(), "testEntity2", testEntity.Id);
@@ -242,10 +242,10 @@ namespace Assets.Scripts.Tests.EditModeTests
             var testTransform2 = new DclTransformComponent(new Vector3(0, 0, 0), Quaternion.identity, Vector3.one);
             testEntity2.AddComponent(testTransform2);
 
-            testTransform2.GlobalPosition = new Vector3(4, 0, 6);
+            testTransform2.globalPosition = new Vector3(4, 0, 6);
 
-            CustomAsserts.AreEqualVector(new Vector3(-2, 0, 4), testTransform2.Position.Value); // Check local
-            CustomAsserts.AreEqualVector(new Vector3(4, 0, 6), testTransform2.GlobalPosition); // Check global
+            CustomAsserts.AreEqualVector(new Vector3(-1, 0, 4), testTransform2.position.Value); // Check local
+            CustomAsserts.AreEqualVector(new Vector3(4, 0, 6), testTransform2.globalPosition); // Check global
         }
     }
 }

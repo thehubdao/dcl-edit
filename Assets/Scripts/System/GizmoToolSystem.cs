@@ -162,7 +162,7 @@ namespace Assets.Scripts.System
                 movedVector = Vector3.Project(movedVector, gizmoState.mouseContextPrimaryVector);
             }
 
-            movedTransform.GlobalPosition = movedTransform.GlobalFixedPosition + movedVector;
+            movedTransform.globalPosition = movedTransform.globalFixedPosition + movedVector;
         }
 
         private void SetPlaneForRotationByGizmoDirection(GizmoDirection gizmoDirection, DclTransformComponent gizmoStateMovedTransform)
@@ -179,10 +179,10 @@ namespace Assets.Scripts.System
         private void SetMouseContextForTransform(GizmoDirection gizmoDirection, DclTransformComponent transformContext)
         {
             // extract center from transform context
-            var centerPosition = transformContext.GlobalPosition;
+            var centerPosition = transformContext.globalPosition;
 
             // extract rotation from transform context
-            var contextRotation = transformContext.GlobalRotation; // TODO: allow local/global context rotation
+            var contextRotation = transformContext.globalRotation; // TODO: allow local/global context rotation
 
             // if direction is single axis
             if (gizmoDirection.isOnlyX() || gizmoDirection.isOnlyY() || gizmoDirection.isOnlyZ())
