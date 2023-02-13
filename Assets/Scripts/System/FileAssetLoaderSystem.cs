@@ -1,11 +1,11 @@
 using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
+using Assets.Scripts.Utility;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Assets.Scripts.Utility;
 using UnityEngine;
 using Zenject;
 using Object = UnityEngine.Object;
@@ -114,10 +114,13 @@ namespace Assets.Scripts.System
 
             assetThumbnailGeneratorSystem.Generate(id, thumbnail =>
             {
-                metadata.thumbnail = thumbnail;
-                WriteMetadataToFile(metadata);
+                if (thumbnail != null)
+                {
+                    metadata.thumbnail = thumbnail;
+                    WriteMetadataToFile(metadata);
+                }
 
-                editorEvents.InvokeThumbnailDataUpdatedEvent(new List<Guid> {id});
+                editorEvents.InvokeThumbnailDataUpdatedEvent(new List<Guid> { id });
             });
 
             return new AssetThumbnail(id, AssetData.State.IsLoading, null); // Thumbnail needs to be generated

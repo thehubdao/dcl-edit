@@ -178,7 +178,7 @@ public class AssetBrowserButtonHandler : ButtonHandler
 
         if (ids.Contains(metadata.assetId))
         {
-            loadingSymbol.SetActive(false);
+            if (loadingSymbol != null) loadingSymbol.SetActive(false);
 
             var thumbnail = assetThumbnailManagerSystem.GetThumbnailById(metadata.assetId);
             if (thumbnail.texture != null) SetImage(thumbnail.texture);
