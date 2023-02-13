@@ -13,6 +13,7 @@ public class AssetBrowserButtonHandler : ButtonHandler
     public Image maskedImage;       // Uses a child object with an image component. This allows setting an image that is influenced by the buttons mask.
     public Image assetTypeIndicatorImage;
     public AssetButtonInteraction assetButtonInteraction;
+    public GameObject loadingSymbol;
 
     private ScrollRect scrollViewRect;
 
@@ -20,6 +21,9 @@ public class AssetBrowserButtonHandler : ButtonHandler
     public Sprite modelTypeIndicator;
     public Sprite imageTypeIndicator;
     public Sprite sceneTypeIndicator;
+
+    [Header("Thumbnail Sprites")]
+    public Sprite errorAssetThumbnail;
 
     // Dependencies
     EditorEvents editorEvents;
@@ -143,39 +147,28 @@ public class AssetBrowserButtonHandler : ButtonHandler
     {
         if (metadata == null) return;
 
-        if (IsVisibleInScrollView())
-        {
-            if (maskedImage.sprite == null)
-            {
-                var result = assetThumbnailManagerSystem.GetThumbnailById(metadata.assetId);
+        loadingSymbol.SetActive(false);
 
-                switch (result.state)
-                {
-                    case AssetData.State.IsAvailable:
-                        SetImage(result.texture);
-                        break;
-                    case AssetData.State.IsLoading:
-                        break;
-                    case AssetData.State.IsError:
-                        break;
-                    default:
-                        break;
-                }
-            }
-            else
-            {
-                if (!maskedImage.enabled)
-                {
-                    maskedImage.enabled = true;
-                }
-            }
-        }
-        else
+        if (!IsVisibleInScrollView())
         {
-            if (maskedImage.enabled)
-            {
-                maskedImage.enabled = false;
-            }
+            maskedImage.enabled = false;
+            return;
+        }
+
+        var result = assetThumbnailManagerSystem.GetThumbnailById(metadata.assetId);
+        switch (result.state)
+        {
+            case AssetData.State.IsAvailable:
+                SetImage(result.texture);
+                break;
+            case AssetData.State.IsLoading:
+                loadingSymbol.SetActive(true);
+                break;
+            case AssetData.State.IsError:
+                SetImage(errorAssetThumbnail);
+                break;
+            default:
+                break;
         }
     }
 
@@ -185,27 +178,32 @@ public class AssetBrowserButtonHandler : ButtonHandler
 
         if (ids.Contains(metadata.assetId))
         {
+            loadingSymbol.SetActive(false);
+
             var thumbnail = assetThumbnailManagerSystem.GetThumbnailById(metadata.assetId);
-            if (thumbnail.texture != null)
-            {
-                SetImage(thumbnail.texture);
-            }
+            if (thumbnail.texture != null) SetImage(thumbnail.texture);
+            else SetImage(errorAssetThumbnail);
         }
     }
 
     public void SetImage(Texture2D tex)
     {
+        if (tex == null) return;
+        SetImage(Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f), 100));
+    }
+
+    public void SetImage(Sprite sprite)
+    {
         if (maskedImage == null) return;
 
-        if (tex != null)
+        if (sprite == null)
         {
-            maskedImage.sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f), 100);
+            maskedImage.enabled = false;
+            return;
         }
 
-        if (!maskedImage.enabled)
-        {
-            maskedImage.enabled = true;
-        }
+        maskedImage.sprite = sprite;
+        maskedImage.enabled = true;
     }
 
     public class Factory : PlaceholderFactory<AssetBrowserButtonHandler>
