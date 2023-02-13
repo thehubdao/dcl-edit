@@ -1,6 +1,6 @@
+using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
 using Assets.Scripts.SceneState;
-using System;
 using Zenject;
 
 public class DialogSystem
@@ -8,12 +8,14 @@ public class DialogSystem
     // Dependencies
     private DialogState dialogState;
     private EditorEvents editorEvents;
+    private AssetBrowserState assetBrowserState;
 
     [Inject]
-    void Construct(DialogState dialogState, EditorEvents editorEvents)
+    void Construct(DialogState dialogState, EditorEvents editorEvents, AssetBrowserState assetBrowserState)
     {
         this.dialogState = dialogState;
         this.editorEvents = editorEvents;
+        this.assetBrowserState = assetBrowserState;
     }
 
     /// <summary>
@@ -25,12 +27,29 @@ public class DialogSystem
     {
         dialogState.currentDialog = DialogState.DialogType.Asset;
         dialogState.targetComponent = component;
+
+        assetBrowserState.StoreShownTypesTemp();
+        switch (component.NameInCode)
+        {
+            case "GLTFShape":
+                assetBrowserState.AddShownType(AssetMetadata.AssetType.Model);
+                break;
+            case "Scene":
+                assetBrowserState.AddShownType(AssetMetadata.AssetType.Scene);
+                break;
+            default:
+                break;
+        }
+
         editorEvents.InvokeDialogChangedEvent();
     }
 
     public void CloseCurrentDialog()
     {
         dialogState.currentDialog = DialogState.DialogType.None;
+
+        assetBrowserState.RestoreShownTypes();
+
         editorEvents.InvokeDialogChangedEvent();
     }
 
