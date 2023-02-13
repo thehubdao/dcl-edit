@@ -7,9 +7,65 @@ namespace Assets.Scripts.EditorState
 {
     public class GizmoState
     {
+        public class GizmoDirection
+        {
+            public readonly bool isX;
+            public readonly bool isY;
+            public readonly bool isZ;
+
+
+            public GizmoDirection(Vector3Int gizmoDirection)
+            {
+                isX = gizmoDirection.x > 0;
+                isY = gizmoDirection.y > 0;
+                isZ = gizmoDirection.z > 0;
+            }
+
+            public bool isOnlyX()
+            {
+                return isX && !isY && !isZ;
+            }
+
+            public bool isOnlyY()
+            {
+                return !isX && isY && !isZ;
+            }
+
+            public bool isOnlyZ()
+            {
+                return !isX && !isY && isZ;
+            }
+
+            public bool isXandY()
+            {
+                return isX && isY && !isZ;
+            }
+
+            public bool isXandZ()
+            {
+                return isX && !isY && isZ;
+            }
+
+            public bool isYandZ()
+            {
+                return !isX && isY && isZ;
+            }
+
+            public bool isXYZ()
+            {
+                return isX && isY && isZ;
+            }
+
+
+            public Vector3 GetDirectionVector()
+            {
+                return new Vector3(isX ? 1 : 0, isY ? 1 : 0, isZ ? 1 : 0);
+            }
+        }
+
         public enum MouseContextRelevance
         {
-            OnlyOneAxis,
+            OnlyPrimaryAxis,
             EntirePlane
         }
 
@@ -47,7 +103,12 @@ namespace Assets.Scripts.EditorState
         /// <summary>
         /// The transform, where the gizmo operations are applied to 
         /// </summary>
-        public DclTransformComponent movedTransform;
+        public DclTransformComponent affectedTransform;
+
+        /// <summary>
+        /// Describes the direction of the held gizmo tool
+        /// </summary>
+        public GizmoDirection gizmoDirection;
 
         /// <summary>
         /// Describes the center point of the mouse context
