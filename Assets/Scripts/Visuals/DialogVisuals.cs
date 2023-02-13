@@ -86,6 +86,7 @@ public class DialogVisuals : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
             dialogSystem.CloseCurrentDialog();
             editorEvents.InvokeSelectionChangedEvent();
+            editorEvents.InvokeUiChangedEvent();
         };
     }
 
