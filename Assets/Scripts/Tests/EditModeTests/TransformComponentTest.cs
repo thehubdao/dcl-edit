@@ -168,7 +168,7 @@ namespace Assets.Scripts.Tests.EditModeTests
         }
 
         [Test]
-        public void SetGlobalPositionWithVariousParents()
+        public void SetGlobalPositionWithRotatedParents()
         {
             var testScene = new DclScene();
 
@@ -188,6 +188,64 @@ namespace Assets.Scripts.Tests.EditModeTests
 
             CustomAsserts.AreEqualVector(new Vector3(0, 0, 1), testTransform.Position.Value); // Check local
             CustomAsserts.AreEqualVector(new Vector3(9, 0, 8), testTransform.GlobalPosition); // Check global
+        }
+
+        [Test]
+        public void SetGlobalPositionWithScaledParents()
+        {
+            var testScene = new DclScene();
+
+            var parentEntity = new DclEntity(Guid.NewGuid(), "testEntity");
+            testScene.AddEntity(parentEntity);
+
+            var parentTransform = new DclTransformComponent(new Vector3(0, 0, 0), Quaternion.identity, new Vector3(2, 1, 0.5f));
+            parentEntity.AddComponent(parentTransform);
+
+            var testEntity = new DclEntity(Guid.NewGuid(), "testEntity", parentEntity.Id);
+            testScene.AddEntity(testEntity);
+
+            var testTransform = new DclTransformComponent(new Vector3(0, 0, 0), Quaternion.identity, Vector3.one);
+            testEntity.AddComponent(testTransform);
+
+            testTransform.GlobalPosition = new Vector3(2, 0, 4);
+
+            CustomAsserts.AreEqualVector(new Vector3(1, 0, 8), testTransform.Position.Value); // Check local
+            CustomAsserts.AreEqualVector(new Vector3(2, 0, 4), testTransform.GlobalPosition); // Check global
+        }
+
+        [Test]
+        public void SetGlobalPositionWithScaledAndRotatedParents()
+        {
+            var testScene = new DclScene();
+
+            var parentEntity = new DclEntity(Guid.NewGuid(), "testEntity");
+            testScene.AddEntity(parentEntity);
+
+            var parentTransform = new DclTransformComponent(new Vector3(0, 0, 0), Quaternion.Euler(0, 90, 0), new Vector3(2, 1, 0.5f));
+            parentEntity.AddComponent(parentTransform);
+
+            var testEntity = new DclEntity(Guid.NewGuid(), "testEntity", parentEntity.Id);
+            testScene.AddEntity(testEntity);
+
+            var testTransform = new DclTransformComponent(new Vector3(0, 0, 0), Quaternion.identity, Vector3.one);
+            testEntity.AddComponent(testTransform);
+
+            testTransform.GlobalPosition = new Vector3(2, 0, 4);
+
+            CustomAsserts.AreEqualVector(new Vector3(-2, 0, 4), testTransform.Position.Value); // Check local
+            CustomAsserts.AreEqualVector(new Vector3(2, 0, 4), testTransform.GlobalPosition); // Check global
+
+            // add a third entity to test the global position of the child
+            var testEntity2 = new DclEntity(Guid.NewGuid(), "testEntity2", testEntity.Id);
+            testScene.AddEntity(testEntity2);
+
+            var testTransform2 = new DclTransformComponent(new Vector3(0, 0, 0), Quaternion.identity, Vector3.one);
+            testEntity2.AddComponent(testTransform2);
+
+            testTransform2.GlobalPosition = new Vector3(4, 0, 6);
+
+            CustomAsserts.AreEqualVector(new Vector3(-2, 0, 4), testTransform2.Position.Value); // Check local
+            CustomAsserts.AreEqualVector(new Vector3(4, 0, 6), testTransform2.GlobalPosition); // Check global
         }
     }
 }

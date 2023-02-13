@@ -7,6 +7,12 @@ namespace Assets.Scripts.EditorState
 {
     public class GizmoState
     {
+        public enum MouseContextRelevance
+        {
+            OnlyOneAxis,
+            EntirePlane
+        }
+
         // Dependencies
         private EditorEvents _editorEvents;
 
@@ -38,23 +44,48 @@ namespace Assets.Scripts.EditorState
 
         // While moving states
 
-        // The transform, where the gizmo operations are applied to 
+        /// <summary>
+        /// The transform, where the gizmo operations are applied to 
+        /// </summary>
         public DclTransformComponent movedTransform;
 
-        // Mouse position context. The center and the two Vectors describe the plane, on that the mouse position will be mapped in 3D space
-        // Describes the center point of the mouse context
+        /// <summary>
+        /// Describes the center point of the mouse context
+        /// </summary>
+        /// <remarks>
+        /// Mouse position context. The center and the two Vectors describe the plane, on that the mouse position will be mapped in 3D space
+        /// </remarks>
         public Vector3 mouseContextCenter;
 
-        // Describes the X Vector. When the mouse points exactly at this vectors position, the resulting mouse movement coordinate will be (1,0). 
-        public Vector3 mouseContextXVector;
+        /// <summary>
+        /// Describes the X Vector. When the mouse points exactly at this vectors position, the resulting mouse movement coordinate will be (1,0). 
+        /// </summary>
+        /// <remarks>
+        /// Mouse position context. The center and the two Vectors describe the plane, on that the mouse position will be mapped in 3D space
+        /// </remarks>
+        public Vector3 mouseContextPrimaryVector;
 
-        // Describes the Y Vector. When the mouse points exactly at this vectors position, the resulting mouse movement coordinate will be (0,1). 
-        public Vector3 mouseContextYVector;
+        /// <summary>
+        /// Describes the Y Vector. When the mouse points exactly at this vectors position, the resulting mouse movement coordinate will be (0,1). 
+        /// </summary>
+        /// <remarks>
+        /// Mouse position context. The center and the two Vectors describe the plane, on that the mouse position will be mapped in 3D space
+        /// </remarks>
+        public Vector3 mouseContextSecondaryVector;
 
-        // The plane, that is defined by the position and the vectors
-        public Plane mouseContextPlane => new Plane(mouseContextCenter, mouseContextCenter + mouseContextXVector, mouseContextCenter + mouseContextYVector);
+        /// <summary>
+        /// Tells, if only one axis or the entire plane is relevant
+        /// </summary>
+        public MouseContextRelevance mouseContextRelevance;
 
-        // The starting position of the mouse on the plane
+        /// <summary>
+        /// The plane, that is defined by the position and the vectors
+        /// </summary>
+        public Plane mouseContextPlane => new Plane(mouseContextCenter, mouseContextCenter + mouseContextPrimaryVector, mouseContextCenter + mouseContextSecondaryVector);
+
+        /// <summary>
+        /// The starting position of the mouse on the plane
+        /// </summary>
         public Vector3 mouseStartingPosition;
     }
 }

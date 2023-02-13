@@ -22,9 +22,9 @@ public class GizmoDebugTool : MonoBehaviour
             return;
 
         Gizmos.color = Color.red;
-        Gizmos.DrawRay(gizmoState.mouseContextCenter, gizmoState.mouseContextXVector);
+        Gizmos.DrawRay(gizmoState.mouseContextCenter, gizmoState.mouseContextPrimaryVector);
 
         Gizmos.color = Color.green;
-        Gizmos.DrawRay(gizmoState.mouseContextCenter, gizmoState.mouseContextYVector);
+        Gizmos.DrawRay(gizmoState.mouseContextCenter, gizmoState.mouseContextSecondaryVector);
     }
 }

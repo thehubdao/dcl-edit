@@ -145,21 +145,7 @@ namespace Assets.Scripts.SceneState
         /// <returns></returns>
         public Vector3 InverseTransformPoint(Vector3 position)
         {
-            var localPos = Quaternion.Inverse(GlobalRotation) * (position - GlobalPosition);
-
-            var invertedScale = Vector3.zero;
-            invertedScale.x = 1 / Scale.Value.x;
-            invertedScale.y = 1 / Scale.Value.y;
-            invertedScale.z = 1 / Scale.Value.z;
-
-            localPos = Vector3.Scale(localPos, invertedScale);
-            return localPos;
+            return GlobalTransformMatrix.inverse.MultiplyPoint(position);
         }
-        /// <summary>
-        /// Transforms position from local space to world space.
-        /// </summary>
-        /// <param name="position"></param>
-        /// <returns></returns>
-        public Vector3 TransformPoint(Vector3 position) => GlobalPosition + GlobalRotation * Vector3.Scale(position, Scale.Value);
     }
 }

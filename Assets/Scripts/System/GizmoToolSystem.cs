@@ -6,6 +6,7 @@ using Assets.Scripts.Utility;
 using UnityEngine;
 using UnityEngine.Assertions;
 using Zenject;
+using static Assets.Scripts.EditorState.GizmoState.MouseContextRelevance;
 
 namespace Assets.Scripts.System
 {
@@ -107,10 +108,10 @@ namespace Assets.Scripts.System
                     SetMouseContextForTransform(gizmoDirection, gizmoState.movedTransform);
                     break;
                 case GizmoState.Mode.Rotate:
-                    //SetPlaneForRotationByGizmoDirection(gizmoDirection);
+                    SetPlaneForRotationByGizmoDirection(gizmoDirection, gizmoState.movedTransform);
                     break;
                 case GizmoState.Mode.Scale:
-                    //SetPlaneForScaleByGizmoDirection(gizmoDirection);
+                    SetPlaneForScaleByGizmoDirection(gizmoDirection, gizmoState.movedTransform);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -135,8 +136,10 @@ namespace Assets.Scripts.System
                     TranslateWhileHolding(gizmoState.movedTransform, mouseMovementSinceStart);
                     break;
                 case GizmoState.Mode.Rotate:
+                    throw new NotImplementedException();
                     break;
                 case GizmoState.Mode.Scale:
+                    throw new NotImplementedException();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -153,7 +156,23 @@ namespace Assets.Scripts.System
 
         private void TranslateWhileHolding(DclTransformComponent movedTransform, Vector3 movedVector)
         {
+            // if the currently hold tool uses only one axis and not a plane, project the moved vector onto the primary mouse context axis
+            if (gizmoState.mouseContextRelevance == OnlyOneAxis)
+            {
+                movedVector = Vector3.Project(movedVector, gizmoState.mouseContextPrimaryVector);
+            }
+
             movedTransform.GlobalPosition = movedTransform.GlobalFixedPosition + movedVector;
+        }
+
+        private void SetPlaneForRotationByGizmoDirection(GizmoDirection gizmoDirection, DclTransformComponent gizmoStateMovedTransform)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void SetPlaneForScaleByGizmoDirection(GizmoDirection gizmoDirection, DclTransformComponent gizmoStateMovedTransform)
+        {
+            throw new NotImplementedException();
         }
 
 
@@ -178,7 +197,7 @@ namespace Assets.Scripts.System
                 var primaryAxisRotated = contextRotation * primaryAxisBase;
                 var secondaryAxisRotated = FigureOutMissingAxisBasedOnCameraPosition(centerPosition, primaryAxisRotated);
 
-                SetMouseContext(centerPosition, primaryAxisRotated, secondaryAxisRotated);
+                SetMouseContext(centerPosition, primaryAxisRotated, secondaryAxisRotated, mouseContextRelevance: OnlyOneAxis);
 
                 return;
             }
@@ -192,7 +211,7 @@ namespace Assets.Scripts.System
                 var primaryAxisRotated = contextRotation * primaryAxisBase;
                 var secondaryAxisRotated = contextRotation * secondaryAxisBase;
 
-                SetMouseContext(centerPosition, primaryAxisRotated, secondaryAxisRotated);
+                SetMouseContext(centerPosition, primaryAxisRotated, secondaryAxisRotated, mouseContextRelevance: EntirePlane);
 
                 return;
             }
@@ -203,17 +222,18 @@ namespace Assets.Scripts.System
                 var primaryAxis = cameraState.Rotation * Vector3.right;
                 var secondaryAxis = FigureOutMissingAxisBasedOnCameraPosition(centerPosition, primaryAxis);
 
-                SetMouseContext(centerPosition, primaryAxis, secondaryAxis);
+                SetMouseContext(centerPosition, primaryAxis, secondaryAxis, mouseContextRelevance: EntirePlane);
 
-                return;
+                return; // ReSharper disable once RedundantJumpStatement
             }
         }
 
-        private void SetMouseContext(Vector3 centerPos, Vector3 xVector, Vector3 yVector)
+        private void SetMouseContext(Vector3 centerPos, Vector3 xVector, Vector3 yVector, GizmoState.MouseContextRelevance mouseContextRelevance)
         {
             gizmoState.mouseContextCenter = centerPos;
-            gizmoState.mouseContextXVector = xVector;
-            gizmoState.mouseContextYVector = yVector;
+            gizmoState.mouseContextPrimaryVector = xVector;
+            gizmoState.mouseContextSecondaryVector = yVector;
+            gizmoState.mouseContextRelevance = mouseContextRelevance;
         }
 
         private Vector3 FigureOutMissingAxisBasedOnCameraPosition(Vector3 centerPos, Vector3 primaryAxisVector)
