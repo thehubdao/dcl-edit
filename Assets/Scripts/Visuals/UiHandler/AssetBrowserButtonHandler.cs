@@ -1,5 +1,6 @@
 using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
+using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
 using System;
 using System.Collections.Generic;
@@ -28,24 +29,37 @@ public class AssetBrowserButtonHandler : ButtonHandler
     // Dependencies
     EditorEvents editorEvents;
     AssetThumbnailManagerSystem assetThumbnailManagerSystem;
+    SceneManagerSystem sceneManagerSystem;
 
     [Inject]
-    void Construct(EditorEvents editorEvents, AssetThumbnailManagerSystem assetThumbnailManagerSystem)
+    void Construct(EditorEvents editorEvents, AssetThumbnailManagerSystem assetThumbnailManagerSystem, SceneManagerSystem sceneManagerSystem)
     {
         this.editorEvents = editorEvents;
         this.assetThumbnailManagerSystem = assetThumbnailManagerSystem;
+        this.sceneManagerSystem = sceneManagerSystem;
     }
 
     public void Init(AssetMetadata metadata, bool enableDragAndDrop, Action<Guid> onClick, ScrollRect scrollViewRect = null)
     {
         this.metadata = metadata;
         assetButtonInteraction.assetMetadata = metadata;
-        assetButtonInteraction.enableDragAndDrop = enableDragAndDrop;
         maskedImage.sprite = null;          // Clear thumbnail. There might be one still set because the prefab gets reused from the pool
 
         SetText(metadata);
         SetTypeIndicator(metadata);
-        SetOnClickAction(metadata, onClick);
+        if (IsCyclicScene())
+        {
+            button.enabled = false;
+            assetButtonInteraction.enableDragAndDrop = false;
+            maskedImage.color = Color.red;
+        }
+        else
+        {
+            button.enabled = true;
+            assetButtonInteraction.enableDragAndDrop = enableDragAndDrop;
+            maskedImage.color = Color.white;
+            SetOnClickAction(metadata, onClick);
+        }
 
         editorEvents.onAssetThumbnailUpdatedEvent += OnAssetThumbnailUpdatedCallback;
 
@@ -66,6 +80,37 @@ public class AssetBrowserButtonHandler : ButtonHandler
     }
 
     #region Initialization
+    private bool IsCyclicScene()
+    {
+        if (metadata == null) return false;
+        if (metadata.assetType != AssetMetadata.AssetType.Scene) return false;
+
+        SceneDirectoryState currentDirState = sceneManagerSystem.GetCurrentDirectoryState();
+        if (currentDirState.id == metadata.assetId) return true;
+
+        // Check all entities in the scene asset if they contain the current scene
+        bool CheckForCyclicScenesRecursive(DclScene scene)
+        {
+            if (scene == null) return false;
+
+            foreach (var childEntity in scene.AllEntities)
+            {
+                var sceneComponent = childEntity.Value.GetComponentByName("Scene");
+                if (sceneComponent == null) continue;
+                Guid? childSceneId = sceneComponent.GetPropertyByName("scene")?.GetConcrete<Guid>().FixedValue;
+                if (childSceneId == null) continue;
+                if (childSceneId == currentDirState.id) return true;
+
+                DclScene childScene = sceneManagerSystem.GetScene(childSceneId.Value);
+                if (CheckForCyclicScenesRecursive(childScene) == true) return true;
+            }
+
+            return false;
+        }
+
+        DclScene sceneFromAsset = sceneManagerSystem.GetScene(metadata.assetId);
+        return CheckForCyclicScenesRecursive(sceneFromAsset);
+    }
     private void SetTypeIndicator(AssetMetadata metadata)
     {
         if (metadata == null)
