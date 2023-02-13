@@ -166,6 +166,8 @@ namespace Assets.Scripts.Visuals
 
         private void BuildHierarchy(AssetHierarchyItem hierarchyItem, PanelAtom.Data panel)
         {
+            if (hierarchyItem.IsEmpty()) return;
+
             int indentationLevel = GetIndentationLevel(hierarchyItem);
             panel.AddAssetBrowserFolder(hierarchyItem, indentationLevel);
 
