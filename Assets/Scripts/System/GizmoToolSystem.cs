@@ -121,14 +121,17 @@ namespace Assets.Scripts.System
 
         private void SetMouseContextForTranslate()
         {
-            SetMouseContextForAxisBasedTools();
+            SetMouseContextForAxisBasedTools(gizmoToolContext);
         }
 
         private void SetMouseContextForRotate(Ray mouseRay)
         {
             // make plane in the middle of the tool and aligned with the grabbed torus
             var centerPosition = gizmoState.affectedTransform.globalPosition;
-            var contextRotation = gizmoState.affectedTransform.globalRotation; // TODO: allow local/global context rotation. Only local context, currently
+            var contextRotation =
+                gizmoToolContext == ToolContext.Local ?
+                    gizmoState.affectedTransform.globalRotation :
+                    Quaternion.identity;
 
             var planeNormal = contextRotation * gizmoState.gizmoDirection.GetDirectionVector();
             var toolPlane = new Plane(planeNormal, centerPosition);
@@ -165,16 +168,20 @@ namespace Assets.Scripts.System
         {
             Assert.IsFalse(gizmoState.gizmoDirection.isXandZ() || gizmoState.gizmoDirection.isXandY() || gizmoState.gizmoDirection.isYandZ(), "Scale gizmo tool can only have one or all tree axis set");
 
-            SetMouseContextForAxisBasedTools();
+            // Scale can only be local
+            SetMouseContextForAxisBasedTools(ToolContext.Local);
         }
 
-        private void SetMouseContextForAxisBasedTools()
+        private void SetMouseContextForAxisBasedTools(ToolContext toolContext)
         {
             // extract center from transform context
             var centerPosition = gizmoState.affectedTransform.globalPosition;
 
             // extract rotation from transform context
-            var contextRotation = gizmoState.affectedTransform.globalRotation; // TODO: allow local/global context rotation. Only local context, currently
+            var contextRotation =
+                toolContext == ToolContext.Local ?
+                    gizmoState.affectedTransform.globalRotation :
+                    Quaternion.identity;
 
             // if direction is single axis
             if (gizmoState.gizmoDirection.isOnlyX() || gizmoState.gizmoDirection.isOnlyY() || gizmoState.gizmoDirection.isOnlyZ())
@@ -285,7 +292,14 @@ namespace Assets.Scripts.System
                 gizmoState.gizmoDirection.isOnlyY() ? contextSpaceMouseMovementSinceStart.x * -90 : 0,
                 gizmoState.gizmoDirection.isOnlyZ() ? contextSpaceMouseMovementSinceStart.x * -90 : 0);
 
-            gizmoState.affectedTransform.rotation.SetFloatingValue(gizmoState.affectedTransform.rotation.FixedValue * additionalRotation);
+            if (gizmoToolContext == ToolContext.Local)
+            {
+                gizmoState.affectedTransform.rotation.SetFloatingValue(gizmoState.affectedTransform.rotation.FixedValue * additionalRotation);
+            }
+            else
+            {
+                gizmoState.affectedTransform.globalRotation = additionalRotation * gizmoState.affectedTransform.globalFixedRotation;
+            }
         }
 
         private void ScaleWhileHolding(Vector2 contextSpaceMouseMovementSinceStart)

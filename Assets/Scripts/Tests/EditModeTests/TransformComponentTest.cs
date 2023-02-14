@@ -247,5 +247,57 @@ namespace Assets.Scripts.Tests.EditModeTests
             CustomAsserts.AreEqualVector(new Vector3(-1, 0, 4), testTransform2.position.Value); // Check local
             CustomAsserts.AreEqualVector(new Vector3(4, 0, 6), testTransform2.globalPosition); // Check global
         }
+
+        [Test]
+        public void SetGlobalRotationWithoutParent()
+        {
+            var testScene = new DclScene();
+
+            var testEntity = new DclEntity(Guid.NewGuid(), "testEntity");
+            testScene.AddEntity(testEntity);
+
+            var testTransform = new DclTransformComponent(new Vector3(0, 0, 0), Quaternion.identity, Vector3.one);
+            testEntity.AddComponent(testTransform);
+
+            testTransform.globalRotation = Quaternion.Euler(0, 90, 0);
+
+            CustomAsserts.AreEqualQuaternion(Quaternion.Euler(0, 90, 0), testTransform.rotation.Value); // Check local
+            CustomAsserts.AreEqualQuaternion(Quaternion.Euler(0, 90, 0), testTransform.globalRotation); // Check global
+        }
+
+        [Test]
+        public void SetGlobalRotationWithParent()
+        {
+            var testScene = new DclScene();
+
+            var parentEntity = new DclEntity(Guid.NewGuid(), "testEntity");
+            testScene.AddEntity(parentEntity);
+
+            var parentTransform = new DclTransformComponent(new Vector3(0, 0, 0), Quaternion.Euler(0, 90, 0), Vector3.one);
+            parentEntity.AddComponent(parentTransform);
+
+            var testEntity = new DclEntity(Guid.NewGuid(), "testEntity", parentEntity.Id);
+            testScene.AddEntity(testEntity);
+
+            var testTransform = new DclTransformComponent(new Vector3(0, 0, 0), Quaternion.identity, Vector3.one);
+            testEntity.AddComponent(testTransform);
+
+            testTransform.globalRotation = Quaternion.Euler(0, 45, 0);
+
+            CustomAsserts.AreEqualQuaternion(Quaternion.Euler(0, -45, 0), testTransform.rotation.Value); // Check local
+            CustomAsserts.AreEqualQuaternion(Quaternion.Euler(0, 45, 0), testTransform.globalRotation); // Check global
+
+            // add a third entity to test the global rotation of the child
+            var testEntity2 = new DclEntity(Guid.NewGuid(), "testEntity2", testEntity.Id);
+            testScene.AddEntity(testEntity2);
+
+            var testTransform2 = new DclTransformComponent(new Vector3(0, 0, 0), Quaternion.identity, Vector3.one);
+            testEntity2.AddComponent(testTransform2);
+
+            testTransform2.globalRotation = Quaternion.Euler(0, 45, 0);
+
+            CustomAsserts.AreEqualQuaternion(Quaternion.Euler(0, 0, 0), testTransform2.rotation.Value); // Check local
+            CustomAsserts.AreEqualQuaternion(Quaternion.Euler(0, 45, 0), testTransform2.globalRotation); // Check global
+        }
     }
 }

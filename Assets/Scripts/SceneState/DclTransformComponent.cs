@@ -81,7 +81,18 @@ namespace Assets.Scripts.SceneState
 
         public Quaternion globalRotation
         {
-            get { return Entity.Parent == null ? rotation.Value : Entity.Parent.GetTransformComponent().globalRotation * rotation.Value; }
+            get => Entity.Parent == null ? rotation.Value : Entity.Parent.GetTransformComponent().globalRotation * rotation.Value;
+            set
+            {
+                if (Entity.Parent == null)
+                {
+                    rotation.SetFloatingValue(value);
+                }
+                else
+                {
+                    rotation.SetFloatingValue(Quaternion.Inverse(Entity.Parent.GetTransformComponent().globalRotation) * value);
+                }
+            }
         }
 
         public Matrix4x4 globalFixedTransformMatrix
@@ -121,10 +132,7 @@ namespace Assets.Scripts.SceneState
             }
         }
 
-        public Quaternion globalFixedRotation
-        {
-            get { return globalFixedTransformMatrix.rotation; }
-        }
+        public Quaternion globalFixedRotation => Entity.Parent == null ? rotation.FixedValue : Entity.Parent.GetTransformComponent().globalFixedRotation * rotation.FixedValue;
 
         public bool Validate()
         {

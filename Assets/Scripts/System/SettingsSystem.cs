@@ -241,30 +241,40 @@ namespace Assets.Scripts.System
         {
             _editorEvents = editorEvents;
 
-            var userSettings = new List<ISetting>();
 
             uiScalingFactor = new FloatClampedUserSetting(this, "UI Scaling", 1.0f, 0.5f, 3.0f);
-            userSettings.Add(uiScalingFactor);
-
             mouseSensitivity = new FloatClampedUserSetting(this, "Mouse Sensitivity", 1.0f, 0.1f, 10.0f);
-            userSettings.Add(mouseSensitivity);
-
             gizmoSize = new FloatClampedUserSetting(this, "Gizmo Size", 1.0f, 0.1f, 10.0f);
-            userSettings.Add(gizmoSize);
-
             applicationTargetFramerate = new IntClampedUserSetting(this, "Maximum frame rate", 120, 5, 1000);
-            userSettings.Add(applicationTargetFramerate);
 
-            ShownSettings.Add("User Settings", userSettings);
+
+            ShownSettings.Add(
+                "User Settings",
+                new List<ISetting>
+                {
+                    uiScalingFactor,
+                    mouseSensitivity,
+                    gizmoSize,
+                    applicationTargetFramerate
+                });
 
             //Hidden Settings
             //Saves Panel Size
             panelSize = new StringUserSetting(this, "Panel Size","");
 
+
             //Gizmo Settings
             selectedGizmoTool = new IntUserSetting(this, "Selected Gizmo Tool", 0);
             gizmoLocalGlobalContext = new IntUserSetting(this, "Gizmo Local Global Context", 0);
             gizmoToolDoesSnap = new IntUserSetting(this, "Gizmo Tool Does Snap", 0);
+
+            ShownSettings.Add(
+                "Tmp Gizmo Settings",
+                new List<ISetting>
+                {
+                    gizmoLocalGlobalContext,
+                    gizmoToolDoesSnap
+                });
         }
 
         public Dictionary<string, List<ISetting>> ShownSettings = new Dictionary<string, List<ISetting>>();

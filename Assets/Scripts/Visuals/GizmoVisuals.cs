@@ -77,7 +77,15 @@ namespace Assets.Scripts.Visuals
 
             var selectedTransform = selectedEntity.GetTransformComponent();
             activeGizmo.transform.position = selectedTransform.globalPosition;
-            activeGizmo.transform.rotation = selectedTransform.globalRotation;
+
+            var isToolContextLocal =
+                gizmoToolSystem.gizmoToolContext == GizmoToolSystem.ToolContext.Local ||
+                gizmoToolSystem.gizmoToolMode == GizmoToolSystem.ToolMode.Scale;
+
+            activeGizmo.transform.rotation =
+                isToolContextLocal ?
+                    selectedTransform.globalRotation :
+                    Quaternion.identity;
         }
 
         private void HideGizmo()
