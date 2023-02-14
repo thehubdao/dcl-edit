@@ -24,6 +24,7 @@ namespace Assets.Scripts.System
         private TypeScriptGenerationSystem typeScriptGenerationSystem;
         private SceneViewSystem sceneViewSystem;
         private MenuBarSystem menuBarSystem;
+        private SettingsSystem settingsSystem;
 
         [Inject]
         public void Construct(
@@ -36,7 +37,8 @@ namespace Assets.Scripts.System
             WorkspaceSaveSystem workspaceSaveSystem,
             TypeScriptGenerationSystem typeScriptGenerationSystem,
             SceneViewSystem sceneViewSystem,
-            MenuBarSystem menuBarSystem)
+            MenuBarSystem menuBarSystem,
+            SettingsSystem settingsSystem)
         {
             this.sceneManagerState = sceneManagerState;
             this.pathState = pathState;
@@ -48,7 +50,7 @@ namespace Assets.Scripts.System
             this.typeScriptGenerationSystem = typeScriptGenerationSystem;
             this.sceneViewSystem = sceneViewSystem;
             this.menuBarSystem = menuBarSystem;
-
+            this.settingsSystem = settingsSystem;
             CreateMenuBarItems();
         }
 
@@ -104,24 +106,17 @@ namespace Assets.Scripts.System
         /// <summary>
         /// Set last opened scene on start up
         /// </summary>
-        public void SetLastOpenedSceneAsCurrentScene(SettingsSystem.StringUserSetting openLastOpenedScene)
+        public void SetLastOpenedSceneAsCurrentScene()
         {
             Guid lastSceneIndex;
 
-            if (Guid.TryParse(openLastOpenedScene.Get(), out lastSceneIndex))
+            if (Guid.TryParse(settingsSystem.openLastOpenedScene.Get(), out lastSceneIndex))
             {
-                var lastSceneDirectoryState = new SceneDirectoryState(null, lastSceneIndex, DclEditVersion.Alpha);
-                sceneManagerState.AddSceneDirectoryState(lastSceneDirectoryState);
-                //SaveCurrentScene();
-                SaveScene(lastSceneDirectoryState);
                 SetCurrentScene(lastSceneIndex);
-                openLastOpenedScene.Set(lastSceneIndex.ToString());
             }
             else if (lastSceneIndex == Guid.Empty)
             {
                 SetNewSceneAsCurrentScene();
-                var newSceneIndex = sceneManagerState.currentSceneIndex;
-                openLastOpenedScene.Set(newSceneIndex.ToString());
             }
         }
 
@@ -170,6 +165,8 @@ namespace Assets.Scripts.System
         {
             sceneManagerState.SetCurrentSceneIndex(id);
             sceneViewSystem.SetUpCurrentScene();
+            var newSceneIndex = sceneManagerState.currentSceneIndex;
+            settingsSystem.openLastOpenedScene.Set(newSceneIndex.ToString());
         }
 
         /// <summary>
