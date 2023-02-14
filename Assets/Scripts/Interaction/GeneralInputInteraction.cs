@@ -145,7 +145,7 @@ namespace Assets.Scripts.Interaction
                                         mousePosViewport.y >= 0 &&
                                         mousePosViewport.y < 1;
                 isMouseOverContextMenu = contextMenuSystem.IsMouseOverMenu();
-                isMouseOverGizmoModeMenu = unityState.GizmoModeMenu.GetComponent<GizmoModeInteraction>().IsMouseOverGizmoModeMenu;
+                isMouseOverGizmoModeMenu = unityState.GizmoModeMenu.GetComponent<GizmoModeInteraction>().isMouseOverGizmoModeMenu;
                 isMouseOverDialog = dialogSystem.IsMouseOverDialog();
             }
 
@@ -241,8 +241,11 @@ namespace Assets.Scripts.Interaction
                     {
                         inputState.InState = InputState.InStateType.HoldingGizmoTool;
 
-                        var gizmoDir = interface3DState.CurrentlyHoveredObject.GetComponent<GizmoDirection>();
-                        if (gizmoDir == null) break;
+                        if (!interface3DState.CurrentlyHoveredObject.TryGetComponent<GizmoDirection>(out var gizmoDir))
+                        {
+                            break;
+                        }
+
                         var localGizmoDir = gizmoDir.GetVector();
 
                         gizmoToolSystem.StartHolding(localGizmoDir, mouseRay);
@@ -336,19 +339,19 @@ namespace Assets.Scripts.Interaction
             // When pressing Translate hotkey, enter translation gizmo mode
             if (inputSystemAsset.Hotkeys.Translate.triggered)
             {
-                gizmoToolSystem.SetGizmoMode(GizmoState.Mode.Translate);
+                gizmoToolSystem.gizmoToolMode = GizmoToolSystem.ToolMode.Translate;
             }
 
             // When pressing Rotate hotkey, enter rotation gizmo mode
             if (inputSystemAsset.Hotkeys.Rotate.triggered)
             {
-                gizmoToolSystem.SetGizmoMode(GizmoState.Mode.Rotate);
+                gizmoToolSystem.gizmoToolMode = GizmoToolSystem.ToolMode.Rotate;
             }
 
             // When pressing Scale hotkey, enter rotation gizmo mode
             if (inputSystemAsset.Hotkeys.Scale.triggered)
             {
-                gizmoToolSystem.SetGizmoMode(GizmoState.Mode.Scale);
+                gizmoToolSystem.gizmoToolMode = GizmoToolSystem.ToolMode.Scale;
             }
         }
 

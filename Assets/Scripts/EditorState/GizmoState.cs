@@ -78,25 +78,6 @@ namespace Assets.Scripts.EditorState
             _editorEvents = editorEvents;
         }
 
-        public enum Mode
-        {
-            Translate,
-            Rotate,
-            Scale
-        }
-
-        private Mode _currentMode;
-
-        public Mode CurrentMode
-        {
-            get => _currentMode;
-            set
-            {
-                _currentMode = value;
-                _editorEvents.InvokeGizmoModeChangeEvent();
-                _editorEvents.InvokeSelectionChangedEvent();
-            }
-        }
 
         // While moving states
 

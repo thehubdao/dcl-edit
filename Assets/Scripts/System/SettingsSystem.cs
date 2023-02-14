@@ -260,6 +260,11 @@ namespace Assets.Scripts.System
             //Hidden Settings
             //Saves Panel Size
             panelSize = new StringUserSetting(this, "Panel Size","");
+
+            //Gizmo Settings
+            selectedGizmoTool = new IntUserSetting(this, "Selected Gizmo Tool", 0);
+            gizmoLocalGlobalContext = new IntUserSetting(this, "Gizmo Local Global Context", 0);
+            gizmoToolDoesSnap = new IntUserSetting(this, "Gizmo Tool Does Snap", 0);
         }
 
         public Dictionary<string, List<ISetting>> ShownSettings = new Dictionary<string, List<ISetting>>();
@@ -267,14 +272,27 @@ namespace Assets.Scripts.System
         public FloatClampedUserSetting uiScalingFactor;
         public FloatClampedUserSetting mouseSensitivity;
         public FloatClampedUserSetting gizmoSize;
-        public IntUserSetting TestInteger;
-        public StringUserSetting TestString;
         public IntClampedUserSetting applicationTargetFramerate;
 
-        public Vec3ProjectSetting TestProjVec3;
-        public StringProjectSetting TestProjString;
 
-        public Vec3SceneSetting TestSceneVec3;
+        /// <summary>
+        /// 0 = Translate
+        /// 1 = Rotate
+        /// 2 = Scale
+        /// </summary>
+        public IntUserSetting selectedGizmoTool;
+
+        /// <summary>
+        /// 0 = Local Context
+        /// 1 = Global Context
+        /// </summary>
+        public IntUserSetting gizmoLocalGlobalContext;
+
+        /// <summary>
+        /// 0 = Does not snap
+        /// 1 = Does snap
+        /// </summary>
+        public IntUserSetting gizmoToolDoesSnap;
 
         public StringUserSetting panelSize;
     }

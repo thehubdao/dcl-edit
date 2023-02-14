@@ -22,20 +22,17 @@ namespace Assets.Scripts.Visuals
 
         // Dependencies
 
-        private GizmoState gizmoState;
-        private UnityState unityState;
+        private GizmoToolSystem gizmoToolSystem;
         private EditorEvents editorEvents;
         private SceneManagerSystem sceneManagerSystem;
 
         [Inject]
         private void Construct(
-            GizmoState gizmoState,
-            UnityState unityState,
+            GizmoToolSystem gizmoToolSystem,
             EditorEvents editorEvents,
             SceneManagerSystem sceneManagerSystem)
         {
-            this.gizmoState = gizmoState;
-            this.unityState = unityState;
+            this.gizmoToolSystem = gizmoToolSystem;
             this.editorEvents = editorEvents;
             this.sceneManagerSystem = sceneManagerSystem;
 
@@ -61,15 +58,15 @@ namespace Assets.Scripts.Visuals
             }
 
             activeGizmo?.SetActive(false);
-            switch (gizmoState.CurrentMode)
+            switch (gizmoToolSystem.gizmoToolMode)
             {
-                case GizmoState.Mode.Translate:
+                case GizmoToolSystem.ToolMode.Translate:
                     activeGizmo = translateGizmoObject;
                     break;
-                case GizmoState.Mode.Rotate:
+                case GizmoToolSystem.ToolMode.Rotate:
                     activeGizmo = rotateGizmoObject;
                     break;
-                case GizmoState.Mode.Scale:
+                case GizmoToolSystem.ToolMode.Scale:
                     activeGizmo = scaleGizmoObject;
                     break;
                 default:

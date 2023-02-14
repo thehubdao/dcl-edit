@@ -124,9 +124,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b96cb5082b62b9429361cd377a5b514, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _translateButton: {fileID: 2800764512185443779}
-  _rotateButton: {fileID: 1069512347793190789}
-  _scaleButton: {fileID: 3256798531659918249}
+  translateButton: {fileID: 2800764512185443779}
+  rotateButton: {fileID: 1069512347793190789}
+  scaleButton: {fileID: 3256798531659918249}
 --- !u!1001 &1317774691215050334
 PrefabInstance:
   m_ObjectHideFlags: 0

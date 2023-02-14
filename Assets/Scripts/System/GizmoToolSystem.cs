@@ -2,6 +2,7 @@ using System;
 using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
 using UnityEngine;
+using UnityEngine.Android;
 using UnityEngine.Assertions;
 using Zenject;
 using static Assets.Scripts.EditorState.GizmoState.MouseContextRelevance;
@@ -11,12 +12,26 @@ namespace Assets.Scripts.System
 {
     public class GizmoToolSystem
     {
+        public enum ToolMode
+        {
+            Translate = 0,
+            Rotate = 1,
+            Scale = 2
+        }
+
+        public enum ToolContext
+        {
+            Local = 0,
+            Global = 1
+        }
+
         // Dependencies
         private GizmoState gizmoState;
         private SceneManagerState sceneManagerState;
         private CameraState cameraState;
         private EditorEvents editorEvents;
         private GizmoSizeSystem gizmoSizeSystem;
+        private SettingsSystem settingsSystem;
 
         [Inject]
         private void Construct(
@@ -24,19 +39,53 @@ namespace Assets.Scripts.System
             SceneManagerState sceneManagerState,
             CameraState cameraState,
             EditorEvents editorEvents,
-            GizmoSizeSystem gizmoSizeSystem)
+            GizmoSizeSystem gizmoSizeSystem,
+            SettingsSystem settingsSystem)
         {
             this.gizmoState = gizmoState;
             this.sceneManagerState = sceneManagerState;
             this.cameraState = cameraState;
             this.editorEvents = editorEvents;
             this.gizmoSizeSystem = gizmoSizeSystem;
+            this.settingsSystem = settingsSystem;
         }
 
-        public void SetGizmoMode(GizmoState.Mode value)
+        public ToolMode gizmoToolMode
         {
-            gizmoState.CurrentMode = value;
+            get => (ToolMode) settingsSystem.selectedGizmoTool.Get();
+            set
+            {
+                settingsSystem.selectedGizmoTool.Set((int) value);
+
+                editorEvents.InvokeGizmoModeChangeEvent();
+                editorEvents.InvokeSelectionChangedEvent();
+            }
         }
+
+        public bool isToolSnapping
+        {
+            get => settingsSystem.gizmoToolDoesSnap.Get() > 0;
+            set
+            {
+                settingsSystem.gizmoToolDoesSnap.Set(value ? 1 : 0);
+
+                editorEvents.InvokeGizmoModeChangeEvent();
+                editorEvents.InvokeSelectionChangedEvent();
+            }
+        }
+
+        public ToolContext gizmoToolContext
+        {
+            get => (ToolContext) settingsSystem.gizmoLocalGlobalContext.Get();
+            set
+            {
+                settingsSystem.gizmoLocalGlobalContext.Set((int) value);
+
+                editorEvents.InvokeGizmoModeChangeEvent();
+                editorEvents.InvokeSelectionChangedEvent();
+            }
+        }
+
 
         #region Start holding
 
@@ -50,15 +99,15 @@ namespace Assets.Scripts.System
             Assert.IsNotNull(gizmoState.affectedTransform);
 
             // set plane
-            switch (gizmoState.CurrentMode)
+            switch (gizmoToolMode)
             {
-                case GizmoState.Mode.Translate:
+                case ToolMode.Translate:
                     SetMouseContextForTranslate();
                     break;
-                case GizmoState.Mode.Rotate:
+                case ToolMode.Rotate:
                     SetMouseContextForRotate(mouseRay);
                     break;
-                case GizmoState.Mode.Scale:
+                case ToolMode.Scale:
                     SetMouseContextForScale();
                     break;
                 default:
@@ -205,15 +254,15 @@ namespace Assets.Scripts.System
                     DistanceOnAxis(mousePos, true) - DistanceOnAxis(gizmoState.mouseStartingPosition, true),
                     DistanceOnAxis(mousePos, false) - DistanceOnAxis(gizmoState.mouseStartingPosition, false));
 
-            switch (gizmoState.CurrentMode)
+            switch (gizmoToolMode)
             {
-                case GizmoState.Mode.Translate:
+                case ToolMode.Translate:
                     TranslateWhileHolding(worldSpaceMouseMovementSinceStart);
                     break;
-                case GizmoState.Mode.Rotate:
+                case ToolMode.Rotate:
                     RotateWhileHolding(contextSpaceMouseMovementSinceStart);
                     break;
-                case GizmoState.Mode.Scale:
+                case ToolMode.Scale:
                     ScaleWhileHolding(contextSpaceMouseMovementSinceStart);
                     break;
                 default:

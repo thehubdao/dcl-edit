@@ -1,5 +1,5 @@
-﻿using Assets.Scripts.EditorState;
-using Assets.Scripts.Events;
+﻿using Assets.Scripts.Events;
+using Assets.Scripts.System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -10,20 +10,20 @@ namespace Assets.Scripts.Interaction
     public class GizmoModeInteraction : MonoBehaviour, IPointerDownHandler, IPointerEnterHandler, IPointerExitHandler
     {
         //Dependencies
-        private GizmoState _gizmoState;
-        private EditorEvents _editorEvents;
+        private GizmoToolSystem gizmoToolSystem;
+        private EditorEvents editorEvents;
 
-        public GameObject _translateButton;
-        public GameObject _rotateButton;
-        public GameObject _scaleButton;
+        public GameObject translateButton;
+        public GameObject rotateButton;
+        public GameObject scaleButton;
 
-        public bool IsMouseOverGizmoModeMenu { get; set; }
+        public bool isMouseOverGizmoModeMenu { get; set; }
 
         [Inject]
-        private void Construct(GizmoState gizmoState, EditorEvents editorEvents)
+        private void Construct(GizmoToolSystem gizmoState, EditorEvents editorEvents)
         {
-            _gizmoState = gizmoState;
-            _editorEvents = editorEvents;
+            gizmoToolSystem = gizmoState;
+            this.editorEvents = editorEvents;
             SetupListeners();
         }
 
@@ -34,27 +34,27 @@ namespace Assets.Scripts.Interaction
 
         public void SetupListeners()
         {
-            _editorEvents.onUpdateGizmoModeMenu += UpdateVisuals;
+            editorEvents.onUpdateGizmoModeMenu += UpdateVisuals;
         }
 
         private void UpdateVisuals()
         {
-            _translateButton.GetComponent<Button>().interactable = _gizmoState.CurrentMode != GizmoState.Mode.Translate;
-            _rotateButton.GetComponent<Button>().interactable = _gizmoState.CurrentMode != GizmoState.Mode.Rotate;
-            _scaleButton.GetComponent<Button>().interactable = _gizmoState.CurrentMode != GizmoState.Mode.Scale;
+            translateButton.GetComponent<Button>().interactable = gizmoToolSystem.gizmoToolMode != GizmoToolSystem.ToolMode.Translate;
+            rotateButton.GetComponent<Button>().interactable = gizmoToolSystem.gizmoToolMode != GizmoToolSystem.ToolMode.Rotate;
+            scaleButton.GetComponent<Button>().interactable = gizmoToolSystem.gizmoToolMode != GizmoToolSystem.ToolMode.Scale;
         }
 
         public void SetManipulatorTranslate()
         {
-            _gizmoState.CurrentMode = GizmoState.Mode.Translate;
+            gizmoToolSystem.gizmoToolMode = GizmoToolSystem.ToolMode.Translate;
         }
         public void SetManipulatorRotate()
         {
-            _gizmoState.CurrentMode = GizmoState.Mode.Rotate;
+            gizmoToolSystem.gizmoToolMode = GizmoToolSystem.ToolMode.Rotate;
         }
         public void SetManipulatorScale()
         {
-            _gizmoState.CurrentMode = GizmoState.Mode.Scale;
+            gizmoToolSystem.gizmoToolMode = GizmoToolSystem.ToolMode.Scale;
         }
         public void OnPointerDown(PointerEventData eventData)
         {
@@ -63,12 +63,12 @@ namespace Assets.Scripts.Interaction
 
         public void OnPointerEnter(PointerEventData eventData)
         {
-            IsMouseOverGizmoModeMenu = true;
+            isMouseOverGizmoModeMenu = true;
         }
 
         public void OnPointerExit(PointerEventData eventData)
         {
-            IsMouseOverGizmoModeMenu = false;
+            isMouseOverGizmoModeMenu = false;
         }
     }
 }
