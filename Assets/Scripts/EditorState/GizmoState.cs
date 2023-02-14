@@ -100,6 +100,14 @@ namespace Assets.Scripts.EditorState
 
         // While moving states
 
+        public void SetMouseContext(Vector3 centerPos, Vector3 xVector, Vector3 yVector, GizmoState.MouseContextRelevance mouseContextRelevance)
+        {
+            mouseContextCenter = centerPos;
+            mouseContextPrimaryVector = xVector;
+            mouseContextSecondaryVector = yVector;
+            this.mouseContextRelevance = mouseContextRelevance;
+        }
+
         /// <summary>
         /// The transform, where the gizmo operations are applied to 
         /// </summary>
@@ -116,7 +124,7 @@ namespace Assets.Scripts.EditorState
         /// <remarks>
         /// Mouse position context. The center and the two Vectors describe the plane, on that the mouse position will be mapped in 3D space
         /// </remarks>
-        public Vector3 mouseContextCenter;
+        public Vector3 mouseContextCenter { get; private set; }
 
         /// <summary>
         /// Describes the X Vector. When the mouse points exactly at this vectors position, the resulting mouse movement coordinate will be (1,0). 
@@ -124,7 +132,7 @@ namespace Assets.Scripts.EditorState
         /// <remarks>
         /// Mouse position context. The center and the two Vectors describe the plane, on that the mouse position will be mapped in 3D space
         /// </remarks>
-        public Vector3 mouseContextPrimaryVector;
+        public Vector3 mouseContextPrimaryVector { get; private set; }
 
         /// <summary>
         /// Describes the Y Vector. When the mouse points exactly at this vectors position, the resulting mouse movement coordinate will be (0,1). 
@@ -132,12 +140,12 @@ namespace Assets.Scripts.EditorState
         /// <remarks>
         /// Mouse position context. The center and the two Vectors describe the plane, on that the mouse position will be mapped in 3D space
         /// </remarks>
-        public Vector3 mouseContextSecondaryVector;
+        public Vector3 mouseContextSecondaryVector { get; private set; }
 
         /// <summary>
         /// Tells, if only one axis or the entire plane is relevant
         /// </summary>
-        public MouseContextRelevance mouseContextRelevance;
+        public MouseContextRelevance mouseContextRelevance { get; private set; }
 
         /// <summary>
         /// The plane, that is defined by the position and the vectors

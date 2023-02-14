@@ -1,11 +1,11 @@
 using System;
 using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
-using Assets.Scripts.Utility;
 using UnityEngine;
 using UnityEngine.Assertions;
 using Zenject;
 using static Assets.Scripts.EditorState.GizmoState.MouseContextRelevance;
+using static Assets.Scripts.Utility.StaticUtilities;
 
 namespace Assets.Scripts.System
 {
@@ -16,18 +16,21 @@ namespace Assets.Scripts.System
         private SceneManagerState sceneManagerState;
         private CameraState cameraState;
         private EditorEvents editorEvents;
+        private GizmoSizeSystem gizmoSizeSystem;
 
         [Inject]
         private void Construct(
             GizmoState gizmoState,
             SceneManagerState sceneManagerState,
             CameraState cameraState,
-            EditorEvents editorEvents)
+            EditorEvents editorEvents,
+            GizmoSizeSystem gizmoSizeSystem)
         {
             this.gizmoState = gizmoState;
             this.sceneManagerState = sceneManagerState;
             this.cameraState = cameraState;
             this.editorEvents = editorEvents;
+            this.gizmoSizeSystem = gizmoSizeSystem;
         }
 
         public void SetGizmoMode(GizmoState.Mode value)
@@ -42,7 +45,7 @@ namespace Assets.Scripts.System
             // generate GizmoDirection
             gizmoState.gizmoDirection = new GizmoState.GizmoDirection(gizmoDirectionVector);
 
-            // get the transform context
+            // get the affected transform
             gizmoState.affectedTransform = sceneManagerState.GetCurrentDirectoryState()?.currentScene?.SelectionState.PrimarySelectedEntity?.GetTransformComponent();
             Assert.IsNotNull(gizmoState.affectedTransform);
 
@@ -53,7 +56,7 @@ namespace Assets.Scripts.System
                     SetMouseContextForTranslate();
                     break;
                 case GizmoState.Mode.Rotate:
-                    SetMouseContextForRotate();
+                    SetMouseContextForRotate(mouseRay);
                     break;
                 case GizmoState.Mode.Scale:
                     SetMouseContextForScale();
@@ -72,9 +75,41 @@ namespace Assets.Scripts.System
             SetMouseContextForAxisBasedTools();
         }
 
-        private void SetMouseContextForRotate()
+        private void SetMouseContextForRotate(Ray mouseRay)
         {
-            throw new NotImplementedException();
+            // make plane in the middle of the tool and aligned with the grabbed torus
+            var centerPosition = gizmoState.affectedTransform.globalPosition;
+            var contextRotation = gizmoState.affectedTransform.globalRotation; // TODO: allow local/global context rotation. Only local context, currently
+
+            var planeNormal = contextRotation * gizmoState.gizmoDirection.GetDirectionVector();
+            var toolPlane = new Plane(planeNormal, centerPosition);
+
+            // find the current mouse position on that plane
+            var mousePositionOnPlane = RayOnPlane(mouseRay, toolPlane);
+
+            // make a "click" vector from the tool center to that clicked position
+            var clickVector = VectorFromTo(centerPosition, mousePositionOnPlane);
+
+            // change that click vector to be of the length of the torus radius
+            var clickVectorOnTorus = clickVector.normalized * gizmoSizeSystem.GetGizmoSize(centerPosition);
+
+            // to get the center of the mouse context we need to add the tool center to the click vector
+            var mouseContextCenterPosition = centerPosition + clickVectorOnTorus;
+
+            // find perpendicular vector of the click vector and the normal of the torus plane
+            var perpendicularVector = Vector3.Cross(clickVector, planeNormal).normalized;
+
+            // change the perpendicular vector to be of the length half pi times tool radius
+            var perpendicularVectorProperLength = perpendicularVector * gizmoSizeSystem.GetGizmoSize(centerPosition) * Mathf.PI / 2;
+
+            // this is the primary axis of the mouse context
+            // when moving the mouse by one in the mouse context that translates to a rotation of 90 degrees
+            var mouseContextPrimaryAxis = perpendicularVectorProperLength;
+
+            // set the secondary axis of the mouse context
+            var mouseContextSecondaryAxis = FigureOutMissingAxisBasedOnCameraPosition(centerPosition, mouseContextPrimaryAxis);
+
+            gizmoState.SetMouseContext(mouseContextCenterPosition, mouseContextPrimaryAxis, mouseContextSecondaryAxis, OnlyPrimaryAxis);
         }
 
         private void SetMouseContextForScale()
@@ -105,7 +140,7 @@ namespace Assets.Scripts.System
                 var primaryAxisRotated = contextRotation * primaryAxisBase;
                 var secondaryAxisRotated = FigureOutMissingAxisBasedOnCameraPosition(centerPosition, primaryAxisRotated);
 
-                SetMouseContext(centerPosition, primaryAxisRotated, secondaryAxisRotated, mouseContextRelevance: OnlyPrimaryAxis);
+                gizmoState.SetMouseContext(centerPosition, primaryAxisRotated, secondaryAxisRotated, mouseContextRelevance: OnlyPrimaryAxis);
 
                 return;
             }
@@ -119,7 +154,7 @@ namespace Assets.Scripts.System
                 var primaryAxisRotated = contextRotation * primaryAxisBase;
                 var secondaryAxisRotated = contextRotation * secondaryAxisBase;
 
-                SetMouseContext(centerPosition, primaryAxisRotated, secondaryAxisRotated, mouseContextRelevance: EntirePlane);
+                gizmoState.SetMouseContext(centerPosition, primaryAxisRotated, secondaryAxisRotated, mouseContextRelevance: EntirePlane);
 
                 return;
             }
@@ -130,23 +165,16 @@ namespace Assets.Scripts.System
                 var primaryAxis = cameraState.Rotation * Vector3.right;
                 var secondaryAxis = FigureOutMissingAxisBasedOnCameraPosition(centerPosition, primaryAxis);
 
-                SetMouseContext(centerPosition, primaryAxis, secondaryAxis, mouseContextRelevance: EntirePlane);
+                gizmoState.SetMouseContext(centerPosition, primaryAxis, secondaryAxis, mouseContextRelevance: EntirePlane);
 
                 return; // ReSharper disable once RedundantJumpStatement
             }
         }
 
-        private void SetMouseContext(Vector3 centerPos, Vector3 xVector, Vector3 yVector, GizmoState.MouseContextRelevance mouseContextRelevance)
-        {
-            gizmoState.mouseContextCenter = centerPos;
-            gizmoState.mouseContextPrimaryVector = xVector;
-            gizmoState.mouseContextSecondaryVector = yVector;
-            gizmoState.mouseContextRelevance = mouseContextRelevance;
-        }
 
         private Vector3 FigureOutMissingAxisBasedOnCameraPosition(Vector3 centerPos, Vector3 primaryAxisVector)
         {
-            var centerToCameraVector = centerPos.VectorTo(cameraState.Position);
+            var centerToCameraVector = VectorFromTo(centerPos, cameraState.Position);
 
             var perpendicularVector = Vector3.Cross(primaryAxisVector, centerToCameraVector);
 
@@ -163,7 +191,7 @@ namespace Assets.Scripts.System
             var mousePos = RayOnPlane(mouseRay, gizmoState.mouseContextPlane);
 
             // get total mouse movement in world space from start
-            var worldSpaceMouseMovementSinceStart = gizmoState.mouseStartingPosition.VectorTo(mousePos);
+            var worldSpaceMouseMovementSinceStart = VectorFromTo(gizmoState.mouseStartingPosition, mousePos);
 
             // if the currently hold tool uses only one axis and not a plane, project the moved vector onto the primary mouse context axis
             if (gizmoState.mouseContextRelevance == OnlyPrimaryAxis)
@@ -183,7 +211,7 @@ namespace Assets.Scripts.System
                     TranslateWhileHolding(worldSpaceMouseMovementSinceStart);
                     break;
                 case GizmoState.Mode.Rotate:
-                    throw new NotImplementedException();
+                    RotateWhileHolding(contextSpaceMouseMovementSinceStart);
                     break;
                 case GizmoState.Mode.Scale:
                     ScaleWhileHolding(contextSpaceMouseMovementSinceStart);
@@ -199,6 +227,16 @@ namespace Assets.Scripts.System
         private void TranslateWhileHolding(Vector3 mouseMovementVectorSinceStart)
         {
             gizmoState.affectedTransform.globalPosition = gizmoState.affectedTransform.globalFixedPosition + mouseMovementVectorSinceStart;
+        }
+
+        private void RotateWhileHolding(Vector2 contextSpaceMouseMovementSinceStart)
+        {
+            var additionalRotation = Quaternion.Euler(
+                gizmoState.gizmoDirection.isOnlyX() ? contextSpaceMouseMovementSinceStart.x * -90 : 0,
+                gizmoState.gizmoDirection.isOnlyY() ? contextSpaceMouseMovementSinceStart.x * -90 : 0,
+                gizmoState.gizmoDirection.isOnlyZ() ? contextSpaceMouseMovementSinceStart.x * -90 : 0);
+
+            gizmoState.affectedTransform.rotation.SetFloatingValue(gizmoState.affectedTransform.rotation.FixedValue * additionalRotation);
         }
 
         private void ScaleWhileHolding(Vector2 contextSpaceMouseMovementSinceStart)
