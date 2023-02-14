@@ -5,7 +5,6 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
 using System.Linq;
-using UnityEditor;
 using UnityEngine;
 using USFB;
 using Zenject;
@@ -247,7 +246,7 @@ namespace Assets.Scripts.System
             // Strip path inside a dcl scene folder. This allows to save as a already existing scene.
             newPath = newPath.Substring(0, newPath.IndexOf(".dclscene") + 9);
 
-            Guid newId = default;
+            Guid newId = Guid.Empty;
             // remove any potential scene that will be overridden
             if (sceneManagerState.TryGetDirectoryState(newPath, out SceneDirectoryState sceneDirectoryStateToOverride))
             {
