@@ -246,25 +246,30 @@ namespace Assets.Scripts.System
             // calculate mouse on context plane
             var mousePos = RayOnPlane(mouseRay, gizmoState.mouseContextPlane);
 
-            // get total mouse movement in world space from start
-            var worldSpaceMouseMovementSinceStart = VectorFromTo(gizmoState.mouseStartingPosition, mousePos);
-
-            // if the currently hold tool uses only one axis and not a plane, project the moved vector onto the primary mouse context axis
-            if (gizmoState.mouseContextRelevance == OnlyPrimaryAxis)
-            {
-                worldSpaceMouseMovementSinceStart = Vector3.Project(worldSpaceMouseMovementSinceStart, gizmoState.mouseContextPrimaryVector);
-            }
-
             // get total mouse movement in mouse context space from start. Movement on Primary axis is in x, movement on Secondary axis is in y
             var contextSpaceMouseMovementSinceStart =
                 new Vector2(
                     DistanceOnAxis(mousePos, true) - DistanceOnAxis(gizmoState.mouseStartingPosition, true),
                     DistanceOnAxis(mousePos, false) - DistanceOnAxis(gizmoState.mouseStartingPosition, false));
 
+            if (isToolSnapping)
+            {
+                var snappingDistance = gizmoToolMode switch
+                {
+                    ToolMode.Translate => settingsSystem.gizmoToolTranslateSnapping.Get(),
+                    ToolMode.Rotate => settingsSystem.gizmoToolRotateSnapping.Get() / 90,
+                    ToolMode.Scale => settingsSystem.gizmoToolScaleSnapping.Get(),
+                    _ => throw new ArgumentOutOfRangeException()
+                };
+
+                contextSpaceMouseMovementSinceStart.x = SnapValue(contextSpaceMouseMovementSinceStart.x, snappingDistance);
+                contextSpaceMouseMovementSinceStart.y = SnapValue(contextSpaceMouseMovementSinceStart.y, snappingDistance);
+            }
+
             switch (gizmoToolMode)
             {
                 case ToolMode.Translate:
-                    TranslateWhileHolding(worldSpaceMouseMovementSinceStart);
+                    TranslateWhileHolding(contextSpaceMouseMovementSinceStart);
                     break;
                 case ToolMode.Rotate:
                     RotateWhileHolding(contextSpaceMouseMovementSinceStart);
@@ -279,10 +284,18 @@ namespace Assets.Scripts.System
             editorEvents.InvokeSelectionChangedEvent();
         }
 
-
-        private void TranslateWhileHolding(Vector3 mouseMovementVectorSinceStart)
+        private void TranslateWhileHolding(Vector2 contextSpaceMouseMovementSinceStart)
         {
-            gizmoState.affectedTransform.globalPosition = gizmoState.affectedTransform.globalFixedPosition + mouseMovementVectorSinceStart;
+            var mouseMovementOnPrimaryAxis = gizmoState.mouseContextPrimaryVector * contextSpaceMouseMovementSinceStart.x;
+
+            var mouseMovementOnSecondaryAxis =
+                gizmoState.mouseContextRelevance == EntirePlane ?
+                    gizmoState.mouseContextSecondaryVector * contextSpaceMouseMovementSinceStart.y :
+                    Vector3.zero;
+
+            var worldMouseMovementSinceStart = mouseMovementOnPrimaryAxis + mouseMovementOnSecondaryAxis;
+
+            gizmoState.affectedTransform.globalPosition = gizmoState.affectedTransform.globalFixedPosition + worldMouseMovementSinceStart;
         }
 
         private void RotateWhileHolding(Vector2 contextSpaceMouseMovementSinceStart)
@@ -342,6 +355,16 @@ namespace Assets.Scripts.System
             var distanceOnAxis = normalizedDistanceOnAxis / axis.magnitude;
 
             return distanceOnAxis;
+        }
+
+        private float SnapValue(float value, float distance)
+        {
+            Assert.IsTrue(distance > 0);
+
+            var normalizedValue = value / distance;
+            var flooredValue = Mathf.Round(normalizedValue);
+            var flooredValueInOriginalSpace = flooredValue * distance;
+            return flooredValueInOriginalSpace;
         }
 
         #endregion

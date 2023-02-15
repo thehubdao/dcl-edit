@@ -275,6 +275,19 @@ namespace Assets.Scripts.System
                     gizmoLocalGlobalContext,
                     gizmoToolDoesSnap
                 });
+
+            gizmoToolTranslateSnapping = new FloatUserSetting(this, "Gizmo Tool Translate Snapping", 0.25f);
+            gizmoToolRotateSnapping = new FloatUserSetting(this, "Gizmo Tool Rotate Snapping", 15f); // degrees
+            gizmoToolScaleSnapping = new FloatUserSetting(this, "Gizmo Tool Scale Snapping", 0.25f);
+
+            ShownSettings.Add(
+                "Gizmo Tool Snapping",
+                new List<ISetting>
+                {
+                    gizmoToolTranslateSnapping,
+                    gizmoToolRotateSnapping,
+                    gizmoToolScaleSnapping
+                });
         }
 
         public Dictionary<string, List<ISetting>> ShownSettings = new Dictionary<string, List<ISetting>>();
@@ -303,6 +316,11 @@ namespace Assets.Scripts.System
         /// 1 = Does snap
         /// </summary>
         public IntUserSetting gizmoToolDoesSnap;
+
+
+        public FloatUserSetting gizmoToolTranslateSnapping;
+        public FloatUserSetting gizmoToolRotateSnapping;
+        public FloatUserSetting gizmoToolScaleSnapping;
 
         public StringUserSetting panelSize;
     }

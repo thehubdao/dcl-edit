@@ -70,13 +70,13 @@ namespace Assets.Scripts.EditorState
         }
 
         // Dependencies
-        private EditorEvents _editorEvents;
-
-        [Inject]
-        private void Construct(EditorEvents editorEvents)
-        {
-            _editorEvents = editorEvents;
-        }
+        //private EditorEvents _editorEvents;
+        //
+        //[Inject]
+        //private void Construct(EditorEvents editorEvents)
+        //{
+        //    _editorEvents = editorEvents;
+        //}
 
 
         // While moving states
