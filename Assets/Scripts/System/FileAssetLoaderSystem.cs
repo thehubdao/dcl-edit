@@ -9,6 +9,7 @@ using Assets.Scripts.Utility;
 using UnityEngine;
 using Zenject;
 using Object = UnityEngine.Object;
+using UnityGLTF;
 
 namespace Assets.Scripts.System
 {
@@ -373,10 +374,12 @@ namespace Assets.Scripts.System
         {
             ModelAssetData CreateCopyOfCachedModel(ModelAssetData data)
             {
-                GameObject copy = Object.Instantiate(data.data);
-                copy.SetActive(true);
-                copy.transform.SetParent(null);
-                return new ModelAssetData(id, copy);
+                InstantiatedGLTFObject component = data.data.GetComponent<InstantiatedGLTFObject>().Duplicate();
+                //GameObject copy = Object.Instantiate(data.data);
+                //copy.SetActive(true);
+                component.transform.SetParent(null);
+
+                return new ModelAssetData(id, component.GetComponent<InstantiatedGLTFObject>().gameObject);
             }
 
             try
