@@ -375,8 +375,7 @@ namespace Assets.Scripts.System
             ModelAssetData CreateCopyOfCachedModel(ModelAssetData data)
             {
                 InstantiatedGLTFObject component = data.data.GetComponent<InstantiatedGLTFObject>().Duplicate();
-                //GameObject copy = Object.Instantiate(data.data);
-                //copy.SetActive(true);
+                component.GetComponent<InstantiatedGLTFObject>().gameObject.SetActive(true);
                 component.transform.SetParent(null);
 
                 return new ModelAssetData(id, component.GetComponent<InstantiatedGLTFObject>().gameObject);
