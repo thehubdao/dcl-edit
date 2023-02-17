@@ -290,6 +290,18 @@ namespace Assets.Scripts.System
 
             return GetScene(sceneManagerState.currentSceneIndex);
         }
+        
+        [NotNull]
+        public DclScene GetCurrentScene()
+        {
+            //return null if no scene is open
+            if (sceneManagerState.currentSceneIndex == Guid.Empty)
+            {
+                throw new NoCurrentSceneException();
+            }
+
+            return GetScene(sceneManagerState.currentSceneIndex);
+        }
 
         [NotNull]
         public DclScene GetScene(Guid id)
@@ -367,5 +379,16 @@ namespace Assets.Scripts.System
             public JObject settings;
             public string dclEditVersionNumber;
         }
+    }
+    
+    public class NoCurrentSceneException : Exception
+    {
+        public NoCurrentSceneException() { }
+
+        public NoCurrentSceneException(string message)
+            : base(message) { }
+
+        public NoCurrentSceneException(string message, Exception inner)
+            : base(message, inner) { }
     }
 }
