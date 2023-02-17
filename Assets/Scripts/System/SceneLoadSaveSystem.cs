@@ -207,7 +207,7 @@ namespace Assets.Scripts.System
             public string customName;
             public Guid guid;
             public Guid? parentGuid;
-            public float? hierarchyOrder;
+            public float hierarchyOrder;
             public bool isExposed;
             public List<DclComponentData> components;
             public string dclEditVersionNumber;
@@ -240,12 +240,6 @@ namespace Assets.Scripts.System
                 {
                     throw new SceneLoadException($"Guid was not set for entity {customName}");
                 }
-                
-                if (hierarchyOrder == null)
-                {
-                    throw new SceneLoadException($"HierarchyOrder was not set for entity {customName}");
-                }
-
 
                 var dclEntity = new DclEntity(guid, customName, parentGuid ?? default, isExposed, hierarchyOrder);
 

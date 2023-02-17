@@ -54,7 +54,7 @@ public class CommandFactorySystem
         return new DuplicateEntity(entityId, hierarchyOrder);
     }
 
-    public AddModelAssetToScene CreateAddModelAssetToScene(Guid entityId, string entityCustomName, Guid assetId, Vector3 positionInScene, float? hierarchyOrder)
+    public AddModelAssetToScene CreateAddModelAssetToScene(Guid entityId, string entityCustomName, Guid assetId, Vector3 positionInScene, float hierarchyOrder)
     {
         return new AddModelAssetToScene(entityId, entityCustomName, assetId, positionInScene, hierarchyOrder);
     }
@@ -70,7 +70,7 @@ public class CommandFactorySystem
     }
 
     public AddEntity CreateAddEntity(EntityPresetState.EntityPreset preset, Guid oldPrimarySelection,
-        IEnumerable<Guid> oldSecondarySelection, float? hierarchyOrder, Guid parent = default)
+        IEnumerable<Guid> oldSecondarySelection, float hierarchyOrder, Guid parent = default)
     {
         return new AddEntity(oldPrimarySelection, oldSecondarySelection, preset, hierarchyOrder, parent);
     }
@@ -81,7 +81,7 @@ public class CommandFactorySystem
     }
 
     public ChangeHierarchyOrder CreateChangeHierarchyOrder(DclEntity draggedEntity, DclEntity hoveredEntity,
-        HierarchyExpansionState hierarchyExpansionState, float? newHierarchyOrder, DclEntity newParent)
+        HierarchyExpansionState hierarchyExpansionState, float newHierarchyOrder, DclEntity newParent)
     {
         return new ChangeHierarchyOrder(draggedEntity, hoveredEntity, hierarchyExpansionState, newHierarchyOrder, newParent);
     }

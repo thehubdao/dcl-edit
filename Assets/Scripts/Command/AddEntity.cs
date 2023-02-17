@@ -19,10 +19,10 @@ namespace Assets.Scripts.Command
 
         private readonly SelectionUtility.SelectionWrapper oldSelection;
         
-        private readonly float? hierarchyOrder;
+        private readonly float hierarchyOrder;
 
         public AddEntity(Guid oldPrimarySelection, IEnumerable<Guid> oldSecondarySelection,
-            EntityPresetState.EntityPreset preset, float? hierarchyOrder, Guid parent = default)
+            EntityPresetState.EntityPreset preset, float hierarchyOrder, Guid parent = default)
         {
             this.preset = preset;
             this.parent = parent;

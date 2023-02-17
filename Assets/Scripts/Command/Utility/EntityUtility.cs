@@ -15,7 +15,7 @@ namespace Assets.Scripts.Command.Utility
         /// <param name="hierarchyOrder">The hierarchy order of the entity</param>
         /// <param name="parent">The parent of the entity</param>
         /// <returns>Reference to new entity</returns>
-        public static DclEntity AddEntity(DclScene scene, Guid id, string name, float? hierarchyOrder,
+        public static DclEntity AddEntity(DclScene scene, Guid id, string name, float hierarchyOrder,
             Guid parent = default)
         {
             DclEntity entity = new DclEntity(id, name, parent, default, hierarchyOrder);

@@ -11,14 +11,14 @@ namespace Assets.Scripts.Command
         private readonly Guid draggedEntityId;
         private readonly Guid hoveredEntityId;
         private readonly Guid startParentId;
-        private readonly float? startHierarchyOrder;
+        private readonly float startHierarchyOrder;
         private readonly bool? startExpansionStateParent;
         private readonly bool? startExpansionStateHoveredEntity;
         private DclEntity startPrimarySelection;
-        private readonly float? newHierarchyOrder;
+        private readonly float newHierarchyOrder;
         private readonly Guid newParentId;
 
-        public ChangeHierarchyOrder(DclEntity draggedEntity, DclEntity hoveredEntity, HierarchyExpansionState hierarchyExpansionState, float? newHierarchyOrder, DclEntity newParent)
+        public ChangeHierarchyOrder(DclEntity draggedEntity, DclEntity hoveredEntity, HierarchyExpansionState hierarchyExpansionState, float newHierarchyOrder, DclEntity newParent)
         {
             if (draggedEntity == null)
             {

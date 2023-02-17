@@ -90,14 +90,9 @@ namespace Assets.Scripts.System
         /// Gets the new calculated hierarchy order, when placing an entity below the last root entity.
         /// </summary>
         /// <returns>The calculated hierarchy order, or null</returns>
-        private float? GetNewHierarchyOrderPlaceLastInRoot()
+        private float GetNewHierarchyOrderPlaceLastInRoot()
         {
             var scene = sceneManagerSystem.GetCurrentScene();
-            
-            if (scene == null)
-            {
-                return null;
-            }
             
             var rootEntities = scene.EntitiesInSceneRoot.ToList();
             
@@ -111,7 +106,7 @@ namespace Assets.Scripts.System
         /// <param name="first">An existing entity</param>
         /// <param name="second">Another existing entity</param>
         /// <returns>The new calculated hierarchy order or the order of the entity</returns>
-        private static float? GetHierarchyOrderPlaceBetweenSiblings(DclEntity entity, DclEntity first, DclEntity second)
+        private static float GetHierarchyOrderPlaceBetweenSiblings(DclEntity entity, DclEntity first, DclEntity second)
         {
             if (entity == first || entity == second)
             {
@@ -125,7 +120,7 @@ namespace Assets.Scripts.System
         /// Gets the new calculated hierarchy order, when placing an entity as a child without existing siblings.
         /// </summary>
         /// <returns>The new calculated hierarchy order</returns>
-        private static float? GetHierarchyOrderPlaceAsOnlyChild()
+        private static float GetHierarchyOrderPlaceAsOnlyChild()
         {
             return 0.0f;
         }
@@ -135,7 +130,7 @@ namespace Assets.Scripts.System
         /// </summary>
         /// <param name="nextSiblingEntity">The existing sibling</param>
         /// <returns>The new calculated hierarchy order</returns>
-        private static float? GetHierarchyOrderPlaceAboveSibling(DclEntity nextSiblingEntity)
+        private static float GetHierarchyOrderPlaceAboveSibling(DclEntity nextSiblingEntity)
         {
             return nextSiblingEntity.hierarchyOrder - 1;
         }
@@ -145,7 +140,7 @@ namespace Assets.Scripts.System
         /// </summary>
         /// <param name="previousSiblingEntity">The existing sibling</param>
         /// <returns>The new calculated hierarchy order</returns>
-        private static float? GetHierarchyOrderPlaceBeneathSibling(DclEntity previousSiblingEntity)
+        private static float GetHierarchyOrderPlaceBeneathSibling(DclEntity previousSiblingEntity)
         {
             return previousSiblingEntity.hierarchyOrder + 1;
         }
@@ -159,12 +154,13 @@ namespace Assets.Scripts.System
         /// <param name="newHierarchyOrder">The future hierarchy order of the dragged Entity</param>
         /// <param name="newParent">The future parent of the dragged Entity</param>
         private void ChangeHierarchyOrderAsCommand(DclEntity draggedEntity, DclEntity hoveredEntity,
-            float? newHierarchyOrder, DclEntity newParent)
+            float newHierarchyOrder, DclEntity newParent)
         {
             if (newParent != null && newParent.Children.Any(e => e.hierarchyOrder.Equals(newHierarchyOrder)))
             {
                 Debug.LogError("Hierarchy order must be unique!");
             }
+            //TODO entity hierarchy order == newentityhierarchyOrder return
             
             commandSystem.ExecuteCommand(
                 commandSystem.CommandFactory.CreateChangeHierarchyOrder(draggedEntity, hoveredEntity,
@@ -176,19 +172,13 @@ namespace Assets.Scripts.System
         /// </summary>
         /// <param name="parentId">Id of the parent</param>
         /// <returns>The new calculated hierarchy order</returns>
-        private float? GetHierarchyOrderFromParentWhenPlacedAsLastChild(Guid parentId)
+        private float GetHierarchyOrderFromParentWhenPlacedAsLastChild(Guid parentId)
         {
             var scene = sceneManagerSystem.GetCurrentScene();
-            
-            if (scene == null)
-            {
-                Debug.LogError("No current scene!");
-                return null;
-            }
 
             var parent = scene.GetEntityById(parentId);
             
-            float? newHierarchyOrder;
+            float newHierarchyOrder;
 
             if (parent.Children.Any())
             {
@@ -209,9 +199,9 @@ namespace Assets.Scripts.System
         /// </summary>
         /// <param name="parentId">Id of the parent</param>
         /// <returns>The new calculated hierarchy order</returns>
-        public float? GetDefaultHierarchyOrder(Guid parentId)
+        public float GetDefaultHierarchyOrder(Guid parentId)
         {
-            float? newHierarchyOrder;
+            float newHierarchyOrder;
             
             if (parentId != default)
             {
@@ -233,13 +223,13 @@ namespace Assets.Scripts.System
         /// <param name="aboveEntity">The Entity, that is sibling above the hovered Entity</param>
         public void DropUpper(DclEntity draggedEntity, DclEntity hoveredEntity, DclEntity aboveEntity)
         {
-            if (aboveEntity == draggedEntity)
+            if (draggedEntity == aboveEntity)
             {
                 editorEvents.InvokeHierarchyChangedEvent();
                 return;
             }
             
-            float? newHierarchyOrder;
+            float newHierarchyOrder;
 
             var newParent = hoveredEntity?.Parent;
 
@@ -271,7 +261,7 @@ namespace Assets.Scripts.System
             var newHierarchyOrder = GetHierarchyOrderFromParentWhenPlacedAsLastChild(hoveredEntity.Id);
             var newParent = hoveredEntity;
 
-            if (draggedEntity == null || (hoveredEntity != null && hoveredEntity.IsSuccessorOf(draggedEntity)))
+            if (draggedEntity == null || hoveredEntity.IsSuccessorOf(draggedEntity))
             {
                 editorEvents.InvokeHierarchyChangedEvent();
                 return;
@@ -291,7 +281,7 @@ namespace Assets.Scripts.System
         public void DropLower(DclEntity draggedEntity, DclEntity hoveredEntity, DclEntity belowEntity,
             DclEntity firstChildOfHoveredEntity, bool isExpanded)
         {
-            float? newHierarchyOrder;
+            float newHierarchyOrder;
             DclEntity newParent;
 
             if (belowEntity == draggedEntity)

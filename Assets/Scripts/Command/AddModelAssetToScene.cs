@@ -15,9 +15,9 @@ namespace Assets.Scripts.Command
         string _entityCustomName;
         Guid _assetId;
         Vector3 _positionInScene;
-        private float? hierarchyOrder;
+        private float hierarchyOrder;
 
-        public AddModelAssetToScene(Guid entityId, string entityCustomName, Guid assetId, Vector3 positionInScene, float? hierarchyOrder)
+        public AddModelAssetToScene(Guid entityId, string entityCustomName, Guid assetId, Vector3 positionInScene, float hierarchyOrder)
         {
             _entityId = entityId;
             _entityCustomName = entityCustomName;

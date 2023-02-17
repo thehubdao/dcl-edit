@@ -41,12 +41,6 @@ namespace Assets.Scripts.SceneState
 
         public void AddEntity(DclEntity entity)
         {
-            if (entity.hierarchyOrder == null)
-            {
-                Debug.LogError("Entity needs a hierarchy order at this point!");
-                return;
-            }
-            
             entity.Scene = this;
             _allEntities.Add(entity.Id, entity);
         }

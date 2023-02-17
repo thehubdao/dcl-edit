@@ -57,7 +57,7 @@ namespace Assets.Scripts.SceneState
 
         public Guid Id { get; set; }
 
-        public float? hierarchyOrder;
+        public float hierarchyOrder;
 
         [CanBeNull]
         public DclEntity Parent
@@ -152,7 +152,7 @@ namespace Assets.Scripts.SceneState
         }
 
         public DclEntity(Guid id, string name = "", Guid parentId = default, bool isExposed = false,
-            float? hierarchyOrder = null)
+            float hierarchyOrder = default)
         {
             Id = id;
             _customName = name;
