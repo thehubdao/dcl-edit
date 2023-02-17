@@ -241,9 +241,11 @@ namespace Assets.Scripts.System
         /// <param name="aboveEntity">The Entity, that is sibling above the hovered Entity</param>
         public void DropUpper(DclEntity draggedEntity, DclEntity hoveredEntity, DclEntity aboveEntity)
         {
+            Assert.IsNotNull(draggedEntity);
+            Assert.IsNotNull(hoveredEntity);
             Assert.AreNotEqual(draggedEntity, hoveredEntity);
 
-            if (draggedEntity == aboveEntity || draggedEntity == hoveredEntity)
+            if (draggedEntity == aboveEntity)
             {
                 editorEvents.InvokeHierarchyChangedEvent();
                 return;
@@ -272,12 +274,14 @@ namespace Assets.Scripts.System
         /// <param name="hoveredEntity">The Entity, that is being dropped on</param>
         public void DropMiddle(DclEntity draggedEntity, DclEntity hoveredEntity)
         {
+            Assert.IsNotNull(draggedEntity);
+            Assert.IsNotNull(hoveredEntity);
             Assert.AreNotEqual(draggedEntity, hoveredEntity);
             
             var newHierarchyOrder = GetHierarchyOrderFromParentWhenPlacedAsLastChild(hoveredEntity.Id);
             var newParent = hoveredEntity;
 
-            if (draggedEntity == null || hoveredEntity.IsDescendantOf(draggedEntity))
+            if (hoveredEntity.IsDescendantOf(draggedEntity))
             {
                 editorEvents.InvokeHierarchyChangedEvent();
                 return;
@@ -300,11 +304,13 @@ namespace Assets.Scripts.System
             float newHierarchyOrder;
             DclEntity newParent;
 
+            Assert.IsNotNull(draggedEntity);
+            Assert.IsNotNull(hoveredEntity);
             Assert.AreNotEqual(draggedEntity, hoveredEntity);
             
             if (isExpanded)
             {
-                if (draggedEntity == null || (hoveredEntity != null && hoveredEntity.IsDescendantOf(draggedEntity)))
+                if (hoveredEntity.IsDescendantOf(draggedEntity))
                 {
                     editorEvents.InvokeHierarchyChangedEvent();
                     return;
@@ -338,6 +344,7 @@ namespace Assets.Scripts.System
         /// <param name="draggedEntity">The dragged Entity</param>
         public void DropSpacer(DclEntity draggedEntity)
         {
+            Assert.IsNotNull(draggedEntity);
             var newHierarchyOrder = GetNewHierarchyOrderPlaceLastInRoot(draggedEntity);
 
             ChangeHierarchyOrderAsCommand(draggedEntity, null, newHierarchyOrder, null);
