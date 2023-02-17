@@ -287,7 +287,7 @@ namespace Assets.Scripts.System
             float newHierarchyOrder;
             DclEntity newParent;
 
-            if (draggedEntity == belowEntity || draggedEntity == hoveredEntity)
+            if (draggedEntity == hoveredEntity)
             {
                 editorEvents.InvokeHierarchyChangedEvent();
                 return;
@@ -303,6 +303,11 @@ namespace Assets.Scripts.System
 
                 newHierarchyOrder = GetHierarchyOrderPlaceAboveSibling(firstChildOfHoveredEntity);
                 newParent = hoveredEntity;
+            }
+            else if (draggedEntity == belowEntity)
+            {
+                editorEvents.InvokeHierarchyChangedEvent();
+                return;
             }
             else if (belowEntity == null)
             {
