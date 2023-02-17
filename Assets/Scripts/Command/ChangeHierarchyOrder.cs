@@ -1,8 +1,6 @@
 using System;
-using System.Linq;
 using Assets.Scripts.Events;
 using Assets.Scripts.SceneState;
-using JetBrains.Annotations;
 
 namespace Assets.Scripts.Command
 {
@@ -30,11 +28,11 @@ namespace Assets.Scripts.Command
 
         public override void Do(DclScene sceneState, EditorEvents editorEvents)
         {
-            var draggedEntity  = sceneState.GetEntityById(affectedEntityId);
+            var affectedEntity  = sceneState.GetEntityById(affectedEntityId);
             var newParent = newParentId == default ? null : sceneState.GetEntityById(newParentId);
 
-            draggedEntity.hierarchyOrder = newHierarchyOrder;
-            draggedEntity.Parent = newParent;
+            affectedEntity.hierarchyOrder = newHierarchyOrder;
+            affectedEntity.Parent = newParent;
 
             editorEvents.InvokeHierarchyChangedEvent();
             editorEvents.InvokeSelectionChangedEvent();
@@ -43,16 +41,11 @@ namespace Assets.Scripts.Command
 
         public override void Undo(DclScene sceneState, EditorEvents editorEvents)
         {
-            var draggedEntity  = affectedEntityId == default ? null : sceneState.GetEntityById(affectedEntityId);
+            var affectedEntity  = sceneState.GetEntityById(affectedEntityId);
             var startParent = startParentId == default ? null : sceneState.GetEntityById(startParentId);
 
-            if (draggedEntity == null)
-            {
-                return;
-            }
-
-            draggedEntity.Parent = startParent;
-            draggedEntity.hierarchyOrder = startHierarchyOrder;
+            affectedEntity.Parent = startParent;
+            affectedEntity.hierarchyOrder = startHierarchyOrder;
 
             editorEvents.InvokeHierarchyChangedEvent();
             editorEvents.InvokeSelectionChangedEvent();
