@@ -81,8 +81,9 @@ public class CommandFactorySystem
     }
 
     public ChangeHierarchyOrder CreateChangeHierarchyOrder(DclEntity draggedEntity, DclEntity hoveredEntity,
-        HierarchyExpansionState hierarchyExpansionState, float newHierarchyOrder, DclEntity newParent)
+        HierarchyExpansionState hierarchyExpansionState, float newHierarchyOrder, DclEntity newParent,
+        bool shouldExpand)
     {
-        return new ChangeHierarchyOrder(draggedEntity, hoveredEntity, hierarchyExpansionState, newHierarchyOrder, newParent);
+        return new ChangeHierarchyOrder(draggedEntity, hoveredEntity, hierarchyExpansionState, newHierarchyOrder, newParent, shouldExpand);
     }
 }

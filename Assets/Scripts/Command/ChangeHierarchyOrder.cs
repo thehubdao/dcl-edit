@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Assets.Scripts.Events;
 using Assets.Scripts.SceneState;
+using JetBrains.Annotations;
 
 namespace Assets.Scripts.Command
 {
@@ -17,23 +18,21 @@ namespace Assets.Scripts.Command
         private DclEntity startPrimarySelection;
         private readonly float newHierarchyOrder;
         private readonly Guid newParentId;
+        private readonly bool shouldExpand;
 
-        public ChangeHierarchyOrder(DclEntity draggedEntity, DclEntity hoveredEntity, HierarchyExpansionState hierarchyExpansionState, float newHierarchyOrder, DclEntity newParent)
+        public ChangeHierarchyOrder(DclEntity draggedEntity, [CanBeNull] DclEntity hoveredEntity, HierarchyExpansionState hierarchyExpansionState, float newHierarchyOrder, [CanBeNull] DclEntity newParent, bool shouldExpand)
         {
-            if (draggedEntity == null)
-            {
-                return;
-            }
-
-            startParentId = draggedEntity.Parent?.Id ?? default;
+            this.hierarchyExpansionState = hierarchyExpansionState;
+            
+            startParentId = draggedEntity.ParentId;
             startHierarchyOrder = draggedEntity.hierarchyOrder;
             
             draggedEntityId = draggedEntity.Id;
             hoveredEntityId = hoveredEntity?.Id ?? default;
-            this.hierarchyExpansionState = hierarchyExpansionState;
-            
-            this.newHierarchyOrder = newHierarchyOrder;
             newParentId = newParent?.Id ?? default;
+            this.newHierarchyOrder = newHierarchyOrder;
+            
+            this.shouldExpand = shouldExpand;
             
             if (startParentId != default)
             {
@@ -57,19 +56,13 @@ namespace Assets.Scripts.Command
             var draggedEntity  = sceneState.GetEntityById(draggedEntityId);
             var newParent = newParentId == default ? null : sceneState.GetEntityById(newParentId);
 
-            if (draggedEntity == null || (hoveredEntity != null && hoveredEntity.IsSuccessorOf(draggedEntity)))
-            {
-                editorEvents.InvokeHierarchyChangedEvent();
-                return;
-            }
-            
             draggedEntity.hierarchyOrder = newHierarchyOrder;
             draggedEntity.Parent = newParent;
 
             startPrimarySelection = sceneState.SelectionState.PrimarySelectedEntity;
             sceneState.SelectionState.PrimarySelectedEntity = draggedEntity;
-            
-            if (newParent != null && hoveredEntity != null && newParentId.Equals(hoveredEntityId))
+
+            if (shouldExpand && hoveredEntity != null)
             {
                 hierarchyExpansionState.SetExpanded(hoveredEntity.Id, true);
             }

@@ -102,17 +102,11 @@ namespace Assets.Scripts.System
         /// <summary>
         /// Gets the new calculated hierarchy order, when placing an entity between two siblings.
         /// </summary>
-        /// <param name="entity">The entity to be placed</param>
         /// <param name="first">An existing entity</param>
         /// <param name="second">Another existing entity</param>
         /// <returns>The new calculated hierarchy order or the order of the entity</returns>
-        private static float GetHierarchyOrderPlaceBetweenSiblings(DclEntity entity, DclEntity first, DclEntity second)
+        private static float GetHierarchyOrderPlaceBetweenSiblings(DclEntity first, DclEntity second)
         {
-            if (entity == first || entity == second)
-            {
-                return entity.hierarchyOrder;
-            }
-
             return 0.5f * (first.hierarchyOrder + second.hierarchyOrder);
         }
 
@@ -160,11 +154,18 @@ namespace Assets.Scripts.System
             {
                 Debug.LogError("Hierarchy order must be unique!");
             }
-            //TODO entity hierarchy order == newentityhierarchyOrder return
             
+            if (draggedEntity == null || (hoveredEntity != null && hoveredEntity.IsSuccessorOf(draggedEntity)))
+            {
+                editorEvents.InvokeHierarchyChangedEvent();
+                return;
+            }
+
+            var shouldExpand = newParent != null && hoveredEntity != null && newParent.Id.Equals(hoveredEntity.Id);
+
             commandSystem.ExecuteCommand(
                 commandSystem.CommandFactory.CreateChangeHierarchyOrder(draggedEntity, hoveredEntity,
-                    hierarchyExpansionState, newHierarchyOrder, newParent));
+                    hierarchyExpansionState, newHierarchyOrder, newParent, shouldExpand));
         }
 
         /// <summary>
@@ -223,7 +224,7 @@ namespace Assets.Scripts.System
         /// <param name="aboveEntity">The Entity, that is sibling above the hovered Entity</param>
         public void DropUpper(DclEntity draggedEntity, DclEntity hoveredEntity, DclEntity aboveEntity)
         {
-            if (draggedEntity == aboveEntity)
+            if (draggedEntity == aboveEntity || draggedEntity == hoveredEntity)
             {
                 editorEvents.InvokeHierarchyChangedEvent();
                 return;
@@ -239,7 +240,7 @@ namespace Assets.Scripts.System
             }
             else
             {
-                newHierarchyOrder = GetHierarchyOrderPlaceBetweenSiblings(draggedEntity, hoveredEntity, aboveEntity);
+                newHierarchyOrder = GetHierarchyOrderPlaceBetweenSiblings(hoveredEntity, aboveEntity);
             }
 
             ChangeHierarchyOrderAsCommand(draggedEntity, hoveredEntity, newHierarchyOrder, newParent);
@@ -284,7 +285,7 @@ namespace Assets.Scripts.System
             float newHierarchyOrder;
             DclEntity newParent;
 
-            if (belowEntity == draggedEntity)
+            if (draggedEntity == belowEntity || draggedEntity == hoveredEntity)
             {
                 editorEvents.InvokeHierarchyChangedEvent();
                 return;
@@ -308,7 +309,7 @@ namespace Assets.Scripts.System
             }
             else
             {
-                newHierarchyOrder = GetHierarchyOrderPlaceBetweenSiblings(draggedEntity, hoveredEntity, belowEntity);
+                newHierarchyOrder = GetHierarchyOrderPlaceBetweenSiblings(hoveredEntity, belowEntity);
                 newParent = hoveredEntity?.Parent;
             }
 
