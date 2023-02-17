@@ -11,7 +11,7 @@ namespace Assets.Scripts.Tests.PlayModeTests.UiTests
 {
     public class TestHierarchyItem
     {
-        /*private bool sceneIsLoaded = false;
+        private bool sceneIsLoaded = false;
         private UiBuilder uiBuilder;
 
         [UnitySetUp]
@@ -225,6 +225,6 @@ namespace Assets.Scripts.Tests.PlayModeTests.UiTests
                 yield return testerPrompt.WaitForQuestionPrompt("Try to click the arrow, the text, and right click the text. Did anything happen?", No);
                 //yield return UiTester.instance.PositiveFeedback();
             }
-        }*/
+        }
     }
 }
