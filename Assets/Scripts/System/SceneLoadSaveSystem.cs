@@ -240,6 +240,11 @@ namespace Assets.Scripts.System
                 {
                     throw new SceneLoadException($"Guid was not set for entity {customName}");
                 }
+                
+                if (hierarchyOrder == null)
+                {
+                    throw new SceneLoadException($"HierarchyOrder was not set for entity {customName}");
+                }
 
 
                 var dclEntity = new DclEntity(guid, customName, parentGuid ?? default, isExposed, hierarchyOrder);
