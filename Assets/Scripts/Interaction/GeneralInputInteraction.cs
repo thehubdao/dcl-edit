@@ -452,122 +452,16 @@ namespace Assets.Scripts.Interaction
 
         private void UpdateHoldingGizmoTool()
         {
-            //GizmoState.Mode mode = gizmoState.CurrentMode;
-            //DclEntity selectedEntity = sceneManagerSystem.GetCurrentScene()?.SelectionState.PrimarySelectedEntity;
-            //
-            //if (selectedEntity == null)
-            //{
-            //    return;
-            //}
-            //
-            //DclTransformComponent trans = selectedEntity!.GetTransformComponent();
-            //
             //// When releasing LMB, stop holding gizmo
             if (!inputHelper.IsLeftMouseButtonPressed())
             {
                 inputState.InState = InputState.InStateType.NoInput;
-                //    inputState.CurrentGizmoData = null;
-                //
-                //    switch (mode)
-                //    {
-                //        case GizmoState.Mode.Translate:
-                //            commandSystem.ExecuteCommand(
-                //                commandSystem.CommandFactory.CreateTranslateTransform(selectedEntity.Id, trans.Position.FixedValue, trans.Position.Value)
-                //            );
-                //            break;
-                //        case GizmoState.Mode.Rotate:
-                //            commandSystem.ExecuteCommand(
-                //                commandSystem.CommandFactory.CreateRotateTransform(selectedEntity.Id, trans.Rotation.FixedValue, trans.Rotation.Value)
-                //            );
-                //            break;
-                //        case GizmoState.Mode.Scale:
-                //            commandSystem.ExecuteCommand(
-                //                commandSystem.CommandFactory.CreateScaleTransform(selectedEntity.Id, trans.Scale.FixedValue, trans.Scale.Value)
-                //            );
-                //            break;
-                //    }
-                //
+                gizmoToolSystem.EndHolding();
                 return;
             }
 
             var mouseRay = unityState.MainCamera.ViewportPointToRay(inputHelper.GetMousePositionInScenePanel());
             gizmoToolSystem.WhileHolding(mouseRay);
-
-            //
-            //if (inputState.CurrentGizmoData != null)
-            //{
-            //    InputState.GizmoData gizmoData = (InputState.GizmoData)inputState.CurrentGizmoData;
-            //
-            //    // Find mouse position in world on previously calculated plane
-            //    Ray ray = unityState.MainCamera.ViewportPointToRay(inputHelper.GetMousePositionInScenePanel());
-            //    if (gizmoData.plane.Raycast(ray, out float enter))
-            //    {
-            //        // Ignore mouse positions that are too far away
-            //        if (enter >= unityState.MainCamera.farClipPlane) return;
-            //
-            //        Vector3 hitPoint = ray.GetPoint(enter);
-            //        Vector3 dirToHitPoint = hitPoint - trans.GlobalPosition;
-            //
-            //        // Handle movement on planes separately:
-            //        if (gizmoData.movingOnPlane && gizmoState.CurrentMode == GizmoState.Mode.Translate)
-            //        {
-            //            Vector3 globalPosition = gizmoData.plane.ClosestPointOnPlane(hitPoint - gizmoData.initialMouseOffset);
-            //            Vector3? localPosition = selectedEntity.Parent?.GetTransformComponent().InverseTransformPoint(globalPosition);
-            //            trans.Position.SetFloatingValue(localPosition ?? globalPosition);
-            //            editorEvents.InvokeSelectionChangedEvent();
-            //            return;
-            //        }
-            //
-            //        // Project the dirToHitPoint onto gizmoAxis. This results in a "shadow" of the dirToHitPoint which lies
-            //        // on the gizmoAxis. Also factor in the mouse offset from the start of the drag to keep the object at the
-            //        // same position relative to the mouse cursor. This point is relative to the selected object.
-            //        Vector3 hitPointOnAxis = Vector3.Project(dirToHitPoint - gizmoData.initialMouseOffset, (Vector3)gizmoData.dragAxis);
-            //
-            //
-            //        switch (gizmoState.CurrentMode)
-            //        {
-            //            case GizmoState.Mode.Translate:
-            //                Vector3 globalPosition = trans.GlobalPosition + hitPointOnAxis;
-            //                Vector3? localPosition = selectedEntity.Parent?.GetTransformComponent().InverseTransformPoint(globalPosition);
-            //                trans.Position.SetFloatingValue(localPosition ?? globalPosition);
-            //                break;
-            //            case GizmoState.Mode.Rotate:
-            //                // The distance along the gizmo axis at which the hit point lies.
-            //                // If the hit point on axis lies in the positive direction, the dot product returns 1. If it lies
-            //                // in the negative direction, the dot product returns -1. Therefore we can determine how far we pointed
-            //                // along the gizmo axis and in which direction.
-            //                float signedHitDistance = Vector3.Dot(hitPointOnAxis.normalized, (Vector3)gizmoData.dragAxis) * hitPointOnAxis.magnitude;
-            //
-            //                // Measure the radius of the rotation gizmo circle. As the initial mouse position is pretty close
-            //                // to the circle we can take that as a radius.
-            //                float radius = gizmoData.initialMouseOffset.magnitude;
-            //
-            //                // The distance moved by the mouse is the length of the arc. 
-            //                float arcLength = signedHitDistance;
-            //
-            //                // Calculate the angle of the arc. This is the amount that the object will be rotated by.
-            //                float angle = (arcLength * 360) / (2 * Mathf.PI * radius);
-            //
-            //                // Invert to rotate in the correct direction
-            //                angle *= -1;
-            //
-            //                Quaternion newRotation = trans.Rotation.FixedValue * Quaternion.Euler((Vector3)gizmoData.rotationAxis * angle);
-            //
-            //                trans.Rotation.SetFloatingValue(newRotation);
-            //                break;
-            //            case GizmoState.Mode.Scale:
-            //                Vector3 currentScale = trans.Scale.FixedValue;
-            //
-            //                // The point on the gizmo axis that is closest to the current mouse position. Transformed into local space.
-            //                Vector3 localHitPointOnAxis = Quaternion.Inverse(trans.GlobalRotation) * hitPointOnAxis;
-            //                Vector3 newScale = currentScale + Vector3.Scale(currentScale, localHitPointOnAxis);
-            //                trans.Scale.SetFloatingValue(newScale);
-            //                break;
-            //        }
-            //
-            //        editorEvents.InvokeSelectionChangedEvent();
-            //    }
-            //}
         }
 
         private void ProcessHotKeys()

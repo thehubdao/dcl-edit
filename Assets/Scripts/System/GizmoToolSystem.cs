@@ -1,8 +1,8 @@
 using System;
 using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
+using Assets.Scripts.SceneState;
 using UnityEngine;
-using UnityEngine.Android;
 using UnityEngine.Assertions;
 using Zenject;
 using static Assets.Scripts.EditorState.GizmoState.MouseContextRelevance;
@@ -32,6 +32,7 @@ namespace Assets.Scripts.System
         private EditorEvents editorEvents;
         private GizmoSizeSystem gizmoSizeSystem;
         private SettingsSystem settingsSystem;
+        private CommandSystem commandSystem;
 
         [Inject]
         private void Construct(
@@ -40,7 +41,8 @@ namespace Assets.Scripts.System
             CameraState cameraState,
             EditorEvents editorEvents,
             GizmoSizeSystem gizmoSizeSystem,
-            SettingsSystem settingsSystem)
+            SettingsSystem settingsSystem,
+            CommandSystem commandSystem)
         {
             this.gizmoState = gizmoState;
             this.sceneManagerState = sceneManagerState;
@@ -48,6 +50,7 @@ namespace Assets.Scripts.System
             this.editorEvents = editorEvents;
             this.gizmoSizeSystem = gizmoSizeSystem;
             this.settingsSystem = settingsSystem;
+            this.commandSystem = commandSystem;
         }
 
         public ToolMode gizmoToolMode
@@ -419,6 +422,61 @@ namespace Assets.Scripts.System
         #endregion // While holding
 
         #region End holding
+
+        public void EndHolding()
+        {
+            switch (gizmoToolMode)
+            {
+                case ToolMode.Translate:
+                    ExecuteTranslateCommand();
+                    break;
+                case ToolMode.Rotate:
+                    ExecuteRotateCommand();
+                    break;
+                case ToolMode.Scale:
+                    ExecuteScaleCommand();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+
+        private void ExecuteTranslateCommand()
+        {
+            commandSystem.ExecuteCommand(
+                commandSystem.CommandFactory.CreateChangePropertyCommand(
+                    new DclPropertyIdentifier(
+                        gizmoState.affectedTransform.Entity.Id,
+                        DclTransformComponent.transformComponentDefinition.NameInCode,
+                        "position"),
+                    gizmoState.affectedTransform.position.FixedValue,
+                    gizmoState.affectedTransform.position.Value));
+        }
+
+        private void ExecuteRotateCommand()
+        {
+            commandSystem.ExecuteCommand(
+                commandSystem.CommandFactory.CreateChangePropertyCommand(
+                    new DclPropertyIdentifier(
+                        gizmoState.affectedTransform.Entity.Id,
+                        DclTransformComponent.transformComponentDefinition.NameInCode,
+                        "rotation"),
+                    gizmoState.affectedTransform.rotation.FixedValue,
+                    gizmoState.affectedTransform.rotation.Value));
+        }
+
+        private void ExecuteScaleCommand()
+        {
+            commandSystem.ExecuteCommand(
+                commandSystem.CommandFactory.CreateChangePropertyCommand(
+                    new DclPropertyIdentifier(
+                        gizmoState.affectedTransform.Entity.Id,
+                        DclTransformComponent.transformComponentDefinition.NameInCode,
+                        "scale"),
+                    gizmoState.affectedTransform.scale.FixedValue,
+                    gizmoState.affectedTransform.scale.Value));
+        }
 
         #endregion // End holding
 
