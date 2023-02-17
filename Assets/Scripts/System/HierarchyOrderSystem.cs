@@ -39,17 +39,12 @@ namespace Assets.Scripts.System
 
             if (parent == null)
             {
-                var scene = sceneManagerSystem.GetCurrentSceneOrNull();
-                children = scene?.EntitiesInSceneRoot.OrderBy(e => e.hierarchyOrder).ToList();
+                var scene = sceneManagerSystem.GetCurrentScene();
+                children = scene.EntitiesInSceneRoot.OrderBy(e => e.hierarchyOrder).ToList();
             }
             else
             {
                 children = parent.Children.OrderBy(e => e.hierarchyOrder).ToList();
-            }
-
-            if (children == null)
-            {
-                return null;
             }
 
             var index = children.IndexOf(entity);
@@ -69,17 +64,12 @@ namespace Assets.Scripts.System
 
             if (parent == null)
             {
-                var scene = sceneManagerSystem.GetCurrentSceneOrNull();
+                var scene = sceneManagerSystem.GetCurrentScene();
                 children = scene?.EntitiesInSceneRoot.OrderBy(e => e.hierarchyOrder).ToList();
             }
             else
             {
                 children = parent.Children.OrderBy(e => e.hierarchyOrder).ToList();
-            }
-
-            if (children == null)
-            {
-                return null;
             }
 
             var index = children.IndexOf(entity);
@@ -92,7 +82,7 @@ namespace Assets.Scripts.System
         /// <returns>The calculated hierarchy order, or null</returns>
         private float GetNewHierarchyOrderPlaceLastInRoot()
         {
-            var scene = sceneManagerSystem.GetCurrentSceneOrNull();
+            var scene = sceneManagerSystem.GetCurrentScene();
             
             var rootEntities = scene.EntitiesInSceneRoot.ToList();
             
@@ -175,7 +165,7 @@ namespace Assets.Scripts.System
         /// <returns>The new calculated hierarchy order</returns>
         private float GetHierarchyOrderFromParentWhenPlacedAsLastChild(Guid parentId)
         {
-            var scene = sceneManagerSystem.GetCurrentSceneOrNull();
+            var scene = sceneManagerSystem.GetCurrentScene();
 
             var parent = scene.GetEntityById(parentId);
             
