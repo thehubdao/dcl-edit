@@ -115,7 +115,8 @@ namespace Assets.Scripts.Visuals
             {
                 if (scene.EntitiesInSceneRoot.Count() == 0)
                 {
-                    mainPanelData.AddTitle("No Entities");
+                    mainPanelData.AddTitle("No Entities.");
+                    mainPanelData.AddText("Use right-click to add entities.");
                 }
                 else
                 {
