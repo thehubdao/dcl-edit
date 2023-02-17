@@ -80,13 +80,27 @@ namespace Assets.Scripts.System
         /// Gets the new calculated hierarchy order, when placing an entity below the last root entity.
         /// </summary>
         /// <returns>The calculated hierarchy order, or null</returns>
-        private float GetNewHierarchyOrderPlaceLastInRoot()
+        private float GetNewHierarchyOrderPlaceLastInRoot([CanBeNull] DclEntity draggedEntity)
         {
             var scene = sceneManagerSystem.GetCurrentScene();
             
             var rootEntities = scene.EntitiesInSceneRoot.ToList();
             
-            return rootEntities.Count == 0 ? 0 : rootEntities.Max(e => e.hierarchyOrder) + 1;
+            var lastEntityInRoot = rootEntities.OrderByDescending(e => e.hierarchyOrder).FirstOrDefault();
+
+            //No existing entities in root
+            if (lastEntityInRoot == null)
+            {
+                return 0;
+            }
+            
+            //If draggedEntity already exists as last sibling, return same hierarchy order
+            if (draggedEntity != null && draggedEntity.Id.Equals(lastEntityInRoot.Id))
+            {
+                return draggedEntity.hierarchyOrder;
+            }
+            
+            return lastEntityInRoot.hierarchyOrder + 1;
         }
 
         /// <summary>
@@ -212,7 +226,7 @@ namespace Assets.Scripts.System
             }
             else
             {
-                newHierarchyOrder = GetNewHierarchyOrderPlaceLastInRoot();
+                newHierarchyOrder = GetNewHierarchyOrderPlaceLastInRoot(null);
             }
 
             return newHierarchyOrder;
@@ -329,7 +343,7 @@ namespace Assets.Scripts.System
         /// <param name="draggedEntity">The dragged Entity</param>
         public void DropSpacer(DclEntity draggedEntity)
         {
-            var newHierarchyOrder = GetNewHierarchyOrderPlaceLastInRoot();
+            var newHierarchyOrder = GetNewHierarchyOrderPlaceLastInRoot(draggedEntity);
 
             ChangeHierarchyOrderAsCommand(draggedEntity, null, newHierarchyOrder, null);
         }
