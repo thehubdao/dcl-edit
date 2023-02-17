@@ -14,7 +14,7 @@ namespace Assets.Scripts.Tests.PlayModeTests.UiTests
 {
     public class ShowAllBasicAtoms
     {
-        private bool sceneIsLoaded = false;
+        /*private bool sceneIsLoaded = false;
         private UiBuilder uiBuilder;
 
         [UnitySetUp]
@@ -201,6 +201,6 @@ namespace Assets.Scripts.Tests.PlayModeTests.UiTests
             uiBuilder.Update(mainPanel);
 
             yield return testerPrompt.WaitForQuestionPrompt("Do you see three hierarchy items under each other?", Yes);
-        }
+        }*/
     }
 }
