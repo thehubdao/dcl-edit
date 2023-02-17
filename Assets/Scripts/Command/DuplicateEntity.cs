@@ -17,9 +17,9 @@ public class DuplicateEntity : Command
     private int seed;
 
     private List<DclEntity> secondarySelectedEntities;
-    private readonly float? hierarchyOrder;
+    private readonly float hierarchyOrder;
 
-    public DuplicateEntity(Guid entityId, float? hierarchyOrder)
+    public DuplicateEntity(Guid entityId, float hierarchyOrder)
     {
         this.entityId = entityId;
         this.hierarchyOrder = hierarchyOrder;

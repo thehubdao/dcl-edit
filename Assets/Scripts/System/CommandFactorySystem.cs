@@ -49,7 +49,7 @@ public class CommandFactorySystem
     }
 
     // Duplicate Entity
-    public DuplicateEntity CreateDuplicateEntity(Guid entityId, float? hierarchyOrder)
+    public DuplicateEntity CreateDuplicateEntity(Guid entityId, float hierarchyOrder)
     {
         return new DuplicateEntity(entityId, hierarchyOrder);
     }

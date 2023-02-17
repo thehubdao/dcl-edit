@@ -105,7 +105,7 @@ namespace Assets.Scripts.System
         /// <param name="first">An existing entity</param>
         /// <param name="second">Another existing entity</param>
         /// <returns>The new calculated hierarchy order or the order of the entity</returns>
-        private static float GetHierarchyOrderPlaceBetweenSiblings(DclEntity first, DclEntity second)
+        public float GetHierarchyOrderPlaceBetweenSiblings(DclEntity first, DclEntity second)
         {
             return 0.5f * (first.hierarchyOrder + second.hierarchyOrder);
         }
@@ -134,7 +134,7 @@ namespace Assets.Scripts.System
         /// </summary>
         /// <param name="previousSiblingEntity">The existing sibling</param>
         /// <returns>The new calculated hierarchy order</returns>
-        private static float GetHierarchyOrderPlaceBeneathSibling(DclEntity previousSiblingEntity)
+        public float GetHierarchyOrderPlaceBeneathSibling(DclEntity previousSiblingEntity)
         {
             return previousSiblingEntity.hierarchyOrder + 1;
         }

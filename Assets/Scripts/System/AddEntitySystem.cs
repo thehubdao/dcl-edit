@@ -51,8 +51,19 @@ namespace Assets.Scripts.System
 
         public void DuplicateEntityAsCommand(DclEntity selectedEntity)
         {
-            var hierarchyOrder = hierarchyOrderSystem.GetDefaultHierarchyOrder(selectedEntity.ParentId);
+            float hierarchyOrder;
+
+            var belowEntity = hierarchyOrderSystem.GetBelowSibling(selectedEntity);
             
+            if (belowEntity == null)
+            {
+                hierarchyOrder = hierarchyOrderSystem.GetHierarchyOrderPlaceBeneathSibling(selectedEntity);
+            }
+            else
+            {
+                hierarchyOrder = hierarchyOrderSystem.GetHierarchyOrderPlaceBetweenSiblings(selectedEntity, belowEntity);
+            }
+
             commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateDuplicateEntity(selectedEntity.Id, hierarchyOrder));
         }
     }
