@@ -8,6 +8,7 @@ using JetBrains.Annotations;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Assertions;
 using Visuals.UiHandler;
 using Zenject;
 using static Assets.Scripts.Visuals.UiBuilder.UiBuilder;
@@ -158,6 +159,8 @@ namespace Assets.Scripts.Visuals
 
             foreach (var entity in dclEntities)
             {
+                Assert.IsNotNull(entity);
+                
                 var isPrimarySelection = scene.SelectionState.PrimarySelectedEntity == entity;
 
                 var isSecondarySelection = scene.SelectionState.SecondarySelectedEntities.Contains(entity);
@@ -205,6 +208,7 @@ namespace Assets.Scripts.Visuals
                     {
                         var draggedEntity = draggedGameObject.GetComponent<DragAndDropHandler>().draggedEntity;
                         var aboveEntity = hierarchyOrderSystem.GetAboveSibling(entity);
+                        
                         hierarchyOrderSystem.DropUpper(draggedEntity, entity, aboveEntity);
                     },
                     draggedGameObject =>

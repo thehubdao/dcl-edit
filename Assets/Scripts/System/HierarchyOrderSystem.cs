@@ -5,6 +5,7 @@ using Assets.Scripts.Events;
 using Assets.Scripts.SceneState;
 using JetBrains.Annotations;
 using UnityEngine;
+using UnityEngine.Assertions;
 using Zenject;
 
 namespace Assets.Scripts.System
@@ -240,6 +241,8 @@ namespace Assets.Scripts.System
         /// <param name="aboveEntity">The Entity, that is sibling above the hovered Entity</param>
         public void DropUpper(DclEntity draggedEntity, DclEntity hoveredEntity, DclEntity aboveEntity)
         {
+            Assert.AreNotEqual(draggedEntity, hoveredEntity);
+
             if (draggedEntity == aboveEntity || draggedEntity == hoveredEntity)
             {
                 editorEvents.InvokeHierarchyChangedEvent();
@@ -269,11 +272,7 @@ namespace Assets.Scripts.System
         /// <param name="hoveredEntity">The Entity, that is being dropped on</param>
         public void DropMiddle(DclEntity draggedEntity, DclEntity hoveredEntity)
         {
-            if (hoveredEntity == draggedEntity)
-            {
-                editorEvents.InvokeHierarchyChangedEvent();
-                return;
-            }
+            Assert.AreNotEqual(draggedEntity, hoveredEntity);
             
             var newHierarchyOrder = GetHierarchyOrderFromParentWhenPlacedAsLastChild(hoveredEntity.Id);
             var newParent = hoveredEntity;
@@ -301,11 +300,7 @@ namespace Assets.Scripts.System
             float newHierarchyOrder;
             DclEntity newParent;
 
-            if (draggedEntity == hoveredEntity)
-            {
-                editorEvents.InvokeHierarchyChangedEvent();
-                return;
-            }
+            Assert.AreNotEqual(draggedEntity, hoveredEntity);
             
             if (isExpanded)
             {
