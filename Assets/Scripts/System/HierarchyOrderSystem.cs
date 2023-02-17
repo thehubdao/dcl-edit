@@ -140,22 +140,34 @@ namespace Assets.Scripts.System
         private void ChangeHierarchyOrderAsCommand(DclEntity draggedEntity, DclEntity hoveredEntity,
             float newHierarchyOrder, DclEntity newParent)
         {
+            var startHierarchyOrder = draggedEntity.hierarchyOrder;
+            var startParentId = draggedEntity.Parent?.Id ?? default;
+            var affectedEntityId = draggedEntity.Id;
+            var newParentId = newParent?.Id ?? default;
+            
+            //Check for non-unique hierarchy orders of siblings.
             if (newParent != null && newParent.Children.Any(e => e.hierarchyOrder.Equals(newHierarchyOrder)))
             {
                 Debug.LogError("Hierarchy order must be unique!");
+                editorEvents.InvokeHierarchyChangedEvent();
+                return;
             }
             
-            if (draggedEntity == null || (hoveredEntity != null && hoveredEntity.IsDescendantOf(draggedEntity)))
+            //Check that an Ancestor isn't dragged into a Descendant.
+            if (hoveredEntity != null && hoveredEntity.IsDescendantOf(draggedEntity))
             {
                 editorEvents.InvokeHierarchyChangedEvent();
                 return;
             }
 
-            var shouldExpand = newParent != null && hoveredEntity != null && newParent.Id.Equals(hoveredEntity.Id);
+            //Check if new child of hovered entity
+            if (newParent != null && hoveredEntity != null && newParentId.Equals(hoveredEntity.Id))
+            {
+                hierarchyExpansionState.SetExpanded(hoveredEntity.Id, true);
+            }
 
             commandSystem.ExecuteCommand(
-                commandSystem.CommandFactory.CreateChangeHierarchyOrder(draggedEntity, hoveredEntity,
-                    hierarchyExpansionState, newHierarchyOrder, newParent, shouldExpand));
+                commandSystem.CommandFactory.CreateChangeHierarchyOrder(affectedEntityId, startParentId, startHierarchyOrder, newHierarchyOrder, newParentId));
         }
 
         /// <summary>

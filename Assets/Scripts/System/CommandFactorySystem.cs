@@ -80,10 +80,8 @@ public class CommandFactorySystem
         return new RemoveEntity(entity);
     }
 
-    public ChangeHierarchyOrder CreateChangeHierarchyOrder(DclEntity draggedEntity, DclEntity hoveredEntity,
-        HierarchyExpansionState hierarchyExpansionState, float newHierarchyOrder, DclEntity newParent,
-        bool shouldExpand)
+    public ChangeHierarchyOrder CreateChangeHierarchyOrder(Guid affectedEntityId, Guid startParentId, float startHierarchyOrder, float newHierarchyOrder, Guid newParentId)
     {
-        return new ChangeHierarchyOrder(draggedEntity, hoveredEntity, hierarchyExpansionState, newHierarchyOrder, newParent, shouldExpand);
+        return new ChangeHierarchyOrder(affectedEntityId, startParentId, startHierarchyOrder, newHierarchyOrder, newParentId);
     }
 }
