@@ -207,6 +207,7 @@ namespace Assets.Scripts.System
             public string customName;
             public Guid guid;
             public Guid? parentGuid;
+            public float? hierarchyOrder;
             public bool isExposed;
             public List<DclComponentData> components;
             public string dclEditVersionNumber;
@@ -218,6 +219,7 @@ namespace Assets.Scripts.System
                 this.parentGuid = entity.Parent?.Id;
                 isExposed = entity.IsExposed;
                 dclEditVersionNumber = Application.version;
+                this.hierarchyOrder = entity.hierarchyOrder;
 
                 this.components = new List<DclComponentData>();
                 foreach (DclComponent component in entity.Components)
@@ -240,7 +242,7 @@ namespace Assets.Scripts.System
                 }
 
 
-                var dclEntity = new DclEntity(guid, customName, parentGuid ?? default, isExposed);
+                var dclEntity = new DclEntity(guid, customName, parentGuid ?? default, isExposed, hierarchyOrder);
 
                 // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator 
                 foreach (var component in components)
