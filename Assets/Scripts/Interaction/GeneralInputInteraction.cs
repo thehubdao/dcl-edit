@@ -219,8 +219,6 @@ namespace Assets.Scripts.Interaction
 
                 if (selectedEntity != null)
                 {
-                    var selectedEntity = currentScene.SelectionState.PrimarySelectedEntity;
-                    
                     addEntitySystem.DuplicateEntityAsCommand(selectedEntity);
                 }
             }
