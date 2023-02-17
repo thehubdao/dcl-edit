@@ -116,6 +116,68 @@ namespace Assets.Scripts.System
 
             // set starting mouse pos
             gizmoState.mouseStartingPosition = RayOnPlane(mouseRay, gizmoState.mouseContextPlane);
+
+            // set snapping offset, when its needed for grid snapping
+            SetupSnappingOffset();
+        }
+
+        private void SetupSnappingOffset()
+        {
+            if (gizmoToolMode == ToolMode.Translate && gizmoToolContext == ToolContext.Global)
+            {
+                var startingEntityPosition = gizmoState.affectedTransform.globalPosition;
+
+                if (gizmoState.gizmoDirection.isOnlyX())
+                {
+                    gizmoState.snappingOffset = new Vector2(
+                        FindGridSnapOffset(startingEntityPosition.x, settingsSystem.gizmoToolTranslateSnapping.Get()),
+                        0);
+                }
+                else if (gizmoState.gizmoDirection.isOnlyY())
+                {
+                    gizmoState.snappingOffset = new Vector2(
+                        FindGridSnapOffset(startingEntityPosition.y, settingsSystem.gizmoToolTranslateSnapping.Get()),
+                        0);
+                }
+                else if (gizmoState.gizmoDirection.isOnlyZ())
+                {
+                    gizmoState.snappingOffset = new Vector2(
+                        FindGridSnapOffset(startingEntityPosition.z, settingsSystem.gizmoToolTranslateSnapping.Get()),
+                        0);
+                }
+                else if (gizmoState.gizmoDirection.isXandY())
+                {
+                    gizmoState.snappingOffset = new Vector2(
+                        FindGridSnapOffset(startingEntityPosition.x, settingsSystem.gizmoToolTranslateSnapping.Get()),
+                        FindGridSnapOffset(startingEntityPosition.y, settingsSystem.gizmoToolTranslateSnapping.Get()));
+                }
+                else if (gizmoState.gizmoDirection.isXandZ())
+                {
+                    gizmoState.snappingOffset = new Vector2(
+                        FindGridSnapOffset(startingEntityPosition.x, settingsSystem.gizmoToolTranslateSnapping.Get()),
+                        FindGridSnapOffset(startingEntityPosition.z, settingsSystem.gizmoToolTranslateSnapping.Get()));
+                }
+                else if (gizmoState.gizmoDirection.isYandZ())
+                {
+                    gizmoState.snappingOffset = new Vector2(
+                        FindGridSnapOffset(startingEntityPosition.y, settingsSystem.gizmoToolTranslateSnapping.Get()),
+                        FindGridSnapOffset(startingEntityPosition.z, settingsSystem.gizmoToolTranslateSnapping.Get()));
+                }
+                else // if (gizmoState.gizmoDirection.isXYZ())
+                {
+                    gizmoState.snappingOffset = Vector2.zero;
+                }
+            }
+            else
+            {
+                gizmoState.snappingOffset = Vector2.zero;
+            }
+        }
+
+        private float FindGridSnapOffset(float startingValue, float snappingStep)
+        {
+            Assert.IsTrue(snappingStep > 0);
+            return startingValue % snappingStep;
         }
 
 
@@ -174,6 +236,27 @@ namespace Assets.Scripts.System
 
         private void SetMouseContextForAxisBasedTools(ToolContext toolContext)
         {
+            // if direction is single axis
+            if (gizmoState.gizmoDirection.isOnlyX() || gizmoState.gizmoDirection.isOnlyY() || gizmoState.gizmoDirection.isOnlyZ())
+            {
+                SetMouseContextForSingleAxisBasedTool(toolContext);
+            }
+
+            // if direction is two axis
+            if (gizmoState.gizmoDirection.isXandZ() || gizmoState.gizmoDirection.isXandY() || gizmoState.gizmoDirection.isYandZ())
+            {
+                SetMouseContextForPlaneBasedTool(toolContext);
+            }
+
+            // if direction is all tree axis
+            if (gizmoState.gizmoDirection.isXYZ())
+            {
+                SetMouseContextForAllAxisBasedTool(toolContext);
+            }
+        }
+
+        private void SetMouseContextForSingleAxisBasedTool(ToolContext toolContext)
+        {
             // extract center from transform context
             var centerPosition = gizmoState.affectedTransform.globalPosition;
 
@@ -183,48 +266,54 @@ namespace Assets.Scripts.System
                     gizmoState.affectedTransform.globalRotation :
                     Quaternion.identity;
 
-            // if direction is single axis
-            if (gizmoState.gizmoDirection.isOnlyX() || gizmoState.gizmoDirection.isOnlyY() || gizmoState.gizmoDirection.isOnlyZ())
-            {
-                var primaryAxisBase =
-                    gizmoState.gizmoDirection.isX ?
-                        new Vector3(1, 0, 0) :
-                        gizmoState.gizmoDirection.isY ?
-                            new Vector3(0, 1, 0) :
-                            new Vector3(0, 0, 1);
+            var primaryAxisBase =
+                gizmoState.gizmoDirection.isX ?
+                    new Vector3(1, 0, 0) :
+                    gizmoState.gizmoDirection.isY ?
+                        new Vector3(0, 1, 0) :
+                        new Vector3(0, 0, 1);
 
-                var primaryAxisRotated = contextRotation * primaryAxisBase;
-                var secondaryAxisRotated = FigureOutMissingAxisBasedOnCameraPosition(centerPosition, primaryAxisRotated);
+            var primaryAxisRotated = contextRotation * primaryAxisBase;
+            var secondaryAxisRotated = FigureOutMissingAxisBasedOnCameraPosition(centerPosition, primaryAxisRotated);
 
-                gizmoState.SetMouseContext(centerPosition, primaryAxisRotated, secondaryAxisRotated, mouseContextRelevance: OnlyPrimaryAxis);
+            gizmoState.SetMouseContext(centerPosition, primaryAxisRotated, secondaryAxisRotated, mouseContextRelevance: OnlyPrimaryAxis);
+        }
 
-                return;
-            }
+        private void SetMouseContextForPlaneBasedTool(ToolContext toolContext)
+        {
+            // extract center from transform context
+            var centerPosition = gizmoState.affectedTransform.globalPosition;
 
-            // if direction is two axis
-            if (gizmoState.gizmoDirection.isXandZ() || gizmoState.gizmoDirection.isXandY() || gizmoState.gizmoDirection.isYandZ())
-            {
-                var primaryAxisBase = gizmoState.gizmoDirection.isX ? new Vector3(1, 0, 0) : new Vector3(0, 1, 0);
-                var secondaryAxisBase = gizmoState.gizmoDirection.isZ ? new Vector3(0, 0, 1) : new Vector3(0, 1, 0);
+            // extract rotation from transform context
+            var contextRotation =
+                toolContext == ToolContext.Local ?
+                    gizmoState.affectedTransform.globalRotation :
+                    Quaternion.identity;
 
-                var primaryAxisRotated = contextRotation * primaryAxisBase;
-                var secondaryAxisRotated = contextRotation * secondaryAxisBase;
+            var primaryAxisBase = gizmoState.gizmoDirection.isX ? new Vector3(1, 0, 0) : new Vector3(0, 1, 0);
+            var secondaryAxisBase = gizmoState.gizmoDirection.isZ ? new Vector3(0, 0, 1) : new Vector3(0, 1, 0);
 
-                gizmoState.SetMouseContext(centerPosition, primaryAxisRotated, secondaryAxisRotated, mouseContextRelevance: EntirePlane);
+            var primaryAxisRotated = contextRotation * primaryAxisBase;
+            var secondaryAxisRotated = contextRotation * secondaryAxisBase;
 
-                return;
-            }
+            gizmoState.SetMouseContext(centerPosition, primaryAxisRotated, secondaryAxisRotated, mouseContextRelevance: EntirePlane);
+        }
 
-            // if direction is all tree axis
-            if (gizmoState.gizmoDirection.isXYZ())
-            {
-                var primaryAxis = cameraState.Rotation * Vector3.right;
-                var secondaryAxis = FigureOutMissingAxisBasedOnCameraPosition(centerPosition, primaryAxis);
+        private void SetMouseContextForAllAxisBasedTool(ToolContext toolContext)
+        {
+            // extract center from transform context
+            var centerPosition = gizmoState.affectedTransform.globalPosition;
 
-                gizmoState.SetMouseContext(centerPosition, primaryAxis, secondaryAxis, mouseContextRelevance: EntirePlane);
+            // extract rotation from transform context
+            var contextRotation =
+                toolContext == ToolContext.Local ?
+                    gizmoState.affectedTransform.globalRotation :
+                    Quaternion.identity;
 
-                return; // ReSharper disable once RedundantJumpStatement
-            }
+            var primaryAxis = cameraState.Rotation * Vector3.right;
+            var secondaryAxis = FigureOutMissingAxisBasedOnCameraPosition(centerPosition, primaryAxis);
+
+            gizmoState.SetMouseContext(centerPosition, primaryAxis, secondaryAxis, mouseContextRelevance: EntirePlane);
         }
 
 
@@ -264,6 +353,8 @@ namespace Assets.Scripts.System
 
                 contextSpaceMouseMovementSinceStart.x = SnapValue(contextSpaceMouseMovementSinceStart.x, snappingDistance);
                 contextSpaceMouseMovementSinceStart.y = SnapValue(contextSpaceMouseMovementSinceStart.y, snappingDistance);
+
+                contextSpaceMouseMovementSinceStart += gizmoState.snappingOffset;
             }
 
             switch (gizmoToolMode)

@@ -36,6 +36,11 @@ namespace Assets.Scripts.EditorState
                 return !isX && !isY && isZ;
             }
 
+            public bool isOneAxis()
+            {
+                return isOnlyX() || isOnlyY() || isOnlyZ();
+            }
+
             public bool isXandY()
             {
                 return isX && isY && !isZ;
@@ -49,6 +54,11 @@ namespace Assets.Scripts.EditorState
             public bool isYandZ()
             {
                 return !isX && isY && isZ;
+            }
+
+            public bool isTwoAxis()
+            {
+                return isXandY() || isXandZ() || isYandZ();
             }
 
             public bool isXYZ()
@@ -137,5 +147,10 @@ namespace Assets.Scripts.EditorState
         /// The starting position of the mouse on the plane
         /// </summary>
         public Vector3 mouseStartingPosition;
+
+        /// <summary>
+        /// The offset that is added to the position, when snapping is active. This is useful when the tool is in global translate mode, to have the snapping steps align with the world grid
+        /// </summary>
+        public Vector2 snappingOffset;
     }
 }
