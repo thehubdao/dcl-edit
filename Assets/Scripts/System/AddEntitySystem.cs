@@ -26,7 +26,7 @@ namespace Assets.Scripts.System
         {
             var newHierarchyOrder = hierarchyOrderSystem.GetDefaultHierarchyOrder(parentId);
             
-            var scene = sceneManagerSystem.GetCurrentScene();
+            var scene = sceneManagerSystem.GetCurrentSceneOrNull();
             
             if (scene == null)
             {

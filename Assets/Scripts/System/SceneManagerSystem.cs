@@ -280,7 +280,7 @@ namespace Assets.Scripts.System
         }
 
         [CanBeNull]
-        public DclScene GetCurrentScene()
+        public DclScene GetCurrentSceneOrNull()
         {
             //return null if no scene is open
             if (sceneManagerState.currentSceneIndex == Guid.Empty)

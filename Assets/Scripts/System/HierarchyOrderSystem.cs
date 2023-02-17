@@ -39,7 +39,7 @@ namespace Assets.Scripts.System
 
             if (parent == null)
             {
-                var scene = sceneManagerSystem.GetCurrentScene();
+                var scene = sceneManagerSystem.GetCurrentSceneOrNull();
                 children = scene?.EntitiesInSceneRoot.OrderBy(e => e.hierarchyOrder).ToList();
             }
             else
@@ -69,7 +69,7 @@ namespace Assets.Scripts.System
 
             if (parent == null)
             {
-                var scene = sceneManagerSystem.GetCurrentScene();
+                var scene = sceneManagerSystem.GetCurrentSceneOrNull();
                 children = scene?.EntitiesInSceneRoot.OrderBy(e => e.hierarchyOrder).ToList();
             }
             else
@@ -92,7 +92,7 @@ namespace Assets.Scripts.System
         /// <returns>The calculated hierarchy order, or null</returns>
         private float GetNewHierarchyOrderPlaceLastInRoot()
         {
-            var scene = sceneManagerSystem.GetCurrentScene();
+            var scene = sceneManagerSystem.GetCurrentSceneOrNull();
             
             var rootEntities = scene.EntitiesInSceneRoot.ToList();
             
@@ -175,7 +175,7 @@ namespace Assets.Scripts.System
         /// <returns>The new calculated hierarchy order</returns>
         private float GetHierarchyOrderFromParentWhenPlacedAsLastChild(Guid parentId)
         {
-            var scene = sceneManagerSystem.GetCurrentScene();
+            var scene = sceneManagerSystem.GetCurrentSceneOrNull();
 
             var parent = scene.GetEntityById(parentId);
             

@@ -32,7 +32,7 @@ namespace Assets.Scripts.System
             if (command == null)
                 return;
 
-            var commandState = sceneManagerSystem.GetCurrentScene()?.CommandHistoryState;
+            var commandState = sceneManagerSystem.GetCurrentSceneOrNull()?.CommandHistoryState;
 
             if (commandState == null)
             {
@@ -49,12 +49,12 @@ namespace Assets.Scripts.System
             commandState.CommandHistory.Add(command);
             commandState.CurrentCommandIndex = commandState.CommandHistory.Count - 1;
 
-            command.Do(sceneManagerSystem.GetCurrentScene(), editorEvents);
+            command.Do(sceneManagerSystem.GetCurrentSceneOrNull(), editorEvents);
         }
 
         public void UndoCommand()
         {
-            var commandState = sceneManagerSystem.GetCurrentScene()?.CommandHistoryState;
+            var commandState = sceneManagerSystem.GetCurrentSceneOrNull()?.CommandHistoryState;
 
             if (commandState == null)
             {
@@ -64,14 +64,14 @@ namespace Assets.Scripts.System
 
             if (commandState.CurrentCommandIndex >= 0)
             {
-                commandState.CommandHistory[commandState.CurrentCommandIndex].Undo(sceneManagerSystem.GetCurrentScene(), editorEvents);
+                commandState.CommandHistory[commandState.CurrentCommandIndex].Undo(sceneManagerSystem.GetCurrentSceneOrNull(), editorEvents);
                 commandState.CurrentCommandIndex--;
             }
         }
 
         public void RedoCommand()
         {
-            var commandState = sceneManagerSystem.GetCurrentScene()?.CommandHistoryState;
+            var commandState = sceneManagerSystem.GetCurrentSceneOrNull()?.CommandHistoryState;
 
             if (commandState == null)
             {
@@ -82,7 +82,7 @@ namespace Assets.Scripts.System
             if (commandState.CurrentCommandIndex < commandState.CommandHistory.Count - 1)
             {
                 commandState.CurrentCommandIndex++;
-                commandState.CommandHistory[commandState.CurrentCommandIndex].Do(sceneManagerSystem.GetCurrentScene(), editorEvents);
+                commandState.CommandHistory[commandState.CurrentCommandIndex].Do(sceneManagerSystem.GetCurrentSceneOrNull(), editorEvents);
             }
         }
 

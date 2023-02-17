@@ -62,7 +62,7 @@ public class AssetButtonInteraction : MonoBehaviour, IBeginDragHandler, IDragHan
     {
         if (!enableDragAndDrop) return;
 
-        var currentScene = sceneManagerSystem.GetCurrentScene();
+        var currentScene = sceneManagerSystem.GetCurrentSceneOrNull();
 
         if (currentScene == null)
         {
@@ -116,7 +116,7 @@ public class AssetButtonInteraction : MonoBehaviour, IBeginDragHandler, IDragHan
 
     private void AddEntityToScene(Vector3 position)
     {
-        sceneManagerSystem.GetCurrentScene()?.RemoveFloatingEntity(newEntity.Id);
+        sceneManagerSystem.GetCurrentSceneOrNull()?.RemoveFloatingEntity(newEntity.Id);
         switch (assetMetadata.assetType)
         {
             case AssetMetadata.AssetType.Model:

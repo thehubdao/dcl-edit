@@ -91,7 +91,7 @@ namespace Assets.Scripts.Visuals
 
             var inspectorPanel = new PanelAtom.Data();
 
-            var currentScene = sceneManagerSystem.GetCurrentScene();
+            var currentScene = sceneManagerSystem.GetCurrentSceneOrNull();
 
             if (currentScene == null)
             {

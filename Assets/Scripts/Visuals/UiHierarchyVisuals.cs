@@ -112,7 +112,7 @@ namespace Assets.Scripts.Visuals
         {
             var mainPanelData = NewPanelData();
 
-            var scene = sceneManagerSystem.GetCurrentScene();
+            var scene = sceneManagerSystem.GetCurrentSceneOrNull();
 
             if (scene == null)
             {

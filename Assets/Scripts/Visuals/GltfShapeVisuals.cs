@@ -76,7 +76,7 @@ namespace Assets.Scripts.Visuals
                 UpdateSelection(entity);
             }
 
-            if (_sceneManagerSystem.GetCurrentScene()?.IsFloatingEntity(entity.Id)! == true)
+            if (_sceneManagerSystem.GetCurrentSceneOrNull()?.IsFloatingEntity(entity.Id)! == true)
             {
                 StaticUtilities.SetLayerRecursive(gameObject, LayerMask.NameToLayer("Ignore Raycast"));
             }

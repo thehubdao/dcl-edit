@@ -214,7 +214,7 @@ namespace Assets.Scripts.Interaction
             // When pressing Duplicates selected entity
             if (inputSystemAsset.Hotkeys.Duplicate.triggered)
             {
-                var currentScene = sceneManagerSystem.GetCurrentScene();
+                var currentScene = sceneManagerSystem.GetCurrentSceneOrNull();
                 var selectedEntity = currentScene?.SelectionState.PrimarySelectedEntity;
 
                 if (selectedEntity != null)
@@ -227,7 +227,7 @@ namespace Assets.Scripts.Interaction
             //When pressing Delete delete primary selected Entity
             if (inputSystemAsset.Hotkeys.Delete.triggered)
             {
-                var currentScene = sceneManagerSystem.GetCurrentScene();
+                var currentScene = sceneManagerSystem.GetCurrentSceneOrNull();
                 var selectedEntity = currentScene?.SelectionState.PrimarySelectedEntity;
                     
                 if (selectedEntity != null)
@@ -251,7 +251,7 @@ namespace Assets.Scripts.Interaction
                             if (gizmoDir == null) break;
                             Vector3 localGizmoDir = gizmoDir.GetVector();
 
-                            var entity = sceneManagerSystem.GetCurrentScene()?.SelectionState.PrimarySelectedEntity.GetTransformComponent();
+                            var entity = sceneManagerSystem.GetCurrentSceneOrNull()?.SelectionState.PrimarySelectedEntity.GetTransformComponent();
 
                             GizmoState.Mode gizmoMode = gizmoState.CurrentMode;
 
@@ -426,10 +426,10 @@ namespace Assets.Scripts.Interaction
             }
 
             // When pressing the focus hotkey and having a selected primary entity, switch to Focus Transition state
-            if (inputSystemAsset.CameraMovement.Focus.triggered && sceneManagerSystem.GetCurrentScene()?.SelectionState.PrimarySelectedEntity != null)
+            if (inputSystemAsset.CameraMovement.Focus.triggered && sceneManagerSystem.GetCurrentSceneOrNull()?.SelectionState.PrimarySelectedEntity != null)
             {
                 // Fetch position of selected object
-                var selectedEntity = sceneManagerSystem.GetCurrentScene()?.SelectionState.PrimarySelectedEntity;
+                var selectedEntity = sceneManagerSystem.GetCurrentSceneOrNull()?.SelectionState.PrimarySelectedEntity;
                 var entityPos = selectedEntity.GetTransformComponent().GlobalPosition;
 
                 // Calculate an offset position so that the camera keeps its rotation and looks at the selected entity
@@ -563,7 +563,7 @@ namespace Assets.Scripts.Interaction
         private void UpdateHoldingGizmoTool()
         {
             GizmoState.Mode mode = gizmoState.CurrentMode;
-            DclEntity selectedEntity = sceneManagerSystem.GetCurrentScene()?.SelectionState.PrimarySelectedEntity;
+            DclEntity selectedEntity = sceneManagerSystem.GetCurrentSceneOrNull()?.SelectionState.PrimarySelectedEntity;
 
             if (selectedEntity == null)
             {
