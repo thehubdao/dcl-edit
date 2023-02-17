@@ -151,6 +151,7 @@ MonoBehaviour:
   NormalColorGradient: {fileID: 11400000, guid: c2e3fb0467bc7af4b9ced519e3efe75d, type: 2}
   PrimaryColorGradient: {fileID: 11400000, guid: fd55bb3cc1e5ba944b4bb9f9aa355a18, type: 2}
   SecondaryColorGradient: {fileID: 11400000, guid: 391ea3c2d39da864c959c30ce56a8da1, type: 2}
+  DisabledColorGradient: {fileID: 11400000, guid: 479fa25d43f3a734e815874f8171d407, type: 2}
   TextComponent: {fileID: 8024071907148859789}
 --- !u!114 &8642057508157690593
 MonoBehaviour:
