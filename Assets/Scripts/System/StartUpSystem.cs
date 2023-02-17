@@ -16,6 +16,7 @@ namespace Assets.Scripts.System
         private ApplicationSystem frameTimeSystem;
         private SceneManagerSystem sceneManagerSystem;
         private SceneViewSystem sceneViewSystem;
+        private SettingsSystem settingsSystem;
 
         [Inject]
         private void Construct(
@@ -24,13 +25,15 @@ namespace Assets.Scripts.System
             IPathState pathState,
             ApplicationSystem frameTimeSystem,
             SceneManagerSystem sceneManagerSystem,
-            SceneViewSystem sceneViewSystem)
+            SceneViewSystem sceneViewSystem,
+            SettingsSystem settingsSystem)
         {
             this.assetManagerSystem = assetManagerSystem;
             this.workspaceSaveSystem = workspaceSaveSystem;
             this.frameTimeSystem = frameTimeSystem;
             this.sceneManagerSystem = sceneManagerSystem;
             this.sceneViewSystem = sceneViewSystem;
+            this.settingsSystem = settingsSystem;
         }
 
         void Awake()
@@ -39,8 +42,7 @@ namespace Assets.Scripts.System
 
             sceneManagerSystem.DiscoverScenes();
 
-            // TODO: load proper scene. Work around is to load the first scene
-            sceneManagerSystem.SetFirstSceneAsCurrentScene();
+            sceneManagerSystem.SetLastOpenedSceneAsCurrentScene();
         }
 
         void Start()
