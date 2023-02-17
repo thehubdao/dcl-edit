@@ -16,25 +16,25 @@ public class AssetButtonInteraction : MonoBehaviour, IBeginDragHandler, IDragHan
     private Vector3 mousePositionInScene;
 
     // Dependencies
-    private CommandSystem commandSystem;
     private EditorEvents editorEvents;
     private InputHelper inputHelperSystem;
     private SceneManagerSystem sceneManagerSystem;
     private CameraState cameraState;
+    private AddEntitySystem addEntitySystem;
 
     [Inject]
     private void Construct(
-        CommandSystem commandSystem,
         EditorEvents editorEvents,
         InputHelper inputHelperSystem,
         SceneManagerSystem sceneManagerSystem,
-        CameraState cameraState)
+        CameraState cameraState,
+        AddEntitySystem addEntitySystem)
     {
-        this.commandSystem = commandSystem;
         this.inputHelperSystem = inputHelperSystem;
         this.sceneManagerSystem = sceneManagerSystem;
         this.editorEvents = editorEvents;
         this.cameraState = cameraState;
+        this.addEntitySystem = addEntitySystem;
     }
 
     public void OnClick()
@@ -120,8 +120,8 @@ public class AssetButtonInteraction : MonoBehaviour, IBeginDragHandler, IDragHan
         switch (assetMetadata.assetType)
         {
             case AssetMetadata.AssetType.Model:
-                commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateAddModelAssetToScene(newEntity.Id,
-                    newEntity.CustomName, assetMetadata.assetId, position));
+                addEntitySystem.AddModelAssetEntityAsCommand(newEntity, assetMetadata, position);
+
                 break;
             case AssetMetadata.AssetType.Image:
                 break;

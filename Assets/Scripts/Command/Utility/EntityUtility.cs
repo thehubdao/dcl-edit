@@ -12,11 +12,13 @@ namespace Assets.Scripts.Command.Utility
         /// <param name="scene">The scene to add the entity to</param>
         /// <param name="id">The guid of the entity</param>
         /// <param name="name">The name of the entity</param>
+        /// <param name="hierarchyOrder">The hierarchy order of the entity</param>
         /// <param name="parent">The parent of the entity</param>
         /// <returns>Reference to new entity</returns>
-        public static DclEntity AddEntity(DclScene scene, Guid id, string name, Guid parent = default)
+        public static DclEntity AddEntity(DclScene scene, Guid id, string name, float? hierarchyOrder,
+            Guid parent = default)
         {
-            DclEntity entity = new DclEntity(id, name, parent);
+            DclEntity entity = new DclEntity(id, name, parent, default, hierarchyOrder);
             scene.AddEntity(entity);
             
             return entity;

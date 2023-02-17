@@ -18,8 +18,11 @@ namespace Assets.Scripts.Command
         private readonly Guid id;
 
         private readonly SelectionUtility.SelectionWrapper oldSelection;
+        
+        private readonly float? hierarchyOrder;
 
-        public AddEntity(Guid oldPrimarySelection, IEnumerable<Guid> oldSecondarySelection, EntityPresetState.EntityPreset preset, Guid parent = default)
+        public AddEntity(Guid oldPrimarySelection, IEnumerable<Guid> oldSecondarySelection,
+            EntityPresetState.EntityPreset preset, float? hierarchyOrder, Guid parent = default)
         {
             this.preset = preset;
             this.parent = parent;
@@ -29,6 +32,7 @@ namespace Assets.Scripts.Command
                 Primary = oldPrimarySelection,
                 Secondary = oldSecondarySelection.ToList()
             };
+            this.hierarchyOrder = hierarchyOrder;
         }
 
         public override string Name => "Add Entity";
@@ -36,7 +40,7 @@ namespace Assets.Scripts.Command
 
         public override void Do(DclScene sceneState, EditorEvents editorEvents)
         {
-            var entity = EntityUtility.AddEntity(sceneState, id, preset.name, parent);
+            var entity = EntityUtility.AddEntity(sceneState, id, preset.name, hierarchyOrder, parent);
 
             EntityUtility.AddDefaultTransformComponent(entity);
 

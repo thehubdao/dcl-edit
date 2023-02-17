@@ -28,6 +28,7 @@ namespace Assets.Scripts.Interaction
         private ContextMenuSystem contextMenuSystem;
         private SceneManagerSystem sceneManagerSystem;
         private DialogSystem dialogSystem;
+        private AddEntitySystem addEntitySystem;
 
         [Inject]
         private void Construct(
@@ -43,7 +44,8 @@ namespace Assets.Scripts.Interaction
             EntitySelectSystem entitySelectSystem,
             ContextMenuSystem contextMenuSystem,
             SceneManagerSystem sceneManagerSystem,
-            DialogSystem dialogSystem)
+            DialogSystem dialogSystem,
+            AddEntitySystem addEntitySystem)
         {
             this.sceneSaveSystem = sceneSaveSystem;
             this.commandSystem = commandSystem;
@@ -58,6 +60,7 @@ namespace Assets.Scripts.Interaction
             this.contextMenuSystem = contextMenuSystem;
             this.sceneManagerSystem = sceneManagerSystem;
             this.dialogSystem = dialogSystem;
+            this.addEntitySystem = addEntitySystem;
         }
 
 
@@ -216,7 +219,9 @@ namespace Assets.Scripts.Interaction
 
                 if (selectedEntity != null)
                 {
-                    commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateDuplicateEntity(selectedEntity.Id));
+                    var selectedEntity = currentScene.SelectionState.PrimarySelectedEntity;
+                    
+                    addEntitySystem.DuplicateEntityAsCommand(selectedEntity);
                 }
             }
 

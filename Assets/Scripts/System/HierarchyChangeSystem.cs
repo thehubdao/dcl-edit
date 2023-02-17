@@ -7,32 +7,37 @@ namespace Assets.Scripts.System
     public class HierarchyChangeSystem
     {
         // Dependencies
-        private EntitySelectSystem _entitySelectSystem;
-        private HierarchyExpansionState _hierarchyExpansionState;
-        private EditorEvents _editorEvents;
+        private EntitySelectSystem entitySelectSystem;
+        private HierarchyExpansionState hierarchyExpansionState;
+        private EditorEvents editorEvents;
 
         [Inject]
         private void Construct(EntitySelectSystem entitySelectSystem, HierarchyExpansionState hierarchyExpansionState, EditorEvents editorEvents)
         {
-            _entitySelectSystem = entitySelectSystem;
-            _hierarchyExpansionState = hierarchyExpansionState;
-            _editorEvents = editorEvents;
+            this.entitySelectSystem = entitySelectSystem;
+            this.hierarchyExpansionState = hierarchyExpansionState;
+            this.editorEvents = editorEvents;
         }
 
         public void ClickedOnEntityInHierarchy(DclEntity entity)
         {
-            _entitySelectSystem.ClickedOnEntity(entity.Id);
+            entitySelectSystem.ClickedOnEntity(entity.Id);
         }
 
         public void ClickedOnEntityExpandArrow(DclEntity entity)
         {
-            _hierarchyExpansionState.ToggleExpanded(entity.Id);
-            _editorEvents.InvokeHierarchyChangedEvent();
+            hierarchyExpansionState.ToggleExpanded(entity.Id);
+            editorEvents.InvokeHierarchyChangedEvent();
+        }
+
+        public void SetExpanded(DclEntity entity, bool isExpanded)
+        {
+            hierarchyExpansionState.SetExpanded(entity.Id, isExpanded);
         }
 
         public bool IsExpanded(DclEntity entity)
         {
-            return _hierarchyExpansionState.IsExpanded(entity.Id);
+            return hierarchyExpansionState.IsExpanded(entity.Id);
         }
     }
 }

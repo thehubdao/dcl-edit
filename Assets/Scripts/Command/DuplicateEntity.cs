@@ -17,10 +17,12 @@ public class DuplicateEntity : Command
     private int seed;
 
     private List<DclEntity> secondarySelectedEntities;
+    private readonly float? hierarchyOrder;
 
-    public DuplicateEntity(Guid entityId)
+    public DuplicateEntity(Guid entityId, float? hierarchyOrder)
     {
         this.entityId = entityId;
+        this.hierarchyOrder = hierarchyOrder;
         System.Random rand = new System.Random();
         this.seed = rand.Next();
     }
@@ -29,7 +31,7 @@ public class DuplicateEntity : Command
     {
         DclEntity entity = sceneState.GetEntityById(entityId);
 
-        DclEntity newEntity = entity.DeepCopy(sceneState, new System.Random(this.seed));
+        DclEntity newEntity = entity.DeepCopy(sceneState, new System.Random(this.seed), hierarchyOrder);
 
         this.doupEntityId = newEntity.Id;
 
