@@ -49,14 +49,14 @@ public class CommandFactorySystem
     }
 
     // Duplicate Entity
-    public DuplicateEntity CreateDuplicateEntity(Guid entityId)
+    public DuplicateEntity CreateDuplicateEntity(Guid entityId, float? hierarchyOrder)
     {
-        return new DuplicateEntity(entityId);
+        return new DuplicateEntity(entityId, hierarchyOrder);
     }
 
-    public AddModelAssetToScene CreateAddModelAssetToScene(Guid entityId, string entityCustomName, Guid assetId, Vector3 positionInScene)
+    public AddModelAssetToScene CreateAddModelAssetToScene(Guid entityId, string entityCustomName, Guid assetId, Vector3 positionInScene, float? hierarchyOrder)
     {
-        return new AddModelAssetToScene(entityId, entityCustomName, assetId, positionInScene);
+        return new AddModelAssetToScene(entityId, entityCustomName, assetId, positionInScene, hierarchyOrder);
     }
 
     public AddComponent CreateAddComponent(Guid entityId, DclComponent.ComponentDefinition component)
@@ -69,14 +69,20 @@ public class CommandFactorySystem
         return new RemoveComponent(entityId, component);
     }
 
-    public AddEntity CreateAddEntity(EntityPresetState.EntityPreset preset, Guid oldPrimarySelection, IEnumerable<Guid> oldSecondarySelection, Guid parent = default)
+    public AddEntity CreateAddEntity(EntityPresetState.EntityPreset preset, Guid oldPrimarySelection,
+        IEnumerable<Guid> oldSecondarySelection, float? hierarchyOrder, Guid parent = default)
     {
-        return new AddEntity(oldPrimarySelection, oldSecondarySelection, preset, parent);
+        return new AddEntity(oldPrimarySelection, oldSecondarySelection, preset, hierarchyOrder, parent);
     }
 
     public RemoveEntity CreateRemoveEntity(DclEntity entity)
     {
         return new RemoveEntity(entity);
     }
-}
 
+    public ChangeHierarchyOrder CreateChangeHierarchyOrder(DclEntity draggedEntity, DclEntity hoveredEntity,
+        HierarchyExpansionState hierarchyExpansionState, float? newHierarchyOrder, DclEntity newParent)
+    {
+        return new ChangeHierarchyOrder(draggedEntity, hoveredEntity, hierarchyExpansionState, newHierarchyOrder, newParent);
+    }
+}
