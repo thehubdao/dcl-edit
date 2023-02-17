@@ -145,7 +145,7 @@ namespace Assets.Scripts.System
                 Debug.LogError("Hierarchy order must be unique!");
             }
             
-            if (draggedEntity == null || (hoveredEntity != null && hoveredEntity.IsSuccessorOf(draggedEntity)))
+            if (draggedEntity == null || (hoveredEntity != null && hoveredEntity.IsDescendantOf(draggedEntity)))
             {
                 editorEvents.InvokeHierarchyChangedEvent();
                 return;
@@ -252,7 +252,7 @@ namespace Assets.Scripts.System
             var newHierarchyOrder = GetHierarchyOrderFromParentWhenPlacedAsLastChild(hoveredEntity.Id);
             var newParent = hoveredEntity;
 
-            if (draggedEntity == null || hoveredEntity.IsSuccessorOf(draggedEntity))
+            if (draggedEntity == null || hoveredEntity.IsDescendantOf(draggedEntity))
             {
                 editorEvents.InvokeHierarchyChangedEvent();
                 return;
@@ -283,7 +283,7 @@ namespace Assets.Scripts.System
             
             if (isExpanded)
             {
-                if (draggedEntity == null || (hoveredEntity != null && hoveredEntity.IsSuccessorOf(draggedEntity)))
+                if (draggedEntity == null || (hoveredEntity != null && hoveredEntity.IsDescendantOf(draggedEntity)))
                 {
                     editorEvents.InvokeHierarchyChangedEvent();
                     return;

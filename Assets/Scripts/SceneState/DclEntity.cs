@@ -209,7 +209,7 @@ namespace Assets.Scripts.SceneState
             return deepcopyEntity;
         }
 
-        public bool IsSuccessorOf(DclEntity potentialAncestor)
+        public bool IsDescendantOf(DclEntity potentialAncestor)
         {
             var parent = Parent;
         
