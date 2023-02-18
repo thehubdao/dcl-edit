@@ -68,9 +68,9 @@ namespace Assets.Scripts.SceneState
             DclScene copy = new DclScene();
             Random random = new Random();
 
-            foreach (KeyValuePair<Guid, DclEntity> entitiy in _allEntities)
+            foreach (DclEntity entitiy in EntitiesInSceneRoot)
             {
-                entitiy.Value.DeepCopy(copy, random);
+                entitiy.DeepCopy(copy, random);
             }
 
             return copy;
