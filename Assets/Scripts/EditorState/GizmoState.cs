@@ -79,15 +79,6 @@ namespace Assets.Scripts.EditorState
             EntirePlane
         }
 
-        // Dependencies
-        //private EditorEvents _editorEvents;
-        //
-        //[Inject]
-        //private void Construct(EditorEvents editorEvents)
-        //{
-        //    _editorEvents = editorEvents;
-        //}
-
 
         // While moving states
 
