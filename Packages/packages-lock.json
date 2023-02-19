@@ -1,5 +1,12 @@
 {
   "dependencies": {
+    "com.gkngkc.usfb": {
+      "version": "https://github.com/Sov3rain/unity-standalone-file-browser.git#upm",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "2ef27bb51dd002e6e61e6ab063e9117c14d54f00"
+    },
     "com.svermeulen.extenject": {
       "version": "https://github.com/Mathijs-Bakker/Extenject.git?path=/UnityProject/Assets/Plugins/Zenject/#9.2.1",
       "depth": 0,
@@ -21,7 +28,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.ide.rider": {
-      "version": "3.0.17",
+      "version": "3.0.18",
       "depth": 0,
       "source": "registry",
       "dependencies": {

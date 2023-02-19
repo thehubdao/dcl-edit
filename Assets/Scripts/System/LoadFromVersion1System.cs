@@ -151,6 +151,8 @@ namespace Assets.Scripts.System
             sceneDirectoryState.currentScene = newScene;
         }
 
+        public void LoadV1(SceneDirectoryState sceneDirectoryState) => Load(sceneDirectoryState);
+
         private void ChangeToLocal(DclEntity entity, DclTransformComponent dclParentTransform)
         {
             // can be null

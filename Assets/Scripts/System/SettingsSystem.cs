@@ -252,36 +252,14 @@ namespace Assets.Scripts.System
             gizmoSize = new FloatClampedUserSetting(this, "Gizmo Size", 1.0f, 0.1f, 10.0f);
             userSettings.Add(gizmoSize);
 
-            TestInteger = new IntUserSetting(this, "Test integer", 123);
-            userSettings.Add(TestInteger);
-
-            TestString = new StringUserSetting(this, "Test text", "Hello world!");
-            userSettings.Add(TestString);
-
-            applicationTargetFramerate = new IntUserSetting(this, "applicationTargetFramerate", -1);
+            applicationTargetFramerate = new IntClampedUserSetting(this, "Maximum frame rate", 120, 5, 1000);
             userSettings.Add(applicationTargetFramerate);
+
+            openLastOpenedScene = new StringUserSetting(this, "Open last opened scene on start up", "");
+            //userSettings.Add(openLastOpenedScene);
 
             ShownSettings.Add("User Settings", userSettings);
 
-
-            var projectSettings = new List<ISetting>();
-
-            TestProjVec3 = new Vec3ProjectSetting(this, "Test Vec3 Project", Vector3.one, projectSettingsState);
-            projectSettings.Add(TestProjVec3);
-
-            TestProjString = new StringProjectSetting(this, "Test String Project", "some text", projectSettingsState);
-            projectSettings.Add(TestProjString);
-
-            ShownSettings.Add("Project Settings", projectSettings);
-
-
-            var sceneSettings = new List<ISetting>();
-
-            TestSceneVec3 = new Vec3SceneSetting(this, "Test Vec3 Scene", Vector3.one, sceneSettingState);
-            sceneSettings.Add(TestSceneVec3);
-
-            ShownSettings.Add("Scene Settings", sceneSettings);
-            
             //Hidden Settings
             //Saves Panel Size
             panelSize = new StringUserSetting(this, "Panel Size","");
@@ -289,12 +267,13 @@ namespace Assets.Scripts.System
 
         public Dictionary<string, List<ISetting>> ShownSettings = new Dictionary<string, List<ISetting>>();
 
-        public FloatUserSetting uiScalingFactor;
-        public FloatUserSetting mouseSensitivity;
-        public FloatUserSetting gizmoSize;
+        public FloatClampedUserSetting uiScalingFactor;
+        public FloatClampedUserSetting mouseSensitivity;
+        public FloatClampedUserSetting gizmoSize;
         public IntUserSetting TestInteger;
         public StringUserSetting TestString;
-        public IntUserSetting applicationTargetFramerate;
+        public IntClampedUserSetting applicationTargetFramerate;
+        public StringUserSetting openLastOpenedScene;
 
         public Vec3ProjectSetting TestProjVec3;
         public StringProjectSetting TestProjString;

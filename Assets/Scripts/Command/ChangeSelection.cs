@@ -4,26 +4,28 @@ using Assets.Scripts.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Assets.Scripts.Command.Utility;
 
 namespace Assets.Scripts.Command
 {
     public class ChangeSelection : SceneState.Command
     {
-        private struct SelectionWrapper
-        {
-            public Guid Primary;
-            public List<Guid> Secondary;
-        }
-
-        private readonly SelectionWrapper _oldSelection;
-        private readonly SelectionWrapper _newSelection;
+        private readonly SelectionUtility.SelectionWrapper oldSelection;
+        private readonly SelectionUtility.SelectionWrapper newSelection;
 
         public ChangeSelection(Guid oldPrimary, IEnumerable<Guid> oldSecondary, Guid newPrimary, IEnumerable<Guid> newSecondary)
         {
-            _oldSelection.Primary = oldPrimary;
-            _oldSelection.Secondary = oldSecondary.ToList();
-            _newSelection.Primary = newPrimary;
-            _newSelection.Secondary = newSecondary.ToList();
+            oldSelection = new SelectionUtility.SelectionWrapper
+            {
+                Primary = oldPrimary,
+                Secondary = oldSecondary.ToList()
+            };
+
+            newSelection = new SelectionUtility.SelectionWrapper
+            {
+                Primary = newPrimary,
+                Secondary = newSecondary.ToList()
+            };
         }
 
         public override string Name => "Change Selection";
@@ -31,20 +33,20 @@ namespace Assets.Scripts.Command
         {
             get
             {
-                if (_newSelection.Primary == Guid.Empty)
+                if (newSelection.Primary == Guid.Empty)
                     return "Deselecting all Entities";
 
-                var retVal = $"Selecting as primary selection: {GetNameFromGuid(_newSelection.Primary)}";
+                var retVal = $"Selecting as primary selection: {GetNameFromGuid(newSelection.Primary)}";
 
-                if (_newSelection.Secondary.Count > 0)
+                if (newSelection.Secondary.Count > 0)
                 {
                     retVal += " and as secondary selection: ";
-                    for (var i = 0; i < _newSelection.Secondary.Count; i++)
+                    for (var i = 0; i < newSelection.Secondary.Count; i++)
                     {
                         if (i != 0)
                             retVal += " ,";
 
-                        var guid = _newSelection.Secondary[i];
+                        var guid = newSelection.Secondary[i];
 
                         retVal += GetNameFromGuid(guid);
                     }
@@ -61,23 +63,13 @@ namespace Assets.Scripts.Command
 
         public override void Do(DclScene sceneState, EditorEvents editorEvents)
         {
-            sceneState.SelectionState.PrimarySelectedEntity = sceneState.GetEntityById(_newSelection.Primary);
-            sceneState.SelectionState.SecondarySelectedEntities.Clear();
-            foreach (var secondary in _newSelection.Secondary)
-            {
-                sceneState.SelectionState.SecondarySelectedEntities.Add(sceneState.GetEntityById(secondary));
-            }
+            SelectionUtility.SetSelection(sceneState, newSelection);
             editorEvents.InvokeSelectionChangedEvent();
         }
 
         public override void Undo(DclScene sceneState, EditorEvents editorEvents)
         {
-            sceneState.SelectionState.PrimarySelectedEntity = sceneState.GetEntityById(_oldSelection.Primary);
-            sceneState.SelectionState.SecondarySelectedEntities.Clear();
-            foreach (var secondary in _oldSelection.Secondary)
-            {
-                sceneState.SelectionState.SecondarySelectedEntities.Add(sceneState.GetEntityById(secondary));
-            }
+            SelectionUtility.SetSelection(sceneState, oldSelection);
             editorEvents.InvokeSelectionChangedEvent();
         }
     }

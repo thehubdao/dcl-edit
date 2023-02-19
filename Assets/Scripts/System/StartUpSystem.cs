@@ -10,45 +10,46 @@ namespace Assets.Scripts.System
         private CameraSystem _cameraSystem;
 
         // dependencies
-        private WorkspaceSaveSystem _workspaceSaveSystem;
-        private UnityState _unityState;
-        private IPathState _pathState;
-        private FrameTimeSystem _frameTimeSystem;
+        private AssetManagerSystem assetManagerSystem;
+        private WorkspaceSaveSystem workspaceSaveSystem;
+        private IPathState pathState;
+        private ApplicationSystem frameTimeSystem;
         private SceneManagerSystem sceneManagerSystem;
         private SceneViewSystem sceneViewSystem;
+        private SettingsSystem settingsSystem;
 
         [Inject]
         private void Construct(
+            AssetManagerSystem assetManagerSystem,
             WorkspaceSaveSystem workspaceSaveSystem,
-            UnityState unityState,
             IPathState pathState,
-            FrameTimeSystem frameTimeSystem,
+            ApplicationSystem frameTimeSystem,
             SceneManagerSystem sceneManagerSystem,
-            SceneViewSystem sceneViewSystem)
+            SceneViewSystem sceneViewSystem,
+            SettingsSystem settingsSystem)
         {
-            _workspaceSaveSystem = workspaceSaveSystem;
-            _unityState = unityState;
-            _pathState = pathState;
-            _frameTimeSystem = frameTimeSystem;
+            this.assetManagerSystem = assetManagerSystem;
+            this.workspaceSaveSystem = workspaceSaveSystem;
+            this.frameTimeSystem = frameTimeSystem;
             this.sceneManagerSystem = sceneManagerSystem;
             this.sceneViewSystem = sceneViewSystem;
+            this.settingsSystem = settingsSystem;
         }
 
         void Awake()
         {
+            assetManagerSystem.CacheAllAssetMetadata();
+
             sceneManagerSystem.DiscoverScenes();
 
-            // TODO: load proper scene. Work around is to load the first scene
-            sceneManagerSystem.SetFirstSceneAsCurrent();
-
-            sceneViewSystem.SetUpCurrentScene();
+            sceneManagerSystem.SetLastOpenedSceneAsCurrentScene();
         }
 
         void Start()
         {
-            _workspaceSaveSystem.Load(_unityState.dynamicPanelsCanvas);
+            workspaceSaveSystem.Load();
 
-            _frameTimeSystem.SetApplicationTargetFramerate();
+            frameTimeSystem.SetApplicationTargetFramerate();
         }
     }
 }

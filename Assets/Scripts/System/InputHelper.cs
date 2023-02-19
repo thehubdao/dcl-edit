@@ -133,6 +133,31 @@ namespace Assets.Scripts.System
             return mousePosViewport;
         }
 
+        public bool IsMouseOverScenePanel()
+        {
+            var mousePosViewport = GetMousePositionInScenePanel();
+            // Figure out, if the mouse is over the Game window
+            return mousePosViewport.x >= 0 &&
+                    mousePosViewport.x < 1 &&
+                    mousePosViewport.y >= 0 &&
+                    mousePosViewport.y < 1;
+        }
+
+        public Vector3 GetMousePositionInScene()
+        {
+            var mousePosition = GetMousePositionInScenePanel();
+            var mouseRay = _unityState.MainCamera.ViewportPointToRay(mousePosition);
+            var farClipPlane = _unityState.MainCamera.farClipPlane;
+            if (Physics.Raycast(mouseRay, out RaycastHit hit, farClipPlane))
+            {
+                return hit.point;
+            }
+            else
+            {
+                return mouseRay.GetPoint(farClipPlane);
+            }
+        }
+
         // check for mouse buttons
         public bool IsLeftMouseButtonPressed()
         {

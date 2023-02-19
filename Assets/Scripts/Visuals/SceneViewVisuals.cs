@@ -1,6 +1,7 @@
 using Assets.Scripts.Events;
 using Assets.Scripts.System;
 using UnityEngine;
+using UnityEngine.Profiling;
 using Zenject;
 
 namespace Assets.Scripts.Visuals
@@ -26,6 +27,8 @@ namespace Assets.Scripts.Visuals
         {
             editorEvents.onHierarchyChangedEvent += UpdateVisuals;
             editorEvents.onSelectionChangedEvent += UpdateVisuals;
+            editorEvents.onAssetDataUpdatedEvent += _ => UpdateVisuals();
+            editorEvents.onAssetMetadataCacheUpdatedEvent += UpdateVisuals;
 
             UpdateVisuals();
         }
@@ -34,6 +37,8 @@ namespace Assets.Scripts.Visuals
 
         private void UpdateVisuals()
         {
+            Profiler.BeginSample("SceneViewVisuals");
+
             var currentScene = sceneManagerSystem.GetCurrentDirectoryState();
 
             if (currentScene == null)
@@ -48,6 +53,8 @@ namespace Assets.Scripts.Visuals
             }
 
             currentMainSceneVisuals.ShowScene(currentScene.id);
+
+            Profiler.EndSample();
         }
     }
 }

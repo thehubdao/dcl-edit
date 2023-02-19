@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
 using Assets.Scripts.SceneState;
@@ -8,6 +6,8 @@ using Assets.Scripts.Visuals.UiBuilder;
 using Assets.Scripts.Utility;
 using Assets.Scripts.Visuals.UiHandler;
 using JetBrains.Annotations;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
@@ -21,6 +21,9 @@ namespace Assets.Scripts.Visuals
 
         [SerializeField]
         private GameObject content;
+
+        [SerializeField]
+        private HierarchyViewportHandler hierarchyViewportHandler;
 
         [SerializeField]
         private ScrollRect scrollRect;
@@ -56,7 +59,9 @@ namespace Assets.Scripts.Visuals
         private UiBuilder.UiBuilder uiBuilder;
         private HierarchyChangeSystem hierarchyChangeSystem;
         private ContextMenuSystem contextMenuSystem;
+        private HierarchyContextMenuSystem hierarchyContextMenuSystem;
         private SceneManagerSystem sceneManagerSystem;
+        private CommandSystem commandSystem;
 
         [Inject]
         private void Construct(
@@ -64,22 +69,47 @@ namespace Assets.Scripts.Visuals
             Factory uiBuilderFactory,
             HierarchyChangeSystem hierarchyChangeSystem,
             ContextMenuSystem contextMenuSystem,
-            SceneManagerSystem sceneManagerSystem)
+            SceneManagerSystem sceneManagerSystem,
+            CommandSystem commandSystem,
+            HierarchyContextMenuSystem hierarchyContextMenuSystem)
         {
             this.events = events;
             this.uiBuilder = uiBuilderFactory.Create(content);
             this.hierarchyChangeSystem = hierarchyChangeSystem;
             this.contextMenuSystem = contextMenuSystem;
             this.sceneManagerSystem = sceneManagerSystem;
+            this.commandSystem = commandSystem;
+            this.hierarchyContextMenuSystem = hierarchyContextMenuSystem;
 
+
+            SetupRightClickHandler();
             SetupEventListeners();
         }
 
-        public void SetupEventListeners()
+        private void SetupEventListeners()
         {
             events.onHierarchyChangedEvent += MarkForUpdate;
             events.onSelectionChangedEvent += MarkForUpdate;
             MarkForUpdate();
+        }
+
+        private void SetupRightClickHandler()
+        {
+            hierarchyViewportHandler.rightClickHandler.onRightClick = clickPosition =>
+            {
+                var addEntityMenuItems = new List<ContextMenuItem>();
+
+                foreach (var preset in hierarchyContextMenuSystem.GetPresets())
+                {
+                    addEntityMenuItems.Add(new ContextMenuTextItem(preset.name,
+                        () => hierarchyContextMenuSystem.AddEntityFromPreset(preset)));
+                }
+
+                contextMenuSystem.OpenMenu(clickPosition, new List<ContextMenuItem>
+                {
+                    new ContextSubmenuItem("Add entity...", addEntityMenuItems),
+                });
+            };
         }
 
         private void UpdateVisuals()
@@ -94,16 +124,39 @@ namespace Assets.Scripts.Visuals
             }
             else
             {
-                ExpandSelectedItem(scene);
-                MakeHierarchyItemsRecursive(scene, 0, scene.EntitiesInSceneRoot, mainPanelData);
+                if (scene.EntitiesInSceneRoot.Count() == 0)
+                {
+                    mainPanelData.AddTitle("No Entities.");
+                    mainPanelData.AddText("Use right-click to add entities.");
+                }
+                else
+                {
+                    ExpandSelectedItem(scene);
+                    MakeHierarchyItemsRecursive(scene, 0, scene.EntitiesInSceneRoot, mainPanelData);
+                }
 
-                mainPanelData.AddSpacer(300);
+                mainPanelData.AddSpacer(300, clickPosition =>
+                {
+                    var addEntityMenuItems = new List<ContextMenuItem>();
+
+                    foreach (var preset in hierarchyContextMenuSystem.GetPresets())
+                    {
+                        addEntityMenuItems.Add(new ContextMenuTextItem(preset.name,
+                            () => hierarchyContextMenuSystem.AddEntityFromPreset(preset)));
+                    }
+
+                    contextMenuSystem.OpenMenu(clickPosition, new List<ContextMenuItem>
+                    {
+                        new ContextSubmenuItem("Add entity...", addEntityMenuItems),
+                    });
+                });
             }
 
             uiBuilder.Update(mainPanelData);
         }
 
-        private void MakeHierarchyItemsRecursive([NotNull] DclScene scene, int level, IEnumerable<DclEntity> entities, PanelAtom.Data mainPanelData)
+        private void MakeHierarchyItemsRecursive([NotNull] DclScene scene, int level, IEnumerable<DclEntity> entities,
+            PanelAtom.Data mainPanelData)
         {
             foreach (var entity in entities)
             {
@@ -112,11 +165,9 @@ namespace Assets.Scripts.Visuals
                 var isSecondarySelection = scene.SelectionState.SecondarySelectedEntities.Contains(entity);
 
                 var style =
-                    isPrimarySelection ?
-                        TextHandler.TextStyle.PrimarySelection :
-                        isSecondarySelection ?
-                            TextHandler.TextStyle.SecondarySelection :
-                            TextHandler.TextStyle.Normal;
+                    isPrimarySelection ? TextHandler.TextStyle.PrimarySelection :
+                    isSecondarySelection ? TextHandler.TextStyle.SecondarySelection :
+                    TextHandler.TextStyle.Normal;
 
                 var isExpanded = hierarchyChangeSystem.IsExpanded(entity);
 
@@ -129,21 +180,23 @@ namespace Assets.Scripts.Visuals
                     },
                     clickPosition =>
                     {
+                        var addEntityMenuItems = new List<ContextMenuItem>();
+
+                        foreach (var preset in hierarchyContextMenuSystem.GetPresets())
+                        {
+                            addEntityMenuItems.Add(new ContextMenuTextItem(preset.name,
+                                () => hierarchyContextMenuSystem.AddEntityFromPreset(preset, entity.Id)));
+                        }
+
                         contextMenuSystem.OpenMenu(clickPosition, new List<ContextMenuItem>
                         {
-                            new ContextSubmenuItem("Add entity...", new List<ContextMenuItem>
-                            {
-                                new ContextMenuTextItem("Empty Entity", () => Debug.Log("Add empty Entity")),
-                                new ContextMenuSpacerItem(),
-                                new ContextMenuTextItem("Gltf Entity", () => Debug.Log("Add Gltf Entity")),
-                                new ContextMenuSpacerItem(),
-                                new ContextMenuTextItem("Cube", () => Debug.Log("Add empty ")),
-                                new ContextMenuTextItem("Sphere", () => Debug.Log("Add empty ")),
-                                new ContextMenuTextItem("Cylinder", () => Debug.Log("Add empty ")),
-                                new ContextMenuTextItem("Cone", () => Debug.Log("Add empty ")),
-                            }),
-                            new ContextMenuTextItem("Duplicate", () => Debug.Log("Duplicate entity")),
-                            new ContextMenuTextItem("Delete", () => Debug.Log("Delete entity"))
+                            new ContextSubmenuItem("Add entity...", addEntityMenuItems),
+                            new ContextMenuTextItem("Duplicate",
+                                () => commandSystem.ExecuteCommand(
+                                    commandSystem.CommandFactory.CreateDuplicateEntity(entity.Id))),
+                            new ContextMenuTextItem("Delete",
+                                () => commandSystem.ExecuteCommand(
+                                    commandSystem.CommandFactory.CreateRemoveEntity(entity)))
                         });
                     });
 
@@ -179,7 +232,7 @@ namespace Assets.Scripts.Visuals
             if (selectedUiItem == null)
             {
                 if (!prevScrollPosition.HasValue) return;
-                
+
                 scrollRect.content.localPosition = prevScrollPosition.Value;
                 prevScrollPosition = null;
                 return;
@@ -187,7 +240,7 @@ namespace Assets.Scripts.Visuals
 
             prevScrollPosition ??= scrollRect.content.localPosition;
             var newVerticalPos = uiItemHeight * index;
-            
+
             if (scrollRect.viewport.rect.height + scrollRect.content.localPosition.y < newVerticalPos || newVerticalPos < scrollRect.content.localPosition.y)
             {
                 scrollRect.content.localPosition = new Vector2(

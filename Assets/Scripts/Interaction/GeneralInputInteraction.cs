@@ -3,6 +3,7 @@ using Assets.Scripts.Events;
 using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
 using ModestTree;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Zenject;
@@ -18,16 +19,15 @@ namespace Assets.Scripts.Interaction
         private ICommandSystem commandSystem;
         private InputState inputState;
         private Interface3DState interface3DState;
-        private WorkspaceSaveSystem workspaceSaveSystem;
         private GizmoState gizmoState;
         private UnityState unityState;
         private InputHelper inputHelper;
         private CameraState cameraState;
         private EditorEvents editorEvents;
-        private TypeScriptGenerationSystem typeScriptGenerationSystem;
         private EntitySelectSystem entitySelectSystem;
         private ContextMenuSystem contextMenuSystem;
         private SceneManagerSystem sceneManagerSystem;
+        private DialogSystem dialogSystem;
 
         [Inject]
         private void Construct(
@@ -35,31 +35,29 @@ namespace Assets.Scripts.Interaction
             ICommandSystem commandSystem,
             InputState inputState,
             Interface3DState interface3DState,
-            WorkspaceSaveSystem workspaceSaveSystem,
             CameraState cameraState,
             GizmoState gizmoState,
             UnityState unityState,
             InputHelper inputHelper,
             EditorEvents editorEvents,
-            TypeScriptGenerationSystem typeScriptGenerationSystem,
             EntitySelectSystem entitySelectSystem,
             ContextMenuSystem contextMenuSystem,
-            SceneManagerSystem sceneManagerSystem)
+            SceneManagerSystem sceneManagerSystem,
+            DialogSystem dialogSystem)
         {
             this.sceneSaveSystem = sceneSaveSystem;
             this.commandSystem = commandSystem;
             this.inputState = inputState;
             this.interface3DState = interface3DState;
-            this.workspaceSaveSystem = workspaceSaveSystem;
             this.gizmoState = gizmoState;
             this.unityState = unityState;
             this.inputHelper = inputHelper;
             this.cameraState = cameraState;
             this.editorEvents = editorEvents;
-            this.typeScriptGenerationSystem = typeScriptGenerationSystem;
             this.entitySelectSystem = entitySelectSystem;
             this.contextMenuSystem = contextMenuSystem;
             this.sceneManagerSystem = sceneManagerSystem;
+            this.dialogSystem = dialogSystem;
         }
 
 
@@ -135,6 +133,8 @@ namespace Assets.Scripts.Interaction
             Ray mouseRay;
             bool isMouseOverGameWindow;
             bool isMouseOverContextMenu;
+            bool isMouseOverGizmoModeMenu;
+            bool isMouseOverDialog;
             {
                 var mousePosViewport = inputHelper.GetMousePositionInScenePanel();
                 // Get the ray from the Camera, that corresponds to the mouse position in the panel
@@ -145,14 +145,16 @@ namespace Assets.Scripts.Interaction
                                         mousePosViewport.y >= 0 &&
                                         mousePosViewport.y < 1;
                 isMouseOverContextMenu = contextMenuSystem.IsMouseOverMenu();
+                isMouseOverGizmoModeMenu = unityState.GizmoModeMenu.GetComponent<GizmoModeInteraction>().IsMouseOverGizmoModeMenu;
+                isMouseOverDialog = dialogSystem.IsMouseOverDialog();
             }
 
 
-            
+
 
 
             // Figure out, if the mouse is over the 3D viewport (not hovering over any UI)
-            var isMouseIn3DView = /*!EventSystem.current.IsPointerOverGameObject() &&*/ isMouseOverGameWindow && !isMouseOverContextMenu;
+            var isMouseIn3DView = /*!EventSystem.current.IsPointerOverGameObject() &&*/ isMouseOverGameWindow && !isMouseOverContextMenu && !isMouseOverDialog && !isMouseOverGizmoModeMenu;
 
             // The position the mouse currently points to in the 3D viewport
             Vector3? mousePositionIn3DView = null;
@@ -206,6 +208,31 @@ namespace Assets.Scripts.Interaction
                 }
             }
 
+            // When pressing Duplicates selected entity
+            if (inputSystemAsset.Hotkeys.Duplicate.triggered)
+            {
+                var currentScene = sceneManagerSystem.GetCurrentScene();
+                var selectedEntity = currentScene?.SelectionState.PrimarySelectedEntity;
+
+                if (selectedEntity != null)
+                {
+                    commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateDuplicateEntity(selectedEntity.Id));
+                }
+            }
+
+            //TODO Delete all selected entities
+            //When pressing Delete delete primary selected Entity
+            if (inputSystemAsset.Hotkeys.Delete.triggered)
+            {
+                var currentScene = sceneManagerSystem.GetCurrentScene();
+                var selectedEntity = currentScene?.SelectionState.PrimarySelectedEntity;
+                    
+                if (selectedEntity != null)
+                {
+                    commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateRemoveEntity(selectedEntity));    
+                }
+            }
+            
             // When pressing(down) Left mouse button, select the hovered entity
             if (inputHelper.IsLeftMouseButtonDown() && !pressingAlt && isMouseIn3DView)
             {
@@ -410,12 +437,10 @@ namespace Assets.Scripts.Interaction
                 inputState.InState = InputState.InStateType.FocusTransition;
             }
 
-            // When pressing the save hotkey, save the scene and workspace layout
+            // When pressing the save hotkey, save the scene
             if (inputSystemAsset.Hotkeys.Save.triggered)
             {
-                sceneSaveSystem.Save(sceneManagerSystem.GetCurrentDirectoryState());
-                workspaceSaveSystem.Save(unityState.dynamicPanelsCanvas);
-                typeScriptGenerationSystem.GenerateTypeScript();
+                sceneManagerSystem.SaveCurrentScene();
             }
 
             // When pressing Translate hotkey, enter translation gizmo mode

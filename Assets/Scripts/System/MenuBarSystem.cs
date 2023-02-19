@@ -44,9 +44,9 @@ namespace Assets.Scripts.System
         /// <param name="path">The path to the Menu/Submenu of the entry (e.g. "File/Open/Project")</param>
         /// <param name="onClick">The Action called when the Entry (e.g. "Project") is clicked.</param>
         /// <param name="position">The Position to add in the lowest level. -1 to append as last.</param>
-        public void AddMenuItem(string path, UnityAction onClick, int position = -1)
+        public void AddMenuItem(string path, UnityAction onClick)
         {
-            _state.AddMenuItem(path, onClick, position);
+            _state.AddMenuItem(path, onClick);
             _editorEvents.InvokeUpdateMenuBarEvent();
         }
     }

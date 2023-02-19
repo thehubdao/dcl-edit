@@ -50,13 +50,13 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
                 if (newHeaderData.onClose != null)
                 {
-                    headerHandler.CloseButton.gameObject.SetActive(true);
+                    headerHandler.CloseButtonContainer.SetActive(true);
                     headerHandler.CloseButton.onClick.RemoveAllListeners();
                     headerHandler.CloseButton.onClick.AddListener(newHeaderData.onClose);
                 }
                 else
                 {
-                    headerHandler.CloseButton.gameObject.SetActive(false);
+                    headerHandler.CloseButtonContainer.SetActive(false);
                     headerHandler.CloseButton.onClick.RemoveAllListeners();
                 }
             }

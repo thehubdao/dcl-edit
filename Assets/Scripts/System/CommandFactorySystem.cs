@@ -1,6 +1,7 @@
 using Assets.Scripts.Command;
 using System;
 using System.Collections.Generic;
+using Assets.Scripts.EditorState;
 using Assets.Scripts.SceneState;
 using UnityEngine;
 
@@ -46,9 +47,36 @@ public class CommandFactorySystem
     {
         return new ChangeSelection(oldPrimary, oldSecondary, newPrimary, newSecondary);
     }
-    
+
+    // Duplicate Entity
+    public DuplicateEntity CreateDuplicateEntity(Guid entityId)
+    {
+        return new DuplicateEntity(entityId);
+    }
+
+    public AddModelAssetToScene CreateAddModelAssetToScene(Guid entityId, string entityCustomName, Guid assetId, Vector3 positionInScene)
+    {
+        return new AddModelAssetToScene(entityId, entityCustomName, assetId, positionInScene);
+    }
+
+    public AddComponent CreateAddComponent(Guid entityId, DclComponent.ComponentDefinition component)
+    {
+        return new AddComponent(entityId, component);
+    }
+
     public RemoveComponent CreateRemoveComponent(Guid entityId, DclComponent component)
     {
         return new RemoveComponent(entityId, component);
     }
+
+    public AddEntity CreateAddEntity(EntityPresetState.EntityPreset preset, Guid oldPrimarySelection, IEnumerable<Guid> oldSecondarySelection, Guid parent = default)
+    {
+        return new AddEntity(oldPrimarySelection, oldSecondarySelection, preset, parent);
+    }
+
+    public RemoveEntity CreateRemoveEntity(DclEntity entity)
+    {
+        return new RemoveEntity(entity);
+    }
 }
+

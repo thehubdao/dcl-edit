@@ -1,4 +1,4 @@
-// GENERATED AUTOMATICALLY FROM 'Assets/Scripts/Interaction/InputSystem/InputSystemAsset.inputactions'
+// GENERATED AUTOMATICALLY FROM 'Assets/Scripts/System/InputSystem/InputSystemAsset.inputactions'
 
 using System;
 using System.Collections;
@@ -333,6 +333,22 @@ public class @InputSystemAsset : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": ""Press(behavior=1)""
+                },
+                {
+                    ""name"": ""Duplicate"",
+                    ""type"": ""Button"",
+                    ""id"": ""a89fc159-e2c8-43e8-835b-b3abe72d9a23"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": ""Press(behavior=1)""
+                },
+                {
+                    ""name"": ""Delete"",
+                    ""type"": ""Button"",
+                    ""id"": ""57999a8f-1f67-41a8-95ca-23f8ae77af75"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": ""Press(behavior=1)""
                 }
             ],
             ""bindings"": [
@@ -467,6 +483,50 @@ public class @InputSystemAsset : IInputActionCollection, IDisposable
                     ""action"": ""Scale"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""Button With One Modifier"",
+                    ""id"": ""bef78461-17ec-4063-a2a8-af589df8b2a6"",
+                    ""path"": ""ButtonWithOneModifier"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Duplicate"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier"",
+                    ""id"": ""c49f2fe6-2125-46f7-9648-ebf9b8376ce0"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Duplicate"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""button"",
+                    ""id"": ""9dfdcda5-10ed-4eb3-95f0-9b8299384586"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Duplicate"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c149c92d-59b8-4758-a124-c81fb9aa1068"",
+                    ""path"": ""<Keyboard>/delete"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Delete"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -553,6 +613,8 @@ public class @InputSystemAsset : IInputActionCollection, IDisposable
         m_Hotkeys_Translate = m_Hotkeys.FindAction("Translate", throwIfNotFound: true);
         m_Hotkeys_Rotate = m_Hotkeys.FindAction("Rotate", throwIfNotFound: true);
         m_Hotkeys_Scale = m_Hotkeys.FindAction("Scale", throwIfNotFound: true);
+        m_Hotkeys_Duplicate = m_Hotkeys.FindAction("Duplicate", throwIfNotFound: true);
+        m_Hotkeys_Delete = m_Hotkeys.FindAction("Delete", throwIfNotFound: true);
         // Modifier
         m_Modifier = asset.FindActionMap("Modifier", throwIfNotFound: true);
         m_Modifier_Shift = m_Modifier.FindAction("Shift", throwIfNotFound: true);
@@ -678,6 +740,8 @@ public class @InputSystemAsset : IInputActionCollection, IDisposable
     private readonly InputAction m_Hotkeys_Translate;
     private readonly InputAction m_Hotkeys_Rotate;
     private readonly InputAction m_Hotkeys_Scale;
+    private readonly InputAction m_Hotkeys_Duplicate;
+    private readonly InputAction m_Hotkeys_Delete;
     public struct HotkeysActions
     {
         private @InputSystemAsset m_Wrapper;
@@ -688,6 +752,8 @@ public class @InputSystemAsset : IInputActionCollection, IDisposable
         public InputAction @Translate => m_Wrapper.m_Hotkeys_Translate;
         public InputAction @Rotate => m_Wrapper.m_Hotkeys_Rotate;
         public InputAction @Scale => m_Wrapper.m_Hotkeys_Scale;
+        public InputAction @Duplicate => m_Wrapper.m_Hotkeys_Duplicate;
+        public InputAction @Delete => m_Wrapper.m_Hotkeys_Delete;
         public InputActionMap Get() { return m_Wrapper.m_Hotkeys; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -715,6 +781,12 @@ public class @InputSystemAsset : IInputActionCollection, IDisposable
                 @Scale.started -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnScale;
                 @Scale.performed -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnScale;
                 @Scale.canceled -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnScale;
+                @Duplicate.started -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnDuplicate;
+                @Duplicate.performed -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnDuplicate;
+                @Duplicate.canceled -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnDuplicate;
+                @Delete.started -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnDelete;
+                @Delete.performed -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnDelete;
+                @Delete.canceled -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnDelete;
             }
             m_Wrapper.m_HotkeysActionsCallbackInterface = instance;
             if (instance != null)
@@ -737,6 +809,12 @@ public class @InputSystemAsset : IInputActionCollection, IDisposable
                 @Scale.started += instance.OnScale;
                 @Scale.performed += instance.OnScale;
                 @Scale.canceled += instance.OnScale;
+                @Duplicate.started += instance.OnDuplicate;
+                @Duplicate.performed += instance.OnDuplicate;
+                @Duplicate.canceled += instance.OnDuplicate;
+                @Delete.started += instance.OnDelete;
+                @Delete.performed += instance.OnDelete;
+                @Delete.canceled += instance.OnDelete;
             }
         }
     }
@@ -806,6 +884,8 @@ public class @InputSystemAsset : IInputActionCollection, IDisposable
         void OnTranslate(InputAction.CallbackContext context);
         void OnRotate(InputAction.CallbackContext context);
         void OnScale(InputAction.CallbackContext context);
+        void OnDuplicate(InputAction.CallbackContext context);
+        void OnDelete(InputAction.CallbackContext context);
     }
     public interface IModifierActions
     {

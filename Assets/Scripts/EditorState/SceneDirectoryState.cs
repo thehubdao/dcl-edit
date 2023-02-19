@@ -1,9 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
 using Assets.Scripts.SceneState;
 using JetBrains.Annotations;
-using UnityEngine;
+using System;
+using System.Collections.Generic;
 
 
 namespace Assets.Scripts.EditorState
@@ -55,15 +53,67 @@ namespace Assets.Scripts.EditorState
          */
         public Guid id;
 
+        public string name = "New Scene";
+
         public SceneDirectoryState()
         {
             id = Guid.NewGuid();
         }
+        
+        /**
+         * <summary>
+         * The version of the dcl-edit project
+         * </summary>
+         */
+        public readonly DclEditVersion dclEditVersion = DclEditVersion.None;
 
-        public SceneDirectoryState(string directoryPath, Guid id)
+        public SceneDirectoryState(string directoryPath, Guid id, DclEditVersion dclEditVersion = DclEditVersion.Beta)
         {
             this.directoryPath = directoryPath;
             this.id = id;
+            this.dclEditVersion = dclEditVersion;
         }
+
+        /// <summary>
+        /// Creates a deep Copy. 
+        /// </summary>
+        /// <param name="id">This id will be assigned to the copy.</param>
+        public SceneDirectoryState DeepCopy(Guid id)
+        {
+            if (id == Guid.Empty)
+            {
+                id = Guid.NewGuid();
+            }
+
+            SceneDirectoryState copy = DeepCopy();
+            copy.id = id;
+            return copy;
+        }
+
+        /// <summary>
+        /// Creates a deep Copy. 
+        /// </summary>
+        public SceneDirectoryState DeepCopy()
+        {
+            SceneDirectoryState copy = new SceneDirectoryState();
+            copy.directoryPath = directoryPath;
+            copy.currentScene = currentScene.DeepCopy();
+            return copy;
+        }
+
+        /// <summary>
+        /// Creates a new SceneDirectoryState and adds a Scene to it.
+        /// </summary>
+        public static SceneDirectoryState CreateNewSceneDirectoryState()
+        {
+            return new SceneDirectoryState { currentScene = new DclScene() };
+        }
+    }
+    
+    public enum DclEditVersion
+    {
+        None,
+        Alpha,
+        Beta
     }
 }

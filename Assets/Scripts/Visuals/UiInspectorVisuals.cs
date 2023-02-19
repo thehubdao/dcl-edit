@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
 using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
+using Assets.Scripts.Utility;
 using Assets.Scripts.Visuals.UiBuilder;
 using UnityEngine;
 using Zenject;
@@ -22,6 +24,11 @@ namespace Assets.Scripts.Visuals
         private EditorEvents editorEvents;
         private CommandSystem commandSystem;
         private SceneManagerSystem sceneManagerSystem;
+        private ContextMenuSystem contextMenuSystem;
+        private AddComponentSystem addComponentSystem;
+        private AvailableComponentsState availableComponentsState;
+        private AssetManagerSystem assetManagerSystem;
+        private DialogSystem dialogSystem;
 
         [Inject]
         private void Construct(
@@ -30,7 +37,12 @@ namespace Assets.Scripts.Visuals
             UiBuilder.UiBuilder.Factory uiBuilderFactory,
             EditorEvents editorEvents,
             CommandSystem commandSystem,
-            SceneManagerSystem sceneManagerSystem)
+            SceneManagerSystem sceneManagerSystem,
+            ContextMenuSystem contextMenuSystem,
+            AddComponentSystem addComponentSystem,
+            AvailableComponentsState availableComponentsState,
+            AssetManagerSystem assetManagerSystem,
+            DialogSystem dialogSystem)
         {
             this.inputState = inputState;
             this.updatePropertiesSystem = updatePropertiesSystem;
@@ -38,14 +50,36 @@ namespace Assets.Scripts.Visuals
             this.editorEvents = editorEvents;
             this.commandSystem = commandSystem;
             this.sceneManagerSystem = sceneManagerSystem;
+            this.contextMenuSystem = contextMenuSystem;
+            this.addComponentSystem = addComponentSystem;
+            this.availableComponentsState = availableComponentsState;
+            this.assetManagerSystem = assetManagerSystem;
+            this.dialogSystem = dialogSystem;
 
             SetupEventListeners();
         }
 
         public void SetupEventListeners()
         {
-            editorEvents.onSelectionChangedEvent += UpdateVisuals;
-            UpdateVisuals();
+            editorEvents.onSelectionChangedEvent += SetDirty;
+            SetDirty();
+        }
+
+
+        private bool _dirty;
+
+        void SetDirty()
+        {
+            _dirty = true;
+        }
+
+        void LateUpdate()
+        {
+            if (_dirty)
+            {
+                _dirty = false;
+                UpdateVisuals();
+            }
         }
 
         private void UpdateVisuals()
@@ -165,9 +199,19 @@ namespace Assets.Scripts.Visuals
 
                             break;
                         }
-                        case DclComponent.DclComponentProperty.PropertyType.Boolean: // not supported yet
+                        case DclComponent.DclComponentProperty.PropertyType.Boolean:
                         {
-                            componentPanel.AddText("Boolean property not supported yet");
+                            var boolActions = new StringPropertyAtom.UiPropertyActions<bool>
+                            {
+                                OnChange = (value) => updatePropertiesSystem.UpdateFixedProperty(propertyIdentifier, value),
+                                OnSubmit = (value) => updatePropertiesSystem.UpdateFixedProperty(propertyIdentifier, value)
+                                // OnInvalid, OnAbort not required for a checkbox
+                            };
+
+                            componentPanel.AddBooleanProperty(
+                                property.PropertyName,
+                                property.GetConcrete<bool>().Value,
+                                boolActions);                                    
                             break;
                         }
                         case DclComponent.DclComponentProperty.PropertyType.Vector3:
@@ -207,8 +251,13 @@ namespace Assets.Scripts.Visuals
                             break;
                         }
                         case DclComponent.DclComponentProperty.PropertyType.Asset: // not supported yet
-                        {
-                            componentPanel.AddText("Asset property not supported yet");
+                            {
+                                var assetMetadata = assetManagerSystem.GetMetadataById(property.GetConcrete<Guid>().Value);
+                                componentPanel.AddAssetProperty(
+                                    property.PropertyName,
+                                    assetMetadata,
+                                    (_) => dialogSystem.OpenAssetDialog(selectedEntity.Id));
+
                             break;
                         }
                         default:
@@ -216,6 +265,76 @@ namespace Assets.Scripts.Visuals
                     }
                 }
             }
+
+            inspectorPanel.AddSpacer(20);
+
+            inspectorPanel.AddButton("Add Component", go =>
+            {
+                var rect = go.GetComponent<RectTransform>();
+
+                var menuItemCategories = new Dictionary<string, List<ContextMenuItem>>
+                {
+                    {"", new List<ContextMenuItem>()}
+                };
+
+                List<ContextMenuItem> GetCategoryList(string categoryPath)
+                {
+                    // Try to get the category list
+                    if (menuItemCategories.TryGetValue(categoryPath, out var categoryList)) return categoryList;
+
+                    // if category list does NOT exist yet
+                    // split category by '/'
+                    var categoryParts = categoryPath.Split('/');
+
+                    // Generate parent category name. Either by concatenating the previews path parts or "" for the root category
+                    var parentCategoryPath =
+                        categoryParts.Length > 1 ?
+                            string.Join("/", categoryParts.Take(categoryParts.Length - 1)) :
+                            "";
+
+                    // recursively get the parent category list
+                    var parentCategoryList = GetCategoryList(parentCategoryPath);
+
+                    // Create new list
+                    categoryList = new List<ContextMenuItem>();
+
+                    // add the list to the parent category
+                    parentCategoryList.Add(new ContextSubmenuItem(categoryParts[categoryParts.Length - 1], categoryList));
+
+                    // add the list to the categories dictionary
+                    menuItemCategories.Add(categoryPath, categoryList);
+
+                    // return the list
+                    return categoryList;
+                }
+
+                foreach (var component in availableComponentsState.allAvailableComponents.Where(c => c.availableInAddComponentMenu))
+                {
+                    var categoryMenu = GetCategoryList(component.category);
+
+                    categoryMenu.Add(
+                        new ContextMenuTextItem(
+                            component.name,
+                            () => addComponentSystem.AddComponent(selectedEntity.Id, component.componentDefinition),
+                            !addComponentSystem.CanComponentBeAdded(selectedEntity, component.componentDefinition)));
+                }
+
+                contextMenuSystem.OpenMenu(new List<ContextMenuState.Placement>
+                {
+                    new ContextMenuState.Placement
+                    {
+                        position = rect.position + new Vector3(0, -rect.sizeDelta.y, 0),
+                        expandDirection = ContextMenuState.Placement.Direction.Right,
+                    },
+                    new ContextMenuState.Placement
+                    {
+                        position = rect.position + new Vector3(rect.sizeDelta.x, -rect.sizeDelta.y, 0),
+                        expandDirection = ContextMenuState.Placement.Direction.Left,
+                    }
+                }, menuItemCategories[""]);
+            });
+
+            inspectorPanel.AddSpacer(20);
 
             uiBuilder.Update(inspectorPanel);
         }

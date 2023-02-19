@@ -1,11 +1,9 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using Assets.Scripts.EditorState;
 using Assets.Scripts.Visuals.UiBuilder;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
+using System;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -113,7 +111,8 @@ namespace Assets.Scripts.Tests.PlayModeTests.UiTests.Utility
             rectTransform.offsetMax = Vector2.zero;
 
             var uiBuilder = new UiBuilder(go);
-            uiBuilder.Constructor(unityState);
+            // TODO: Fix error
+            uiBuilder.Constructor(unityState, null, null);
 
             return uiBuilder;
         }
