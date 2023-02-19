@@ -112,7 +112,7 @@ namespace Assets.Scripts.Tests.PlayModeTests.UiTests.Utility
 
             var uiBuilder = new UiBuilder(go);
             // TODO: Fix error
-            //uiBuilder.Constructor(unityState);
+            uiBuilder.Constructor(unityState, null, null);
 
             return uiBuilder;
         }

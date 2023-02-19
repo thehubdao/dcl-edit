@@ -328,10 +328,6 @@ PrefabInstance:
       propertyPath: _loadSceneFromVersion1
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 2209880425006019886, guid: eb965bbb945432643839bb61bab7ba9f, type: 3}
-      propertyPath: _assetThumbnailGeneratorPrefab
-      value: 
-      objectReference: {fileID: 7535211212909013817, guid: c920a71b6949a694798102689c32baf8, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: eb965bbb945432643839bb61bab7ba9f, type: 3}
 --- !u!1001 &2682837584673782010
