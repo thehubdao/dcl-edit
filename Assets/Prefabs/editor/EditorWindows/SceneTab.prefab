@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1357615837148802335}
   - component: {fileID: 1357615837148802329}
   - component: {fileID: 1357615837148802328}
+  - component: {fileID: 3815314254288705362}
   m_Layer: 5
   m_Name: SceneTab
   m_TagString: Untagged
@@ -73,6 +74,20 @@ MonoBehaviour:
     y: 0
     width: 1
     height: 1
+--- !u!114 &3815314254288705362
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1357615837148802334}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3312d7739989d2b4e91e6319e9a96d76, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Padding: {x: 0, y: 0, z: 0, w: 0}
+  m_Softness: {x: 0, y: 0}
 --- !u!1 &1443251776778444254
 GameObject:
   m_ObjectHideFlags: 0
