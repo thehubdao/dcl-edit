@@ -60,7 +60,7 @@ namespace Assets.Scripts.System
             {
                 settingsSystem.selectedGizmoTool.Set((int) value);
 
-                editorEvents.InvokeGizmoModeChangeEvent();
+                editorEvents.InvokeUpdateSceneViewButtons();
                 editorEvents.InvokeSelectionChangedEvent();
             }
         }
@@ -72,7 +72,7 @@ namespace Assets.Scripts.System
             {
                 settingsSystem.gizmoToolDoesSnap.Set(value ? 1 : 0);
 
-                editorEvents.InvokeGizmoModeChangeEvent();
+                editorEvents.InvokeUpdateSceneViewButtons();
                 editorEvents.InvokeSelectionChangedEvent();
             }
         }
@@ -84,7 +84,7 @@ namespace Assets.Scripts.System
             {
                 settingsSystem.gizmoLocalGlobalContext.Set((int) value);
 
-                editorEvents.InvokeGizmoModeChangeEvent();
+                editorEvents.InvokeUpdateSceneViewButtons();
                 editorEvents.InvokeSelectionChangedEvent();
             }
         }

@@ -268,14 +268,6 @@ namespace Assets.Scripts.System
             gizmoLocalGlobalContext = new IntUserSetting(this, "Gizmo Local Global Context", 0);
             gizmoToolDoesSnap = new IntUserSetting(this, "Gizmo Tool Does Snap", 0);
 
-            ShownSettings.Add(
-                "Tmp Gizmo Settings",
-                new List<ISetting>
-                {
-                    gizmoLocalGlobalContext,
-                    gizmoToolDoesSnap
-                });
-
             gizmoToolTranslateSnapping = new FloatUserSetting(this, "Gizmo Tool Translate Snapping", 0.25f);
             gizmoToolRotateSnapping = new FloatUserSetting(this, "Gizmo Tool Rotate Snapping", 15f); // degrees
             gizmoToolScaleSnapping = new FloatUserSetting(this, "Gizmo Tool Scale Snapping", 0.25f);

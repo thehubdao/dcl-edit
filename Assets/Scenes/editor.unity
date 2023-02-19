@@ -241,6 +241,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a03a9b75e7a1ed745977e9bad5da7ef1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &710671776 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8532448768082727038, guid: 44790cf12ccd011459f749712f90a90b, type: 3}
+  m_PrefabInstance: {fileID: 5677096275816853216}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &728950132 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5677096275094490004, guid: 44790cf12ccd011459f749712f90a90b, type: 3}
@@ -1240,6 +1245,10 @@ PrefabInstance:
       propertyPath: GizmoModeMenu
       value: 
       objectReference: {fileID: 1375574674}
+    - target: {fileID: 6554674216587907478, guid: 20ed7006bd4d7d84dab9ab96b9f5129a, type: 3}
+      propertyPath: sceneViewButtons
+      value: 
+      objectReference: {fileID: 710671776}
     - target: {fileID: 6554674216587907478, guid: 20ed7006bd4d7d84dab9ab96b9f5129a, type: 3}
       propertyPath: dynamicPanelsCanvas
       value: 
