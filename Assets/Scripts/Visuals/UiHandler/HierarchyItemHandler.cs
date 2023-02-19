@@ -27,6 +27,8 @@ namespace Assets.Scripts.Visuals.UiHandler
         [SerializeField]
         public DragAndDropHandler dragAndDropHandler;
 
+        public bool primarySelection;
+
         public struct UiHierarchyItemActions
         {
             [CanBeNull]
@@ -78,6 +80,8 @@ namespace Assets.Scripts.Visuals.UiHandler
             dragAndDropHandler.draggedEntity = newHierarchyItemData.draggedEntity;
             dragAndDropHandler.isExpanded = newHierarchyItemData.isExpanded;
             dragAndDropHandler.isParentExpanded = newHierarchyItemData.isParentExpanded;
+            
+            primarySelection = newHierarchyItemData.isPrimarySelected;
             
             text.text = newHierarchyItemData.name;
             text.textStyle = newHierarchyItemData.style;

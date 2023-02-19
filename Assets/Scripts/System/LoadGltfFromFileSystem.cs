@@ -82,11 +82,11 @@ namespace Assets.Scripts.System
                         // Add click collider to all visible GameObjects
                         foreach (var child in visibleChildren)
                         {
-                            var colliderGameObject = new GameObject("Collider");
-                            colliderGameObject.transform.parent = o.transform;
-                            colliderGameObject.transform.position = child.position;
-                            colliderGameObject.transform.rotation = child.rotation;
-                            colliderGameObject.transform.localScale = child.localScale;
+                            var colliderGameObject = new GameObject("Click Collider");
+                            colliderGameObject.transform.parent = child;
+                            colliderGameObject.transform.localPosition = Vector3.zero;
+                            colliderGameObject.transform.localRotation = Quaternion.identity;
+                            colliderGameObject.transform.localScale = Vector3.one;
 
                             colliderGameObject.layer = 10; // Entity Click Layer
                             var newCollider = colliderGameObject.AddComponent<MeshCollider>();

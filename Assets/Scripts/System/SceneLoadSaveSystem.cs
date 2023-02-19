@@ -33,6 +33,7 @@ namespace Assets.Scripts.System
     public interface ISceneSaveSystem
     {
         void Save(SceneDirectoryState sceneDirectoryState);
+        void Delete(SceneDirectoryState sceneDirectoryState);
     }
 
     public class SceneLoadSaveSystem : ISceneLoadSystem, ISceneSaveSystem
@@ -78,7 +79,7 @@ namespace Assets.Scripts.System
                     dclEditVersionNumber = Application.version
                 };
                 string sceneFilePath = Path.Combine(sceneDirectoryState.directoryPath, "scene.json");
-                string sceneFileContentsJson = JsonConvert.SerializeObject(sceneFileContents);
+                string sceneFileContentsJson = JsonConvert.SerializeObject(sceneFileContents, Formatting.Indented);
                 File.WriteAllText(sceneFilePath, sceneFileContentsJson);
 
                 sceneDirectoryState.loadedFilePathsInScene.Add(NormalizePath(sceneFilePath));
@@ -153,6 +154,20 @@ namespace Assets.Scripts.System
         public void LoadV1(SceneDirectoryState sceneDirectoryState)
         {
             loadFromVersion1System.Load(sceneDirectoryState);
+        }
+
+        /// <summary>
+        /// Deletes the Scene and delets all associated Files.
+        /// </summary>
+        public void Delete(SceneDirectoryState sceneDirectoryState)
+        {
+            foreach (var path in sceneDirectoryState.loadedFilePathsInScene.Select(p => Path.Combine(sceneDirectoryState.directoryPath, p)))
+            {
+                if (File.Exists(path))
+                {
+                    File.Delete(path);
+                }
+            }
         }
 
         /**
