@@ -9,7 +9,7 @@ using System.Linq;
 using UnityEngine;
 using Zenject;
 using Debug = UnityEngine.Debug;
-using Random = System.Random;
+using Random = UnityEngine.Random;
 
 namespace Assets.Scripts.System
 {
@@ -257,8 +257,8 @@ namespace Assets.Scripts.System
                     throw new SceneLoadException($"Guid was not set for entity {customName}");
                 }
 
-                hierarchyOrder ??= new Random().Next();
-                
+                hierarchyOrder ??= Random.Range(0, 100000); // using full integer values for random initialization
+
                 var dclEntity = new DclEntity(guid, customName, parentGuid ?? default, isExposed, (float)hierarchyOrder);
 
                 // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator 
