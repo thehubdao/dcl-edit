@@ -180,7 +180,7 @@ namespace Assets.Scripts.System
         private float FindGridSnapOffset(float startingValue, float snappingStep)
         {
             Assert.IsTrue(snappingStep > 0);
-            return startingValue % snappingStep;
+            return -(startingValue % snappingStep);
         }
 
 
