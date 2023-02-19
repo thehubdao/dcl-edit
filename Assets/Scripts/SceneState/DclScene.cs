@@ -63,6 +63,19 @@ namespace Assets.Scripts.SceneState
         }
         public void ClearFloatingEntities() => _allFloatingEntities.Clear();
 
+        public DclScene DeepCopy()
+        {
+            DclScene copy = new DclScene();
+            Random random = new Random();
+
+            foreach (DclEntity entitiy in EntitiesInSceneRoot)
+            {
+                entitiy.DeepCopy(copy, random);
+            }
+
+            return copy;
+        }
+
         // Other States
 
         public SelectionState SelectionState = new SelectionState();
