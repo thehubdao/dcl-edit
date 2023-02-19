@@ -76,12 +76,11 @@ namespace Assets.Scripts.System
             var uniqueNumbers = new Dictionary<int, DclEntity>();
             foreach (var entity in entities.entities)
             {
-                var newEntity = new DclEntity(Guid.NewGuid(), entity.name);
+                var newEntity = new DclEntity(Guid.NewGuid(), entity.name, hierarchyOrder: entity.hierarchyOrder);
 
 
                 //newEntity.IsExposed = entity.exposed;
 
-                //newEntity.HierarchyOrder = entity.hierarchyOrder;
                 //newEntity.CollapsedChildren = entity.collapsedChildren;
 
                 parentNumbers.Add(newEntity, entity.parent);

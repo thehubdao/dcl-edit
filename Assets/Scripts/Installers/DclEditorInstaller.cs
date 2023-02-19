@@ -160,6 +160,10 @@ public class DclEditorInstaller : MonoInstaller
 
         Container.BindInterfacesAndSelfTo<DialogState>().AsSingle();
 
+        Container.BindInterfacesAndSelfTo<HierarchyOrderSystem>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<AddEntitySystem>().AsSingle();
+
         Container.BindInterfacesAndSelfTo<GizmoToolSystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<GizmoSizeSystem>().AsSingle();

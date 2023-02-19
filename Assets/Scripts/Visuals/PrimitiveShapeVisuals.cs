@@ -36,7 +36,7 @@ namespace Assets.Scripts.Visuals
             }
 
             meshRenderer.enabled = true;
-            
+
             meshFilter.mesh = primitiveShapeComponent.NameInCode switch
             {
                 "BoxShape" => _unityState.BoxMesh,
@@ -107,6 +107,11 @@ namespace Assets.Scripts.Visuals
         {
             var meshRenderer = GetComponent<MeshRenderer>();
             meshRenderer.enabled = false;
+
+            if (_colliderObject != null)
+            {
+                _colliderObject.SetActive(false);
+            }
         }
 
         public class Factory : PlaceholderFactory<PrimitiveShapeVisuals> { }
