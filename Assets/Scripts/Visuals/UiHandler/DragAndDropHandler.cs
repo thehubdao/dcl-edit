@@ -28,6 +28,8 @@ namespace Visuals.UiHandler
         public bool isExpanded = false;
         public bool isParentExpanded = false;
 
+        private static bool isAnyDragged = false; // Quick and dirty fix TODO: Change it
+
 
         private void Start()
         {
@@ -44,6 +46,7 @@ namespace Visuals.UiHandler
 
 
             isBeingDragged = true;
+            isAnyDragged = true;
         }
 
         public void OnEndDrag(PointerEventData eventData)
@@ -57,13 +60,14 @@ namespace Visuals.UiHandler
             verticalLayoutGroupParent.enabled = true;
 
             isBeingDragged = false;
+            isAnyDragged = false;
         }
 
 
         //Called for all Handlers that aren't dragged
         public void OnPointerEnter(PointerEventData eventData)
         {
-            if (!isBeingDragged && eventData.pointerDrag != null)
+            if (!isBeingDragged && eventData.pointerDrag != null && isAnyDragged)
             {
                 SetDragHandlerEnabled(false);
                 rightClickHandler.enabled = false;
