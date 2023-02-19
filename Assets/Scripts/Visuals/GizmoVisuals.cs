@@ -52,7 +52,7 @@ namespace Assets.Scripts.Visuals
         private void UpdateVisuals()
         {
             var selectedEntity = sceneManagerSystem
-                .GetCurrentScene()?
+                .GetCurrentSceneOrNull()?
                 .SelectionState
                 .PrimarySelectedEntity;
 

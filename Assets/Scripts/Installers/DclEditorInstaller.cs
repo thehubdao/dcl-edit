@@ -165,5 +165,9 @@ public class DclEditorInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<DialogSystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<DialogState>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<HierarchyOrderSystem>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<AddEntitySystem>().AsSingle();
     }
 }

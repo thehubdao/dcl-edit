@@ -45,7 +45,7 @@ namespace Assets.Scripts.System
 
         public void SelectAdditional(Guid id)
         {
-            var scene = sceneManagerSystem.GetCurrentScene();
+            var scene = sceneManagerSystem.GetCurrentSceneOrNull();
             if (scene == null)
             {
                 return;
@@ -64,7 +64,7 @@ namespace Assets.Scripts.System
 
         public void SelectSingle(Guid id)
         {
-            var scene = sceneManagerSystem.GetCurrentScene();
+            var scene = sceneManagerSystem.GetCurrentSceneOrNull();
             if (scene == null)
             {
                 return;
@@ -81,7 +81,7 @@ namespace Assets.Scripts.System
 
         public void DeselectAll()
         {
-            var scene = sceneManagerSystem.GetCurrentScene();
+            var scene = sceneManagerSystem.GetCurrentSceneOrNull();
             if (scene == null)
             {
                 return;

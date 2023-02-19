@@ -12,6 +12,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
         {
             public int height;
             [CanBeNull] public Action<Vector3> rightClickAction;
+            [CanBeNull] public Action<GameObject> dropAction;
 
             public override bool Equals(Atom.Data other)
             {
@@ -22,7 +23,8 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
                 return
                     height.Equals(otherSpacer.height) &&
-                    rightClickAction == otherSpacer.rightClickAction;
+                    rightClickAction == otherSpacer.rightClickAction &&
+                    dropAction == otherSpacer.dropAction;
             }
         }
 
@@ -50,7 +52,14 @@ namespace Assets.Scripts.Visuals.UiBuilder
                 
                 le.minHeight = newSpacerData.height;
                 spacerHandler.rightClickHandler.onRightClick = newSpacerData.rightClickAction;
+                spacerHandler.dropHandler.onDrop = newSpacerData.dropAction;
+                spacerHandler.dropHandler.ResetHandler();
                 
+                if (newSpacerData.dropAction != null)
+                {
+                    spacerHandler.dropHandler.SetEnabled(true);
+                }
+
                 data = newSpacerData;
             }
         }
@@ -69,12 +78,13 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
     public static class SpacerPanelHelper
     {
-        public static SpacerAtom.Data AddSpacer(this PanelAtom.Data panelAtomData, int height, Action<Vector3> rightClickAction = null)
+        public static SpacerAtom.Data AddSpacer(this PanelAtom.Data panelAtomData, int height, Action<Vector3> rightClickAction = null, Action<GameObject> dropAction = null)
         {
             var data = new SpacerAtom.Data
             {
                 height = height,
-                rightClickAction = rightClickAction
+                rightClickAction = rightClickAction,
+                dropAction = dropAction
             };
 
             panelAtomData.childDates.Add(data);

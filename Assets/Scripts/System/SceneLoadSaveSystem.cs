@@ -9,6 +9,7 @@ using System.Linq;
 using UnityEngine;
 using Zenject;
 using Debug = UnityEngine.Debug;
+using Random = UnityEngine.Random;
 
 namespace Assets.Scripts.System
 {
@@ -222,6 +223,7 @@ namespace Assets.Scripts.System
             public string customName;
             public Guid guid;
             public Guid? parentGuid;
+            public float? hierarchyOrder;
             public bool isExposed;
             public List<DclComponentData> components;
             public string dclEditVersionNumber;
@@ -233,6 +235,7 @@ namespace Assets.Scripts.System
                 this.parentGuid = entity.Parent?.Id;
                 isExposed = entity.IsExposed;
                 dclEditVersionNumber = Application.version;
+                this.hierarchyOrder = entity.hierarchyOrder;
 
                 this.components = new List<DclComponentData>();
                 foreach (DclComponent component in entity.Components)
@@ -254,8 +257,9 @@ namespace Assets.Scripts.System
                     throw new SceneLoadException($"Guid was not set for entity {customName}");
                 }
 
+                hierarchyOrder ??= Random.Range(0, 100000); // using full integer values for random initialization
 
-                var dclEntity = new DclEntity(guid, customName, parentGuid ?? default, isExposed);
+                var dclEntity = new DclEntity(guid, customName, parentGuid ?? default, isExposed, (float)hierarchyOrder);
 
                 // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator 
                 foreach (var component in components)

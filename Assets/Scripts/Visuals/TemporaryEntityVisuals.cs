@@ -33,7 +33,7 @@ namespace Assets.Scripts.Visuals
 
         private void UpdateVisuals()
         {
-            var scene = sceneManagerSystem.GetCurrentScene();
+            var scene = sceneManagerSystem.GetCurrentSceneOrNull();
 
             if (scene == null)
             {

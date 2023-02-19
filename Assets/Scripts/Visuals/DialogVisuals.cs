@@ -64,7 +64,7 @@ public class DialogVisuals : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         AssetDialogHandler handler = window.GetComponent<AssetDialogHandler>();
         handler.assetBrowserVisuals.assetButtonOnClickOverride = (Guid assetId) =>
         {
-            DclScene scene = sceneManagerSystem.GetCurrentScene();
+            DclScene scene = sceneManagerSystem.GetCurrentSceneOrNull();
             DclEntity entity = scene.GetEntityById(dialogState.targetEntityId);
             var shapeComponent = entity.GetComponentBySlot("Shape");
             if (shapeComponent != null) entity.RemoveComponent(shapeComponent);

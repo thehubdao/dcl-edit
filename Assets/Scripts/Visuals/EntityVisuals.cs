@@ -166,7 +166,7 @@ namespace Assets.Scripts.Visuals
                 return;
             }
 
-            DclScene rootScene = sceneManagerSystem.GetCurrentScene();
+            DclScene rootScene = sceneManagerSystem.GetCurrentSceneOrNull();
             if (rootScene == null)
             {
                 return;
