@@ -247,7 +247,6 @@ namespace Assets.Scripts.System
             gizmoSize = new FloatClampedUserSetting(this, "Gizmo Size", 1.0f, 0.1f, 10.0f);
             applicationTargetFramerate = new IntClampedUserSetting(this, "Maximum frame rate", 120, 5, 1000);
 
-
             ShownSettings.Add(
                 "User Settings",
                 new List<ISetting>
@@ -257,13 +256,16 @@ namespace Assets.Scripts.System
                     gizmoSize,
                     applicationTargetFramerate
                 });
+                
 
-            //Hidden Settings
-            //Saves Panel Size
+            // Hidden Settings
+            // Saves Panel Size
             panelSize = new StringUserSetting(this, "Panel Size","");
+            
+            // last opened scene
+            openLastOpenedScene = new StringUserSetting(this, "Open last opened scene on start up", "");
 
-
-            //Gizmo Settings
+            // Gizmo Settings
             selectedGizmoTool = new IntUserSetting(this, "Selected Gizmo Tool", 0);
             gizmoLocalGlobalContext = new IntUserSetting(this, "Gizmo Local Global Context", 0);
             gizmoToolDoesSnap = new IntUserSetting(this, "Gizmo Tool Does Snap", 0);
@@ -288,6 +290,7 @@ namespace Assets.Scripts.System
         public FloatClampedUserSetting mouseSensitivity;
         public FloatClampedUserSetting gizmoSize;
         public IntClampedUserSetting applicationTargetFramerate;
+        public StringUserSetting openLastOpenedScene;
 
 
         /// <summary>

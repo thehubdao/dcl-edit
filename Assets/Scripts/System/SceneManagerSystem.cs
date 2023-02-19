@@ -24,6 +24,7 @@ namespace Assets.Scripts.System
         private TypeScriptGenerationSystem typeScriptGenerationSystem;
         private SceneViewSystem sceneViewSystem;
         private MenuBarSystem menuBarSystem;
+        private SettingsSystem settingsSystem;
 
         [Inject]
         public void Construct(
@@ -36,7 +37,8 @@ namespace Assets.Scripts.System
             WorkspaceSaveSystem workspaceSaveSystem,
             TypeScriptGenerationSystem typeScriptGenerationSystem,
             SceneViewSystem sceneViewSystem,
-            MenuBarSystem menuBarSystem)
+            MenuBarSystem menuBarSystem,
+            SettingsSystem settingsSystem)
         {
             this.sceneManagerState = sceneManagerState;
             this.pathState = pathState;
@@ -48,7 +50,7 @@ namespace Assets.Scripts.System
             this.typeScriptGenerationSystem = typeScriptGenerationSystem;
             this.sceneViewSystem = sceneViewSystem;
             this.menuBarSystem = menuBarSystem;
-
+            this.settingsSystem = settingsSystem;
             CreateMenuBarItems();
         }
 
@@ -102,9 +104,26 @@ namespace Assets.Scripts.System
         }
 
         /// <summary>
+        /// Set last opened scene on start up
+        /// </summary>
+        public void SetLastOpenedSceneAsCurrentScene()
+        {
+            Guid lastSceneIndex;
+
+            if (Guid.TryParse(settingsSystem.openLastOpenedScene.Get(), out lastSceneIndex))
+            {
+                SetCurrentScene(lastSceneIndex);
+            }
+            else if (lastSceneIndex == Guid.Empty)
+            {
+                SetNewSceneAsCurrentScene();
+            }
+        }
+
+        /// <summary>
         /// Create a new scene and set it as current scene
         /// </summary>
-        public void SetNewScneneAsCurrentScene()
+        public void SetNewSceneAsCurrentScene()
         {
             SceneDirectoryState newScene = SceneDirectoryState.CreateNewSceneDirectoryState();
             sceneManagerState.AddSceneDirectoryState(newScene);
@@ -145,6 +164,8 @@ namespace Assets.Scripts.System
         {
             sceneManagerState.SetCurrentSceneIndex(id);
             sceneViewSystem.SetUpCurrentScene();
+            var newSceneIndex = sceneManagerState.currentSceneIndex;
+            settingsSystem.openLastOpenedScene.Set(newSceneIndex.ToString());
         }
 
         /// <summary>
@@ -333,7 +354,7 @@ namespace Assets.Scripts.System
 
         private void CreateMenuBarItems()
         {
-            menuBarSystem.AddMenuItem("File#1/New Scene#1", SetNewScneneAsCurrentScene);
+            menuBarSystem.AddMenuItem("File#1/New Scene#1", SetNewSceneAsCurrentScene);
             menuBarSystem.AddMenuItem("File#1/Open Scene#2", SetDialogAsCurrentScene);
             menuBarSystem.AddMenuItem("File#1/Save Scene#3", SaveCurrentScene);
             menuBarSystem.AddMenuItem("File#1/Save Scene As...#4", SaveCurrentSceneAs);
