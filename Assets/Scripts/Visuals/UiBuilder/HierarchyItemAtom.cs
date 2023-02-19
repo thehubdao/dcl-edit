@@ -13,6 +13,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
             public bool hasChildren;
             public bool isExpanded;
             public TextHandler.TextStyle style;
+            public bool isPrimarySelected;
             public HierarchyItemHandler.UiHierarchyItemActions actions;
             public Action<Vector3> rightClickAction;
 
@@ -28,6 +29,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
                     level.Equals(otherHierarchyItem.level) &&
                     hasChildren.Equals(otherHierarchyItem.hasChildren) &&
                     isExpanded.Equals(otherHierarchyItem.isExpanded) &&
+                    isPrimarySelected.Equals(otherHierarchyItem.isPrimarySelected) &&
                     style.Equals(otherHierarchyItem.style) &&
                     actions.Equals(otherHierarchyItem.actions) &&
                     rightClickAction.Equals(otherHierarchyItem.rightClickAction);
@@ -58,6 +60,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
                 hierarchyItemHandler.text.text = newHierarchyItemData.name;
                 hierarchyItemHandler.indent.offsetMin = new Vector2(20 * newHierarchyItemData.level, 0);
                 hierarchyItemHandler.text.textStyle = newHierarchyItemData.style;
+                hierarchyItemHandler.primarySelection = newHierarchyItemData.isPrimarySelected;
                 hierarchyItemHandler.actions = newHierarchyItemData.actions;
                 hierarchyItemHandler.rightClickHandler.onRightClick = newHierarchyItemData.rightClickAction;
 
@@ -89,7 +92,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
     public static class HierarchyItemPanelHelper
     {
-        public static HierarchyItemAtom.Data AddHierarchyItem(this PanelAtom.Data panelAtomData, string name, int level, bool hasChildren, bool isExpanded, TextHandler.TextStyle textStyle, HierarchyItemHandler.UiHierarchyItemActions actions, Action<Vector3> rightClickAction)
+        public static HierarchyItemAtom.Data AddHierarchyItem(this PanelAtom.Data panelAtomData, string name, int level, bool hasChildren, bool isExpanded, TextHandler.TextStyle textStyle, bool isPrimarySelected, HierarchyItemHandler.UiHierarchyItemActions actions, Action<Vector3> rightClickAction)
         {
             var data = new HierarchyItemAtom.Data
             {
@@ -98,6 +101,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
                 hasChildren = hasChildren,
                 isExpanded = isExpanded,
                 style = textStyle,
+                isPrimarySelected = isPrimarySelected,
                 actions = actions,
                 rightClickAction = rightClickAction
             };

@@ -3,11 +3,13 @@ using Assets.Scripts.Events;
 using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
 using Assets.Scripts.Visuals.UiBuilder;
+using Assets.Scripts.Utility;
 using Assets.Scripts.Visuals.UiHandler;
 using JetBrains.Annotations;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 using Zenject;
 using static Assets.Scripts.Visuals.UiBuilder.UiBuilder;
 
@@ -17,11 +19,19 @@ namespace Assets.Scripts.Visuals
     {
 #pragma warning disable CS0649 // Warning: Uninitialized filed. Serialized fields will be initialized by Unity
 
-        [SerializeField] private GameObject content;
+        [SerializeField]
+        private GameObject content;
 
-        [SerializeField] private HierarchyViewportHandler hierarchyViewportHandler;
+        [SerializeField]
+        private HierarchyViewportHandler hierarchyViewportHandler;
+
+        [SerializeField]
+        private ScrollRect scrollRect;
 
 #pragma warning restore CS0649
+
+        private Vector3? prevScrollPosition;
+        private const float uiItemHeight = 30f;
 
         #region Mark for update
 
@@ -32,6 +42,7 @@ namespace Assets.Scripts.Visuals
             if (shouldUpdate)
             {
                 UpdateVisuals();
+                ScrollPanelToSelectedItem();
                 shouldUpdate = false;
             }
         }
@@ -120,9 +131,10 @@ namespace Assets.Scripts.Visuals
                 }
                 else
                 {
+                    ExpandSelectedItem(scene);
                     MakeHierarchyItemsRecursive(scene, 0, scene.EntitiesInSceneRoot, mainPanelData);
                 }
-                
+
                 mainPanelData.AddSpacer(300, clickPosition =>
                 {
                     var addEntityMenuItems = new List<ContextMenuItem>();
@@ -160,6 +172,7 @@ namespace Assets.Scripts.Visuals
                 var isExpanded = hierarchyChangeSystem.IsExpanded(entity);
 
                 mainPanelData.AddHierarchyItem(entity.ShownName, level, entity.Children.Any(), isExpanded, style,
+                    isPrimarySelection,
                     new HierarchyItemHandler.UiHierarchyItemActions
                     {
                         onArrowClick = () => { hierarchyChangeSystem.ClickedOnEntityExpandArrow(entity); },
@@ -178,7 +191,7 @@ namespace Assets.Scripts.Visuals
                         contextMenuSystem.OpenMenu(clickPosition, new List<ContextMenuItem>
                         {
                             new ContextSubmenuItem("Add entity...", addEntityMenuItems),
-                            new ContextMenuTextItem("Duplicate", 
+                            new ContextMenuTextItem("Duplicate",
                                 () => commandSystem.ExecuteCommand(
                                     commandSystem.CommandFactory.CreateDuplicateEntity(entity.Id))),
                             new ContextMenuTextItem("Delete",
@@ -191,6 +204,49 @@ namespace Assets.Scripts.Visuals
                 {
                     MakeHierarchyItemsRecursive(scene, level + 1, entity.Children, mainPanelData);
                 }
+            }
+        }
+
+        private void ExpandSelectedItem(DclScene scene)
+        {
+            var selectedEntity = scene.SelectionState.PrimarySelectedEntity;
+            hierarchyChangeSystem.ExpandParents(selectedEntity);
+        }
+
+        private (HierarchyItemHandler selectedItem, int index) HierarchyPanelSelectedItem()
+        {
+            var list = content.GetComponentsInChildren<HierarchyItemHandler>();
+
+            for (var i = 0; i < list.Length; i++)
+            {
+                if (list[i].primarySelection)
+                    return (list[i], i);
+            }
+
+            return (null, 0);
+        }
+
+        private void ScrollPanelToSelectedItem()
+        {
+            var (selectedUiItem, index) = HierarchyPanelSelectedItem();
+            if (selectedUiItem == null)
+            {
+                if (!prevScrollPosition.HasValue) return;
+
+                scrollRect.content.localPosition = prevScrollPosition.Value;
+                prevScrollPosition = null;
+                return;
+            }
+
+            prevScrollPosition ??= scrollRect.content.localPosition;
+            var newVerticalPos = uiItemHeight * index;
+
+            if (scrollRect.viewport.rect.height + scrollRect.content.localPosition.y < newVerticalPos || newVerticalPos < scrollRect.content.localPosition.y)
+            {
+                scrollRect.content.localPosition = new Vector2(
+                    0,
+                    uiItemHeight * index
+                );
             }
         }
     }

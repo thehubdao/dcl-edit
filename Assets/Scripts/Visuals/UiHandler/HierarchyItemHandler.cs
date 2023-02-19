@@ -22,6 +22,8 @@ namespace Assets.Scripts.Visuals.UiHandler
         [SerializeField]
         public RightClickHandler rightClickHandler;
 
+        public bool primarySelection;
+
         public struct UiHierarchyItemActions
         {
             [CanBeNull]
