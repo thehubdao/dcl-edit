@@ -24,7 +24,7 @@ namespace Assets.Scripts.EditorState
         public DynamicPanelsCanvas dynamicPanelsCanvas;
 
         [SerializeField]
-        public GameObject GizmoModeMenu;
+        public GameObject sceneViewButtons;
 
         [Header("Assets")]
         [SerializeField]

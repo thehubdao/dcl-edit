@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
+using Random = System.Random;
 
 namespace Assets.Scripts.SceneState
 {
@@ -62,6 +64,19 @@ namespace Assets.Scripts.SceneState
             _allFloatingEntities.Remove(id);
         }
         public void ClearFloatingEntities() => _allFloatingEntities.Clear();
+
+        public DclScene DeepCopy()
+        {
+            DclScene copy = new DclScene();
+            Random random = new Random();
+
+            foreach (DclEntity entitiy in EntitiesInSceneRoot)
+            {
+                entitiy.DeepCopy(copy, random, null);
+            }
+
+            return copy;
+        }
 
         // Other States
 

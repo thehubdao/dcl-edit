@@ -241,25 +241,47 @@ namespace Assets.Scripts.System
         {
             _editorEvents = editorEvents;
 
-            var userSettings = new List<ISetting>();
 
             uiScalingFactor = new FloatClampedUserSetting(this, "UI Scaling", 1.0f, 0.5f, 3.0f);
-            userSettings.Add(uiScalingFactor);
-
             mouseSensitivity = new FloatClampedUserSetting(this, "Mouse Sensitivity", 1.0f, 0.1f, 10.0f);
-            userSettings.Add(mouseSensitivity);
-
             gizmoSize = new FloatClampedUserSetting(this, "Gizmo Size", 1.0f, 0.1f, 10.0f);
-            userSettings.Add(gizmoSize);
-
             applicationTargetFramerate = new IntClampedUserSetting(this, "Maximum frame rate", 120, 5, 1000);
-            userSettings.Add(applicationTargetFramerate);
 
-            ShownSettings.Add("User Settings", userSettings);
+            ShownSettings.Add(
+                "User Settings",
+                new List<ISetting>
+                {
+                    uiScalingFactor,
+                    mouseSensitivity,
+                    gizmoSize,
+                    applicationTargetFramerate
+                });
+                
 
-            //Hidden Settings
-            //Saves Panel Size
+            // Hidden Settings
+            // Saves Panel Size
             panelSize = new StringUserSetting(this, "Panel Size","");
+            
+            // last opened scene
+            openLastOpenedScene = new StringUserSetting(this, "Open last opened scene on start up", "");
+
+            // Gizmo Settings
+            selectedGizmoTool = new IntUserSetting(this, "Selected Gizmo Tool", 0);
+            gizmoLocalGlobalContext = new IntUserSetting(this, "Gizmo Local Global Context", 0);
+            gizmoToolDoesSnap = new IntUserSetting(this, "Gizmo Tool Does Snap", 0);
+
+            gizmoToolTranslateSnapping = new FloatUserSetting(this, "Gizmo Tool Translate Snapping", 0.25f);
+            gizmoToolRotateSnapping = new FloatUserSetting(this, "Gizmo Tool Rotate Snapping", 15f); // degrees
+            gizmoToolScaleSnapping = new FloatUserSetting(this, "Gizmo Tool Scale Snapping", 0.25f);
+
+            ShownSettings.Add(
+                "Gizmo Tool Snapping",
+                new List<ISetting>
+                {
+                    gizmoToolTranslateSnapping,
+                    gizmoToolRotateSnapping,
+                    gizmoToolScaleSnapping
+                });
         }
 
         public Dictionary<string, List<ISetting>> ShownSettings = new Dictionary<string, List<ISetting>>();
@@ -267,14 +289,33 @@ namespace Assets.Scripts.System
         public FloatClampedUserSetting uiScalingFactor;
         public FloatClampedUserSetting mouseSensitivity;
         public FloatClampedUserSetting gizmoSize;
-        public IntUserSetting TestInteger;
-        public StringUserSetting TestString;
         public IntClampedUserSetting applicationTargetFramerate;
+        public StringUserSetting openLastOpenedScene;
 
-        public Vec3ProjectSetting TestProjVec3;
-        public StringProjectSetting TestProjString;
 
-        public Vec3SceneSetting TestSceneVec3;
+        /// <summary>
+        /// 0 = Translate
+        /// 1 = Rotate
+        /// 2 = Scale
+        /// </summary>
+        public IntUserSetting selectedGizmoTool;
+
+        /// <summary>
+        /// 0 = Local Context
+        /// 1 = Global Context
+        /// </summary>
+        public IntUserSetting gizmoLocalGlobalContext;
+
+        /// <summary>
+        /// 0 = Does not snap
+        /// 1 = Does snap
+        /// </summary>
+        public IntUserSetting gizmoToolDoesSnap;
+
+
+        public FloatUserSetting gizmoToolTranslateSnapping;
+        public FloatUserSetting gizmoToolRotateSnapping;
+        public FloatUserSetting gizmoToolScaleSnapping;
 
         public StringUserSetting panelSize;
     }

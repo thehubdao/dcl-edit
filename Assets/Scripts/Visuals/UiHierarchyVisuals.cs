@@ -3,12 +3,17 @@ using Assets.Scripts.Events;
 using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
 using Assets.Scripts.Visuals.UiBuilder;
+using Assets.Scripts.Utility;
 using Assets.Scripts.Visuals.UiHandler;
 using JetBrains.Annotations;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.Assertions;
+using Visuals.UiHandler;
 using Zenject;
+using Zenject.SpaceFighter;
 using static Assets.Scripts.Visuals.UiBuilder.UiBuilder;
 
 namespace Assets.Scripts.Visuals
@@ -17,11 +22,19 @@ namespace Assets.Scripts.Visuals
     {
 #pragma warning disable CS0649 // Warning: Uninitialized filed. Serialized fields will be initialized by Unity
 
-        [SerializeField] private GameObject content;
+        [SerializeField]
+        private GameObject content;
 
-        [SerializeField] private HierarchyViewportHandler hierarchyViewportHandler;
+        [SerializeField]
+        private HierarchyViewportHandler hierarchyViewportHandler;
+
+        [SerializeField]
+        private ScrollRect scrollRect;
 
 #pragma warning restore CS0649
+
+        private Vector3? prevScrollPosition;
+        private const float uiItemHeight = 30f;
 
         #region Mark for update
 
@@ -32,6 +45,7 @@ namespace Assets.Scripts.Visuals
             if (shouldUpdate)
             {
                 UpdateVisuals();
+                ScrollPanelToSelectedItem();
                 shouldUpdate = false;
             }
         }
@@ -51,6 +65,8 @@ namespace Assets.Scripts.Visuals
         private HierarchyContextMenuSystem hierarchyContextMenuSystem;
         private SceneManagerSystem sceneManagerSystem;
         private CommandSystem commandSystem;
+        private HierarchyOrderSystem hierarchyOrderSystem;
+        private AddEntitySystem addEntitySystem;
 
         [Inject]
         private void Construct(
@@ -60,7 +76,9 @@ namespace Assets.Scripts.Visuals
             ContextMenuSystem contextMenuSystem,
             SceneManagerSystem sceneManagerSystem,
             CommandSystem commandSystem,
-            HierarchyContextMenuSystem hierarchyContextMenuSystem)
+            HierarchyContextMenuSystem hierarchyContextMenuSystem,
+            HierarchyOrderSystem hierarchyOrderSystem,
+            AddEntitySystem addEntitySystem)
         {
             this.events = events;
             this.uiBuilder = uiBuilderFactory.Create(content);
@@ -69,6 +87,8 @@ namespace Assets.Scripts.Visuals
             this.sceneManagerSystem = sceneManagerSystem;
             this.commandSystem = commandSystem;
             this.hierarchyContextMenuSystem = hierarchyContextMenuSystem;
+            this.hierarchyOrderSystem = hierarchyOrderSystem;
+            this.addEntitySystem = addEntitySystem;
 
 
             SetupRightClickHandler();
@@ -105,7 +125,7 @@ namespace Assets.Scripts.Visuals
         {
             var mainPanelData = NewPanelData();
 
-            var scene = sceneManagerSystem.GetCurrentScene();
+            var scene = sceneManagerSystem.GetCurrentSceneOrNull();
 
             if (scene == null)
             {
@@ -113,7 +133,21 @@ namespace Assets.Scripts.Visuals
             }
             else
             {
-                MakeHierarchyItemsRecursive(scene, 0, scene.EntitiesInSceneRoot, mainPanelData);
+                if (scene.EntitiesInSceneRoot.Count() == 0)
+                {
+                    mainPanelData.AddTitle("No Entities.");
+                    mainPanelData.AddText("Use right-click to add entities.");
+                }
+                else
+                {
+                    ExpandSelectedItem(scene);
+
+                    var entitiesInRoot = scene.EntitiesInSceneRoot;
+                    entitiesInRoot = entitiesInRoot.OrderBy(entity => entity.hierarchyOrder);
+
+                    mainPanelData.AddSpacer(1);
+                    MakeHierarchyItemsRecursive(scene, 0, entitiesInRoot, mainPanelData);
+                }
 
                 mainPanelData.AddSpacer(300, clickPosition =>
                 {
@@ -129,6 +163,10 @@ namespace Assets.Scripts.Visuals
                     {
                         new ContextSubmenuItem("Add entity...", addEntityMenuItems),
                     });
+                }, draggedGameObject =>
+                {
+                    var draggedEntity = draggedGameObject.GetComponent<DragAndDropHandler>().draggedEntity;
+                    hierarchyOrderSystem.DropSpacer(draggedEntity);
                 });
             }
 
@@ -138,8 +176,12 @@ namespace Assets.Scripts.Visuals
         private void MakeHierarchyItemsRecursive([NotNull] DclScene scene, int level, IEnumerable<DclEntity> entities,
             PanelAtom.Data mainPanelData)
         {
-            foreach (var entity in entities)
+            var dclEntities = entities.ToList();
+
+            foreach (var entity in dclEntities)
             {
+                Assert.IsNotNull(entity);
+
                 var isPrimarySelection = scene.SelectionState.PrimarySelectedEntity == entity;
 
                 var isSecondarySelection = scene.SelectionState.SecondarySelectedEntities.Contains(entity);
@@ -149,9 +191,16 @@ namespace Assets.Scripts.Visuals
                     isSecondarySelection ? TextHandler.TextStyle.SecondarySelection :
                     TextHandler.TextStyle.Normal;
 
-                var isExpanded = hierarchyChangeSystem.IsExpanded(entity);
+                if (!entity.Children.Any())
+                {
+                    hierarchyChangeSystem.SetExpanded(entity, false);
+                }
 
-                mainPanelData.AddHierarchyItem(entity.ShownName, level, entity.Children.Any(), isExpanded, style,
+                var isExpanded = hierarchyChangeSystem.IsExpanded(entity);
+                var isParentExpanded = entity.Parent != null && hierarchyChangeSystem.IsExpanded(entity.Parent);
+
+                mainPanelData.AddHierarchyItem(entity.ShownName, level, entity.Children.Any(), isExpanded, isParentExpanded, style,
+                    isPrimarySelection,
                     new HierarchyItemHandler.UiHierarchyItemActions
                     {
                         onArrowClick = () => { hierarchyChangeSystem.ClickedOnEntityExpandArrow(entity); },
@@ -167,22 +216,95 @@ namespace Assets.Scripts.Visuals
                                 () => hierarchyContextMenuSystem.AddEntityFromPreset(preset, entity.Id)));
                         }
 
+                        var belowSibling = hierarchyOrderSystem.GetBelowSibling(entity);
+                        var newHierarchyOrderForDuplicatedEntity =
+                            belowSibling != null ?
+                                hierarchyOrderSystem.GetHierarchyOrderPlaceBetweenSiblings(entity, belowSibling) :
+                                hierarchyOrderSystem.GetHierarchyOrderPlaceBeneathSibling(entity);
+
+
                         contextMenuSystem.OpenMenu(clickPosition, new List<ContextMenuItem>
                         {
                             new ContextSubmenuItem("Add entity...", addEntityMenuItems),
-                            new ContextMenuTextItem("Duplicate", 
+                            new ContextMenuTextItem("Duplicate",
                                 () => commandSystem.ExecuteCommand(
-                                    commandSystem.CommandFactory.CreateDuplicateEntity(entity.Id))),
+                                    commandSystem.CommandFactory.CreateDuplicateEntity(entity.Id, newHierarchyOrderForDuplicatedEntity))),
                             new ContextMenuTextItem("Delete",
                                 () => commandSystem.ExecuteCommand(
                                     commandSystem.CommandFactory.CreateRemoveEntity(entity)))
                         });
-                    });
+                    },
+                    draggedGameObject =>
+                    {
+                        var draggedEntity = draggedGameObject.GetComponent<DragAndDropHandler>().draggedEntity;
+                        var aboveEntity = hierarchyOrderSystem.GetAboveSibling(entity);
+
+                        hierarchyOrderSystem.DropUpper(draggedEntity, entity, aboveEntity);
+                    },
+                    draggedGameObject =>
+                    {
+                        var draggedEntity = draggedGameObject.GetComponent<DragAndDropHandler>().draggedEntity;
+
+                        hierarchyOrderSystem.DropMiddle(draggedEntity, entity);
+                    },
+                    draggedGameObject =>
+                    {
+                        var draggedEntity = draggedGameObject.GetComponent<DragAndDropHandler>().draggedEntity;
+                        var belowEntity = hierarchyOrderSystem.GetBelowSibling(entity);
+                        var firstChildOfHoveredEntity = entity.Children.OrderBy(e => e.hierarchyOrder).FirstOrDefault();
+
+                        hierarchyOrderSystem.DropLower(draggedEntity, entity, belowEntity, firstChildOfHoveredEntity, isExpanded);
+                    },
+                    entity);
 
                 if (isExpanded)
                 {
-                    MakeHierarchyItemsRecursive(scene, level + 1, entity.Children, mainPanelData);
+                    var sortedChildren = entity.Children.OrderBy(entity => entity.hierarchyOrder);
+                    MakeHierarchyItemsRecursive(scene, level + 1, sortedChildren, mainPanelData);
                 }
+            }
+        }
+
+        private void ExpandSelectedItem(DclScene scene)
+        {
+            var selectedEntity = scene.SelectionState.PrimarySelectedEntity;
+            hierarchyChangeSystem.ExpandParents(selectedEntity);
+        }
+
+        private (HierarchyItemHandler selectedItem, int index) HierarchyPanelSelectedItem()
+        {
+            var list = content.GetComponentsInChildren<HierarchyItemHandler>();
+
+            for (var i = 0; i < list.Length; i++)
+            {
+                if (list[i].primarySelection)
+                    return (list[i], i);
+            }
+
+            return (null, 0);
+        }
+
+        private void ScrollPanelToSelectedItem()
+        {
+            var (selectedUiItem, index) = HierarchyPanelSelectedItem();
+            if (selectedUiItem == null)
+            {
+                if (!prevScrollPosition.HasValue) return;
+
+                scrollRect.content.localPosition = prevScrollPosition.Value;
+                prevScrollPosition = null;
+                return;
+            }
+
+            prevScrollPosition ??= scrollRect.content.localPosition;
+            var newVerticalPos = uiItemHeight * index;
+
+            if (scrollRect.viewport.rect.height + scrollRect.content.localPosition.y < newVerticalPos || newVerticalPos < scrollRect.content.localPosition.y)
+            {
+                scrollRect.content.localPosition = new Vector2(
+                    0,
+                    uiItemHeight * index
+                );
             }
         }
     }

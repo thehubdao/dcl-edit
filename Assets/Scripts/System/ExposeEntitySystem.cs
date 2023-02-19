@@ -19,7 +19,7 @@ public class ExposeEntitySystem
 
     public bool IsEntityExposable(DclEntity entity)
     {
-        var scene = sceneManagerSystem.GetCurrentScene();
+        var scene = sceneManagerSystem.GetCurrentSceneOrNull();
         if (scene == null)
         {
             return false;

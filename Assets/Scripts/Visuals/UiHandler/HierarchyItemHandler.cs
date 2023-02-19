@@ -1,7 +1,9 @@
 using System;
+using Assets.Scripts.Visuals.UiBuilder;
 using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.UI;
+using Visuals.UiHandler;
 
 namespace Assets.Scripts.Visuals.UiHandler
 {
@@ -21,6 +23,11 @@ namespace Assets.Scripts.Visuals.UiHandler
 
         [SerializeField]
         public RightClickHandler rightClickHandler;
+        
+        [SerializeField]
+        public DragAndDropHandler dragAndDropHandler;
+
+        public bool primarySelection;
 
         public struct UiHierarchyItemActions
         {
@@ -64,5 +71,36 @@ namespace Assets.Scripts.Visuals.UiHandler
         {
             set => arrowContainer.gameObject.SetActive(value);
         }
+
+        public void UpdateHandlers(HierarchyItemAtom.Data newHierarchyItemData)
+        {
+            actions = newHierarchyItemData.actions;
+            rightClickHandler.onRightClick = newHierarchyItemData.rightClickAction;
+            dragAndDropHandler.UpdateDropHandlers(newHierarchyItemData.dropActions);
+            dragAndDropHandler.draggedEntity = newHierarchyItemData.draggedEntity;
+            dragAndDropHandler.isExpanded = newHierarchyItemData.isExpanded;
+            dragAndDropHandler.isParentExpanded = newHierarchyItemData.isParentExpanded;
+            
+            primarySelection = newHierarchyItemData.isPrimarySelected;
+            
+            text.text = newHierarchyItemData.name;
+            text.textStyle = newHierarchyItemData.style;
+            text.TextComponent.enabled = true;
+            
+            indent.offsetMin = new Vector2(20 * newHierarchyItemData.level, 0);
+
+            if (newHierarchyItemData.hasChildren)
+            {
+                showArrow = true;
+                isExpanded = newHierarchyItemData.isExpanded;
+            }
+            else
+            {
+                showArrow = false;
+            }
+            
+            dragAndDropHandler.ResetHandler();
+        }
+        
     }
 }

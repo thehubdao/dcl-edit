@@ -27,7 +27,7 @@ namespace Assets.Scripts.Visuals
 
         protected void UpdateSelection(DclEntity entity)
         {
-            var selectionState = sceneManagerSystem.GetCurrentScene()?.SelectionState;
+            var selectionState = sceneManagerSystem.GetCurrentSceneOrNull()?.SelectionState;
 
             if (selectionState == null)
             {

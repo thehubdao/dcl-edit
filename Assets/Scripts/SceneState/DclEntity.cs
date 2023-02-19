@@ -5,6 +5,7 @@ using System.Text;
 using Assets.Scripts.Utility;
 using JetBrains.Annotations;
 using UnityEngine;
+using Random = System.Random;
 
 
 namespace Assets.Scripts.SceneState
@@ -45,8 +46,7 @@ namespace Assets.Scripts.SceneState
             }
         }
 
-        [SerializeField]
-        private string _customName = "";
+        [SerializeField] private string _customName = "";
 
         /// <summary>
         /// The name, that is used as default 
@@ -57,6 +57,8 @@ namespace Assets.Scripts.SceneState
         public bool IsExposed { get; set; }
 
         public Guid Id { get; set; }
+
+        public float hierarchyOrder;
 
         [CanBeNull]
         public DclEntity Parent
@@ -103,15 +105,19 @@ namespace Assets.Scripts.SceneState
 
         public DclComponent GetComponentByName(string name)
         {
-            return Components.Exists(c => c.NameInCode == name) ? // if component exists
-                Components.Find(c => c.NameInCode == name) : // then return component
+            return Components.Exists(c => c.NameInCode == name)
+                ? // if component exists
+                Components.Find(c => c.NameInCode == name)
+                : // then return component
                 null; // else return null
         }
 
         public DclComponent GetComponentBySlot(string slot)
         {
-            return Components.Exists(c => c.NameOfSlot == slot) ? // if component exists
-                Components.Find(c => c.NameOfSlot == slot) : // then return component
+            return Components.Exists(c => c.NameOfSlot == slot)
+                ? // if component exists
+                Components.Find(c => c.NameOfSlot == slot)
+                : // then return component
                 null; // else return null
         }
 
@@ -146,13 +152,16 @@ namespace Assets.Scripts.SceneState
             return Components.Exists(c => c.NameOfSlot == nameOfSlot);
         }
 
-        public DclEntity(Guid id, string name = "", Guid parentId = default, bool isExposed = false)
+        public DclEntity(Guid id, string name = "", Guid parentId = default, bool isExposed = false,
+            float hierarchyOrder = default)
         {
             Id = id;
             _customName = name;
             _parentId = parentId;
             IsExposed = isExposed;
+            this.hierarchyOrder = hierarchyOrder;
         }
+
         public Guid GenerateSeededGuid(System.Random seed)
         {
             //var r = new System.Random(seed);
@@ -163,9 +172,13 @@ namespace Assets.Scripts.SceneState
         }
 
         private System.Random _random;
-        public DclEntity DeepCopy(DclScene sceneState, System.Random random)
+
+        public DclEntity DeepCopy(DclScene sceneState, Random random, float? copyParentHierarchyOrder)
         {
-            DclEntity deepcopyEntity = new DclEntity(Id, CustomName, _parentId, false); // copied entity should never be exposed
+            var newHierarchyOrder = copyParentHierarchyOrder ?? hierarchyOrder;
+            
+            DclEntity deepcopyEntity =
+                new DclEntity(Id, CustomName, _parentId, false, newHierarchyOrder); // copied entity should never be exposed
 
             if (random != null)
             {
@@ -189,11 +202,29 @@ namespace Assets.Scripts.SceneState
             {
                 foreach (var child in Children.ToList())
                 {
-                    DclEntity newChild = child.DeepCopy(sceneState, random);
+                    DclEntity newChild = child.DeepCopy(sceneState, random, null);
                     newChild.Parent = deepcopyEntity;
                 }
             }
+
             return deepcopyEntity;
+        }
+
+        public bool IsDescendantOf(DclEntity potentialAncestor)
+        {
+            var parent = Parent;
+        
+            while (parent != null)
+            {
+                if (parent == potentialAncestor)
+                {
+                    return true;
+                }
+                
+                parent = parent.Parent;
+            }
+
+            return false;
         }
 
         /// <summary>

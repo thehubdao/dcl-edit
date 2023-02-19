@@ -7,5 +7,8 @@ namespace Visuals.UiHandler
     {
         [SerializeField]
         public RightClickHandler rightClickHandler;
+        
+        [SerializeField]
+        public DropHandler dropHandler;
     }
 }

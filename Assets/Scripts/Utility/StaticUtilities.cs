@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using UnityEditor;
-using UnityEditor.PackageManager;
 using UnityEngine;
 
 namespace Assets.Scripts.Utility
@@ -166,6 +165,11 @@ namespace Assets.Scripts.Utility
         {
             key = kvp.Key;
             value = kvp.Value;
+        }
+
+        public static Vector3 VectorFromTo(Vector3 from, Vector3 to)
+        {
+            return to - from;
         }
     }
 }

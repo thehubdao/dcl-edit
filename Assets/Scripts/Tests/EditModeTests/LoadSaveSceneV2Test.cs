@@ -45,13 +45,13 @@ namespace Assets.Scripts.Tests.EditModeTests
             Assert.NotNull(cubeEntTransform);
 
             // position
-            Assert.AreEqual(new Vector3(8, 0.5f, 3), cubeEntTransform.Position.Value);
+            Assert.AreEqual(new Vector3(8, 0.5f, 3), cubeEntTransform.position.Value);
 
             // rotation
-            Assert.AreEqual(new Quaternion(0, 0, 0, 1), cubeEntTransform.Rotation.Value);
+            Assert.AreEqual(new Quaternion(0, 0, 0, 1), cubeEntTransform.rotation.Value);
 
             // scale
-            Assert.AreEqual(new Vector3(1, 1, 1), cubeEntTransform.Scale.Value);
+            Assert.AreEqual(new Vector3(1, 1, 1), cubeEntTransform.scale.Value);
 
             // BoxShape
             var cubeEntBoxShape = cubeEnt.GetComponentByName("BoxShape");
@@ -76,6 +76,9 @@ namespace Assets.Scripts.Tests.EditModeTests
             SceneManagerSystem sceneManagerSystem = new SceneManagerSystem();
             EditorEvents editorEvents = new EditorEvents();
             MenuBarState menuBarState = new MenuBarState();
+            ProjectSettingState projectSettingState = new ProjectSettingState();
+            SettingsSystem settingsSystem = new SettingsSystem(projectSettingState, sceneSettingState, editorEvents);
+
 
             menuBarSystem.Construct(editorEvents, menuBarState);
             sceneSettingState.Construct(pathState, sceneManagerState);
@@ -89,7 +92,8 @@ namespace Assets.Scripts.Tests.EditModeTests
                 workspaceSaveSystem,
                 typeScriptGenerationSystem,
                 sceneViewSystem,
-                menuBarSystem);
+                menuBarSystem,
+                settingsSystem);
 
             var scenePath = pathState.ProjectPath + "/dcl-edit/saves/v2/New Scene.dclscene";
 

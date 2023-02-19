@@ -224,6 +224,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b88f25d91feaddf43aa63bf06bbb35b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &635739827 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3860120150759162506, guid: 77f7e25531a13164999d8d9ae976278a, type: 3}
+  m_PrefabInstance: {fileID: 3860120150684201991}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &635739831
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 635739827}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a03a9b75e7a1ed745977e9bad5da7ef1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!1 &710671776 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8532448768082727038, guid: 44790cf12ccd011459f749712f90a90b, type: 3}
+  m_PrefabInstance: {fileID: 5677096275816853216}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &728950132 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5677096275094490004, guid: 44790cf12ccd011459f749712f90a90b, type: 3}
@@ -328,10 +350,6 @@ PrefabInstance:
       propertyPath: _loadSceneFromVersion1
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 2209880425006019886, guid: eb965bbb945432643839bb61bab7ba9f, type: 3}
-      propertyPath: _assetThumbnailGeneratorPrefab
-      value: 
-      objectReference: {fileID: 7535211212909013817, guid: c920a71b6949a694798102689c32baf8, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: eb965bbb945432643839bb61bab7ba9f, type: 3}
 --- !u!1001 &2682837584673782010
@@ -1223,6 +1241,10 @@ PrefabInstance:
       propertyPath: GizmoModeMenu
       value: 
       objectReference: {fileID: 1375574674}
+    - target: {fileID: 6554674216587907478, guid: 20ed7006bd4d7d84dab9ab96b9f5129a, type: 3}
+      propertyPath: sceneViewButtons
+      value: 
+      objectReference: {fileID: 710671776}
     - target: {fileID: 6554674216587907478, guid: 20ed7006bd4d7d84dab9ab96b9f5129a, type: 3}
       propertyPath: dynamicPanelsCanvas
       value: 

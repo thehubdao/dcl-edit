@@ -54,9 +54,9 @@ namespace Assets.Scripts.Visuals
                 return;
             }
 
-            transform.localPosition = transformComponent.Position.Value;
-            transform.localRotation = transformComponent.Rotation.Value;
-            transform.localScale = transformComponent.Scale.Value;
+            transform.localPosition = transformComponent.position.Value;
+            transform.localRotation = transformComponent.rotation.Value;
+            transform.localScale = transformComponent.scale.Value;
         }
 
         void InitializeGltfShapeVisualsComponent(DclEntity entity)
@@ -166,7 +166,7 @@ namespace Assets.Scripts.Visuals
                 return;
             }
 
-            DclScene rootScene = sceneManagerSystem.GetCurrentScene();
+            DclScene rootScene = sceneManagerSystem.GetCurrentSceneOrNull();
             if (rootScene == null)
             {
                 return;

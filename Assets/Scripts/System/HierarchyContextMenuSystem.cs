@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Assets.Scripts.EditorState;
 using Zenject;
 
@@ -9,19 +8,16 @@ namespace Assets.Scripts.System
     public class HierarchyContextMenuSystem
     {
         // Dependencies
-        private CommandSystem commandSystem;
-        private SceneManagerSystem sceneManagerSystem;
         private EntityPresetSystem entityPresetSystem;
+        private AddEntitySystem addEntitySystem;
 
         [Inject]
         public void Construct(
-            CommandSystem commandSystem,
-            SceneManagerSystem sceneManagerSystem,
-            EntityPresetSystem entityPresetSystem)
+            EntityPresetSystem entityPresetSystem,
+            AddEntitySystem addEntitySystem)
         {
-            this.commandSystem = commandSystem;
-            this.sceneManagerSystem = sceneManagerSystem;
             this.entityPresetSystem = entityPresetSystem;
+            this.addEntitySystem = addEntitySystem;
         }
 
         public IEnumerable<EntityPresetState.EntityPreset> GetPresets()
@@ -31,18 +27,7 @@ namespace Assets.Scripts.System
 
         public void AddEntityFromPreset(EntityPresetState.EntityPreset preset, Guid parentId = default)
         {
-            var scene = sceneManagerSystem.GetCurrentScene();
-            if (scene == null)
-            {
-                return;
-            }
-
-            commandSystem.ExecuteCommand(
-                commandSystem.CommandFactory.CreateAddEntity(
-                    preset,
-                    scene.SelectionState.PrimarySelectedEntity?.Id ?? Guid.Empty,
-                    scene.SelectionState.SecondarySelectedEntities.Select(e => e.Id),
-                    parentId));
+            addEntitySystem.AddEntityFromPresetAsCommand(preset, parentId);
         }
     }
 }
