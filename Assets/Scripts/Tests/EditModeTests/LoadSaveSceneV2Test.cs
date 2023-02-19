@@ -45,13 +45,13 @@ namespace Assets.Scripts.Tests.EditModeTests
             Assert.NotNull(cubeEntTransform);
 
             // position
-            Assert.AreEqual(new Vector3(8, 0.5f, 3), cubeEntTransform.Position.Value);
+            Assert.AreEqual(new Vector3(8, 0.5f, 3), cubeEntTransform.position.Value);
 
             // rotation
-            Assert.AreEqual(new Quaternion(0, 0, 0, 1), cubeEntTransform.Rotation.Value);
+            Assert.AreEqual(new Quaternion(0, 0, 0, 1), cubeEntTransform.rotation.Value);
 
             // scale
-            Assert.AreEqual(new Vector3(1, 1, 1), cubeEntTransform.Scale.Value);
+            Assert.AreEqual(new Vector3(1, 1, 1), cubeEntTransform.scale.Value);
 
             // BoxShape
             var cubeEntBoxShape = cubeEnt.GetComponentByName("BoxShape");

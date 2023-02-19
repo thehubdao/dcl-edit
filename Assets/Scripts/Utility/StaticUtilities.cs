@@ -166,5 +166,10 @@ namespace Assets.Scripts.Utility
             key = kvp.Key;
             value = kvp.Value;
         }
+
+        public static Vector3 VectorFromTo(Vector3 from, Vector3 to)
+        {
+            return to - from;
+        }
     }
 }

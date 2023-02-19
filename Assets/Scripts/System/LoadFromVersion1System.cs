@@ -171,16 +171,16 @@ namespace Assets.Scripts.System
 
             childTransform.SetParent(parentTransform);
 
-            parentTransform.position = dclParentTransform.Position.Value;
-            parentTransform.rotation = dclParentTransform.Rotation.Value;
-            parentTransform.localScale = dclParentTransform.Scale.Value;
+            parentTransform.position = dclParentTransform.position.Value;
+            parentTransform.rotation = dclParentTransform.rotation.Value;
+            parentTransform.localScale = dclParentTransform.scale.Value;
 
-            childTransform.position = dclTransform.Position.Value;
-            childTransform.rotation = dclTransform.Rotation.Value;
-            childTransform.localScale = dclTransform.Scale.Value;
+            childTransform.position = dclTransform.position.Value;
+            childTransform.rotation = dclTransform.rotation.Value;
+            childTransform.localScale = dclTransform.scale.Value;
 
-            dclTransform.Position.SetFixedValue(childTransform.localPosition);
-            dclTransform.Rotation.SetFixedValue(childTransform.localRotation);
+            dclTransform.position.SetFixedValue(childTransform.localPosition);
+            dclTransform.rotation.SetFixedValue(childTransform.localRotation);
 
             // cleanup
             UnityEngine.Object.Destroy(parentTransform.gameObject);
