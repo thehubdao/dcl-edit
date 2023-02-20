@@ -17,6 +17,7 @@ public class DialogVisuals : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     UnityState unityState;
     EditorEvents editorEvents;
     SceneManagerSystem sceneManagerSystem;
+    CommandSystem commandSystem;
 
     [Inject]
     void Construct(
@@ -24,13 +25,15 @@ public class DialogVisuals : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         DialogState dialogState,
         UnityState unityState,
         EditorEvents editorEvents,
-        SceneManagerSystem sceneManagerSystem)
+        SceneManagerSystem sceneManagerSystem,
+        CommandSystem commandSystem)
     {
         this.dialogSystem = dialogSystem;
         this.dialogState = dialogState;
         this.unityState = unityState;
         this.editorEvents = editorEvents;
         this.sceneManagerSystem = sceneManagerSystem;
+        this.commandSystem = commandSystem;
 
         editorEvents.onDialogChangedEvent += UpdateDialog;
     }
@@ -64,11 +67,18 @@ public class DialogVisuals : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         AssetDialogHandler handler = window.GetComponent<AssetDialogHandler>();
         handler.assetBrowserVisuals.assetButtonOnClickOverride = (Guid assetId) =>
         {
-            DclScene scene = sceneManagerSystem.GetCurrentSceneOrNull();
+            DclScene scene = sceneManagerSystem.GetCurrentScene();
             DclEntity entity = scene.GetEntityById(dialogState.targetEntityId);
-            var shapeComponent = entity.GetComponentBySlot("Shape");
-            if (shapeComponent != null) entity.RemoveComponent(shapeComponent);
-            entity.AddComponent(new DclGltfShapeComponent(assetId));
+            var gltfShapeComponent = new DclGltfShapeComponent(entity.GetComponentByName(DclGltfShapeComponent.gltfShapeComponentDefinition.NameInCode));
+            commandSystem.ExecuteCommand(
+                commandSystem.CommandFactory.CreateChangePropertyCommand(
+                    new DclPropertyIdentifier(
+                        entity.Id,
+                        gltfShapeComponent.NameInCode,
+                        "asset"),
+                    gltfShapeComponent.Asset.FixedValue,
+                    assetId
+                ));
             editorEvents.InvokeSelectionChangedEvent();
 
             dialogSystem.CloseCurrentDialog();
