@@ -18,6 +18,7 @@ namespace Assets.Scripts.Visuals.UiHandler
         {
             var buttonColors = button.colors;
             buttonColors.normalColor = isOn ? onColor : offColor;
+            buttonColors.highlightedColor = isOn ? onColor : offColor;
             button.colors = buttonColors;
         }
     }
