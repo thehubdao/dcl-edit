@@ -168,6 +168,9 @@ namespace Assets.Scripts.Visuals
                 }
             }
 
+            settingsPanel.AddSpacer(100);
+            settingsPanel.AddText($"dcl-edit version: {Application.version}");
+
             uiBuilder.Update(settingsPanel);
         }
     }
