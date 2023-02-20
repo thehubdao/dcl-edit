@@ -115,22 +115,29 @@ namespace Assets.Scripts.System
 
         public async Task GenerateTypeScript()
         {
-            var generationInfo = await GatherInfo();
-            if (!generationInfo.HasValue)
+            try
             {
-                Debug.LogError("Script generation: gathering info failed");
-                return;
+                var generationInfo = await GatherInfo();
+                if (!generationInfo.HasValue)
+                {
+                    Debug.LogError("Script generation: gathering info failed");
+                    return;
+                }
+
+                var script = GenerateActualScript(generationInfo.Value);
+
+                var scriptsFolderPath = pathState.ProjectPath + "/dcl-edit/build/scripts/";
+
+                Directory.CreateDirectory(scriptsFolderPath);
+
+                File.WriteAllText(scriptsFolderPath + "scenes.ts", script);
+
+                Debug.Log("Script generation done");
             }
-
-            var script = GenerateActualScript(generationInfo.Value);
-
-            var scriptsFolderPath = pathState.ProjectPath + "/dcl-edit/build/scripts/";
-
-            Directory.CreateDirectory(scriptsFolderPath);
-
-            File.WriteAllText(scriptsFolderPath + "scenes.ts", script);
-
-            Debug.Log("Script generation done");
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
         }
 
         private async Task<GenerationInfo?> GatherInfo()
