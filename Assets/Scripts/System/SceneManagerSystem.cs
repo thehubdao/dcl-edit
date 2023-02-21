@@ -243,29 +243,42 @@ namespace Assets.Scripts.System
 
             string oldContainingDirectoryPath;
             string oldName;
-            if (oldPath == null)
+
+            try
             {
-                oldContainingDirectoryPath = pathState.ProjectPath;
-                oldName = "New Scene";
-            }
-            else
-            {
+                if (oldPath == null)
+                {
+                    //use defaults
+                    throw new Exception();
+                }
+
                 oldPath = Path.GetFullPath(oldPath); //normalize path format (e.g. turn '/' into '\\')
                 oldContainingDirectoryPath = oldPath.Substring(0, oldPath.LastIndexOf(Path.DirectorySeparatorChar));
                 oldName = oldPath.Substring(oldPath.LastIndexOf(Path.DirectorySeparatorChar) + 1);
                 oldName = oldName.Substring(0, oldName.LastIndexOf('.'));
             }
+            catch
+            {
+                //if the extraction of path and name failed, use the defaults below.
+                oldContainingDirectoryPath = pathState.ProjectPath;
+                oldName = "New Scene";
+            }
 
             string newPath = StandaloneFileBrowser.SaveFilePanel("Save Scene", oldContainingDirectoryPath, oldName, "dclscene");
-
             // check for canceled dialog
             if (newPath == "")
             {
                 return;
             }
 
+            newPath = Path.GetFullPath(newPath); //normalize path format (e.g. turn '/' into '\\')
+            // Add file ending in case it is missing (dialog behaviour is unknown).
+            if (!newPath.EndsWith(".dclscene"))
+            {
+                newPath = newPath + ".dclscene";
+            }
             // Strip path inside a dcl scene folder. This allows to save as a already existing scene.
-            newPath = newPath.Substring(0, newPath.IndexOf(".dclscene") + 9);
+            newPath = newPath.Substring(0, (newPath).IndexOf(".dclscene") + 9);
 
             Guid newId = Guid.Empty;
             // remove any potential scene that will be overridden
