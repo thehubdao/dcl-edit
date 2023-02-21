@@ -55,7 +55,6 @@ MonoBehaviour:
   header: {fileID: 5914830228607229683}
   headerText: {fileID: 7653724580197155377}
   expandIcon: {fileID: 7395457280913301948}
-  layoutGroup: {fileID: 2827788213991788455}
 --- !u!114 &2827788213991788455
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -181,7 +180,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
-    m_Mode: 3
+    m_Mode: 0
     m_WrapAround: 0
     m_SelectOnUp: {fileID: 0}
     m_SelectOnDown: {fileID: 0}
