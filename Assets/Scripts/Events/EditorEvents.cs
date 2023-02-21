@@ -59,5 +59,8 @@ namespace Assets.Scripts.Events
 
         public event Action onUpdateSceneViewButtons;
         public void InvokeUpdateSceneViewButtons() => onUpdateSceneViewButtons?.Invoke();
+
+        public event Action OnCurrentSceneChangedEvent;
+        public void InvokeCurrentSceneChangedEvent() => OnCurrentSceneChangedEvent?.Invoke();
     }
 }
