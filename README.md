@@ -12,4 +12,4 @@ https://dcl-edit.com/install-guide/
 
 If you have questions or need help, just hop on to our Discord server:
 
-https://discord.gg/rDUvhbRqvq
+[MetaGameHub DAO - Discord](https://discord.gg/wQK4WQQuKe)
