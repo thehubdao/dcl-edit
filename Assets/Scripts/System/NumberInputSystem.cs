@@ -7,6 +7,7 @@ namespace Assets.Scripts.System
         private const NumberStyles Filter = NumberStyles.Integer | NumberStyles.AllowDecimalPoint;
         public float? ValidateNumberInput(string value)
         {
+            value = value.Replace(',', '.');
             if (float.TryParse(value, Filter, CultureInfo.InvariantCulture, out var result))
             {
                 return result;
