@@ -40,12 +40,14 @@ namespace Assets.Scripts.System
     {
         // Dependencies
         private LoadFromVersion1System loadFromVersion1System;
+        private FileUpgraderSystem fileUpgraderSystem;
 
         [Inject]
         public void Construct(
-            LoadFromVersion1System loadFromVersion1System)
+            LoadFromVersion1System loadFromVersion1System, FileUpgraderSystem fileUpgraderSystem)
         {
             this.loadFromVersion1System = loadFromVersion1System;
+            this.fileUpgraderSystem = fileUpgraderSystem;
         }
 
 
@@ -212,6 +214,8 @@ namespace Assets.Scripts.System
         /// <param name="absolutePath">The path from which to load the entity</param>
         public void LoadEntityFile(DclScene scene, string absolutePath)
         {
+            fileUpgraderSystem.CheckUpgrades(absolutePath);
+
             var json = File.ReadAllText(absolutePath);
             var entityData = JsonConvert.DeserializeObject<DclEntityData>(json);
 

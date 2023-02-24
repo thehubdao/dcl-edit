@@ -1,17 +1,24 @@
+using Assets.Scripts.Utility;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
-using Assets.Scripts.Utility;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
+using Zenject;
 
 namespace Assets.Scripts.System
 {
     public class FileUpgraderSystem
     {
+        [Inject]
+        public void Construct()
+        {
+            SetupUpgrades();
+        }
+
         public struct Version
         {
             public int major;

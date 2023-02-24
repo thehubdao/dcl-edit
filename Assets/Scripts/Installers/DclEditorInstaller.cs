@@ -167,5 +167,7 @@ public class DclEditorInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<GizmoToolSystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<GizmoSizeSystem>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<FileUpgraderSystem>().AsSingle();
     }
 }
