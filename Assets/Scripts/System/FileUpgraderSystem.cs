@@ -210,8 +210,8 @@ namespace Assets.Scripts.System
              * A final sequence of 12 hexadecimal digits.
              * The extension .json.
              */
-            var regex = new Regex("/^.+-\\b[0-9a-fA-F]{8}(-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}\\.json$/gm");
-            return regex.IsMatch(path);
+            var regex = new Regex("^.+-[0-9a-fA-F]{8}(-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}.json$");
+            return regex.IsMatch(Path.GetFileName(path));
         }
 
         // Upgrades
