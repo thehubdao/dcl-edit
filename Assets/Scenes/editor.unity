@@ -251,7 +251,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5677096275094490004, guid: 44790cf12ccd011459f749712f90a90b, type: 3}
   m_PrefabInstance: {fileID: 5677096275816853216}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5677096275816853217}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1344c3c82d62a2a41a3576d8abb8e3ea, type: 3}
@@ -1206,24 +1206,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 44790cf12ccd011459f749712f90a90b, type: 3}
---- !u!1 &5677096275816853217 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5677096275094490002, guid: 44790cf12ccd011459f749712f90a90b, type: 3}
-  m_PrefabInstance: {fileID: 5677096275816853216}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &5677096275816853218
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5677096275816853217}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 46c8b83bff4edfe47bc267cc3befce21, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  scenePanelTab: {fileID: 5677096275816853219}
 --- !u!224 &5677096275816853219 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 5677096275094490003, guid: 44790cf12ccd011459f749712f90a90b, type: 3}
@@ -1269,13 +1251,13 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1375574674}
     - target: {fileID: 6554674216587907478, guid: 20ed7006bd4d7d84dab9ab96b9f5129a, type: 3}
-      propertyPath: sceneViewButtons
-      value: 
-      objectReference: {fileID: 710671776}
-    - target: {fileID: 6554674216587907478, guid: 20ed7006bd4d7d84dab9ab96b9f5129a, type: 3}
       propertyPath: scenePanelTab
       value: 
       objectReference: {fileID: 5677096275816853219}
+    - target: {fileID: 6554674216587907478, guid: 20ed7006bd4d7d84dab9ab96b9f5129a, type: 3}
+      propertyPath: sceneViewButtons
+      value: 
+      objectReference: {fileID: 710671776}
     - target: {fileID: 6554674216587907478, guid: 20ed7006bd4d7d84dab9ab96b9f5129a, type: 3}
       propertyPath: dynamicPanelsCanvas
       value: 
