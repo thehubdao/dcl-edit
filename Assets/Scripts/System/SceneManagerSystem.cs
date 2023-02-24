@@ -24,6 +24,7 @@ namespace Assets.Scripts.System
         private TypeScriptGenerationSystem typeScriptGenerationSystem;
         private SceneViewSystem sceneViewSystem;
         private MenuBarSystem menuBarSystem;
+        private SettingsSystem settingsSystem;
 
         [Inject]
         public void Construct(
@@ -36,7 +37,8 @@ namespace Assets.Scripts.System
             WorkspaceSaveSystem workspaceSaveSystem,
             TypeScriptGenerationSystem typeScriptGenerationSystem,
             SceneViewSystem sceneViewSystem,
-            MenuBarSystem menuBarSystem)
+            MenuBarSystem menuBarSystem,
+            SettingsSystem settingsSystem)
         {
             this.sceneManagerState = sceneManagerState;
             this.pathState = pathState;
@@ -48,7 +50,7 @@ namespace Assets.Scripts.System
             this.typeScriptGenerationSystem = typeScriptGenerationSystem;
             this.sceneViewSystem = sceneViewSystem;
             this.menuBarSystem = menuBarSystem;
-
+            this.settingsSystem = settingsSystem;
             CreateMenuBarItems();
         }
 
@@ -102,9 +104,26 @@ namespace Assets.Scripts.System
         }
 
         /// <summary>
+        /// Set last opened scene on start up
+        /// </summary>
+        public void SetLastOpenedSceneAsCurrentScene()
+        {
+            Guid lastSceneIndex;
+
+            if (Guid.TryParse(settingsSystem.openLastOpenedScene.Get(), out lastSceneIndex))
+            {
+                SetCurrentScene(lastSceneIndex);
+            }
+            else if (lastSceneIndex == Guid.Empty)
+            {
+                SetNewSceneAsCurrentScene();
+            }
+        }
+
+        /// <summary>
         /// Create a new scene and set it as current scene
         /// </summary>
-        public void SetNewScneneAsCurrentScene()
+        public void SetNewSceneAsCurrentScene()
         {
             SceneDirectoryState newScene = SceneDirectoryState.CreateNewSceneDirectoryState();
             sceneManagerState.AddSceneDirectoryState(newScene);
@@ -145,6 +164,8 @@ namespace Assets.Scripts.System
         {
             sceneManagerState.SetCurrentSceneIndex(id);
             sceneViewSystem.SetUpCurrentScene();
+            var newSceneIndex = sceneManagerState.currentSceneIndex;
+            settingsSystem.openLastOpenedScene.Set(newSceneIndex.ToString());
         }
 
         /// <summary>
@@ -243,28 +264,44 @@ namespace Assets.Scripts.System
                 return;
             }
 
-            //remove any potential scene that will be overridden
+            // Strip path inside a dcl scene folder. This allows to save as a already existing scene.
+            newPath = newPath.Substring(0, newPath.IndexOf(".dclscene") + 9);
+
+            Guid newId = Guid.Empty;
+            // remove any potential scene that will be overridden
             if (sceneManagerState.TryGetDirectoryState(newPath, out SceneDirectoryState sceneDirectoryStateToOverride))
             {
-                sceneManagerState.RemoveSceneDirectoryState(sceneDirectoryStateToOverride);
+                newId = sceneDirectoryStateToOverride.id;
+                DeleteScene(sceneDirectoryStateToOverride);
             }
 
-            sceneDirectoryState.directoryPath = newPath;
-            SaveScene(sceneDirectoryState);
+            SceneDirectoryState sceneDirectoryStateCopy = sceneDirectoryState.DeepCopy(newId);
+            sceneDirectoryStateCopy.directoryPath = newPath;
 
-            if (oldPath != null)
-            {
-                LoadSceneDirectoryState(oldPath);
-            }
+            SaveScene(sceneDirectoryStateCopy);
+            sceneDirectoryStateCopy = LoadSceneDirectoryState(newPath); // keep loaded scenes updated
+            SetCurrentScene(sceneDirectoryStateCopy.id);
         }
 
         [CanBeNull]
-        public DclScene GetCurrentScene()
+        public DclScene GetCurrentSceneOrNull()
         {
             //return null if no scene is open
             if (sceneManagerState.currentSceneIndex == Guid.Empty)
             {
                 return null;
+            }
+
+            return GetScene(sceneManagerState.currentSceneIndex);
+        }
+        
+        [NotNull]
+        public DclScene GetCurrentScene()
+        {
+            //return null if no scene is open
+            if (sceneManagerState.currentSceneIndex == Guid.Empty)
+            {
+                throw new NoCurrentSceneException();
             }
 
             return GetScene(sceneManagerState.currentSceneIndex);
@@ -331,9 +368,18 @@ namespace Assets.Scripts.System
             return sceneManagerState.GetCurrentDirectoryState();
         }
 
+        /// <summary>
+        /// Deletes the Scene and delets all associated Files.
+        /// </summary>
+        private void DeleteScene(SceneDirectoryState sceneDirectoryState)
+        {
+            sceneSaveSystem.Delete(sceneDirectoryState);
+            sceneManagerState.RemoveSceneDirectoryState(sceneDirectoryState);
+        }
+
         private void CreateMenuBarItems()
         {
-            menuBarSystem.AddMenuItem("File#1/New Scene#1", SetNewScneneAsCurrentScene);
+            menuBarSystem.AddMenuItem("File#1/New Scene#1", SetNewSceneAsCurrentScene);
             menuBarSystem.AddMenuItem("File#1/Open Scene#2", SetDialogAsCurrentScene);
             menuBarSystem.AddMenuItem("File#1/Save Scene#3", SaveCurrentScene);
             menuBarSystem.AddMenuItem("File#1/Save Scene As...#4", SaveCurrentSceneAs);
@@ -346,5 +392,16 @@ namespace Assets.Scripts.System
             public JObject settings;
             public string dclEditVersionNumber;
         }
+    }
+    
+    public class NoCurrentSceneException : Exception
+    {
+        public NoCurrentSceneException() { }
+
+        public NoCurrentSceneException(string message)
+            : base(message) { }
+
+        public NoCurrentSceneException(string message, Exception inner)
+            : base(message, inner) { }
     }
 }

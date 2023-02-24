@@ -1,3 +1,4 @@
+using System;
 using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
 using Assets.Scripts.System;
@@ -8,36 +9,30 @@ namespace Assets.Scripts.Visuals
 {
     public class GizmoVisuals : MonoBehaviour
     {
+        [SerializeField]
         private GameObject translateGizmoObject = null;
+
+        [SerializeField]
         private GameObject rotateGizmoObject = null;
+
+        [SerializeField]
         private GameObject scaleGizmoObject = null;
+
         private GameObject activeGizmo = null;
 
         // Dependencies
 
-        private TranslateFactory translateFactory;
-        private RotateFactory rotateFactory;
-        private ScaleFactory scaleFactory;
-        private GizmoState gizmoState;
-        private UnityState unityState;
+        private GizmoToolSystem gizmoToolSystem;
         private EditorEvents editorEvents;
         private SceneManagerSystem sceneManagerSystem;
 
         [Inject]
         private void Construct(
-            TranslateFactory translateFactory,
-            RotateFactory rotateFactory,
-            ScaleFactory scaleFactory,
-            GizmoState gizmoState,
-            UnityState unityState,
+            GizmoToolSystem gizmoToolSystem,
             EditorEvents editorEvents,
             SceneManagerSystem sceneManagerSystem)
         {
-            this.translateFactory = translateFactory;
-            this.rotateFactory = rotateFactory;
-            this.scaleFactory = scaleFactory;
-            this.gizmoState = gizmoState;
-            this.unityState = unityState;
+            this.gizmoToolSystem = gizmoToolSystem;
             this.editorEvents = editorEvents;
             this.sceneManagerSystem = sceneManagerSystem;
 
@@ -52,7 +47,7 @@ namespace Assets.Scripts.Visuals
         private void UpdateVisuals()
         {
             var selectedEntity = sceneManagerSystem
-                .GetCurrentScene()?
+                .GetCurrentSceneOrNull()?
                 .SelectionState
                 .PrimarySelectedEntity;
 
@@ -63,30 +58,34 @@ namespace Assets.Scripts.Visuals
             }
 
             activeGizmo?.SetActive(false);
-            switch (gizmoState.CurrentMode)
+            switch (gizmoToolSystem.gizmoToolMode)
             {
-                case GizmoState.Mode.Translate:
-                    if (translateGizmoObject == null)
-                        translateGizmoObject = translateFactory.Create().gameObject;
+                case GizmoToolSystem.ToolMode.Translate:
                     activeGizmo = translateGizmoObject;
                     break;
-                case GizmoState.Mode.Rotate:
-                    if (rotateGizmoObject == null)
-                        rotateGizmoObject = rotateFactory.Create().gameObject;
+                case GizmoToolSystem.ToolMode.Rotate:
                     activeGizmo = rotateGizmoObject;
                     break;
-                case GizmoState.Mode.Scale:
-                    if (scaleGizmoObject == null)
-                        scaleGizmoObject = scaleFactory.Create().gameObject;
+                case GizmoToolSystem.ToolMode.Scale:
                     activeGizmo = scaleGizmoObject;
                     break;
+                default:
+                    throw new IndexOutOfRangeException();
             }
 
             activeGizmo.SetActive(true);
 
             var selectedTransform = selectedEntity.GetTransformComponent();
-            activeGizmo.transform.position = selectedTransform.GlobalPosition;
-            activeGizmo.transform.rotation = selectedTransform.GlobalRotation;
+            activeGizmo.transform.position = selectedTransform.globalPosition;
+
+            var isToolContextLocal =
+                gizmoToolSystem.gizmoToolContext == GizmoToolSystem.ToolContext.Local ||
+                gizmoToolSystem.gizmoToolMode == GizmoToolSystem.ToolMode.Scale;
+
+            activeGizmo.transform.rotation =
+                isToolContextLocal ?
+                    selectedTransform.globalRotation :
+                    Quaternion.identity;
         }
 
         private void HideGizmo()
@@ -94,18 +93,6 @@ namespace Assets.Scripts.Visuals
             translateGizmoObject?.SetActive(false);
             rotateGizmoObject?.SetActive(false);
             scaleGizmoObject?.SetActive(false);
-        }
-
-        public class TranslateFactory : PlaceholderFactory<GizmoSizeFixerSystem>
-        {
-        }
-
-        public class RotateFactory : PlaceholderFactory<GizmoSizeFixerSystem>
-        {
-        }
-
-        public class ScaleFactory : PlaceholderFactory<GizmoSizeFixerSystem>
-        {
         }
     }
 }

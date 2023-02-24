@@ -9,6 +9,7 @@ using System.Linq;
 using UnityEngine;
 using Zenject;
 using Debug = UnityEngine.Debug;
+using Random = UnityEngine.Random;
 
 namespace Assets.Scripts.System
 {
@@ -32,6 +33,7 @@ namespace Assets.Scripts.System
     public interface ISceneSaveSystem
     {
         void Save(SceneDirectoryState sceneDirectoryState);
+        void Delete(SceneDirectoryState sceneDirectoryState);
     }
 
     public class SceneLoadSaveSystem : ISceneLoadSystem, ISceneSaveSystem
@@ -77,7 +79,7 @@ namespace Assets.Scripts.System
                     dclEditVersionNumber = Application.version
                 };
                 string sceneFilePath = Path.Combine(sceneDirectoryState.directoryPath, "scene.json");
-                string sceneFileContentsJson = JsonConvert.SerializeObject(sceneFileContents);
+                string sceneFileContentsJson = JsonConvert.SerializeObject(sceneFileContents, Formatting.Indented);
                 File.WriteAllText(sceneFilePath, sceneFileContentsJson);
 
                 sceneDirectoryState.loadedFilePathsInScene.Add(NormalizePath(sceneFilePath));
@@ -154,6 +156,20 @@ namespace Assets.Scripts.System
             loadFromVersion1System.Load(sceneDirectoryState);
         }
 
+        /// <summary>
+        /// Deletes the Scene and delets all associated Files.
+        /// </summary>
+        public void Delete(SceneDirectoryState sceneDirectoryState)
+        {
+            foreach (var path in sceneDirectoryState.loadedFilePathsInScene.Select(p => Path.Combine(sceneDirectoryState.directoryPath, p)))
+            {
+                if (File.Exists(path))
+                {
+                    File.Delete(path);
+                }
+            }
+        }
+
         /**
          * <summary>
          * Creates a save file for a given entity
@@ -207,6 +223,7 @@ namespace Assets.Scripts.System
             public string customName;
             public Guid guid;
             public Guid? parentGuid;
+            public float? hierarchyOrder;
             public bool isExposed;
             public List<DclComponentData> components;
             public string dclEditVersionNumber;
@@ -218,6 +235,7 @@ namespace Assets.Scripts.System
                 this.parentGuid = entity.Parent?.Id;
                 isExposed = entity.IsExposed;
                 dclEditVersionNumber = Application.version;
+                this.hierarchyOrder = entity.hierarchyOrder;
 
                 this.components = new List<DclComponentData>();
                 foreach (DclComponent component in entity.Components)
@@ -239,8 +257,9 @@ namespace Assets.Scripts.System
                     throw new SceneLoadException($"Guid was not set for entity {customName}");
                 }
 
+                hierarchyOrder ??= Random.Range(0, 100000); // using full integer values for random initialization
 
-                var dclEntity = new DclEntity(guid, customName, parentGuid ?? default, isExposed);
+                var dclEntity = new DclEntity(guid, customName, parentGuid ?? default, isExposed, (float)hierarchyOrder);
 
                 // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator 
                 foreach (var component in components)

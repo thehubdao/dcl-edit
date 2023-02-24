@@ -1,10 +1,11 @@
 using Assets.Scripts.EditorState;
 using UnityEngine;
 using Zenject;
+using static Assets.Scripts.Utility.StaticUtilities;
 
 namespace Assets.Scripts.System
 {
-    public class GizmoSizeFixerSystem : MonoBehaviour
+    public class GizmoSizeSystem
     {
         // Dependencies
         private CameraState _cameraState;
@@ -20,10 +21,10 @@ namespace Assets.Scripts.System
             _settingsSystem = settingsSystem;
         }
 
-        void LateUpdate()
+        public float GetGizmoSize(Vector3 gizmoPosition)
         {
             // vector from camera to gizmo
-            var diffVector = transform.position - _cameraState.Position;
+            var diffVector = VectorFromTo(_cameraState.Position, gizmoPosition);
 
             // camera forward vector
             var camForward = _cameraState.Forward;
@@ -37,8 +38,7 @@ namespace Assets.Scripts.System
             // apply gizmo scale setting
             size *= scaleFactor * _settingsSystem.gizmoSize.Get();
 
-            // set the scale of the gizmo
-            transform.localScale = new Vector3(size, size, size);
+            return size;
         }
     }
 }

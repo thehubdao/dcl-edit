@@ -11,11 +11,24 @@ namespace Assets.Scripts.Command
         public override string Name => "Add model asset to scene";
         public override string Description => $"Drag and drop a model asset from the asset browser into the scene: entity name: \"{entityCustomName}\", id: \"{entityId}\".";
 
-        public AddModelAssetToScene(Guid entityId, string entityCustomName, Guid assetId, Vector3 positionInScene) : base(entityId, entityCustomName, assetId, positionInScene) { }
+        Guid _entityId;
+        string _entityCustomName;
+        Guid _assetId;
+        Vector3 _positionInScene;
+        private float hierarchyOrder;
+
+        public AddModelAssetToScene(Guid entityId, string entityCustomName, Guid assetId, Vector3 positionInScene, float hierarchyOrder)
+        {
+            _entityId = entityId;
+            _entityCustomName = entityCustomName;
+            _assetId = assetId;
+            _positionInScene = positionInScene;
+            this.hierarchyOrder = hierarchyOrder;
+        }
 
         public override void Do(DclScene sceneState, EditorEvents editorEvents)
         {
-            var newEntity = EntityUtility.AddEntity(sceneState, entityId, entityCustomName);
+            var newEntity = EntityUtility.AddEntity(sceneState, entityId, entityCustomName, hierarchyOrder, default);
             AddTransformComponent(newEntity);
             AddGltfShapeComponent(newEntity);
 

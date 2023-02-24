@@ -75,6 +75,33 @@ namespace Assets.Scripts.EditorState
         }
 
         /// <summary>
+        /// Creates a deep Copy. 
+        /// </summary>
+        /// <param name="id">This id will be assigned to the copy.</param>
+        public SceneDirectoryState DeepCopy(Guid id)
+        {
+            if (id == Guid.Empty)
+            {
+                id = Guid.NewGuid();
+            }
+
+            SceneDirectoryState copy = DeepCopy();
+            copy.id = id;
+            return copy;
+        }
+
+        /// <summary>
+        /// Creates a deep Copy. 
+        /// </summary>
+        public SceneDirectoryState DeepCopy()
+        {
+            SceneDirectoryState copy = new SceneDirectoryState();
+            copy.directoryPath = directoryPath;
+            copy.currentScene = currentScene.DeepCopy();
+            return copy;
+        }
+
+        /// <summary>
         /// Creates a new SceneDirectoryState and adds a Scene to it.
         /// </summary>
         public static SceneDirectoryState CreateNewSceneDirectoryState()

@@ -54,7 +54,7 @@ namespace Assets.Scripts.System
 
         public void UpdateFloatingProperty<T>(DclPropertyIdentifier property, T value)
         {
-            var scene = sceneManagerSystem.GetCurrentScene();
+            var scene = sceneManagerSystem.GetCurrentSceneOrNull();
 
             if (scene == null)
             {
@@ -68,7 +68,7 @@ namespace Assets.Scripts.System
 
         public void RevertFloatingProperty(DclPropertyIdentifier property)
         {
-            var scene = sceneManagerSystem.GetCurrentScene();
+            var scene = sceneManagerSystem.GetCurrentSceneOrNull();
 
             if (scene == null)
             {
@@ -82,7 +82,7 @@ namespace Assets.Scripts.System
 
         public void UpdateFixedProperty<T>(DclPropertyIdentifier property, T value)
         {
-            var scene = sceneManagerSystem.GetCurrentScene();
+            var scene = sceneManagerSystem.GetCurrentSceneOrNull();
 
             if (scene == null)
             {

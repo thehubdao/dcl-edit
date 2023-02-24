@@ -50,7 +50,7 @@ public class DclEditorInstaller : MonoInstaller
 
         Container.BindInterfacesAndSelfTo<Interface3DState>().AsSingle();
 
-        Container.BindInterfacesAndSelfTo<FrameTimeSystem>().AsSingle();
+        Container.BindInterfacesAndSelfTo<ApplicationSystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<CameraSystem>().AsSingle();
 
@@ -83,12 +83,6 @@ public class DclEditorInstaller : MonoInstaller
         Container.BindFactory<EntitySelectInteraction, EntitySelectInteraction.Factory>().FromComponentInNewPrefab(_entityVisualPrefab);
 
         Container.BindFactory<MainSceneVisuals, MainSceneVisuals.Factory>().FromComponentInNewPrefab(mainSceneVisualsPrefab);
-
-        Container.BindFactory<GizmoSizeFixerSystem, GizmoVisuals.TranslateFactory>().FromComponentInNewPrefab(_translateGizmoPrefab).AsSingle();
-
-        Container.BindFactory<GizmoSizeFixerSystem, GizmoVisuals.RotateFactory>().FromComponentInNewPrefab(_rotateGizmoPrefab).AsSingle();
-
-        Container.BindFactory<GizmoSizeFixerSystem, GizmoVisuals.ScaleFactory>().FromComponentInNewPrefab(_scaleGizmoPrefab).AsSingle();
 
         Container.BindInterfacesAndSelfTo<EditorEvents>().AsSingle();
 
@@ -165,5 +159,13 @@ public class DclEditorInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<DialogSystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<DialogState>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<HierarchyOrderSystem>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<AddEntitySystem>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<GizmoToolSystem>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<GizmoSizeSystem>().AsSingle();
     }
 }

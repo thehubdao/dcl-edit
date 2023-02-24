@@ -23,14 +23,14 @@ namespace Assets.Scripts.Command
         public override void Do(DclScene sceneState, EditorEvents editorEvents)
         {
             DclTransformComponent transform = TransformFromEntityGuid(sceneState, selectedEntityGuid);
-            transform?.Position.SetFixedValue(newFixedPosition);
+            transform?.position.SetFixedValue(newFixedPosition);
             editorEvents.InvokeSelectionChangedEvent();
         }
 
         public override void Undo(DclScene sceneState, EditorEvents editorEvents)
         {
             DclTransformComponent transform = TransformFromEntityGuid(sceneState, selectedEntityGuid);
-            transform?.Position.SetFixedValue(oldFixedPosition);
+            transform?.position.SetFixedValue(oldFixedPosition);
             editorEvents.InvokeSelectionChangedEvent();
         }
 
