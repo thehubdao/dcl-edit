@@ -4,6 +4,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -154,7 +155,7 @@ namespace Assets.Scripts.System
         {
             var fileContents = File.ReadAllText(path);
             var json = JObject.Parse(fileContents);
-            json["dclEditVersionNumber"] = (JToken) version.ToString();
+            json["dclEditVersionNumber"] = (JToken)version.ToString();
             var newFileContents = json.ToString(Formatting.Indented);
             File.WriteAllText(path, newFileContents);
         }
@@ -170,22 +171,29 @@ namespace Assets.Scripts.System
                 throw new Exception($"The file {path} was saved with a newer version of the editor ({fileVersion}). Please update the editor to the latest version.");
             }
 
-            foreach (var (version, action) in upgradeActions)
+            try
             {
-                if (version <= fileVersion)
+                foreach (var (version, action) in upgradeActions)
                 {
-                    continue;
+                    if (version <= fileVersion)
+                    {
+                        continue;
+                    }
+
+                    if (version > currentVersion)
+                    {
+                        break;
+                    }
+
+                    action(path);
                 }
 
-                if (version > currentVersion)
-                {
-                    break;
-                }
-
-                action(path);
+                SetFileVersion(path, currentVersion);
             }
-
-            SetFileVersion(path, currentVersion);
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
         }
 
         // Utility
@@ -219,13 +227,27 @@ namespace Assets.Scripts.System
 
         private void SetupUpgrades()
         {
-            upgradeActions.Add((1, 0, 1), Foo);
+            upgradeActions.Add((1, 0, 1), UpgradePropertySceneIdToSceneInSceneComponent);
         }
 
-        private void Foo(string path)
+        private void UpgradePropertySceneIdToSceneInSceneComponent(string path)
         {
-            if (IsDclAssetFile(path))
+            if (IsEntityFile(path))
             {
+                var fileContents = File.ReadAllText(path);
+                var json = JObject.Parse(fileContents);
+
+                foreach (JToken property in json["components"]
+                    .Where(c => c["nameInCode"].Value<String>() == "Scene")
+                    .SelectMany(c => c["properties"])
+                    .Where(p => p["name"].Value<String>() == "sceneId"))
+                {
+                    property["name"] = "scene";
+                    property["type"] = "Asset";
+                }
+
+                var newFileContents = json.ToString(Formatting.Indented);
+                File.WriteAllText(path, newFileContents);
             }
         }
     }
