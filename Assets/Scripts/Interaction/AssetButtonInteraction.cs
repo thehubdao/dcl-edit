@@ -146,8 +146,7 @@ public class AssetButtonInteraction : MonoBehaviour, IBeginDragHandler, IDragHan
                 }
                 scene.ClearFloatingEntities();
 
-                commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateAddSceneAssetToScene(newEntity.Id,
-                    newEntity.CustomName, assetMetadata.assetId, position));
+                addEntitySystem.AddSceneAssetEntityAsCommand(newEntity, assetMetadata, position);
                 break;
         }
     }

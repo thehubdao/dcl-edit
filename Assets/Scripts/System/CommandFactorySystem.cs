@@ -1,8 +1,8 @@
 using Assets.Scripts.Command;
-using System;
-using System.Collections.Generic;
 using Assets.Scripts.EditorState;
 using Assets.Scripts.SceneState;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class CommandFactorySystem
@@ -59,9 +59,9 @@ public class CommandFactorySystem
         return new AddModelAssetToScene(entityId, entityCustomName, assetId, positionInScene, hierarchyOrder);
     }
 
-    public AddSceneAssetToScene CreateAddSceneAssetToScene(Guid entityId, string entityCustomName, Guid assetId, Vector3 positionInScene)
+    public AddSceneAssetToScene CreateAddSceneAssetToScene(Guid entityId, string entityCustomName, Guid assetId, Vector3 positionInScene, float hierarchyOrder)
     {
-        return new AddSceneAssetToScene(entityId, entityCustomName, assetId, positionInScene);
+        return new AddSceneAssetToScene(entityId, entityCustomName, assetId, positionInScene, hierarchyOrder);
     }
 
     public AddComponent CreateAddComponent(Guid entityId, DclComponent.ComponentDefinition component)

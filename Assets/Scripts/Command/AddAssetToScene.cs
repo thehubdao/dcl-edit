@@ -14,13 +14,15 @@ namespace Assets.Scripts.Command
         protected Guid assetId;
         protected Vector3 positionInScene;
         protected SelectionUtility.SelectionWrapper oldSelection;
+        protected float hierarchyOrder;
 
-        public AddAssetToScene(Guid entityId, string entityCustomName, Guid assetId, Vector3 positionInScene)
+        public AddAssetToScene(Guid entityId, string entityCustomName, Guid assetId, Vector3 positionInScene, float hierarchyOrder)
         {
             this.entityId = entityId;
             this.entityCustomName = entityCustomName;
             this.assetId = assetId;
             this.positionInScene = positionInScene;
+            this.hierarchyOrder = hierarchyOrder;
         }
 
         public override void Undo(DclScene sceneState, EditorEvents editorEvents)

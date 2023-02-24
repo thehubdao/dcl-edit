@@ -17,7 +17,6 @@ public class DialogVisuals : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     EditorEvents editorEvents;
     SceneManagerSystem sceneManagerSystem;
     CommandSystem commandSystem;
-    CommandSystem commandSystem;
 
     [Inject]
     void Construct(
@@ -27,15 +26,12 @@ public class DialogVisuals : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         EditorEvents editorEvents,
         SceneManagerSystem sceneManagerSystem,
         CommandSystem commandSystem)
-        SceneManagerSystem sceneManagerSystem,
-        CommandSystem commandSystem)
     {
         this.dialogSystem = dialogSystem;
         this.dialogState = dialogState;
         this.unityState = unityState;
         this.editorEvents = editorEvents;
         this.sceneManagerSystem = sceneManagerSystem;
-        this.commandSystem = commandSystem;
         this.commandSystem = commandSystem;
 
         editorEvents.onDialogChangedEvent += UpdateDialog;
