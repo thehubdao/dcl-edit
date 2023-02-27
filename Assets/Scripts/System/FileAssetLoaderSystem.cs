@@ -124,6 +124,8 @@ namespace Assets.Scripts.System
                 return new AssetThumbnail(id, AssetData.State.IsAvailable, metadata.thumbnail); // Thumbnail is available
             }
 
+            if (readOnly) return new AssetThumbnail(id, AssetData.State.IsError, null);
+
             assetThumbnailGeneratorSystem.Generate(id, thumbnail =>
             {
                 metadata.thumbnail = thumbnail;
