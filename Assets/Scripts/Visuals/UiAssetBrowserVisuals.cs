@@ -173,6 +173,7 @@ namespace Assets.Scripts.Visuals
 
             foreach (AssetHierarchyItem dir in hierarchyItem.childDirectories)
             {
+                if (dir.IsEmpty()) continue;
                 BuildHierarchy(dir, panel);
             }
 
