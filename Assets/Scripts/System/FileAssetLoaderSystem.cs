@@ -21,7 +21,7 @@ namespace Assets.Scripts.System
         private LoadGltfFromFileSystem loadGltfFromFileSystem;
         private AssetThumbnailGeneratorSystem assetThumbnailGeneratorSystem;
 
-        private string relativePathInProject = "/assets"; // TODO: Change this, this is just for testing
+        private string relativePathInProject = "assets";
         private bool readOnly = false;
 
         public Dictionary<Guid, AssetMetadataFile> assetMetadataCache => loaderState.assetMetadataCache;
@@ -44,11 +44,22 @@ namespace Assets.Scripts.System
             CheckAssetDirectoryExists();
         }
 
+        /// <summary>
+        /// Note: The relative path should never start with a slash (/). Otherwise combining paths with Path.Combine()
+        /// won't work since it's parameter "path2" shouldn't be absolute.
+        /// </summary>
+        /// <param name="relativePathInProject"></param>
+        /// <param name="readOnly"></param>
+        public FileAssetLoaderSystem(string relativePathInProject, bool readOnly)
+        {
+            this.relativePathInProject = relativePathInProject;
+            this.readOnly = readOnly;
+        }
+
         //TODO Change when asset loading is changed
         private void CheckAssetDirectoryExists()
         {
-            string directoryPath = pathState.ProjectPath + relativePathInProject;
-
+            string directoryPath = Path.Combine(pathState.ProjectPath, relativePathInProject);
             if (!Directory.Exists(directoryPath))
             {
                 Directory.CreateDirectory(directoryPath);
@@ -69,7 +80,7 @@ namespace Assets.Scripts.System
             ClearAllData();
             try
             {
-                string directoryPath = pathState.ProjectPath + relativePathInProject;
+                string directoryPath = Path.Combine(pathState.ProjectPath, relativePathInProject);
 
                 loaderState.assetHierarchy = ScanDirectory(directoryPath);
 
