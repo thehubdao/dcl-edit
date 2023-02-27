@@ -231,7 +231,13 @@ namespace Assets.Scripts.Visuals
                                     commandSystem.CommandFactory.CreateDuplicateEntity(entity.Id, newHierarchyOrderForDuplicatedEntity))),
                             new ContextMenuTextItem("Delete",
                                 () => commandSystem.ExecuteCommand(
-                                    commandSystem.CommandFactory.CreateRemoveEntity(entity)))
+                                    commandSystem.CommandFactory.CreateRemoveEntity(entity))),
+                            new ContextMenuTextItem("Place above", 
+                                () => hierarchyOrderSystem.PlaceAbove(entity)),
+                            new ContextMenuTextItem("Place below", 
+                            () => hierarchyOrderSystem.PlaceBelow(entity)),
+                            new ContextMenuTextItem("Place as Child", 
+                                () => hierarchyOrderSystem.PlaceAsChild(entity))
                         });
                     },
                     draggedGameObject =>
