@@ -441,6 +441,25 @@ namespace Assets.Scripts.System
             }
         }
 
+        public void CancelHolding()
+        {
+            switch (gizmoToolMode)
+            {
+                case ToolMode.Translate:
+                    gizmoState.affectedTransform.globalPosition = gizmoState.affectedTransform.globalFixedPosition;
+                    break;
+                case ToolMode.Rotate:
+                    gizmoState.affectedTransform.globalRotation = gizmoState.affectedTransform.globalFixedRotation;
+                    break;
+                case ToolMode.Scale:
+                    gizmoState.affectedTransform.scale.SetFloatingValue(gizmoState.affectedTransform.scale.FixedValue);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            editorEvents.InvokeSelectionChangedEvent();
+        }
 
         private void ExecuteTranslateCommand()
         {
