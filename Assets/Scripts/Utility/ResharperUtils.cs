@@ -8,19 +8,19 @@ namespace EasySharp.ReSharperCustomSourceTemplates
         [SourceTemplate]
         public static void log(this object source)
         {
-            //$Debug.Log(source);$END$
+            //$Debug.Log($"{nameof(source)}: {source}");$END$
         }
 
         [SourceTemplate]
         public static void elog(this object source)
         {
-            //$Debug.LogError(source);$END$
+            //$Debug.LogError($"{nameof(source)}: {source}");$END$
         }
 
         [SourceTemplate]
         public static void wlog(this object source)
         {
-            //$Debug.LogWarning(source);$END$
+            //$Debug.LogWarning($"{nameof(source)}: {source}");$END$
         }
     }
 }

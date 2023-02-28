@@ -1,11 +1,11 @@
 using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
+using Assets.Scripts.Utility;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Assets.Scripts.Utility;
 using UnityEngine;
 using Zenject;
 using Object = UnityEngine.Object;
@@ -114,10 +114,13 @@ namespace Assets.Scripts.System
 
             assetThumbnailGeneratorSystem.Generate(id, thumbnail =>
             {
-                metadata.thumbnail = thumbnail;
-                WriteMetadataToFile(metadata);
+                if (thumbnail != null)
+                {
+                    metadata.thumbnail = thumbnail;
+                    WriteMetadataToFile(metadata);
+                }
 
-                editorEvents.InvokeThumbnailDataUpdatedEvent(new List<Guid> {id});
+                editorEvents.InvokeThumbnailDataUpdatedEvent(new List<Guid> { id });
             });
 
             return new AssetThumbnail(id, AssetData.State.IsLoading, null); // Thumbnail needs to be generated
@@ -189,10 +192,44 @@ namespace Assets.Scripts.System
 
             foreach (string subdir in subdirs)
             {
+                // Treat scenes as assets instead of directories
+                if (Path.GetExtension(subdir) == ".dclscene")
+                {
+                    var sceneMetadataFile = ReadSceneDirectory(subdir);
+                    if (sceneMetadataFile != null)
+                    {
+                        assetMetadataCache[sceneMetadataFile.assetMetadata.assetId] = sceneMetadataFile;
+                        assets.Add(sceneMetadataFile.assetMetadata);
+                    }
+                    continue;
+                }
+
                 childDirectories.Add(ScanDirectory(subdir, pathInHierarchy));
             }
 
             return new AssetHierarchyItem(dirname, pathInHierarchy, childDirectories, assets);
+        }
+
+        private AssetMetadataFile ReadSceneDirectory(string pathToScene)
+        {
+            try
+            {
+                string sceneName = Path.GetFileNameWithoutExtension(pathToScene);
+                string pathToSceneFile = Path.Combine(pathToScene, "scene.json");
+                string rawContents = File.ReadAllText(pathToSceneFile);
+                SceneManagerSystem.SceneFileContents sceneFileContents = JsonConvert.DeserializeObject<SceneManagerSystem.SceneFileContents>(rawContents);
+                var contents = new AssetMetadataFile.Contents(
+                    new AssetMetadataFile.MetaContents(sceneName, sceneFileContents.id, AssetMetadata.AssetType.Scene, sceneName),
+                    null
+                );
+                var metadataFile = new AssetMetadataFile(contents, pathToSceneFile);
+                return metadataFile;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+                return null;
+            }
         }
 
         /// <summary>
@@ -250,18 +287,25 @@ namespace Assets.Scripts.System
         {
             try
             {
-                var contents = new AssetMetadataFile.Contents(
-                    new AssetMetadataFile.MetaContents(
-                        metadata.assetFilename,
-                        metadata.assetMetadata.assetId,
-                        metadata.assetMetadata.assetType,
-                        metadata.assetMetadata.assetDisplayName
-                    ),
-                    metadata.thumbnail);
+                switch (metadata.assetMetadata.assetType)
+                {
+                    case AssetMetadata.AssetType.Scene:
+                        // TODO write scene metadata to file
+                        break;
+                    default:
+                        var contents = new AssetMetadataFile.Contents(
+                        new AssetMetadataFile.MetaContents(
+                            metadata.assetFilename,
+                            metadata.assetMetadata.assetId,
+                            metadata.assetMetadata.assetType,
+                            metadata.assetMetadata.assetDisplayName
+                        ),
+                        metadata.thumbnail);
+                        string json = JsonConvert.SerializeObject(contents, Formatting.Indented);
+                        File.WriteAllText(metadata.metadataFilePath, json);
+                        break;
+                }
 
-                string json = JsonConvert.SerializeObject(contents, Formatting.Indented);
-
-                File.WriteAllText(metadata.metadataFilePath, json);
             }
             catch (Exception e)
             {

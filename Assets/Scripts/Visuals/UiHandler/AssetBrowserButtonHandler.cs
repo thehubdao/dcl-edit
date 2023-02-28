@@ -1,5 +1,6 @@
 using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
+using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
 using System;
 using System.Collections.Generic;
@@ -13,49 +14,51 @@ public class AssetBrowserButtonHandler : ButtonHandler
     public Image maskedImage;       // Uses a child object with an image component. This allows setting an image that is influenced by the buttons mask.
     public Image assetTypeIndicatorImage;
     public AssetButtonInteraction assetButtonInteraction;
+    public GameObject loadingSymbol;
 
     private ScrollRect scrollViewRect;
 
     [Header("Asset Type Indicator Textures")]
     public Sprite modelTypeIndicator;
     public Sprite imageTypeIndicator;
+    public Sprite sceneTypeIndicator;
+
+    [Header("Thumbnail Sprites")]
+    public Sprite errorAssetThumbnail;
 
     // Dependencies
     EditorEvents editorEvents;
     AssetThumbnailManagerSystem assetThumbnailManagerSystem;
+    SceneManagerSystem sceneManagerSystem;
 
     [Inject]
-    void Construct(EditorEvents editorEvents, AssetThumbnailManagerSystem assetThumbnailManagerSystem)
+    void Construct(EditorEvents editorEvents, AssetThumbnailManagerSystem assetThumbnailManagerSystem, SceneManagerSystem sceneManagerSystem)
     {
         this.editorEvents = editorEvents;
         this.assetThumbnailManagerSystem = assetThumbnailManagerSystem;
+        this.sceneManagerSystem = sceneManagerSystem;
     }
 
     public void Init(AssetMetadata metadata, bool enableDragAndDrop, Action<Guid> onClick, ScrollRect scrollViewRect = null)
     {
         this.metadata = metadata;
         assetButtonInteraction.assetMetadata = metadata;
-        assetButtonInteraction.enableDragAndDrop = enableDragAndDrop;
-        button.onClick.RemoveAllListeners();
-        if (onClick != null) button.onClick.AddListener(() => onClick(metadata.assetId));
-        else button.onClick.AddListener(assetButtonInteraction.OnClick);
-
-        text.text = metadata.assetDisplayName;
-
         maskedImage.sprite = null;          // Clear thumbnail. There might be one still set because the prefab gets reused from the pool
 
-        switch (metadata.assetType)
+        SetText(metadata);
+        SetTypeIndicator(metadata);
+        if (IsCyclicScene())
         {
-            case AssetMetadata.AssetType.Unknown:
-                break;
-            case AssetMetadata.AssetType.Model:
-                assetTypeIndicatorImage.sprite = modelTypeIndicator;
-                break;
-            case AssetMetadata.AssetType.Image:
-                assetTypeIndicatorImage.sprite = imageTypeIndicator;
-                break;
-            default:
-                break;
+            button.enabled = false;
+            assetButtonInteraction.enableDragAndDrop = false;
+            maskedImage.color = Color.red;
+        }
+        else
+        {
+            button.enabled = true;
+            assetButtonInteraction.enableDragAndDrop = enableDragAndDrop;
+            maskedImage.color = Color.white;
+            SetOnClickAction(metadata, onClick);
         }
 
         editorEvents.onAssetThumbnailUpdatedEvent += OnAssetThumbnailUpdatedCallback;
@@ -76,6 +79,98 @@ public class AssetBrowserButtonHandler : ButtonHandler
         editorEvents.onAssetThumbnailUpdatedEvent -= OnAssetThumbnailUpdatedCallback;
     }
 
+    #region Initialization
+    private bool IsCyclicScene()
+    {
+        if (metadata == null) return false;
+        if (metadata.assetType != AssetMetadata.AssetType.Scene) return false;
+
+        SceneDirectoryState currentDirState = sceneManagerSystem.GetCurrentDirectoryState();
+        if (currentDirState.id == metadata.assetId) return true;
+
+        // Check all entities in the scene asset if they contain the current scene
+        bool CheckForCyclicScenesRecursive(DclScene scene)
+        {
+            if (scene == null) return false;
+
+            foreach (var childEntity in scene.AllEntities)
+            {
+                var sceneComponent = childEntity.Value.GetComponentByName("Scene");
+                if (sceneComponent == null) continue;
+                Guid? childSceneId = sceneComponent.GetPropertyByName("scene")?.GetConcrete<Guid>().FixedValue;
+                if (childSceneId == null) continue;
+                if (childSceneId == currentDirState.id) return true;
+
+                DclScene childScene = sceneManagerSystem.GetScene(childSceneId.Value);
+                if (CheckForCyclicScenesRecursive(childScene) == true) return true;
+            }
+
+            return false;
+        }
+
+        DclScene sceneFromAsset = sceneManagerSystem.GetScene(metadata.assetId);
+        return CheckForCyclicScenesRecursive(sceneFromAsset);
+    }
+    private void SetTypeIndicator(AssetMetadata metadata)
+    {
+        if (metadata == null)
+        {
+            assetTypeIndicatorImage.sprite = null;
+            assetTypeIndicatorImage.enabled = false;
+            return;
+        }
+
+        assetTypeIndicatorImage.enabled = true;
+        switch (this.metadata.assetType)
+        {
+            case AssetMetadata.AssetType.Unknown:
+                break;
+            case AssetMetadata.AssetType.Model:
+                assetTypeIndicatorImage.sprite = modelTypeIndicator;
+                break;
+            case AssetMetadata.AssetType.Image:
+                assetTypeIndicatorImage.sprite = imageTypeIndicator;
+                break;
+            case AssetMetadata.AssetType.Scene:
+                assetTypeIndicatorImage.sprite = sceneTypeIndicator;
+                break;
+            default:
+                break;
+        }
+    }
+    private void SetText(AssetMetadata metadata)
+    {
+        if (metadata == null)
+        {
+            text.text = "None";
+            return;
+        }
+
+        text.text = this.metadata.assetDisplayName;
+    }
+    private void SetOnClickAction(AssetMetadata metadata, Action<Guid> onClick)
+    {
+        button.onClick.RemoveAllListeners();
+
+        if (onClick == null)
+        {
+            button.onClick.AddListener(assetButtonInteraction.OnClick);
+            return;
+        }
+
+        if (metadata == null)
+        {
+            button.onClick.AddListener(() => onClick(Guid.Empty));
+            return;
+        }
+
+        button.onClick.AddListener(() => onClick(metadata.assetId));
+    }
+    #endregion
+
+
+
+
     private bool IsVisibleInScrollView()
     {
         // If not placed inside a scroll view, the content is always displayed.
@@ -95,67 +190,65 @@ public class AssetBrowserButtonHandler : ButtonHandler
 
     private void ShowThumbnailWhenVisible(Vector2 _)
     {
-        if (IsVisibleInScrollView())
-        {
-            if (maskedImage.sprite == null)
-            {
-                var result = assetThumbnailManagerSystem.GetThumbnailById(metadata.assetId);
+        if (metadata == null) return;
 
-                switch (result.state)
-                {
-                    case AssetData.State.IsAvailable:
-                        SetImage(result.texture);
-                        break;
-                    case AssetData.State.IsLoading:
-                        break;
-                    case AssetData.State.IsError:
-                        break;
-                    default:
-                        break;
-                }
-            }
-            else
-            {
-                if (!maskedImage.enabled)
-                {
-                    maskedImage.enabled = true;
-                }
-            }
-        }
-        else
+        loadingSymbol.SetActive(false);
+
+        if (!IsVisibleInScrollView())
         {
-            if (maskedImage.enabled)
-            {
-                maskedImage.enabled = false;
-            }
+            maskedImage.enabled = false;
+            return;
+        }
+
+        var result = assetThumbnailManagerSystem.GetThumbnailById(metadata.assetId);
+        switch (result.state)
+        {
+            case AssetData.State.IsAvailable:
+                SetImage(result.texture);
+                break;
+            case AssetData.State.IsLoading:
+                loadingSymbol.SetActive(true);
+                break;
+            case AssetData.State.IsError:
+                SetImage(errorAssetThumbnail);
+                break;
+            default:
+                break;
         }
     }
 
     public void OnAssetThumbnailUpdatedCallback(List<Guid> ids)
     {
+        if (metadata == null) return;
+
         if (ids.Contains(metadata.assetId))
         {
+            if (loadingSymbol != null) loadingSymbol.SetActive(false);
+
             var thumbnail = assetThumbnailManagerSystem.GetThumbnailById(metadata.assetId);
-            if (thumbnail.texture != null)
-            {
-                SetImage(thumbnail.texture);
-            }
+            if (thumbnail.texture != null) SetImage(thumbnail.texture);
+            else SetImage(errorAssetThumbnail);
         }
     }
 
     public void SetImage(Texture2D tex)
     {
+        if (tex == null) return;
+        SetImage(Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f), 100));
+    }
+
+    public void SetImage(Sprite sprite)
+    {
         if (maskedImage == null) return;
 
-        if (tex != null)
+        if (sprite == null)
         {
-            maskedImage.sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f), 100);
+            maskedImage.enabled = false;
+            return;
         }
 
-        if (!maskedImage.enabled)
-        {
-            maskedImage.enabled = true;
-        }
+        maskedImage.sprite = sprite;
+        maskedImage.enabled = true;
     }
 
     public class Factory : PlaceholderFactory<AssetBrowserButtonHandler>

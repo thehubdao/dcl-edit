@@ -109,6 +109,18 @@ public class AssetButtonInteraction : MonoBehaviour, IBeginDragHandler, IDragHan
                 break;
             case AssetMetadata.AssetType.Image:
                 break;
+            case AssetMetadata.AssetType.Scene:
+                DclSceneComponent sceneComponent = new DclSceneComponent(assetMetadata.assetId);
+                e.AddComponent(sceneComponent);
+
+                // Make all entities in the child scene to floating
+                DclScene scene = sceneManagerSystem.GetScene(assetMetadata.assetId);
+                foreach (var entity in scene.AllEntities)
+                {
+                    scene.AddFloatingEntity(entity.Value);
+                }
+                scene.ClearAllEntities();
+                break;
         }
 
         return e;
@@ -124,6 +136,17 @@ public class AssetButtonInteraction : MonoBehaviour, IBeginDragHandler, IDragHan
 
                 break;
             case AssetMetadata.AssetType.Image:
+                break;
+            case AssetMetadata.AssetType.Scene:
+                // Make all floating entities in child scene normal again
+                DclScene scene = sceneManagerSystem.GetScene(assetMetadata.assetId);
+                foreach (var entity in scene.AllFloatingEntities)
+                {
+                    scene.AddEntity(entity.Value);
+                }
+                scene.ClearFloatingEntities();
+
+                addEntitySystem.AddSceneAssetEntityAsCommand(newEntity, assetMetadata, position);
                 break;
         }
     }

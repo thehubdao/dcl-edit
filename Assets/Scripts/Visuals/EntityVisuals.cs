@@ -40,8 +40,8 @@ namespace Assets.Scripts.Visuals
                 return;
 
             InitializeTransformComponent(entity);
-            InitializeGltfShapeVisualsComponent(entity);
-            InitializePrimitiveShapeComponent(entity);
+            InitializeGltfShapeVisualsComponent(scene, entity);
+            InitializePrimitiveShapeComponent(scene, entity);
             InitializeMainSceneVisualsComponent(entity, overrideSelectionId ?? entity.Id);
             InitializePrimarySelectionOutlineForOverrideEntity(overrideSelectionId);
         }
@@ -59,7 +59,7 @@ namespace Assets.Scripts.Visuals
             transform.localScale = transformComponent.scale.Value;
         }
 
-        void InitializeGltfShapeVisualsComponent(DclEntity entity)
+        void InitializeGltfShapeVisualsComponent(DclScene scene, DclEntity entity)
         {
             var gltfShapeComponent = entity.GetComponentByName("GLTFShape");
             var gltfShapeVisualization = GetComponent<GltfShapeVisuals>(); // returns null if component isn't found
@@ -71,7 +71,7 @@ namespace Assets.Scripts.Visuals
                     gltfShapeVisualization = gltfShapeVisualsFactory.Create();
                 }
 
-                gltfShapeVisualization.UpdateVisuals(entity);
+                gltfShapeVisualization.UpdateVisuals(scene, entity);
             }
             else if (gltfShapeVisualization != null)
             {
@@ -79,7 +79,7 @@ namespace Assets.Scripts.Visuals
             }
         }
 
-        void InitializePrimitiveShapeComponent(DclEntity entity)
+        void InitializePrimitiveShapeComponent(DclScene scene, DclEntity entity)
         {
             var primitiveShapeComponent =
                 entity.GetFirstComponentByName("BoxShape", "SphereShape", "CylinderShape", "PlaneShape", "ConeShape");
@@ -89,7 +89,7 @@ namespace Assets.Scripts.Visuals
                 if (primitiveShapeVisualization == null)
                     primitiveShapeVisualization = primitiveShapeVisualsFactory.Create();
 
-                primitiveShapeVisualization.UpdateVisuals(entity);
+                primitiveShapeVisualization.UpdateVisuals(scene, entity);
             }
             else if (primitiveShapeVisualization != null)
             {
@@ -109,14 +109,14 @@ namespace Assets.Scripts.Visuals
                     Guid sceneId;
                     try
                     {
-                        // Return instantly because the empty string is the default id value. No error should be
+                        // Return instantly because the empty GUID is the default id value. No error should be
                         // thrown when a new component is added
-                        if (dclSceneComponent.sceneId.FixedValue == "")
+                        if (dclSceneComponent.sceneId.FixedValue == Guid.Empty)
                         {
                             return;
                         }
 
-                        sceneId = Guid.Parse(dclSceneComponent.sceneId.FixedValue);
+                        sceneId = dclSceneComponent.sceneId.FixedValue;
 
                         // Check for cyclic child scenes
                         MainSceneVisuals[] parentMainSceneVisuals = GetComponentsInParent<MainSceneVisuals>();
