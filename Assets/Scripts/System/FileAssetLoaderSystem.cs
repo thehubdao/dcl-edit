@@ -21,7 +21,8 @@ namespace Assets.Scripts.System
         private LoadGltfFromFileSystem loadGltfFromFileSystem;
         private AssetThumbnailGeneratorSystem assetThumbnailGeneratorSystem;
 
-        private string relativePathInProject = "/assets"; // TODO: Change this, this is just for testing
+        private string relativePathInProject = "assets";
+        private bool readOnly = false;
 
         public Dictionary<Guid, AssetMetadataFile> assetMetadataCache => loaderState.assetMetadataCache;
         public Dictionary<Guid, AssetData> assetDataCache => loaderState.assetDataCache;
@@ -43,11 +44,22 @@ namespace Assets.Scripts.System
             CheckAssetDirectoryExists();
         }
 
+        /// <summary>
+        /// Note: The relative path should never start with a slash (/). Otherwise combining paths with Path.Combine()
+        /// won't work since it's parameter "path2" shouldn't be absolute.
+        /// </summary>
+        /// <param name="relativePathInProject"></param>
+        /// <param name="readOnly"></param>
+        public FileAssetLoaderSystem(string relativePathInProject, bool readOnly)
+        {
+            this.relativePathInProject = relativePathInProject;
+            this.readOnly = readOnly;
+        }
+
         //TODO Change when asset loading is changed
         private void CheckAssetDirectoryExists()
         {
-            string directoryPath = pathState.ProjectPath + relativePathInProject;
-            
+            string directoryPath = Path.Combine(pathState.ProjectPath, relativePathInProject);
             if (!Directory.Exists(directoryPath))
             {
                 Directory.CreateDirectory(directoryPath);
@@ -68,7 +80,7 @@ namespace Assets.Scripts.System
             ClearAllData();
             try
             {
-                string directoryPath = pathState.ProjectPath + relativePathInProject;
+                string directoryPath = Path.Combine(pathState.ProjectPath, relativePathInProject);
 
                 loaderState.assetHierarchy = ScanDirectory(directoryPath);
 
@@ -111,6 +123,8 @@ namespace Assets.Scripts.System
             {
                 return new AssetThumbnail(id, AssetData.State.IsAvailable, metadata.thumbnail); // Thumbnail is available
             }
+
+            if (readOnly) return new AssetThumbnail(id, AssetData.State.IsError, null);
 
             assetThumbnailGeneratorSystem.Generate(id, thumbnail =>
             {
@@ -175,19 +189,8 @@ namespace Assets.Scripts.System
 
             foreach (string assetFile in files)
             {
-                // Populate caches. Assets and their corresponding metadata files get added using their Guid as key.
-                if (IsMetadataFile(assetFile)) { continue; }
-                AssetMetadataFile metadataFile = ReadExistingMetadataFile(assetFile);
-
-                if (metadataFile == null)
-                {
-                    metadataFile = GenerateMetadataFromAsset(assetFile);
-                    if (metadataFile == null) continue;
-                    WriteMetadataToFile(metadataFile);
-                }
-
-                assetMetadataCache[metadataFile.assetMetadata.assetId] = metadataFile;
-                assets.Add(metadataFile.assetMetadata);
+                AssetMetadata result = ScanFile(assetFile);
+                if (result != null) assets.Add(result);
             }
 
             foreach (string subdir in subdirs)
@@ -232,52 +235,56 @@ namespace Assets.Scripts.System
             }
         }
 
-        /// <summary>
-        /// Generates a new metadata object (with a new Guid) for the given asset.
-        /// </summary>
-        /// <param name="assetFilePath"></param>
-        /// <returns></returns>
-        private AssetMetadataFile GenerateMetadataFromAsset(string assetFilePath)
+        protected AssetMetadata ScanFile(string pathToFile)
         {
+            string fileName = Path.GetFileName(pathToFile);
+            string displayName = Path.GetFileNameWithoutExtension(pathToFile);
+            string fileNameExtension = Path.GetExtension(pathToFile);
+            AssetMetadata result = null;
             try
             {
-                var assetFilename = Path.GetFileName(assetFilePath);
-                var fileExtension = Path.GetExtension(assetFilePath);
-                Guid assetId = Guid.NewGuid();
-
-                AssetMetadata.AssetType assetType;
-                switch (fileExtension)
+                switch (fileNameExtension)
                 {
-                    case ".glb":
-                        assetType = AssetMetadata.AssetType.Model;
+                    case ".dclasset":
+                        string json = File.ReadAllText(pathToFile);
+                        AssetMetadataFile.Contents contents = JsonConvert.DeserializeObject<AssetMetadataFile.Contents>(json);
+                        assetMetadataCache[contents.metadata.assetId] = new AssetMetadataFile(contents, pathToFile);
+                        result = new AssetMetadata(contents.metadata.assetDisplayName, contents.metadata.assetId, contents.metadata.assetType);
                         break;
+                    case ".glb":
                     case ".gltf":
-                        assetType = AssetMetadata.AssetType.Model;
+                        if (readOnly) break;
+                        if (MetadataFileExists(pathToFile)) break;
+                        AssetMetadataFile modelMetadataFile = new AssetMetadataFile(Path.ChangeExtension(pathToFile, ".dclasset"), fileName, new AssetMetadata(displayName, Guid.NewGuid(), AssetMetadata.AssetType.Model));
+                        WriteMetadataToFile(modelMetadataFile);
+                        assetMetadataCache[modelMetadataFile.assetMetadata.assetId] = modelMetadataFile;
+                        result = new AssetMetadata(displayName, modelMetadataFile.assetMetadata.assetId, AssetMetadata.AssetType.Model);
                         break;
                     case ".png":
-                        assetType = AssetMetadata.AssetType.Image;
+                        if (readOnly) break;
+                        if (MetadataFileExists(pathToFile)) break;
+                        AssetMetadataFile imageMetadataFile = new AssetMetadataFile(Path.ChangeExtension(pathToFile, ".dclasset"), fileName, new AssetMetadata(displayName, Guid.NewGuid(), AssetMetadata.AssetType.Image));
+                        WriteMetadataToFile(imageMetadataFile);
+                        assetMetadataCache[imageMetadataFile.assetMetadata.assetId] = imageMetadataFile;
+                        result = new AssetMetadata(displayName, imageMetadataFile.assetMetadata.assetId, AssetMetadata.AssetType.Image);
                         break;
-                    default:
-                        // Asset type unknown
-                        return null;
                 }
 
-                return new AssetMetadataFile(
-                    Path.ChangeExtension(assetFilePath, ".dclasset"),
-                    assetFilename,
-                    new AssetMetadata(
-                        Path.GetFileNameWithoutExtension(assetFilename),
-                        assetId,
-                        assetType)
-                // Thumbnail will be added later by the thumbnail generator
-                );
+                return result;
             }
             catch (Exception e)
             {
-                Debug.LogError($"Error while generating metadata: {e}");
+                Debug.LogException(e);
             }
             return null;
         }
+
+        /// <summary>
+        /// Checks if there is a metadata file (.dclasset) that belongs to the given asset file.
+        /// </summary>
+        /// <param name="pathToAssetFile"></param>
+        /// <returns></returns>
+        private bool MetadataFileExists(string pathToAssetFile) => File.Exists(Path.ChangeExtension(pathToAssetFile, ".dclasset"));
 
         /// <summary>
         /// Writes the given metadata to a .dclasset file.
@@ -312,37 +319,6 @@ namespace Assets.Scripts.System
                 Debug.LogError($"Error while writing metadata to file: {e}");
             }
         }
-
-        /// <summary>
-        /// Tries to find and read the given metadata file. It's also possible to specify the path to an asset file as
-        /// the corresponding metadata file path will be automatically determined.
-        /// </summary>
-        /// <param name="filePath"></param>
-        /// <returns></returns>
-        private AssetMetadataFile ReadExistingMetadataFile(string filePath)
-        {
-            try
-            {
-                // Make sure the path leads to a metadata file
-                var metadataFilePath = Path.ChangeExtension(filePath, ".dclasset");
-
-                if (!File.Exists(metadataFilePath))
-                {
-                    return null;
-                }
-
-                var json = File.ReadAllText(metadataFilePath);
-                var contents = JsonConvert.DeserializeObject<AssetMetadataFile.Contents>(json);
-                return new AssetMetadataFile(contents, metadataFilePath);
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"Error while reading existing metadata file: {e}");
-            }
-            return null;
-        }
-
-        private bool IsMetadataFile(string pathToFile) => Path.GetExtension(pathToFile) == ".dclasset";
         #endregion
 
         #region Asset Data related methods
