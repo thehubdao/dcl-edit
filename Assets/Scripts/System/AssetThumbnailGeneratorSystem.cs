@@ -5,7 +5,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using UnityEngine;
 using Zenject;
 using static AssetThumbnailGeneratorState;
@@ -73,14 +72,20 @@ public class AssetThumbnailGeneratorSystem : MonoBehaviour
             QueuedAsset qa = state.queuedAssets.Dequeue();
 
             AssetData data = assetManagerSystem.GetDataById(qa.id);
-            if (data.state == AssetData.State.IsLoading)
+            switch (data.state)
             {
-                state.waitingForAssetData.Add(qa);
-            }
-            else
-            {
-                var thumbnail = GenerateThumbnail(data);
-                qa.then(thumbnail);
+                case AssetData.State.IsAvailable:
+                    var thumbnail = GenerateThumbnail(data);
+                    qa.then(thumbnail);
+                    break;
+                case AssetData.State.IsLoading:
+                    state.waitingForAssetData.Add(qa);
+                    break;
+                case AssetData.State.IsError:
+                    qa.then(null);
+                    break;
+                default:
+                    break;
             }
 
             yield return null;

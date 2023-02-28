@@ -63,6 +63,8 @@ namespace Assets.Scripts.SceneState
         {
             _allFloatingEntities.Remove(id);
         }
+
+        public void ClearAllEntities() => _allEntities.Clear();
         public void ClearFloatingEntities() => _allFloatingEntities.Clear();
 
         public DclScene DeepCopy()

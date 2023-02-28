@@ -1,4 +1,4 @@
-using System;
+using Assets.Scripts.SceneState;
 
 public class DialogState
 {
@@ -8,6 +8,6 @@ public class DialogState
         Asset
     }
     public DialogType currentDialog = DialogType.None;
-    public Guid targetEntityId;
+    public DclComponent targetComponent;
     public bool mouseOverDialogWindow;
 }

@@ -8,24 +8,20 @@ namespace Assets.Scripts.SceneState
             new ComponentDefinition(
                 "Scene",
                 "Scene",
-                new DclComponentProperty.PropertyDefinition("sceneId", DclComponentProperty.PropertyType.String, ""));
-
+                new DclComponentProperty.PropertyDefinition("scene", DclComponentProperty.PropertyType.Asset, Guid.Empty));
 
         public DclSceneComponent(Guid sceneId) : base("Scene", "Scene")
         {
-            Properties.Add(new DclComponentProperty<string>("sceneId", sceneId.ToString() ?? ""));
+            Properties.Add(new DclComponentProperty<Guid>("scene", sceneId));
         }
 
         public DclSceneComponent(DclComponent dclComponent) : base(dclComponent.NameInCode, dclComponent.NameOfSlot)
         {
             this.Properties = dclComponent.Properties;
-            if (!Validate())
-            {
-                throw new ArgumentException(nameof(dclComponent));
-            }
+            if (!Validate()) throw new ArgumentException(nameof(dclComponent));
         }
 
-        public DclComponentProperty<string> sceneId => GetPropertyByName("sceneId")?.GetConcrete<string>();
+        public DclComponentProperty<Guid> sceneId => GetPropertyByName("scene")?.GetConcrete<Guid>();
 
         public bool Validate()
         {
