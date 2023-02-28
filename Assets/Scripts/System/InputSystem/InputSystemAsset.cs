@@ -349,6 +349,14 @@ public class @InputSystemAsset : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": ""Press(behavior=1)""
+                },
+                {
+                    ""name"": ""Cancel"",
+                    ""type"": ""Button"",
+                    ""id"": ""63e5cb43-05ec-4a36-a575-5bc290cc4dc3"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": ""Press(behavior=1)""
                 }
             ],
             ""bindings"": [
@@ -527,6 +535,17 @@ public class @InputSystemAsset : IInputActionCollection, IDisposable
                     ""action"": ""Delete"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""507890a0-c6fc-496c-b7e0-6ce7346f8064"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Cancel"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -615,6 +634,7 @@ public class @InputSystemAsset : IInputActionCollection, IDisposable
         m_Hotkeys_Scale = m_Hotkeys.FindAction("Scale", throwIfNotFound: true);
         m_Hotkeys_Duplicate = m_Hotkeys.FindAction("Duplicate", throwIfNotFound: true);
         m_Hotkeys_Delete = m_Hotkeys.FindAction("Delete", throwIfNotFound: true);
+        m_Hotkeys_Cancel = m_Hotkeys.FindAction("Cancel", throwIfNotFound: true);
         // Modifier
         m_Modifier = asset.FindActionMap("Modifier", throwIfNotFound: true);
         m_Modifier_Shift = m_Modifier.FindAction("Shift", throwIfNotFound: true);
@@ -742,6 +762,7 @@ public class @InputSystemAsset : IInputActionCollection, IDisposable
     private readonly InputAction m_Hotkeys_Scale;
     private readonly InputAction m_Hotkeys_Duplicate;
     private readonly InputAction m_Hotkeys_Delete;
+    private readonly InputAction m_Hotkeys_Cancel;
     public struct HotkeysActions
     {
         private @InputSystemAsset m_Wrapper;
@@ -754,6 +775,7 @@ public class @InputSystemAsset : IInputActionCollection, IDisposable
         public InputAction @Scale => m_Wrapper.m_Hotkeys_Scale;
         public InputAction @Duplicate => m_Wrapper.m_Hotkeys_Duplicate;
         public InputAction @Delete => m_Wrapper.m_Hotkeys_Delete;
+        public InputAction @Cancel => m_Wrapper.m_Hotkeys_Cancel;
         public InputActionMap Get() { return m_Wrapper.m_Hotkeys; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -787,6 +809,9 @@ public class @InputSystemAsset : IInputActionCollection, IDisposable
                 @Delete.started -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnDelete;
                 @Delete.performed -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnDelete;
                 @Delete.canceled -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnDelete;
+                @Cancel.started -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnCancel;
+                @Cancel.performed -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnCancel;
+                @Cancel.canceled -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnCancel;
             }
             m_Wrapper.m_HotkeysActionsCallbackInterface = instance;
             if (instance != null)
@@ -815,6 +840,9 @@ public class @InputSystemAsset : IInputActionCollection, IDisposable
                 @Delete.started += instance.OnDelete;
                 @Delete.performed += instance.OnDelete;
                 @Delete.canceled += instance.OnDelete;
+                @Cancel.started += instance.OnCancel;
+                @Cancel.performed += instance.OnCancel;
+                @Cancel.canceled += instance.OnCancel;
             }
         }
     }
@@ -886,6 +914,7 @@ public class @InputSystemAsset : IInputActionCollection, IDisposable
         void OnScale(InputAction.CallbackContext context);
         void OnDuplicate(InputAction.CallbackContext context);
         void OnDelete(InputAction.CallbackContext context);
+        void OnCancel(InputAction.CallbackContext context);
     }
     public interface IModifierActions
     {
