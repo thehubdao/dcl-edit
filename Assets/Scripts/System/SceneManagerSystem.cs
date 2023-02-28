@@ -166,6 +166,7 @@ namespace Assets.Scripts.System
             sceneViewSystem.SetUpCurrentScene();
             var newSceneIndex = sceneManagerState.currentSceneIndex;
             settingsSystem.openLastOpenedScene.Set(newSceneIndex.ToString());
+            sceneViewSystem.UpdateSceneTabTitle();
         }
 
         /// <summary>
@@ -201,6 +202,7 @@ namespace Assets.Scripts.System
             if (sceneDirectoryState.directoryPath == null)
             {
                 SaveSceneAs(sceneDirectoryState);
+                sceneViewSystem.UpdateSceneTabTitle();
             }
             else
             {
@@ -290,6 +292,7 @@ namespace Assets.Scripts.System
 
             SceneDirectoryState sceneDirectoryStateCopy = sceneDirectoryState.DeepCopy(newId);
             sceneDirectoryStateCopy.directoryPath = newPath;
+            sceneDirectoryStateCopy.name = Path.GetFileNameWithoutExtension(new DirectoryInfo(sceneDirectoryStateCopy.directoryPath).Name);
 
             SaveScene(sceneDirectoryStateCopy);
             sceneDirectoryStateCopy = LoadSceneDirectoryState(newPath); // keep loaded scenes updated

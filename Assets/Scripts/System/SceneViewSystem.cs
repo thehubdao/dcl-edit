@@ -25,5 +25,10 @@ namespace Assets.Scripts.System
 
             editorEvents.InvokeHierarchyChangedEvent();
         }
+
+        public void UpdateSceneTabTitle()
+        {
+            editorEvents.InvokeCurrentSceneChangedEvent();
+        }
     }
 }
