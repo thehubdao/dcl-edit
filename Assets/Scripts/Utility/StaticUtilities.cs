@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using UnityEditor;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace Assets.Scripts.Utility
 {
@@ -72,6 +74,34 @@ namespace Assets.Scripts.Utility
         public static void UnlockAssemblies()
         {
             EditorApplication.UnlockReloadAssemblies();
+        }
+
+        [MenuItem("Edit/Change Dev Project Path")]
+        public static void ChangeDevProjectPath()
+        {
+            var devProjectPathFilePath = Application.dataPath + "/dev_project_path.txt";
+            string oldPath = null;
+
+            if (File.Exists(devProjectPathFilePath))
+            {
+                oldPath = File.ReadAllText(devProjectPathFilePath);
+            }
+
+            var newPath = EditorUtility.OpenFolderPanel("Select Dev Project Path", oldPath ?? Application.dataPath, "Project Folder");
+
+            if (newPath == "")
+            {
+                Debug.Log("Path selection aborted by user");
+                return;
+            }
+
+            if (!File.Exists(newPath + "/scene.json"))
+            {
+                // display a warning, but still allow it, so the developer is able to test invalid project paths
+                Debug.LogWarning($"The path \"{newPath}\" does not seem to be a dcl project");
+            }
+
+            File.WriteAllText(devProjectPathFilePath, newPath);
         }
 #endif // UNITY_EDITOR
 
