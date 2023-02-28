@@ -295,7 +295,7 @@
                     "id": "8426de5b-6dfe-4cf4-a9f4-bb9d6e4bf68a",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": "Press(behavior=1)"
+                    "interactions": ""
                 },
                 {
                     "name": "Translate",
@@ -303,7 +303,7 @@
                     "id": "ae1e3c65-3c80-4b5d-ae3a-fce036399c9c",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": "Press(behavior=1)"
+                    "interactions": ""
                 },
                 {
                     "name": "Rotate",
@@ -311,7 +311,7 @@
                     "id": "2513e2b5-bea4-466b-8c6c-7d406d9a27c2",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": "Press(behavior=1)"
+                    "interactions": ""
                 },
                 {
                     "name": "Scale",
@@ -319,7 +319,7 @@
                     "id": "2dea60ed-d46e-4c2c-96fb-7b684bf4c9a8",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": "Press(behavior=1)"
+                    "interactions": ""
                 },
                 {
                     "name": "Duplicate",
@@ -327,7 +327,7 @@
                     "id": "a89fc159-e2c8-43e8-835b-b3abe72d9a23",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": "Press(behavior=1)"
+                    "interactions": ""
                 },
                 {
                     "name": "Delete",
@@ -335,7 +335,7 @@
                     "id": "57999a8f-1f67-41a8-95ca-23f8ae77af75",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": "Press(behavior=1)"
+                    "interactions": ""
                 },
                 {
                     "name": "Cancel",
@@ -343,7 +343,7 @@
                     "id": "63e5cb43-05ec-4a36-a575-5bc290cc4dc3",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": "Press(behavior=1)"
+                    "interactions": ""
                 }
             ],
             "bindings": [
