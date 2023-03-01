@@ -333,7 +333,7 @@ namespace Assets.Scripts.System
 
         #region While holding
 
-        public void WhileHolding(Ray mouseRay)
+        public void WhileHolding(Ray mouseRay, bool invertToolSnapping)
         {
             // calculate mouse on context plane
             var mousePos = RayOnPlane(mouseRay, gizmoState.mouseContextPlane);
@@ -344,7 +344,7 @@ namespace Assets.Scripts.System
                     DistanceOnAxis(mousePos, true) - DistanceOnAxis(gizmoState.mouseStartingPosition, true),
                     DistanceOnAxis(mousePos, false) - DistanceOnAxis(gizmoState.mouseStartingPosition, false));
 
-            if (isToolSnapping)
+            if (isToolSnapping == invertToolSnapping)
             {
                 var snappingDistance = gizmoToolMode switch
                 {
