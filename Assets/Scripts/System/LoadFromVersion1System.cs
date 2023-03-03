@@ -252,7 +252,7 @@ namespace Assets.Scripts.System
             var specificTransformJson = JsonUtility.FromJson<SpecificGLTFShapeJson>(componentJson.specifics);
 
             var assetJson = assetsJson.gltfAssets.Find(a => a.id == specificTransformJson.assetID);
-            var (didParse, realId) = GetAssetIdFromFolderName(assetJson.gltfPath);
+            var (didParse, realId) = GetAssetIdFromAssetPath(assetJson.gltfPath);
 
             var newGltfShapeComponent = new DclComponent("GLTFShape", "Shape");
             newGltfShapeComponent.Properties.Add(new DclComponent.DclComponentProperty<Guid>("asset", didParse ? realId : Guid.Parse(specificTransformJson.assetID)));
@@ -263,7 +263,7 @@ namespace Assets.Scripts.System
             return newGltfShapeComponent;
         }
 
-        private (bool didParse, Guid assetId) GetAssetIdFromFolderName(string assetJsonGltfPath)
+        private (bool didParse, Guid assetId) GetAssetIdFromAssetPath(string assetJsonGltfPath)
         {
             var folderStructureArray = assetJsonGltfPath.Split('/');
             foreach (var folder in folderStructureArray)
