@@ -112,7 +112,14 @@ namespace Assets.Scripts.System
 
             if (Guid.TryParse(settingsSystem.openLastOpenedScene.Get(), out lastSceneIndex))
             {
-                SetCurrentScene(lastSceneIndex);
+                if (sceneManagerState.CheckSceneExistsOnFolder(lastSceneIndex))
+                {
+                    SetCurrentScene(lastSceneIndex);
+                }
+                else
+                {
+                    SetFirstSceneAsCurrentScene();
+                }
             }
             else if (lastSceneIndex == Guid.Empty)
             {

@@ -86,5 +86,10 @@ namespace Assets.Scripts.EditorState
 
             return sceneDirectoryStates[currentSceneIndex];
         }
+
+        public bool CheckSceneExistsOnFolder(Guid sceneId)
+        {
+            return Exists(sceneId);
+        }
     }
 }
