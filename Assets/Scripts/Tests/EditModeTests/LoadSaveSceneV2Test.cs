@@ -76,8 +76,7 @@ namespace Assets.Scripts.Tests.EditModeTests
             SceneManagerSystem sceneManagerSystem = new SceneManagerSystem();
             EditorEvents editorEvents = new EditorEvents();
             MenuBarState menuBarState = new MenuBarState();
-            ProjectSettingState projectSettingState = new ProjectSettingState();
-            SettingsSystem settingsSystem = new SettingsSystem(projectSettingState, sceneSettingState, editorEvents);
+            SettingsSystem settingsSystem = new SettingsSystem(editorEvents);
 
 
             menuBarSystem.Construct(editorEvents, menuBarState);

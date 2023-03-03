@@ -1,4 +1,5 @@
-using System.Collections.Generic;
+using System;
+using System.Linq;
 using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
 using UnityEngine;
@@ -8,289 +9,315 @@ namespace Assets.Scripts.System
 {
     public class SettingsSystem
     {
-        //Dependencies
-        EditorEvents _editorEvents;
-
-        public enum SettingType
+        public class Setting<T>
         {
-            String,
-            Float,
-            Integer,
-            Vector3
-        }
-
-        public enum SettingStage
-        {
-            User,
-            Project,
-            Scene
-        }
-
-        public interface ISetting
-        {
-            string name { get; }
-
-            string valueString { get; }
-
-            SettingType type { get; }
-
-            SettingStage stage { get; }
-        }
-
-        public abstract class UserSetting<T> : ISetting
-        {
-            // Dependencies
-            private SettingsSystem _settingsSystem;
-
-            protected UserSetting(SettingsSystem settingsSystem, string name, T defaultValue)
+            internal Setting(EditorEvents editorEvents, string key, SettingSaver saver, params SettingFilter<T>[] filters)
             {
-                _settingsSystem = settingsSystem;
-
-                this.name = name;
-                this.defaultValue = defaultValue;
-
-                stage = SettingStage.User;
+                this.key = key;
+                this.saver = saver;
+                this.editorEvents = editorEvents;
+                this.filters = filters;
             }
 
-            public string name { get; }
-            public string valueString => Get().ToString();
-            public T defaultValue { get; }
-            public SettingType type { get; protected set; }
-            public SettingStage stage { get; }
-            public abstract T Get();
-            public virtual void Set(T value)
-            {
-                _settingsSystem._editorEvents.InvokeSettingsChangedEvent();
-            }
-        }
+            public string key;
 
-        public class StringUserSetting : UserSetting<string>
-        {
-            public StringUserSetting(SettingsSystem settingsSystem, string name, string defaultValue) : base(settingsSystem, name, defaultValue)
-            {
-                type = SettingType.String;
-            }
+            private SettingSaver saver;
 
-            public override string Get()
-            {
-                return PlayerPrefs.HasKey(name) ?
-                    PlayerPrefs.GetString(name) :
-                    defaultValue;
-            }
+            private EditorEvents editorEvents;
 
-            public override void Set(string value)
-            {
-                PlayerPrefs.SetString(name, value);
-                base.Set(value);
-            }
-        }
-
-        public class IntUserSetting : UserSetting<int>
-        {
-            public IntUserSetting(SettingsSystem settingsSystem, string name, int defaultValue) : base(settingsSystem, name, defaultValue)
-            {
-                type = SettingType.Integer;
-            }
-
-            public override int Get()
-            {
-                return PlayerPrefs.HasKey(name) ?
-                    PlayerPrefs.GetInt(name) :
-                    defaultValue;
-            }
-
-            public override void Set(int value)
-            {
-                PlayerPrefs.SetInt(name, value);
-                base.Set(value);
-            }
-        }
-
-        public class IntClampedUserSetting : IntUserSetting
-        {
-            private int minValue;
-            private int maxValue;
-
-            public IntClampedUserSetting(SettingsSystem settingsSystem, string name, int defaultValue, int minValue, int maxValue) : base(settingsSystem, name, defaultValue)
-            {
-                this.minValue = minValue;
-                this.maxValue = maxValue;
-            }
-
-            public override void Set(int value)
-            {
-                base.Set(Mathf.Clamp(value, minValue, maxValue));
-            }
-        }
-
-        public class FloatUserSetting : UserSetting<float>
-        {
-            public FloatUserSetting(SettingsSystem settingsSystem, string name, float defaultValue) : base(settingsSystem, name, defaultValue)
-            {
-                type = SettingType.Float;
-            }
-
-            public override float Get()
-            {
-                return PlayerPrefs.HasKey(name) ?
-                    PlayerPrefs.GetFloat(name) :
-                    defaultValue;
-            }
-
-            public override void Set(float value)
-            {
-                PlayerPrefs.SetFloat(name, value);
-                base.Set(value);
-            }
-        }
-
-        public class FloatClampedUserSetting : FloatUserSetting
-        {
-            private float minValue;
-            private float maxValue;
-
-            public FloatClampedUserSetting(SettingsSystem settingsSystem, string name, float defaultValue, float minValue, float maxValue) : base(settingsSystem, name, defaultValue)
-            {
-                this.minValue = minValue;
-                this.maxValue = maxValue;
-            }
-
-            public override void Set(float value)
-            {
-                base.Set(Mathf.Clamp(value, minValue, maxValue));
-            }
-        }
-
-        public abstract class JsonSetting<T, TSettingState> : ISetting where TSettingState : JsonSettingState
-        {
-            // Dependencies
-            private SettingsSystem _settingsSystem;
-
-            protected JsonSetting(SettingsSystem settingsSystem, string name, T defaultValue, TSettingState tSettingState)
-            {
-                _settingsSystem = settingsSystem;
-
-                this.name = name;
-                this.defaultValue = defaultValue;
-
-                if (typeof(TSettingState) == typeof(ProjectSettingState))
-                {
-                    stage = SettingStage.Project;
-                }
-
-                if (typeof(TSettingState) == typeof(SceneSettingState))
-                {
-                    stage = SettingStage.Scene;
-                }
-
-                SettingState = tSettingState;
-            }
-
-            protected TSettingState SettingState;
-
-            public string name { get; }
-            public string valueString => Get().ToString();
-            public T defaultValue { get; }
-            public SettingType type { get; protected set; }
-            public SettingStage stage { get; }
+            private SettingFilter<T>[] filters;
 
             public T Get()
             {
-                var settingValue = SettingState.GetSetting<T>(name);
+                var value = saver.ReadValue<T>(key);
 
-                return settingValue.TryGetValue(out var value) ?
-                    value :
-                    defaultValue;
+                foreach (var filter in filters)
+                {
+                    value = filter.FilterRead(value);
+                }
+
+                return value;
             }
 
             public void Set(T value)
             {
-                SettingState.SetSetting(name, value);
-                _settingsSystem._editorEvents.InvokeSettingsChangedEvent();
+                foreach (var filter in filters)
+                {
+                    value = filter.FilterWrite(value);
+                }
+
+                if (value == null)
+                {
+                    // Rejecting save
+                    return;
+                }
+
+                saver.WriteValue<T>(key, value);
+                editorEvents.InvokeSettingsChangedEvent();
             }
         }
 
-        public class Vec3ProjectSetting : JsonSetting<Vector3, ProjectSettingState>
+        public abstract class SettingSaver
         {
-            public Vec3ProjectSetting(SettingsSystem settingsSystem, string name, Vector3 defaultValue, ProjectSettingState projectSettingsState) : base(settingsSystem, name, defaultValue, projectSettingsState)
-            {
-                type = SettingType.Vector3;
-            }
+            public abstract dynamic ReadValue<T>(string key);
+
+            public abstract void WriteValue<T>(string key, dynamic value);
         }
 
-
-        public class StringProjectSetting : JsonSetting<string, ProjectSettingState>
+        public class UserSettingsSaver : SettingSaver
         {
-            public StringProjectSetting(SettingsSystem settingsSystem, string name, string defaultValue, ProjectSettingState projectSettingsState) : base(settingsSystem, name, defaultValue, projectSettingsState)
+            public override dynamic ReadValue<T>(string key)
             {
-                type = SettingType.String;
+                if (!PlayerPrefs.HasKey(key))
+                {
+                    return null;
+                }
+
+                if (typeof(T) == typeof(string))
+                {
+                    return PlayerPrefs.GetString(key);
+                }
+
+                if (typeof(T) == typeof(float))
+                {
+                    return PlayerPrefs.GetFloat(key);
+                }
+
+                if (typeof(T) == typeof(int))
+                {
+                    return PlayerPrefs.GetInt(key);
+                }
+
+                // throw
+                throw new Exception($"The type {typeof(T)} can not be handled by the UserSettingsSaver");
+            }
+
+            public override void WriteValue<T>(string key, dynamic value)
+            {
+                if (typeof(T) == typeof(string))
+                {
+                    PlayerPrefs.SetString(key, value);
+                    return;
+                }
+
+                if (typeof(T) == typeof(float))
+                {
+                    PlayerPrefs.SetFloat(key, value);
+                    return;
+                }
+
+                if (typeof(T) == typeof(int))
+                {
+                    PlayerPrefs.SetInt(key, value);
+                    return;
+                }
+
+                // throw
+                throw new Exception($"The type {typeof(T)} can not be handled by the UserSettingsSaver");
             }
         }
 
-        public class Vec3SceneSetting : JsonSetting<Vector3, SceneSettingState>
+        public abstract class SettingFilter<T>
         {
-            public Vec3SceneSetting(SettingsSystem settingsSystem, string name, Vector3 defaultValue, SceneSettingState projectSettingsState) : base(settingsSystem, name, defaultValue, projectSettingsState)
+            public virtual dynamic FilterRead(dynamic value)
             {
-                type = SettingType.Vector3;
+                return value;
+            }
+
+            public virtual dynamic FilterWrite(dynamic value)
+            {
+                return value;
             }
         }
 
+        public class DefaultFilter<T> : SettingFilter<T>
+        {
+            private readonly T defaultValue;
+
+            public DefaultFilter(T defaultValue)
+            {
+                this.defaultValue = defaultValue;
+            }
+
+            public override dynamic FilterRead(dynamic value)
+            {
+                return value ?? defaultValue;
+            }
+        }
+
+        public class ClampMaxFilter<T> : SettingFilter<T>
+        {
+            private readonly T maxValue;
+
+            public ClampMaxFilter(T maxValue)
+            {
+                this.maxValue = maxValue;
+            }
+
+            public override dynamic FilterWrite(dynamic value)
+            {
+                if (value == null)
+                    return null;
+
+                return value > maxValue ?
+                    maxValue :
+                    value;
+            }
+        }
+
+        public class ClampMinFilter<T> : SettingFilter<T>
+        {
+            private readonly T minValue;
+
+            public ClampMinFilter(T minValue)
+            {
+                this.minValue = minValue;
+            }
+
+            public override dynamic FilterWrite(dynamic value)
+            {
+                if (value == null)
+                    return null;
+
+                return value < minValue ?
+                    minValue :
+                    value;
+            }
+        }
+
+        public class OptionsFilter<T> : SettingFilter<T>
+        {
+            private readonly T[] availableOptions;
+
+            public OptionsFilter(params T[] availableOptions)
+            {
+                this.availableOptions = availableOptions;
+            }
+
+            public override dynamic FilterWrite(dynamic value)
+            {
+                if (value == null)
+                    return null;
+
+                foreach (var option in availableOptions)
+                {
+                    if (value == option)
+                    {
+                        // return the value when it is one of the options
+                        return value;
+                    }
+                }
+
+                // return null (fail the write) when value is *not* one of the options
+                return null;
+            }
+        }
 
         [Inject]
-        public SettingsSystem(ProjectSettingState projectSettingsState, SceneSettingState sceneSettingState, EditorEvents editorEvents)
+        public SettingsSystem(EditorEvents editorEvents)
         {
-            _editorEvents = editorEvents;
+            // setup saver
+            var userSettingSaverInstance = new UserSettingsSaver();
+
+            uiScalingFactor = new Setting<float>(
+                editorEvents,
+                "UI Scaling",
+                userSettingSaverInstance,
+                new DefaultFilter<float>(1.0f),
+                new ClampMinFilter<float>(0.5f),
+                new ClampMaxFilter<float>(3.0f));
+
+            mouseSensitivity = new Setting<float>(
+                editorEvents,
+                "Mouse Sensitivity",
+                userSettingSaverInstance,
+                new DefaultFilter<float>(1.0f),
+                new ClampMinFilter<float>(0.1f),
+                new ClampMaxFilter<float>(10.0f));
+
+            gizmoSize = new Setting<float>(
+                editorEvents,
+                "Gizmo Size",
+                userSettingSaverInstance,
+                new DefaultFilter<float>(1.0f),
+                new ClampMinFilter<float>(0.1f),
+                new ClampMaxFilter<float>(10.0f));
+
+            applicationTargetFramerate = new Setting<int>(
+                editorEvents,
+                "Maximum frame rate",
+                userSettingSaverInstance,
+                new DefaultFilter<int>(120),
+                new ClampMinFilter<int>(5),
+                new ClampMaxFilter<int>(1000));
 
 
-            uiScalingFactor = new FloatClampedUserSetting(this, "UI Scaling", 1.0f, 0.5f, 3.0f);
-            mouseSensitivity = new FloatClampedUserSetting(this, "Mouse Sensitivity", 1.0f, 0.1f, 10.0f);
-            gizmoSize = new FloatClampedUserSetting(this, "Gizmo Size", 1.0f, 0.1f, 10.0f);
-            applicationTargetFramerate = new IntClampedUserSetting(this, "Maximum frame rate", 120, 5, 1000);
-
-            ShownSettings.Add(
-                "User Settings",
-                new List<ISetting>
-                {
-                    uiScalingFactor,
-                    mouseSensitivity,
-                    gizmoSize,
-                    applicationTargetFramerate
-                });
-                
-
-            // Hidden Settings
             // Saves Panel Size
-            panelSize = new StringUserSetting(this, "Panel Size","");
-            
+            panelSize = new Setting<string>(
+                editorEvents,
+                "Panel Size",
+                userSettingSaverInstance);
+
+
             // last opened scene
-            openLastOpenedScene = new StringUserSetting(this, "Open last opened scene on start up", "");
+            openLastOpenedScene = new Setting<string>(
+                editorEvents,
+                "Open last opened scene on start up",
+                userSettingSaverInstance);
+
 
             // Gizmo Settings
-            selectedGizmoTool = new IntUserSetting(this, "Selected Gizmo Tool", 0);
-            gizmoLocalGlobalContext = new IntUserSetting(this, "Gizmo Local Global Context", 0);
-            gizmoToolDoesSnap = new IntUserSetting(this, "Gizmo Tool Does Snap", 0);
+            selectedGizmoTool = new Setting<int>(
+                editorEvents,
+                "Selected Gizmo Tool",
+                userSettingSaverInstance,
+                new DefaultFilter<int>(0),
+                new OptionsFilter<int>(0, 1, 2));
 
-            gizmoToolTranslateSnapping = new FloatUserSetting(this, "Gizmo Tool Translate Snapping", 0.25f);
-            gizmoToolRotateSnapping = new FloatUserSetting(this, "Gizmo Tool Rotate Snapping", 15f); // degrees
-            gizmoToolScaleSnapping = new FloatUserSetting(this, "Gizmo Tool Scale Snapping", 0.25f);
+            gizmoLocalGlobalContext = new Setting<int>(
+                editorEvents,
+                "Gizmo Local Global Context",
+                userSettingSaverInstance,
+                new DefaultFilter<int>(0),
+                new OptionsFilter<int>(0, 1));
 
-            ShownSettings.Add(
-                "Gizmo Tool Snapping",
-                new List<ISetting>
-                {
-                    gizmoToolTranslateSnapping,
-                    gizmoToolRotateSnapping,
-                    gizmoToolScaleSnapping
-                });
+            gizmoToolDoesSnap = new Setting<int>(
+                editorEvents,
+                "Gizmo Tool Does Snap",
+                userSettingSaverInstance,
+                new DefaultFilter<int>(0),
+                new OptionsFilter<int>(0, 1));
+
+
+            // snapping settings
+            gizmoToolTranslateSnapping = new Setting<float>(
+                editorEvents,
+                "Gizmo Tool Translate Snapping",
+                userSettingSaverInstance,
+                new DefaultFilter<float>(0.25f),
+                new ClampMinFilter<float>(0f));
+
+            gizmoToolRotateSnapping = new Setting<float>(
+                editorEvents,
+                "Gizmo Tool Rotate Snapping",
+                userSettingSaverInstance,
+                new DefaultFilter<float>(15f), // degrees
+                new ClampMinFilter<float>(0f));
+
+            gizmoToolScaleSnapping = new Setting<float>(
+                editorEvents,
+                "Gizmo Tool Scale Snapping",
+                userSettingSaverInstance,
+                new DefaultFilter<float>(0.25f),
+                new ClampMinFilter<float>(0f));
         }
 
-        public Dictionary<string, List<ISetting>> ShownSettings = new Dictionary<string, List<ISetting>>();
 
-        public FloatClampedUserSetting uiScalingFactor;
-        public FloatClampedUserSetting mouseSensitivity;
-        public FloatClampedUserSetting gizmoSize;
-        public IntClampedUserSetting applicationTargetFramerate;
-        public StringUserSetting openLastOpenedScene;
+        public Setting<float> uiScalingFactor;
+        public Setting<float> mouseSensitivity;
+        public Setting<float> gizmoSize;
+        public Setting<int> applicationTargetFramerate;
+        public Setting<string> openLastOpenedScene;
 
 
         /// <summary>
@@ -298,25 +325,26 @@ namespace Assets.Scripts.System
         /// 1 = Rotate
         /// 2 = Scale
         /// </summary>
-        public IntUserSetting selectedGizmoTool;
+        public Setting<int> selectedGizmoTool;
+
 
         /// <summary>
         /// 0 = Local Context
         /// 1 = Global Context
         /// </summary>
-        public IntUserSetting gizmoLocalGlobalContext;
+        public Setting<int> gizmoLocalGlobalContext;
 
         /// <summary>
         /// 0 = Does not snap
         /// 1 = Does snap
         /// </summary>
-        public IntUserSetting gizmoToolDoesSnap;
+        public Setting<int> gizmoToolDoesSnap;
 
 
-        public FloatUserSetting gizmoToolTranslateSnapping;
-        public FloatUserSetting gizmoToolRotateSnapping;
-        public FloatUserSetting gizmoToolScaleSnapping;
+        public Setting<float> gizmoToolTranslateSnapping;
+        public Setting<float> gizmoToolRotateSnapping;
+        public Setting<float> gizmoToolScaleSnapping;
 
-        public StringUserSetting panelSize;
+        public Setting<string> panelSize;
     }
 }
