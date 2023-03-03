@@ -243,6 +243,14 @@ namespace Assets.Scripts.System
                     return availableOptions.Any(option => value == option);
                 }
             }
+
+            public class NotNull<T> : SettingOption<T>, IValidator
+            {
+                public bool Validate(dynamic value)
+                {
+                    return value != null;
+                }
+            }
         }
 
 
@@ -289,7 +297,8 @@ namespace Assets.Scripts.System
             panelSize = new Setting<string>(
                 editorEvents,
                 "Panel Size",
-                userSettingSaverInstance);
+                userSettingSaverInstance,
+                new SettingOptions.NotNull<string>());
 
 
             // last opened scene
