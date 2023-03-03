@@ -54,6 +54,9 @@ namespace Assets.Scripts.System
 
             foreach (AssetMetadata asset in hierarchyItem.assets)
             {
+                // Temporary fix: Image assets are currently disabled because they cannot be used yet.
+                if (asset.assetType == AssetMetadata.AssetType.Image) continue;
+
                 if (assetBrowserState.shownAssetTypes.Contains(asset.assetType) || assetBrowserState.shownAssetTypes.Count == 0)
                 {
                     filteredItem.assets.Add(asset);
