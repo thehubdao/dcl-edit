@@ -344,7 +344,7 @@ namespace Assets.Scripts.System
                     DistanceOnAxis(mousePos, true) - DistanceOnAxis(gizmoState.mouseStartingPosition, true),
                     DistanceOnAxis(mousePos, false) - DistanceOnAxis(gizmoState.mouseStartingPosition, false));
 
-            if (isToolSnapping == invertToolSnapping)
+            if (isToolSnapping != invertToolSnapping)
             {
                 var snappingDistance = gizmoToolMode switch
                 {
