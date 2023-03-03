@@ -453,7 +453,15 @@ namespace Assets.Scripts.Interaction
 
         private void UpdateHoldingGizmoTool()
         {
-            //// When releasing LMB, stop holding gizmo
+            // Cancel the current gizmo operation
+            if (inputSystemAsset.Hotkeys.Cancel.triggered) 
+            {
+                inputState.InState = InputState.InStateType.NoInput;
+                gizmoToolSystem.CancelHolding();
+                return;
+            }
+
+            // When releasing LMB, stop holding gizmo
             if (!inputHelper.IsLeftMouseButtonPressed())
             {
                 inputState.InState = InputState.InStateType.NoInput;
