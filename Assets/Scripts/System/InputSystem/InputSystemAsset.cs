@@ -357,6 +357,14 @@ public class @InputSystemAsset : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""InvertGizmoToolSnapping"",
+                    ""type"": ""Button"",
+                    ""id"": ""4870a501-3ba8-4a99-afdc-d8326569c3ec"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -546,6 +554,17 @@ public class @InputSystemAsset : IInputActionCollection, IDisposable
                     ""action"": ""Cancel"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""13381ec4-79be-45f2-b0e6-bbf09521fcc4"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""InvertGizmoToolSnapping"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -635,6 +654,7 @@ public class @InputSystemAsset : IInputActionCollection, IDisposable
         m_Hotkeys_Duplicate = m_Hotkeys.FindAction("Duplicate", throwIfNotFound: true);
         m_Hotkeys_Delete = m_Hotkeys.FindAction("Delete", throwIfNotFound: true);
         m_Hotkeys_Cancel = m_Hotkeys.FindAction("Cancel", throwIfNotFound: true);
+        m_Hotkeys_InvertGizmoToolSnapping = m_Hotkeys.FindAction("InvertGizmoToolSnapping", throwIfNotFound: true);
         // Modifier
         m_Modifier = asset.FindActionMap("Modifier", throwIfNotFound: true);
         m_Modifier_Shift = m_Modifier.FindAction("Shift", throwIfNotFound: true);
@@ -763,6 +783,7 @@ public class @InputSystemAsset : IInputActionCollection, IDisposable
     private readonly InputAction m_Hotkeys_Duplicate;
     private readonly InputAction m_Hotkeys_Delete;
     private readonly InputAction m_Hotkeys_Cancel;
+    private readonly InputAction m_Hotkeys_InvertGizmoToolSnapping;
     public struct HotkeysActions
     {
         private @InputSystemAsset m_Wrapper;
@@ -776,6 +797,7 @@ public class @InputSystemAsset : IInputActionCollection, IDisposable
         public InputAction @Duplicate => m_Wrapper.m_Hotkeys_Duplicate;
         public InputAction @Delete => m_Wrapper.m_Hotkeys_Delete;
         public InputAction @Cancel => m_Wrapper.m_Hotkeys_Cancel;
+        public InputAction @InvertGizmoToolSnapping => m_Wrapper.m_Hotkeys_InvertGizmoToolSnapping;
         public InputActionMap Get() { return m_Wrapper.m_Hotkeys; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -812,6 +834,9 @@ public class @InputSystemAsset : IInputActionCollection, IDisposable
                 @Cancel.started -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnCancel;
                 @Cancel.performed -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnCancel;
                 @Cancel.canceled -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnCancel;
+                @InvertGizmoToolSnapping.started -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnInvertGizmoToolSnapping;
+                @InvertGizmoToolSnapping.performed -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnInvertGizmoToolSnapping;
+                @InvertGizmoToolSnapping.canceled -= m_Wrapper.m_HotkeysActionsCallbackInterface.OnInvertGizmoToolSnapping;
             }
             m_Wrapper.m_HotkeysActionsCallbackInterface = instance;
             if (instance != null)
@@ -843,6 +868,9 @@ public class @InputSystemAsset : IInputActionCollection, IDisposable
                 @Cancel.started += instance.OnCancel;
                 @Cancel.performed += instance.OnCancel;
                 @Cancel.canceled += instance.OnCancel;
+                @InvertGizmoToolSnapping.started += instance.OnInvertGizmoToolSnapping;
+                @InvertGizmoToolSnapping.performed += instance.OnInvertGizmoToolSnapping;
+                @InvertGizmoToolSnapping.canceled += instance.OnInvertGizmoToolSnapping;
             }
         }
     }
@@ -915,6 +943,7 @@ public class @InputSystemAsset : IInputActionCollection, IDisposable
         void OnDuplicate(InputAction.CallbackContext context);
         void OnDelete(InputAction.CallbackContext context);
         void OnCancel(InputAction.CallbackContext context);
+        void OnInvertGizmoToolSnapping(InputAction.CallbackContext context);
     }
     public interface IModifierActions
     {

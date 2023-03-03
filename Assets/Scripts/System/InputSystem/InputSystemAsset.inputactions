@@ -344,6 +344,14 @@
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
+                },
+                {
+                    "name": "InvertGizmoToolSnapping",
+                    "type": "Button",
+                    "id": "4870a501-3ba8-4a99-afdc-d8326569c3ec",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
                 }
             ],
             "bindings": [
@@ -531,6 +539,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Cancel",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "13381ec4-79be-45f2-b0e6-bbf09521fcc4",
+                    "path": "<Keyboard>/ctrl",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "InvertGizmoToolSnapping",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

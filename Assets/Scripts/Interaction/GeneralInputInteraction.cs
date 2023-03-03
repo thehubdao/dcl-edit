@@ -470,7 +470,8 @@ namespace Assets.Scripts.Interaction
             }
 
             var mouseRay = unityState.MainCamera.ViewportPointToRay(inputHelper.GetMousePositionInScenePanel());
-            gizmoToolSystem.WhileHolding(mouseRay);
+            bool invertGizmoToolSnapping = inputSystemAsset.Hotkeys.InvertGizmoToolSnapping.IsPressed();
+            gizmoToolSystem.WhileHolding(mouseRay, invertGizmoToolSnapping);
         }
 
         private void ProcessHotKeys()
