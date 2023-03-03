@@ -26,12 +26,6 @@ namespace Assets.Scripts.EditorState
                     _projectPath = File.ReadAllText(devProjectPathFilePath);
                 }
 
-                if (!File.Exists(_projectPath + "/scene.json"))
-                {
-                    _projectPath = EditorUtility.OpenFolderPanel("Select DCL project folder", "", "");
-                    File.WriteAllText(devProjectPathFilePath, _projectPath);
-                }
-
 #else
                 _projectPath = Path.GetFullPath(".");
 #endif
