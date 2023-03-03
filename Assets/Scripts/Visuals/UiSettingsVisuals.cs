@@ -74,100 +74,92 @@ namespace Assets.Scripts.Visuals
                 return;
             }
 
+
             var settingsPanel = new PanelAtom.Data();
 
-            //foreach (var settingsPair in settingsSystem.ShownSettings)
-            //{
-            //    var categoryPanel = settingsPanel.AddPanelWithBorder();
-            //
-            //    categoryPanel.AddPanelHeader(settingsPair.Key);
-            //
-            //    foreach (var setting in settingsPair.Value)
-            //    {
-            //        switch ((setting.stage, setting.type))
-            //        {
-            //            case (SettingsSystem.SettingStage.User, SettingsSystem.SettingType.String):
-            //            {
-            //                var concreteSetting = (SettingsSystem.StringUserSetting) setting;
-            //                var actions = new StringPropertyAtom.UiPropertyActions<string>
-            //                {
-            //                    OnChange = _ => { },
-            //                    OnAbort = _ => { },
-            //                    OnSubmit = value => { concreteSetting.Set(value); }
-            //                };
-            //                categoryPanel.AddStringProperty(concreteSetting.name, "", concreteSetting.Get(), actions);
-            //                break;
-            //            }
-            //            case (SettingsSystem.SettingStage.User, SettingsSystem.SettingType.Float):
-            //            {
-            //                var concreteSetting = (SettingsSystem.FloatUserSetting) setting;
-            //                var actions = new StringPropertyAtom.UiPropertyActions<float>
-            //                {
-            //                    OnChange = _ => { },
-            //                    OnInvalid = () => { },
-            //                    OnAbort = _ => { },
-            //                    OnSubmit = value => { concreteSetting.Set(value); }
-            //                };
-            //                categoryPanel.AddNumberProperty(concreteSetting.name, "", concreteSetting.Get(), actions);
-            //                break;
-            //            }
-            //            case (SettingsSystem.SettingStage.User, SettingsSystem.SettingType.Integer):
-            //            {
-            //                var concreteSetting = (SettingsSystem.IntUserSetting) setting;
-            //                var actions = new StringPropertyAtom.UiPropertyActions<float>
-            //                {
-            //                    OnChange = _ => { },
-            //                    OnInvalid = () => { },
-            //                    OnAbort = _ => { },
-            //                    OnSubmit = value => { concreteSetting.Set((int) value); }
-            //                };
-            //                categoryPanel.AddNumberProperty(concreteSetting.name, "", concreteSetting.Get(), actions);
-            //                break;
-            //            }
-            //            case (SettingsSystem.SettingStage.Project, SettingsSystem.SettingType.String):
-            //            {
-            //                var concreteSetting = (SettingsSystem.StringProjectSetting) setting;
-            //                var actions = new StringPropertyAtom.UiPropertyActions<string>
-            //                {
-            //                    OnChange = _ => { },
-            //                    OnAbort = _ => { },
-            //                    OnSubmit = value => { concreteSetting.Set(value); }
-            //                };
-            //                categoryPanel.AddStringProperty(concreteSetting.name, "", concreteSetting.Get(), actions);
-            //                break;
-            //            }
-            //            case (SettingsSystem.SettingStage.Project, SettingsSystem.SettingType.Vector3):
-            //            {
-            //                var concreteSetting = (SettingsSystem.Vec3ProjectSetting) setting;
-            //                var actions = new StringPropertyAtom.UiPropertyActions<Vector3>
-            //                {
-            //                    OnChange = _ => { },
-            //                    OnInvalid = () => { },
-            //                    OnAbort = _ => { },
-            //                    OnSubmit = value => { concreteSetting.Set(value); }
-            //                };
-            //                categoryPanel.AddVector3Property(concreteSetting.name, new List<string> {"", "", ""}, concreteSetting.Get(), actions);
-            //                break;
-            //            }
-            //            case (SettingsSystem.SettingStage.Scene, SettingsSystem.SettingType.Vector3):
-            //            {
-            //                var concreteSetting = (SettingsSystem.Vec3SceneSetting) setting;
-            //                var actions = new StringPropertyAtom.UiPropertyActions<Vector3>
-            //                {
-            //                    OnChange = _ => { },
-            //                    OnInvalid = () => { },
-            //                    OnAbort = _ => { },
-            //                    OnSubmit = value => { concreteSetting.Set(value); }
-            //                };
-            //                categoryPanel.AddVector3Property(concreteSetting.name, new List<string> {"", "", ""}, concreteSetting.Get(), actions);
-            //                break;
-            //            }
-            //            default:
-            //                throw new Exception($"No Setting Type available for stage {setting.stage} and type {setting.type}");
-            //        }
-            //    }
-            //}
+            // User settings
+            var userSettingsPanel = settingsPanel.AddPanelWithBorder();
 
+            userSettingsPanel.AddPanelHeader("User Settings");
+
+            // Ui scale
+            userSettingsPanel.AddNumberProperty(
+                "Ui Scale",
+                "Ui Scale (default: 1)",
+                settingsSystem.uiScalingFactor.Get(),
+                new StringPropertyAtom.UiPropertyActions<float>
+                {
+                    OnSubmit = settingsSystem.uiScalingFactor.Set
+                });
+
+            // mouse sensitivity
+            userSettingsPanel.AddNumberProperty(
+                "Mouse Sensitivity",
+                "Mouse Sensitivity (default: 1)",
+                settingsSystem.mouseSensitivity.Get(),
+                new StringPropertyAtom.UiPropertyActions<float>
+                {
+                    OnSubmit = settingsSystem.mouseSensitivity.Set
+                });
+
+            // Gizmo Size
+            userSettingsPanel.AddNumberProperty(
+                "Gizmo Size",
+                "Gizmo Size (default: 1)",
+                settingsSystem.gizmoSize.Get(),
+                new StringPropertyAtom.UiPropertyActions<float>
+                {
+                    OnSubmit = settingsSystem.gizmoSize.Set
+                });
+
+            // Maximal frame rate
+            userSettingsPanel.AddNumberProperty(
+                "Maximal Frame Rate",
+                "Maximal Frame Rate (default: 120)",
+                settingsSystem.applicationTargetFramerate.Get(),
+                new StringPropertyAtom.UiPropertyActions<float>
+                {
+                    OnSubmit = f => settingsSystem.applicationTargetFramerate.Set((int) f)
+                });
+
+
+            // Gizmo Tool Snapping
+
+            var gizmoToolSnappingPanel = settingsPanel.AddPanelWithBorder();
+
+            gizmoToolSnappingPanel.AddPanelHeader("Gizmo Tool Snapping");
+
+            // translate
+            gizmoToolSnappingPanel.AddNumberProperty(
+                "Translate Step",
+                "Translate (default: 0.25)",
+                settingsSystem.gizmoToolTranslateSnapping.Get(),
+                new StringPropertyAtom.UiPropertyActions<float>
+                {
+                    OnSubmit = settingsSystem.gizmoToolTranslateSnapping.Set
+                });
+
+            // rotate
+            gizmoToolSnappingPanel.AddNumberProperty(
+                "Rotate Step",
+                "Rotate (default: 15)",
+                settingsSystem.gizmoToolRotateSnapping.Get(),
+                new StringPropertyAtom.UiPropertyActions<float>
+                {
+                    OnSubmit = settingsSystem.gizmoToolRotateSnapping.Set
+                });
+
+            // scale
+            gizmoToolSnappingPanel.AddNumberProperty(
+                "Scale Step",
+                "Scale (default: 0.25)",
+                settingsSystem.gizmoToolScaleSnapping.Get(),
+                new StringPropertyAtom.UiPropertyActions<float>
+                {
+                    OnSubmit = settingsSystem.gizmoToolScaleSnapping.Set
+                });
+
+            // Version number
             settingsPanel.AddSpacer(100);
             settingsPanel.AddText($"dcl-edit version: {Application.version}");
 
