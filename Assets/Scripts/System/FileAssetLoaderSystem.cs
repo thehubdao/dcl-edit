@@ -104,7 +104,7 @@ namespace Assets.Scripts.System
         {
             if (!assetMetadataCache.TryGetValue(id, out var metadata))
             {
-                return null; // sorry but this id is in another loader system. Mamma Mia!
+                return null; // sorry but this id is in another loader system. Mamma Mia Pizzeria!
             }
 
             if (metadata.thumbnail != null)
@@ -226,7 +226,7 @@ namespace Assets.Scripts.System
                 }
 
                 return new AssetMetadataFile(
-                    Path.ChangeExtension(assetFilePath, ".dclasset"),
+                    assetFilePath + ".dclasset",
                     assetFilename,
                     new AssetMetadata(
                         Path.GetFileNameWithoutExtension(assetFilename),
@@ -280,7 +280,7 @@ namespace Assets.Scripts.System
             try
             {
                 // Make sure the path leads to a metadata file
-                var metadataFilePath = Path.ChangeExtension(filePath, ".dclasset");
+                var metadataFilePath = filePath + ".dclasset";
 
                 if (!File.Exists(metadataFilePath))
                 {
