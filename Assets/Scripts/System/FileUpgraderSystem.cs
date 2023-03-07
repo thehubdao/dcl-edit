@@ -212,13 +212,39 @@ namespace Assets.Scripts.System
 
         private void SetupUpgrades()
         {
-            upgradeActions.Add((1, 0, 1), Foo);
+            upgradeActions.Add((1, 0, 1), UpgradeAssetFileNamesToIncludeOriginalFileEnding);
         }
 
-        private void Foo(string path)
+        private void UpgradeAssetFileNamesToIncludeOriginalFileEnding(string path)
         {
-            if (IsDclAssetFile(path))
+            if (!IsDclAssetFile(path))
             {
+                return;
+            }
+            
+            try
+            {
+                var fileContents = File.ReadAllText(path);
+                var json = JObject.Parse(fileContents);
+
+                var assetMetaData = json["metadata"];
+                
+                if (assetMetaData == null)
+                {
+                    throw new Exception("No metadata in file!");
+                }
+                
+                var newMetaFileName = assetMetaData["assetFilename"] + ".dclasset";
+                var newPath = Path.Combine(Path.GetDirectoryName(path), newMetaFileName);
+                
+                File.WriteAllText(newPath, fileContents);
+                
+                File.Delete(path);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+                throw;
             }
         }
     }
