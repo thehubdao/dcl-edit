@@ -22,6 +22,7 @@ namespace Assets.Scripts.System
         private AssetThumbnailGeneratorSystem assetThumbnailGeneratorSystem;
 
         private string relativePathInProject = "/assets"; // TODO: Change this, this is just for testing
+        private FileUpgraderSystem fileUpgraderSystem;
 
         public Dictionary<Guid, AssetMetadataFile> assetMetadataCache => loaderState.assetMetadataCache;
         public Dictionary<Guid, AssetData> assetDataCache => loaderState.assetDataCache;
@@ -32,13 +33,15 @@ namespace Assets.Scripts.System
             PathState pathState,
             EditorEvents editorEvents,
             LoadGltfFromFileSystem loadGltfFromFileSystem,
-            AssetThumbnailGeneratorSystem assetThumbnailGeneratorSystem)
+            AssetThumbnailGeneratorSystem assetThumbnailGeneratorSystem,
+            FileUpgraderSystem fileUpgraderSystem)
         {
             this.loaderState = loaderState;
             this.pathState = pathState;
             this.editorEvents = editorEvents;
             this.loadGltfFromFileSystem = loadGltfFromFileSystem;
             this.assetThumbnailGeneratorSystem = assetThumbnailGeneratorSystem;
+            this.fileUpgraderSystem = fileUpgraderSystem;
 
             CheckAssetDirectoryExists();
         }
@@ -170,6 +173,8 @@ namespace Assets.Scripts.System
             List<AssetMetadata> assets = new List<AssetMetadata>();
             List<AssetHierarchyItem> childDirectories = new List<AssetHierarchyItem>();
 
+            CheckUpgrades(files);
+
             foreach (string assetFile in files)
             {
                 // Populate caches. Assets and their corresponding metadata files get added using their Guid as key.
@@ -193,6 +198,19 @@ namespace Assets.Scripts.System
             }
 
             return new AssetHierarchyItem(dirname, pathInHierarchy, childDirectories, assets);
+        }
+
+        private void CheckUpgrades(string[] files)
+        {
+            foreach (var assetFile in files)
+            {
+                if (!IsMetadataFile(assetFile))
+                {
+                    continue;
+                }
+                
+                fileUpgraderSystem.CheckUpgrades(assetFile);
+            }
         }
 
         /// <summary>

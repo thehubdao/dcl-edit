@@ -7,11 +7,18 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
+using Zenject;
 
 namespace Assets.Scripts.System
 {
     public class FileUpgraderSystem
     {
+        [Inject]
+        private void Construct()
+        {
+            SetupUpgrades();
+        }
+        
         public struct Version
         {
             public int major;
@@ -143,8 +150,13 @@ namespace Assets.Scripts.System
             return new Version(versionString);
         }
 
-        public void SetFileVersion(string path, Version version)
+        private static void SetFileVersion(string path, Version version)
         {
+            if (!File.Exists(path))
+            {
+                return;
+            }
+            
             var fileContents = File.ReadAllText(path);
             var json = JObject.Parse(fileContents);
             json["dclEditVersionNumber"] = (JToken) version.ToString();
@@ -177,7 +189,7 @@ namespace Assets.Scripts.System
 
                 action(path);
             }
-
+            
             SetFileVersion(path, currentVersion);
         }
 
@@ -212,10 +224,10 @@ namespace Assets.Scripts.System
 
         private void SetupUpgrades()
         {
-            upgradeActions.Add((1, 0, 1), UpgradeAssetFileNamesToIncludeOriginalFileEnding);
+            upgradeActions.Add((1, 0, 2), UpgradeDclAssetFileNamesToIncludeOriginalFileEnding);
         }
 
-        private void UpgradeAssetFileNamesToIncludeOriginalFileEnding(string path)
+        private void UpgradeDclAssetFileNamesToIncludeOriginalFileEnding(string path)
         {
             if (!IsDclAssetFile(path))
             {
@@ -237,7 +249,11 @@ namespace Assets.Scripts.System
                 var newMetaFileName = assetMetaData["assetFilename"] + ".dclasset";
                 var newPath = Path.Combine(Path.GetDirectoryName(path), newMetaFileName);
                 
-                File.WriteAllText(newPath, fileContents);
+                var currentVersion = new Version(Application.version);
+                json["dclEditVersionNumber"] = currentVersion.ToString();
+                
+                var newFileContents = json.ToString(Formatting.Indented);
+                File.WriteAllText(newPath, newFileContents);
                 
                 File.Delete(path);
             }
