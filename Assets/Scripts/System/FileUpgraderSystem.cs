@@ -178,7 +178,7 @@ namespace Assets.Scripts.System
 
             try
             {
-                foreach (var (version, action) in upgradeActions)
+                foreach (var (version, actions) in upgradeActions)
                 {
                     if (version <= fileVersion)
                     {
@@ -190,7 +190,10 @@ namespace Assets.Scripts.System
                         break;
                     }
 
-                    action(path);
+                    foreach (var action in actions)
+                    {
+                        action(path);
+                    }
                 }
 
                 SetFileVersion(path, currentVersion);
@@ -228,12 +231,15 @@ namespace Assets.Scripts.System
         }
 
         // Upgrades
-        private readonly SortedDictionary<Version, Action<string>> upgradeActions = new SortedDictionary<Version, Action<string>>( /*Comparer<Version>.Create((l, r) => l > r ? -1 : l < r ? 1 : 0)*/);
+        private readonly SortedDictionary<Version, List<Action<string>>> upgradeActions = new SortedDictionary<Version, List<Action<string>>>( /*Comparer<Version>.Create((l, r) => l > r ? -1 : l < r ? 1 : 0)*/);
 
         private void SetupUpgrades()
         {
-            upgradeActions.Add((1, 0, 2), UpgradeDclAssetFileNamesToIncludeOriginalFileEnding);
-            upgradeActions.Add((1, 0, 2), UpgradePropertySceneIdToSceneInSceneComponent);
+            upgradeActions.Add((1, 0, 2), new List<Action<string>>
+            {
+                UpgradeDclAssetFileNamesToIncludeOriginalFileEnding,
+                UpgradePropertySceneIdToSceneInSceneComponent
+            } );
         }
 
         private void UpgradeDclAssetFileNamesToIncludeOriginalFileEnding(string path)
