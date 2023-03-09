@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using Assets.Scripts.EditorState;
 using Assets.Scripts.SceneState;
+using JetBrains.Annotations;
 using Newtonsoft.Json;
 using UnityEngine;
 using Zenject;
@@ -17,13 +18,23 @@ namespace Assets.Scripts.System
 
         public struct DceCompComponentData
         {
-            public string @name;
+            public string @className;
+
+            [CanBeNull]
+            public string @componentName;
             public List<DceCompPropertyData> @properties;
         }
 
         public struct DceCompPropertyData
         {
             public string @name;
+
+            /// <summary>
+            /// possible values:<br/>
+            /// string<br/>
+            /// number<br/>
+            /// vector3
+            /// </summary>
             public string @type;
         }
 
@@ -54,39 +65,73 @@ namespace Assets.Scripts.System
             {
                 availableComponentsState.UpdateCustomComponent(new AvailableComponentsState.AvailableComponent
                 {
-                    category = $"Custom/{componentData.name}",
+                    category = $"Custom",
                     availableInAddComponentMenu = true,
                     componentDefinition = new DclComponent.ComponentDefinition(
-                        componentData.name,
-                        componentData.name,
+                        componentData.className,
+                        componentData.componentName ?? componentData.className,
                         componentData
                             .properties
                             .Select(p => new DclComponent.DclComponentProperty.PropertyDefinition(
                                 p.name,
-                                DclComponent.DclComponentProperty.PropertyType.String,
-                                ""))
+                                GetTypeFromString(p.type),
+                                GetDefaultDefaultFromType(GetTypeFromString(p.type))))
                             .ToArray())
                 });
             }
         }
 
-        public IEnumerable<DceCompComponentData> FindCustomComponentMarkups(string path)
+        private DclComponent.DclComponentProperty.PropertyType GetTypeFromString(string typeString)
         {
-            var fileContents = File.ReadAllText(path);
-
-            // if file is js or ts, filter out everything, that is not a comment
-            if (Path.GetExtension(path) == ".js" || Path.GetExtension(path) == ".ts")
+            return typeString switch
             {
-                fileContents = FilterComments(fileContents);
+                "string" => DclComponent.DclComponentProperty.PropertyType.String,
+                "number" => DclComponent.DclComponentProperty.PropertyType.Float,
+                "vector3" => DclComponent.DclComponentProperty.PropertyType.Vector3,
+                _ => throw new Exception($"Unknown type {typeString}")
+            };
+        }
+
+        private dynamic GetDefaultDefaultFromType(DclComponent.DclComponentProperty.PropertyType type)
+        {
+            return type switch
+            {
+                DclComponent.DclComponentProperty.PropertyType.None => null,
+                DclComponent.DclComponentProperty.PropertyType.String => "",
+                DclComponent.DclComponentProperty.PropertyType.Int => 0,
+                DclComponent.DclComponentProperty.PropertyType.Float => 0f,
+                DclComponent.DclComponentProperty.PropertyType.Boolean => false,
+                DclComponent.DclComponentProperty.PropertyType.Vector3 => Vector3.zero,
+                DclComponent.DclComponentProperty.PropertyType.Quaternion => Quaternion.identity,
+                DclComponent.DclComponentProperty.PropertyType.Asset => Guid.Empty,
+                _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
+            };
+        }
+
+        public DceCompComponentData[] FindCustomComponentMarkups(string path)
+        {
+            try
+            {
+                var fileContents = File.ReadAllText(path);
+
+                // if file is js or ts, filter out everything, that is not a comment
+                if (Path.GetExtension(path) == ".js" || Path.GetExtension(path) == ".ts")
+                {
+                    fileContents = FilterComments(fileContents);
+                }
+
+                // find raw component markup texts
+                var rawTexts = fileContents.Split(new[] {"#DCECOMP"}, StringSplitOptions.None);
+
+                // limit markup texts to the json only
+                var jsonTexts = rawTexts.Skip(1).Select(ExtractJsonFromRawString).Where(t => t != null);
+
+                return jsonTexts.Select(JsonConvert.DeserializeObject<DceCompComponentData>).ToArray();
             }
-
-            // find raw component markup texts
-            var rawTexts = fileContents.Split(new[] {"#DCECOMP"}, StringSplitOptions.None);
-
-            // limit markup texts to the json only
-            var jsonTexts = rawTexts.Skip(1).Select(ExtractJsonFromRawString);
-
-            return jsonTexts.Select(JsonConvert.DeserializeObject<DceCompComponentData>);
+            catch (Exception)
+            {
+                return Array.Empty<DceCompComponentData>();
+            }
         }
 
         private string ExtractJsonFromRawString(string value)
