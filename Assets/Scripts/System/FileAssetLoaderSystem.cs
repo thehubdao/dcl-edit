@@ -180,6 +180,8 @@ namespace Assets.Scripts.System
         #region Metadata related methods
         private AssetHierarchyItem ScanDirectory(string fileSystemPath, string pathInHierarchy = "")
         {
+            CheckUpgrades(Directory.GetFiles(fileSystemPath, "*.*"));
+            
             string dirname = Path.GetFileName(fileSystemPath);
             string[] files = Directory.GetFiles(fileSystemPath, "*.*");
             string[] subdirs = Directory.GetDirectories(fileSystemPath);
@@ -189,7 +191,6 @@ namespace Assets.Scripts.System
             List<AssetMetadata> assets = new List<AssetMetadata>();
             List<AssetHierarchyItem> childDirectories = new List<AssetHierarchyItem>();
 
-            CheckUpgrades(files);
 
             foreach (string assetFile in files)
             {
@@ -221,7 +222,7 @@ namespace Assets.Scripts.System
         {
             foreach (var assetFile in files)
             {
-                if (!IsMetadataFile(assetFile))
+                if (Path.GetExtension(assetFile) != ".dclasset")
                 {
                     continue;
                 }
@@ -301,7 +302,7 @@ namespace Assets.Scripts.System
         /// </summary>
         /// <param name="pathToAssetFile"></param>
         /// <returns></returns>
-        private bool MetadataFileExists(string pathToAssetFile) => File.Exists(pathToAssetFile + ".dclasset"));
+        private bool MetadataFileExists(string pathToAssetFile) => File.Exists(pathToAssetFile + ".dclasset");
 
         /// <summary>
         /// Writes the given metadata to a .dclasset file.
