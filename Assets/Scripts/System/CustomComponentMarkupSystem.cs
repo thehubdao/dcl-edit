@@ -5,9 +5,11 @@ using System.Linq;
 using System.Text;
 using Assets.Scripts.EditorState;
 using Assets.Scripts.SceneState;
+using Assets.Scripts.Utility;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
 using UnityEngine;
+using UnityEngine.Assertions;
 using Zenject;
 
 namespace Assets.Scripts.System
@@ -22,6 +24,10 @@ namespace Assets.Scripts.System
 
             [CanBeNull]
             public string @componentName;
+
+            [CanBeNull]
+            public string @importFile;
+
             public List<DceCompPropertyData> @properties;
         }
 
@@ -43,14 +49,17 @@ namespace Assets.Scripts.System
         // Dependencies
         private FileManagerSystem fileManagerSystem;
         private AvailableComponentsState availableComponentsState;
+        private PathState pathState;
 
         [Inject]
         private void Construct(
             FileManagerSystem fileManagerSystem,
-            AvailableComponentsState availableComponentsState)
+            AvailableComponentsState availableComponentsState,
+            PathState pathState)
         {
             this.fileManagerSystem = fileManagerSystem;
             this.availableComponentsState = availableComponentsState;
+            this.pathState = pathState;
         }
 
 
@@ -70,6 +79,7 @@ namespace Assets.Scripts.System
                     componentDefinition = new DclComponent.ComponentDefinition(
                         componentData.className,
                         componentData.componentName ?? componentData.className,
+                        componentData.importFile,
                         componentData
                             .properties
                             .Select(p => new DclComponent.DclComponentProperty.PropertyDefinition(
@@ -115,7 +125,8 @@ namespace Assets.Scripts.System
                 var fileContents = File.ReadAllText(path);
 
                 // if file is js or ts, filter out everything, that is not a comment
-                if (Path.GetExtension(path) == ".js" || Path.GetExtension(path) == ".ts")
+                var isJsOrTs = Path.GetExtension(path) == ".js" || Path.GetExtension(path) == ".ts";
+                if (isJsOrTs)
                 {
                     fileContents = FilterComments(fileContents);
                 }
@@ -126,12 +137,30 @@ namespace Assets.Scripts.System
                 // limit markup texts to the json only
                 var jsonTexts = rawTexts.Skip(1).Select(ExtractJsonFromRawString).Where(t => t != null);
 
-                return jsonTexts.Select(JsonConvert.DeserializeObject<DceCompComponentData>).ToArray();
+                return jsonTexts.Select(JsonConvert.DeserializeObject<DceCompComponentData>).Select(d =>
+                {
+                    if (isJsOrTs && d.importFile is null)
+                    {
+                        d.importFile = GetImportPathFromFilePath(path);
+                    }
+
+                    return d;
+                }).ToArray();
             }
             catch (Exception)
             {
                 return Array.Empty<DceCompComponentData>();
             }
+        }
+
+        private string GetImportPathFromFilePath(string path)
+        {
+            var relativePath = StaticUtilities.MakeRelativePath(pathState.ProjectPath, path);
+            var folderPath = Path.GetDirectoryName(relativePath);
+            var fileWithoutExtension = Path.GetFileNameWithoutExtension(relativePath);
+            var folderWithFile = Path.Combine(folderPath, fileWithoutExtension);
+            var pathWithForwardSlashes = folderWithFile.Replace('\\', '/');
+            return pathWithForwardSlashes;
         }
 
         private string ExtractJsonFromRawString(string value)

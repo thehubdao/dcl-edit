@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Assets.Scripts.EditorState;
 using Assets.Scripts.SceneState;
 using Assets.Scripts.Utility;
+using JetBrains.Annotations;
 using UnityEngine;
 using Zenject;
 using static Assets.Scripts.SceneState.DclComponent.DclComponentProperty.PropertyDefinition.Flags;
@@ -102,6 +103,10 @@ namespace Assets.Scripts.System
             public string symbol;
             public string withTypeSymbol;
             public string inEntitySymbol;
+
+            [CanBeNull]
+            public string sourceFile;
+
             public EntityComponentInfo.SpecialComponent specialComponent;
         }
 
@@ -313,6 +318,8 @@ namespace Assets.Scripts.System
                 componentInfo.gatheredPropertyInfos.Add(await GatherPropertyInfo(component, property, neededAssets));
             }
 
+            // find the correct component definition
+            var componentDefinition = availableComponentsState.GetComponentDefinitionByName(component.NameInCode);
 
             // update the list of all used components
             //if (entity.IsExposed)
@@ -326,6 +333,7 @@ namespace Assets.Scripts.System
                         symbol = component.NameInCode,
                         withTypeSymbol = withTypeSymbol,
                         inEntitySymbol = inEntitySymbol,
+                        sourceFile = componentDefinition.SourceFile,
                         specialComponent = specialComponent
                     });
                 }
@@ -396,9 +404,16 @@ namespace Assets.Scripts.System
 
         private string GenerateActualScript(GenerationInfo generationInfo)
         {
+            var generatedScript = new StringBuilder();
+
+            // add imports
+            foreach (var componentInfo in generationInfo.usedComponentInfos.Where(c => c.sourceFile != null))
+            {
+                generatedScript.AppendLine($"import {{ {componentInfo.symbol} }} from \"{componentInfo.sourceFile}\"");
+            }
+
             // Default script. This is always in the script
             // This contains the types for the dce entity and the dce scene
-            var generatedScript = new StringBuilder();
             generatedScript.Append(@"export type DceScene = {
     /**
      * The root entity of the scene. All entities in this scene are children of either this scene root entity, or of another entity in the scene

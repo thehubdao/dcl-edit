@@ -8,6 +8,7 @@ public class DclGltfShapeComponent : DclComponent
         new ComponentDefinition(
             "GLTFShape",
             "Shape",
+            null,
             new DclComponentProperty.PropertyDefinition("asset", DclComponentProperty.PropertyType.Asset, Guid.Empty, ParseInConstructor),
             new DclComponentProperty.PropertyDefinition("visible", DclComponentProperty.PropertyType.Boolean, true),
             new DclComponentProperty.PropertyDefinition("withCollisions", DclComponentProperty.PropertyType.Boolean, true),
