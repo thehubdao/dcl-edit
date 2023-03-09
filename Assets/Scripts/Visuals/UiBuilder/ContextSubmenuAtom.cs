@@ -4,6 +4,7 @@ using Assets.Scripts.EditorState;
 using Assets.Scripts.System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Assets.Scripts.Visuals.UiBuilder
 {
@@ -17,6 +18,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
             public List<ContextMenuItem> submenuItems;
             public float menuWidth;
             public ContextMenuSystem contextMenuSystem;
+            public bool isDisabled { get; set; }
 
             public override bool Equals(Atom.Data other)
             {
@@ -31,7 +33,8 @@ namespace Assets.Scripts.Visuals.UiBuilder
                     title.Equals(otherContextMenuText.title) &&
                     submenuItems.Equals(otherContextMenuText.submenuItems) &&
                     menuWidth.Equals(otherContextMenuText.menuWidth) &&
-                    contextMenuSystem.Equals(otherContextMenuText.contextMenuSystem);
+                    contextMenuSystem.Equals(otherContextMenuText.contextMenuSystem) &&
+                    isDisabled.Equals(otherContextMenuText.isDisabled);
             }
         }
 
@@ -58,6 +61,12 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
                 var text = gameObject.gameObject.GetComponentInChildren<TextMeshProUGUI>();
                 text.text = newContextMenuTextData.title;
+                
+                if (newContextMenuTextData.isDisabled)
+                {
+                    var button = gameObject.gameObject.GetComponent<Button>();
+                    button.interactable = false;
+                }
 
                 var hoverHandler = gameObject.gameObject.GetComponent<ContextMenuHoverHandler>();
                 hoverHandler.OnHoverAction = () =>
@@ -94,7 +103,9 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
     public static class ContextSubmenuPanelHelper
     {
-        public static ContextSubmenuAtom.Data AddContextSubmenu(this PanelAtom.Data panelAtomData, Guid menuId, Guid submenuId, string title, List<ContextMenuItem> submenuItems, float menuWidth, ContextMenuSystem contextMenuSystem)
+        public static ContextSubmenuAtom.Data AddContextSubmenu(this PanelAtom.Data panelAtomData, Guid menuId,
+            Guid submenuId, string title, List<ContextMenuItem> submenuItems, float menuWidth,
+            ContextMenuSystem contextMenuSystem, bool isDisabled)
         {
             var data = new ContextSubmenuAtom.Data
             {
@@ -103,7 +114,8 @@ namespace Assets.Scripts.Visuals.UiBuilder
                 title = title,
                 submenuItems = submenuItems,
                 menuWidth = menuWidth,
-                contextMenuSystem = contextMenuSystem
+                contextMenuSystem = contextMenuSystem,
+                isDisabled = isDisabled
             };
 
             panelAtomData.childDates.Add(data);

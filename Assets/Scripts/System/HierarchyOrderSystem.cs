@@ -349,5 +349,51 @@ namespace Assets.Scripts.System
 
             ChangeHierarchyOrderAsCommand(draggedEntity, null, newHierarchyOrder, null);
         }
+
+        public void PlaceAbove([NotNull]DclEntity hoveredEntity)
+        {
+            var scene = sceneManagerSystem.GetCurrentScene();
+            var selectedEntity = scene.SelectionState.PrimarySelectedEntity;
+            
+            if (selectedEntity == null || selectedEntity.Id == hoveredEntity.Id)
+            {
+                return;
+            }
+            
+            DropUpper(selectedEntity, hoveredEntity, GetAboveSibling(hoveredEntity));
+        }
+
+        public void PlaceBelow([NotNull]DclEntity hoveredEntity)
+        {
+            var scene = sceneManagerSystem.GetCurrentScene();
+            var selectedEntity = scene.SelectionState.PrimarySelectedEntity;
+            
+            if (selectedEntity == null || selectedEntity.Id == hoveredEntity.Id)
+            {
+                return;
+            }
+            
+            DropLower(selectedEntity, hoveredEntity, GetBelowSibling(hoveredEntity), null, false);
+        }
+
+        public void PlaceAsChild([NotNull] DclEntity hoveredEntity)
+        {
+            var scene = sceneManagerSystem.GetCurrentScene();
+            var selectedEntity = scene.SelectionState.PrimarySelectedEntity;
+            
+            if (selectedEntity == null || selectedEntity.Id == hoveredEntity.Id)
+            {
+                return;
+            }
+
+            if (hierarchyExpansionState.IsExpanded(hoveredEntity.Id))
+            {
+                DropLower(selectedEntity, hoveredEntity, null, hoveredEntity.Children.OrderBy(e => e.hierarchyOrder).FirstOrDefault(), true);
+            }
+            else
+            {
+                DropMiddle(selectedEntity, hoveredEntity);
+            }
+        }
     }
 }

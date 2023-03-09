@@ -22,7 +22,8 @@ namespace Assets.Scripts.System
 
         private string[] GetBetaProjectPaths()
         {
-            return Directory.GetDirectories(pathState.ProjectPath, "*.dclscene", SearchOption.AllDirectories);
+            string assetsDirPath = Path.Combine(pathState.ProjectPath, "assets");
+            return Directory.GetDirectories(assetsDirPath, "*.dclscene", SearchOption.AllDirectories);
         }
 
         public bool TryGetBetaPaths(out string[] betaPaths)

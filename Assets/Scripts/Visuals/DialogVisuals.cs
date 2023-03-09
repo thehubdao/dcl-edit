@@ -2,7 +2,6 @@ using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
 using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
-using Assets.Scripts.Visuals;
 using Assets.Scripts.Visuals.UiHandler;
 using System;
 using UnityEngine;
@@ -68,20 +67,26 @@ public class DialogVisuals : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         handler.assetBrowserVisuals.assetButtonOnClickOverride = (Guid assetId) =>
         {
             DclScene scene = sceneManagerSystem.GetCurrentScene();
-            DclEntity entity = scene.GetEntityById(dialogState.targetEntityId);
-            var gltfShapeComponent = new DclGltfShapeComponent(entity.GetComponentByName(DclGltfShapeComponent.gltfShapeComponentDefinition.NameInCode));
-            commandSystem.ExecuteCommand(
-                commandSystem.CommandFactory.CreateChangePropertyCommand(
-                    new DclPropertyIdentifier(
-                        entity.Id,
-                        gltfShapeComponent.NameInCode,
-                        "asset"),
-                    gltfShapeComponent.Asset.FixedValue,
-                    assetId
-                ));
-            editorEvents.InvokeSelectionChangedEvent();
+
+            // Update the target component with the new asset
+            var sceneProperty = dialogState.targetComponent.GetPropertyByName("scene");
+            var assetProperty = dialogState.targetComponent.GetPropertyByName("asset");
+            if (sceneProperty != null)
+            {
+                var oldValue = sceneProperty.GetConcrete<Guid>().FixedValue;
+                var identifier = new DclPropertyIdentifier(dialogState.targetComponent.Entity.Id, dialogState.targetComponent.NameInCode, "scene");
+                commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateChangePropertyCommand(identifier, oldValue, assetId));
+            }
+            if (assetProperty != null)
+            {
+                var oldValue = assetProperty.GetConcrete<Guid>().FixedValue;
+                var identifier = new DclPropertyIdentifier(dialogState.targetComponent.Entity.Id, dialogState.targetComponent.NameInCode, "asset");
+                commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateChangePropertyCommand(identifier, oldValue, assetId));
+            }
 
             dialogSystem.CloseCurrentDialog();
+            editorEvents.InvokeSelectionChangedEvent();
+            editorEvents.InvokeUiChangedEvent();
         };
     }
 

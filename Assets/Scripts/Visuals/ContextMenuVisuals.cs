@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
 using Assets.Scripts.System;
@@ -12,8 +13,7 @@ namespace Assets.Scripts.Visuals
 {
     public class ContextMenuVisuals : MonoBehaviour
     {
-        [SerializeField]
-        float width = 200;
+        [SerializeField] float width = 200;
 
         // Dependencies
         ContextMenuState state;
@@ -39,7 +39,7 @@ namespace Assets.Scripts.Visuals
             SetupEventListeners();
         }
 
-        public void SetupEventListeners()
+        private void SetupEventListeners()
         {
             editorEvents.onUpdateContextMenuEvent += () =>
             {
@@ -59,6 +59,7 @@ namespace Assets.Scripts.Visuals
                     objectsToDelete.Remove(data.menuId);
                 }
             }
+
             foreach (var delObj in objectsToDelete)
             {
                 GameObject go = state.menuGameObjects[delObj];
@@ -99,10 +100,13 @@ namespace Assets.Scripts.Visuals
                 switch (item)
                 {
                     case ContextMenuTextItem tItem:
-                        menuPanel.AddContextMenuText(menuData.menuId, tItem.title, tItem.onClick, tItem.isDisabled, contextMenuSystem);
+                        menuPanel.AddContextMenuText(menuData.menuId, tItem.title, tItem.onClick, tItem.isDisabled,
+                            contextMenuSystem);
                         break;
                     case ContextSubmenuItem subItem:
-                        menuPanel.AddContextSubmenu(menuData.menuId, subItem.submenuId, subItem.title, subItem.items, width, contextMenuSystem);
+                        var isDisabled = CheckAllSubItemsDisabledRecursive(subItem.items);
+                        menuPanel.AddContextSubmenu(menuData.menuId, subItem.submenuId, subItem.title, subItem.items,
+                            width, contextMenuSystem, isDisabled);
                         break;
                     case ContextMenuSpacerItem spItem:
                         menuPanel.AddContextMenuSpacer(menuData.menuId, contextMenuSystem);
@@ -134,6 +138,7 @@ namespace Assets.Scripts.Visuals
                 {
                     pos = new Vector3(pos.x, contentRect.sizeDelta.y, pos.z);
                 }
+
                 // 2. position on x axis
                 switch (placement.expandDirection)
                 {
@@ -143,12 +148,14 @@ namespace Assets.Scripts.Visuals
                             var overshoot = bottomRightCorner.x - Screen.width;
                             pos = new Vector3(pos.x - overshoot, pos.y, pos.z);
                         }
+
                         break;
                     case ContextMenuState.Placement.Direction.Left:
                         if (pos.x - width < 0)
                         {
                             continue;
                         }
+
                         pos = new Vector3(pos.x - width, pos.y, pos.z);
                         break;
                     case ContextMenuState.Placement.Direction.Right:
@@ -156,13 +163,36 @@ namespace Assets.Scripts.Visuals
                         {
                             continue;
                         }
+
                         break;
                     default:
                         break;
                 }
+
                 menuRect.position = pos;
                 break;
             }
+        }
+
+        private static bool CheckAllSubItemsDisabledRecursive(List<ContextMenuItem> contextMenuItems)
+        {
+            foreach (var item in contextMenuItems)
+            {
+                switch (item)
+                {
+                    case ContextMenuTextItem {isDisabled: false}:
+                        return false;
+                    case ContextSubmenuItem contextSubmenuItem:
+                        if (!CheckAllSubItemsDisabledRecursive(contextSubmenuItem.items))
+                        {
+                            return false;
+                        }
+
+                        break;
+                }
+            }
+
+            return true;
         }
 
         RectTransform CreateMenuParent()

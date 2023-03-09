@@ -1,10 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text.RegularExpressions;
 using Assets.Scripts.Utility;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.Assertions;
 using Zenject;
@@ -159,7 +160,7 @@ namespace Assets.Scripts.System
             
             var fileContents = File.ReadAllText(path);
             var json = JObject.Parse(fileContents);
-            json["dclEditVersionNumber"] = (JToken) version.ToString();
+            json["dclEditVersionNumber"] = (JToken)version.ToString();
             var newFileContents = json.ToString(Formatting.Indented);
             File.WriteAllText(path, newFileContents);
         }
@@ -175,22 +176,29 @@ namespace Assets.Scripts.System
                 throw new Exception($"The file {path} was saved with a newer version of the editor ({fileVersion}). Please update the editor to the latest version.");
             }
 
-            foreach (var (version, action) in upgradeActions)
+            try
             {
-                if (version <= fileVersion)
+                foreach (var (version, action) in upgradeActions)
                 {
-                    continue;
+                    if (version <= fileVersion)
+                    {
+                        continue;
+                    }
+
+                    if (version > currentVersion)
+                    {
+                        break;
+                    }
+
+                    action(path);
                 }
 
-                if (version > currentVersion)
-                {
-                    break;
-                }
-
-                action(path);
+                SetFileVersion(path, currentVersion);
             }
-            
-            SetFileVersion(path, currentVersion);
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
         }
 
         // Utility
@@ -215,8 +223,8 @@ namespace Assets.Scripts.System
              * A final sequence of 12 hexadecimal digits.
              * The extension .json.
              */
-            var regex = new Regex("/^.+-\\b[0-9a-fA-F]{8}(-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}\\.json$/gm");
-            return regex.IsMatch(path);
+            var regex = new Regex("^.+-[0-9a-fA-F]{8}(-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}.json$");
+            return regex.IsMatch(Path.GetFileName(path));
         }
 
         // Upgrades
@@ -225,6 +233,7 @@ namespace Assets.Scripts.System
         private void SetupUpgrades()
         {
             upgradeActions.Add((1, 0, 2), UpgradeDclAssetFileNamesToIncludeOriginalFileEnding);
+            upgradeActions.Add((1, 0, 2), UpgradePropertySceneIdToSceneInSceneComponent);
         }
 
         private void UpgradeDclAssetFileNamesToIncludeOriginalFileEnding(string path)
@@ -261,6 +270,27 @@ namespace Assets.Scripts.System
             {
                 Debug.LogError(e);
                 throw;
+            }
+        }
+
+        private void UpgradePropertySceneIdToSceneInSceneComponent(string path)
+        {
+            if (IsEntityFile(path))
+            {
+                var fileContents = File.ReadAllText(path);
+                var json = JObject.Parse(fileContents);
+
+                foreach (JToken property in json["components"]
+                    .Where(c => c["nameInCode"].Value<String>() == "Scene")
+                    .SelectMany(c => c["properties"])
+                    .Where(p => p["name"].Value<String>() == "sceneId"))
+                {
+                    property["name"] = "scene";
+                    property["type"] = "Asset";
+                }
+
+                var newFileContents = json.ToString(Formatting.Indented);
+                File.WriteAllText(path, newFileContents);
             }
         }
     }

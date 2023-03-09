@@ -256,7 +256,7 @@ namespace Assets.Scripts.Visuals
                                 componentPanel.AddAssetProperty(
                                     property.PropertyName,
                                     assetMetadata,
-                                    (_) => dialogSystem.OpenAssetDialog(selectedEntity.Id));
+                                    (_) => dialogSystem.OpenAssetDialog(component));
 
                             break;
                         }

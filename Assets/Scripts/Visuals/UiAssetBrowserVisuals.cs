@@ -129,7 +129,8 @@ namespace Assets.Scripts.Visuals
                 }, new List<ContextMenuItem>
                 {
                     new ContextMenuTextItem("Add model filter", () => assetBrowserSystem.AddFilter(AssetMetadata.AssetType.Model)),
-                    new ContextMenuTextItem("Add image filter", () => assetBrowserSystem.AddFilter(AssetMetadata.AssetType.Image)),
+                    //new ContextMenuTextItem("Add image filter", () => assetBrowserSystem.AddFilter(AssetMetadata.AssetType.Image)),
+                    new ContextMenuTextItem("Add scene filter", () => assetBrowserSystem.AddFilter(AssetMetadata.AssetType.Scene)),
                     new ContextMenuTextItem("Sort by name (A-Z)", () => assetBrowserSystem.ChangeSorting(AssetBrowserState.Sorting.NameAscending)),
                     new ContextMenuTextItem("Sort by name (Z-A)", () => assetBrowserSystem.ChangeSorting(AssetBrowserState.Sorting.NameDescending)),
                 });
@@ -166,6 +167,8 @@ namespace Assets.Scripts.Visuals
 
         private void BuildHierarchy(AssetHierarchyItem hierarchyItem, PanelAtom.Data panel)
         {
+            if (hierarchyItem.IsEmpty()) return;
+
             int indentationLevel = GetIndentationLevel(hierarchyItem);
             panel.AddAssetBrowserFolder(hierarchyItem, indentationLevel);
 
@@ -173,6 +176,7 @@ namespace Assets.Scripts.Visuals
 
             foreach (AssetHierarchyItem dir in hierarchyItem.childDirectories)
             {
+                if (dir.IsEmpty()) continue;
                 BuildHierarchy(dir, panel);
             }
 

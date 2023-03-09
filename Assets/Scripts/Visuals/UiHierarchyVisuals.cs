@@ -3,7 +3,6 @@ using Assets.Scripts.Events;
 using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
 using Assets.Scripts.Visuals.UiBuilder;
-using Assets.Scripts.Utility;
 using Assets.Scripts.Visuals.UiHandler;
 using JetBrains.Annotations;
 using System.Collections.Generic;
@@ -13,7 +12,6 @@ using UnityEngine.UI;
 using UnityEngine.Assertions;
 using Visuals.UiHandler;
 using Zenject;
-using Zenject.SpaceFighter;
 using static Assets.Scripts.Visuals.UiBuilder.UiBuilder;
 
 namespace Assets.Scripts.Visuals
@@ -66,7 +64,6 @@ namespace Assets.Scripts.Visuals
         private SceneManagerSystem sceneManagerSystem;
         private CommandSystem commandSystem;
         private HierarchyOrderSystem hierarchyOrderSystem;
-        private AddEntitySystem addEntitySystem;
 
         [Inject]
         private void Construct(
@@ -77,8 +74,7 @@ namespace Assets.Scripts.Visuals
             SceneManagerSystem sceneManagerSystem,
             CommandSystem commandSystem,
             HierarchyContextMenuSystem hierarchyContextMenuSystem,
-            HierarchyOrderSystem hierarchyOrderSystem,
-            AddEntitySystem addEntitySystem)
+            HierarchyOrderSystem hierarchyOrderSystem)
         {
             this.events = events;
             this.uiBuilder = uiBuilderFactory.Create(content);
@@ -88,8 +84,6 @@ namespace Assets.Scripts.Visuals
             this.commandSystem = commandSystem;
             this.hierarchyContextMenuSystem = hierarchyContextMenuSystem;
             this.hierarchyOrderSystem = hierarchyOrderSystem;
-            this.addEntitySystem = addEntitySystem;
-
 
             SetupRightClickHandler();
             SetupEventListeners();
@@ -182,9 +176,10 @@ namespace Assets.Scripts.Visuals
             {
                 Assert.IsNotNull(entity);
 
-                var isPrimarySelection = scene.SelectionState.PrimarySelectedEntity == entity;
+                var selectionState = scene.SelectionState;
+                var isPrimarySelection = selectionState.PrimarySelectedEntity == entity;
 
-                var isSecondarySelection = scene.SelectionState.SecondarySelectedEntities.Contains(entity);
+                var isSecondarySelection = selectionState.SecondarySelectedEntities.Contains(entity);
 
                 var style =
                     isPrimarySelection ? TextHandler.TextStyle.PrimarySelection :
@@ -198,6 +193,7 @@ namespace Assets.Scripts.Visuals
 
                 var isExpanded = hierarchyChangeSystem.IsExpanded(entity);
                 var isParentExpanded = entity.Parent != null && hierarchyChangeSystem.IsExpanded(entity.Parent);
+                var isNothingOrHoveredEntitySelected = selectionState.PrimarySelectedEntity == null || selectionState.PrimarySelectedEntity.Id.Equals(entity.Id);
 
                 mainPanelData.AddHierarchyItem(entity.ShownName, level, entity.Children.Any(), isExpanded, isParentExpanded, style,
                     isPrimarySelection,
@@ -216,6 +212,16 @@ namespace Assets.Scripts.Visuals
                                 () => hierarchyContextMenuSystem.AddEntityFromPreset(preset, entity.Id)));
                         }
 
+                        var placeSelectedEntityMenuItems = new List<ContextMenuItem>()
+                        {
+                            new ContextMenuTextItem("Place above", 
+                                () => hierarchyOrderSystem.PlaceAbove(entity), isNothingOrHoveredEntitySelected),
+                            new ContextMenuTextItem("Place below", 
+                                () => hierarchyOrderSystem.PlaceBelow(entity), isNothingOrHoveredEntitySelected),
+                            new ContextMenuTextItem("Place as Child", 
+                                () => hierarchyOrderSystem.PlaceAsChild(entity), isNothingOrHoveredEntitySelected)
+                        };
+
                         var belowSibling = hierarchyOrderSystem.GetBelowSibling(entity);
                         var newHierarchyOrderForDuplicatedEntity =
                             belowSibling != null ?
@@ -231,7 +237,8 @@ namespace Assets.Scripts.Visuals
                                     commandSystem.CommandFactory.CreateDuplicateEntity(entity.Id, newHierarchyOrderForDuplicatedEntity))),
                             new ContextMenuTextItem("Delete",
                                 () => commandSystem.ExecuteCommand(
-                                    commandSystem.CommandFactory.CreateRemoveEntity(entity)))
+                                    commandSystem.CommandFactory.CreateRemoveEntity(entity))),
+                            new ContextSubmenuItem("Selected entity...", placeSelectedEntityMenuItems)
                         });
                     },
                     draggedGameObject =>

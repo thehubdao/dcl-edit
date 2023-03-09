@@ -333,7 +333,7 @@ namespace Assets.Scripts.System
 
         #region While holding
 
-        public void WhileHolding(Ray mouseRay)
+        public void WhileHolding(Ray mouseRay, bool invertToolSnapping)
         {
             // calculate mouse on context plane
             var mousePos = RayOnPlane(mouseRay, gizmoState.mouseContextPlane);
@@ -344,7 +344,7 @@ namespace Assets.Scripts.System
                     DistanceOnAxis(mousePos, true) - DistanceOnAxis(gizmoState.mouseStartingPosition, true),
                     DistanceOnAxis(mousePos, false) - DistanceOnAxis(gizmoState.mouseStartingPosition, false));
 
-            if (isToolSnapping)
+            if (isToolSnapping != invertToolSnapping)
             {
                 var snappingDistance = gizmoToolMode switch
                 {
@@ -441,6 +441,25 @@ namespace Assets.Scripts.System
             }
         }
 
+        public void CancelHolding()
+        {
+            switch (gizmoToolMode)
+            {
+                case ToolMode.Translate:
+                    gizmoState.affectedTransform.globalPosition = gizmoState.affectedTransform.globalFixedPosition;
+                    break;
+                case ToolMode.Rotate:
+                    gizmoState.affectedTransform.globalRotation = gizmoState.affectedTransform.globalFixedRotation;
+                    break;
+                case ToolMode.Scale:
+                    gizmoState.affectedTransform.scale.SetFloatingValue(gizmoState.affectedTransform.scale.FixedValue);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            editorEvents.InvokeSelectionChangedEvent();
+        }
 
         private void ExecuteTranslateCommand()
         {

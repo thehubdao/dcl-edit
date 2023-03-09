@@ -1,5 +1,4 @@
 using Assets.Scripts.EditorState;
-using Assets.Scripts.Events;
 using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
 using Assets.Scripts.Utility;
@@ -29,7 +28,7 @@ namespace Assets.Scripts.Visuals
             _sceneManagerSystem = sceneManagerSystem;
         }
 
-        public override void UpdateVisuals(DclEntity entity)
+        public override void UpdateVisuals(DclScene scene, DclEntity entity)
         {
             var assetGuid = entity.GetComponentByName("GLTFShape")?.GetPropertyByName("asset")?.GetConcrete<Guid>().Value;
 
@@ -76,7 +75,7 @@ namespace Assets.Scripts.Visuals
                 UpdateSelection(entity);
             }
 
-            if (_sceneManagerSystem.GetCurrentSceneOrNull()?.IsFloatingEntity(entity.Id)! == true)
+            if (scene.IsFloatingEntity(entity.Id)! == true)
             {
                 StaticUtilities.SetLayerRecursive(gameObject, LayerMask.NameToLayer("Ignore Raycast"));
             }

@@ -104,7 +104,8 @@ public class DclEditorInstaller : MonoInstaller
 
         Container.BindInterfacesAndSelfTo<AssetManagerSystem>().AsSingle();
 
-        Container.Bind<IAssetLoaderSystem>().To<FileAssetLoaderSystem>().AsSingle();
+        Container.Bind<IAssetLoaderSystem>().To<FileAssetLoaderSystem>().AsCached().WithArguments("assets", false);
+        Container.Bind<IAssetLoaderSystem>().To<FileAssetLoaderSystem>().AsCached().WithArguments("node_modules", true);
         Container.Bind<IAssetLoaderSystem>().To<BuilderAssetLoaderSystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<FileAssetLoaderState>().AsTransient();
@@ -167,6 +168,8 @@ public class DclEditorInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<GizmoToolSystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<GizmoSizeSystem>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<PanelSystem>().AsSingle();
         
         Container.BindInterfacesAndSelfTo<FileUpgraderSystem>().AsSingle();
     }

@@ -10,7 +10,8 @@ namespace Assets.Scripts.EditorState
         {
             Unknown,
             Model,
-            Image
+            Image,
+            Scene
         }
 
         public AssetMetadata(string assetDisplayName, Guid assetId, AssetType assetType)
