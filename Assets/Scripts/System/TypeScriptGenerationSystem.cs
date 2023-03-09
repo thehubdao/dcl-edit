@@ -195,17 +195,15 @@ namespace Assets.Scripts.System
 
         private async Task<EntityInfo> GatherEntityInfo(DclEntity entity, ICollection<UsedComponentInfo> usedComponentInfos, ICollection<string> uniqueSymbols, IReadOnlyDictionary<Guid, string> sceneNames, Dictionary<Guid, string> neededAssets)
         {
-            var internalEntitySymbol = exposeEntitySystem.GenerateValidSymbol(obfuscate ? "e" : entity.CustomName);
-
             // make the internal symbol unique within the generated scene
+            var i = 0;
+            string internalEntitySymbol;
+            do
             {
-                var i = 0;
-                while (uniqueSymbols.Contains(internalEntitySymbol))
-                {
-                    i++;
-                    internalEntitySymbol = exposeEntitySystem.GenerateValidSymbol((obfuscate ? "e" : entity.CustomName) + i);
-                }
-            }
+                i++;
+                internalEntitySymbol = exposeEntitySystem.GenerateValidSymbol((obfuscate ? "e" : ("ent4_" + entity.CustomName)) + i);
+            } while (uniqueSymbols.Contains(internalEntitySymbol));
+
 
             uniqueSymbols.Add(internalEntitySymbol);
 
