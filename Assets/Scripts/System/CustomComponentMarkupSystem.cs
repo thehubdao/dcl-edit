@@ -8,8 +8,8 @@ using Assets.Scripts.SceneState;
 using Assets.Scripts.Utility;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
-using UnityEngine.Assertions;
 using Zenject;
 
 namespace Assets.Scripts.System
@@ -42,6 +42,9 @@ namespace Assets.Scripts.System
             /// vector3
             /// </summary>
             public string @type;
+
+            [CanBeNull]
+            public JToken @default;
         }
 
 #pragma warning restore CS0649
@@ -85,7 +88,7 @@ namespace Assets.Scripts.System
                             .Select(p => new DclComponent.DclComponentProperty.PropertyDefinition(
                                 p.name,
                                 GetTypeFromString(p.type),
-                                GetDefaultDefaultFromType(GetTypeFromString(p.type))))
+                                GetDefaultPropertyValue(GetTypeFromString(p.type), p.@default)))
                             .ToArray())
                 });
             }
@@ -101,6 +104,75 @@ namespace Assets.Scripts.System
                 _ => throw new Exception($"Unknown type {typeString}")
             };
         }
+
+        private dynamic GetDefaultPropertyValue(DclComponent.DclComponentProperty.PropertyType type, [CanBeNull] JToken value)
+        {
+            if (value == null)
+            {
+                return GetDefaultDefaultFromType(type);
+            }
+
+            return type switch
+            {
+                DclComponent.DclComponentProperty.PropertyType.None => null,
+                DclComponent.DclComponentProperty.PropertyType.String => GetStringFromJObject(value),
+                DclComponent.DclComponentProperty.PropertyType.Int => GetIntFromJObject(value),
+                DclComponent.DclComponentProperty.PropertyType.Float => GetFloatFromJObject(value),
+                DclComponent.DclComponentProperty.PropertyType.Boolean => GetBoolFromJObject(value),
+                DclComponent.DclComponentProperty.PropertyType.Vector3 => GetVector3FromJObject(value),
+                DclComponent.DclComponentProperty.PropertyType.Quaternion => GetQuaternionFromJObject(value),
+                DclComponent.DclComponentProperty.PropertyType.Asset => GetGuidFromJObject(value),
+                _ => throw new ArgumentOutOfRangeException(nameof(type))
+            };
+        }
+
+        private string GetStringFromJObject(JToken value)
+        {
+            return value.Value<string>();
+        }
+
+        private int GetIntFromJObject(JToken value)
+        {
+            return value.Value<int>();
+        }
+
+        private float GetFloatFromJObject(JToken value)
+        {
+            return value.Value<float>();
+        }
+
+        private bool GetBoolFromJObject(JToken value)
+        {
+            return value.Value<bool>();
+        }
+
+        private Vector3 GetVector3FromJObject(JToken value)
+        {
+            // value is a list with 3 numbers
+            // extract that list
+            var list = value.Value<JArray>();
+
+            // TODO: catch errors
+
+            // extract the numbers
+            var x = list[0].Value<float>();
+            var y = list[1].Value<float>();
+            var z = list[2].Value<float>();
+
+            // return the vector
+            return new Vector3(x, y, z);
+        }
+
+        private Quaternion GetQuaternionFromJObject(JToken value)
+        {
+            return Quaternion.identity; // TODO: get actual default value
+        }
+
+        private Guid GetGuidFromJObject(JToken value)
+        {
+            return Guid.Empty;
+        }
+
 
         private dynamic GetDefaultDefaultFromType(DclComponent.DclComponentProperty.PropertyType type)
         {
@@ -147,8 +219,10 @@ namespace Assets.Scripts.System
                     return d;
                 }).ToArray();
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Debug.LogException(e);
+
                 return Array.Empty<DceCompComponentData>();
             }
         }
