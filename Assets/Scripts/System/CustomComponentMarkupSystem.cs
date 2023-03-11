@@ -44,7 +44,7 @@ namespace Assets.Scripts.System
             public string @type;
 
             [CanBeNull]
-            public JToken @default;
+            public JsonLineNumbers.JTokenWithLineInfo @default;
         }
 
 #pragma warning restore CS0649
@@ -70,7 +70,7 @@ namespace Assets.Scripts.System
         {
             var markUpDates =
                 fileManagerSystem
-                    .GetAllFilesWithExtension(".js", ".ts", ".dceComp")
+                    .GetAllFilesWithExtension(".js", ".ts", ".dcecomp")
                     .SelectMany(FindCustomComponentMarkups);
 
             foreach (var componentData in markUpDates)
@@ -105,12 +105,14 @@ namespace Assets.Scripts.System
             };
         }
 
-        private dynamic GetDefaultPropertyValue(DclComponent.DclComponentProperty.PropertyType type, [CanBeNull] JToken value)
+        private dynamic GetDefaultPropertyValue(DclComponent.DclComponentProperty.PropertyType type, [CanBeNull] JsonLineNumbers.JTokenWithLineInfo value)
         {
             if (value == null)
             {
                 return GetDefaultDefaultFromType(type);
             }
+
+            Debug.Log($"value: line: {value.line} column: {value.column}");
 
             return type switch
             {
@@ -209,7 +211,7 @@ namespace Assets.Scripts.System
                 // limit markup texts to the json only
                 var jsonTexts = rawTexts.Skip(1).Select(ExtractJsonFromRawString).Where(t => t != null);
 
-                return jsonTexts.Select(JsonConvert.DeserializeObject<DceCompComponentData>).Select(d =>
+                return jsonTexts.Select(t => JsonConvert.DeserializeObject<DceCompComponentData>(t, new JsonLineNumbers())).Select(d =>
                 {
                     if (isJsOrTs && d.importFile is null)
                     {
