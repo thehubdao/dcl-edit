@@ -206,12 +206,22 @@ namespace Assets.Scripts.System
                 }
 
                 // find raw component markup texts
-                var rawTexts = fileContents.Split(new[] {"#DCECOMP"}, StringSplitOptions.None);
+                //var rawTexts = fileContents.Split(new[] {"#DCECOMP"}, StringSplitOptions.None);
+
+                var indices = GetIndicesOf(fileContents, "#DCECOMP");
 
                 // limit markup texts to the json only
-                var jsonTexts = rawTexts.Skip(1).Select(ExtractJsonFromRawString).Where(t => t != null);
+                //var jsonTexts = rawTexts.Skip(1).Select(ExtractJsonFromRawString).Where(t => t != null);
+                var jsonTexts = indices.Select(i => ExtractJsonFromRawString(fileContents, i + 8));
 
-                return jsonTexts.Select(t => JsonConvert.DeserializeObject<DceCompComponentData>(t, new JsonLineNumbers())).Select(d =>
+                var enumerable = jsonTexts as string[] ?? jsonTexts.ToArray();
+                if (enumerable.Length == 0)
+                    return Array.Empty<DceCompComponentData>();
+
+                Debug.Log($"jsonTexts.First(): {enumerable.First()}");
+
+
+                return enumerable.Select(t => JsonConvert.DeserializeObject<DceCompComponentData>(t, new JsonLineNumbers())).Select(d =>
                 {
                     if (isJsOrTs && d.importFile is null)
                     {
@@ -229,6 +239,29 @@ namespace Assets.Scripts.System
             }
         }
 
+        private List<int> GetIndicesOf(string haystack, string needle)
+        {
+            var i = 0;
+            var result = new List<int>();
+
+            while (i >= 0)
+            {
+                var newFind = haystack.IndexOf(needle, i, StringComparison.InvariantCulture);
+
+                if (newFind >= 0)
+                {
+                    result.Add(newFind);
+                    i = newFind + 1;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            return result;
+        }
+
         private string GetImportPathFromFilePath(string path)
         {
             var relativePath = StaticUtilities.MakeRelativePath(pathState.ProjectPath, path);
@@ -239,16 +272,62 @@ namespace Assets.Scripts.System
             return pathWithForwardSlashes;
         }
 
-        private string ExtractJsonFromRawString(string value)
+        private string ExtractJsonFromRawString(string value, int startingFrom)
         {
-            // has to start with '{'
-            value = value.Trim();
-
+            var reader = new StringReader(value);
             var result = new StringBuilder();
             var bracketLevel = 0;
 
-            foreach (var c in value)
+            // go to start
+            for (int i = 0; i < startingFrom; i++)
             {
+                var c = (char) reader.Read();
+
+                if (c == '\r')
+                {
+                    result.Append("\r");
+                }
+                else if (c == '\n')
+                {
+                    result.Append("\n");
+                }
+                else
+                {
+                    result.Append(" ");
+                }
+            }
+
+            // find start
+            while (reader.Peek() >= 0)
+            {
+                var c = (char) reader.Read();
+
+                if (c == '{')
+                {
+                    result.Append('{');
+                    bracketLevel++;
+                    break;
+                }
+
+                switch (c)
+                {
+                    case '\r':
+                        result.Append("\r");
+                        break;
+                    case '\n':
+                        result.Append("\n");
+                        break;
+                    default:
+                        result.Append(" ");
+                        break;
+                }
+            }
+
+            // extract json
+            while (reader.Peek() >= 0)
+            {
+                var c = (char) reader.Read();
+
                 switch (c)
                 {
                     case '{':
@@ -295,12 +374,29 @@ namespace Assets.Scripts.System
                         // start a block comment
                         commentMode = 1;
                         i++;
+                        result.Append("  ");
                     }
                     else if (text[i] == '/' && text[i + 1] == '/')
                     {
                         // start a line comment
                         commentMode = 2;
                         i++;
+                        result.Append("  ");
+                    }
+                    else
+                    {
+                        if (text[i] == '\n')
+                        {
+                            result.Append("\n");
+                        }
+                        else if (text[i] == '\r')
+                        {
+                            result.Append("\r");
+                        }
+                        else
+                        {
+                            result.Append(" ");
+                        }
                     }
                 }
                 else if (commentMode == 1)
@@ -312,6 +408,7 @@ namespace Assets.Scripts.System
                         // end the block comment
                         commentMode = 0;
                         i++;
+                        result.Append("  ");
                     }
                     else
                     {
@@ -323,10 +420,16 @@ namespace Assets.Scripts.System
                 {
                     // if currently in a line comment
                     // see if the next text is a new line
-                    if (text[i] == '\n' || text[i] == '\r')
+                    if (text[i] == '\n')
                     {
                         // end the line comment
-                        result.Append("\r\n");
+                        result.Append("\n");
+                        commentMode = 0;
+                    }
+                    else if (text[i] == '\r')
+                    {
+                        // end the line comment
+                        result.Append("\r");
                         commentMode = 0;
                     }
                     else

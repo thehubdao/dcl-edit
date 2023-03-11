@@ -14,7 +14,6 @@ namespace Assets.Scripts.Tests.EditModeTests
         [Test]
         public void FilterComments()
         {
-            var nl = "\r\n";
             var componentMarkupSystem = new CustomComponentMarkupSystem();
 
             {
@@ -25,7 +24,12 @@ First comment second line
 Some other code
 ");
 
-                Assert.AreEqual($"First comment first line{nl}First comment second line{nl}", result);
+                Assert.AreEqual(@"         
+  First comment first line
+First comment second line
+  
+               
+", result);
             }
             {
                 var result = componentMarkupSystem.FilterComments(@"Some code
@@ -33,7 +37,10 @@ Some other code
 Some other code
 ");
 
-                Assert.AreEqual($" Line comment{nl}", result);
+                Assert.AreEqual(@"         
+   Line comment
+               
+", result);
             }
             {
                 var result = componentMarkupSystem.FilterComments(@"Some code
@@ -44,7 +51,13 @@ First comment second line
 Some other code
 ");
 
-                Assert.AreEqual($"First comment first line{nl}First comment second line{nl} Line comment{nl}", result);
+                Assert.AreEqual(@"         
+  First comment first line
+First comment second line
+  
+   Line comment
+               
+", result);
             }
             {
                 var result = componentMarkupSystem.FilterComments(@"Some code
@@ -55,7 +68,13 @@ First comment second line
 Some other code
 ");
 
-                Assert.AreEqual($"First comment first line{nl}// Line comment in block comment{nl}First comment second line{nl}", result);
+                Assert.AreEqual(@"         
+  First comment first line
+// Line comment in block comment
+First comment second line
+  
+               
+", result);
             }
             {
                 var result = componentMarkupSystem.FilterComments(@"Some code
@@ -64,7 +83,11 @@ Some other code
                 Some other code
                 ");
 
-                Assert.AreEqual($" Line comment{nl} second line comment{nl}", result);
+                Assert.AreEqual(@"         
+                              Line comment
+       second line comment
+                               
+                ", result);
             }
         }
 
