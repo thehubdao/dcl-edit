@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
@@ -12,6 +14,8 @@ public class JsonLineNumbers : JsonConverter<JsonLineNumbers.JTokenWithLineInfo>
         public JToken token;
         public int line = -1;
         public int column = -1;
+        public string path;
+        public string lineText;
 
         public bool HasLineInfo()
         {
@@ -24,11 +28,13 @@ public class JsonLineNumbers : JsonConverter<JsonLineNumbers.JTokenWithLineInfo>
         }
     }
 
-    private int lineOffset;
+    private string[] completeJsonTextLines;
+    private string filePath;
 
-    public JsonLineNumbers(int lineOffset = 0)
+    public JsonLineNumbers(string completeJsonText, string filePath)
     {
-        this.lineOffset = lineOffset;
+        completeJsonTextLines = Regex.Split(completeJsonText, "\r\n|\r|\n", RegexOptions.None);
+        this.filePath = filePath;
     }
 
 
@@ -43,8 +49,10 @@ public class JsonLineNumbers : JsonConverter<JsonLineNumbers.JTokenWithLineInfo>
 
         if (reader is JsonTextReader textReader)
         {
-            token.line = textReader.LineNumber + lineOffset;
+            token.line = textReader.LineNumber;
             token.column = textReader.LinePosition;
+            token.path = filePath;
+            token.lineText = completeJsonTextLines[textReader.LineNumber - 1];
         }
 
         token.token = JToken.ReadFrom(reader);

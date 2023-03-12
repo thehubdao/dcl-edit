@@ -9,7 +9,8 @@
         "EditorState",
         "Interaction",
         "Events",
-        "Command"
+        "Command",
+        "Utility"
     ],
     "includePlatforms": [
         "Editor"

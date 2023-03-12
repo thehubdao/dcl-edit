@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using Assets.Scripts.System;
 using Assets.Scripts.Tests.EditModeTests.TestUtility;
@@ -97,7 +98,7 @@ First comment second line
             var componentMarkupSystem = new CustomComponentMarkupSystem();
             var pathState = new MockPathState("custom-component-markup");
 
-            componentMarkupSystem.FindCustomComponentMarkups(Path.Combine(pathState.ProjectPath, "come_code.ts"));
+            componentMarkupSystem.FindCustomComponentMarkups(Path.Combine(pathState.ProjectPath, "come_code.ts"), new List<IFileReadingProblem>());
         }
     }
 }
