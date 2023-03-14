@@ -180,7 +180,7 @@ namespace Assets.Scripts.System
         #region Metadata related methods
         private AssetHierarchyItem ScanDirectory(string fileSystemPath, string pathInHierarchy = "")
         {
-            CheckUpgrades(Directory.GetFiles(fileSystemPath, "*.*"));
+            CheckUpgrades(Directory.GetFiles(fileSystemPath, "*.dclasset"));
             
             string dirname = Path.GetFileName(fileSystemPath);
             string[] files = Directory.GetFiles(fileSystemPath, "*.*");
@@ -222,11 +222,6 @@ namespace Assets.Scripts.System
         {
             foreach (var assetFile in files)
             {
-                if (Path.GetExtension(assetFile) != ".dclasset")
-                {
-                    continue;
-                }
-                
                 fileUpgraderSystem.CheckUpgrades(assetFile);
             }
         }
