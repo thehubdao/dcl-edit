@@ -3,6 +3,7 @@ using Assets.Scripts.Events;
 using Assets.Scripts.Interaction;
 using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
+using Assets.Scripts.System.Utility;
 using Assets.Scripts.Visuals;
 using Assets.Scripts.Visuals.UiBuilder;
 using UnityEngine;
@@ -104,6 +105,7 @@ public class DclEditorInstaller : MonoInstaller
 
         Container.BindInterfacesAndSelfTo<AssetManagerSystem>().AsSingle();
 
+        Container.Bind<IAssetLoaderSystem>().To<V1AssetLoaderSystem>().AsSingle();
         Container.Bind<IAssetLoaderSystem>().To<FileAssetLoaderSystem>().AsCached().WithArguments("assets", false);
         Container.Bind<IAssetLoaderSystem>().To<FileAssetLoaderSystem>().AsCached().WithArguments("node_modules", true);
         Container.Bind<IAssetLoaderSystem>().To<BuilderAssetLoaderSystem>().AsSingle();
@@ -172,5 +174,8 @@ public class DclEditorInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<PanelSystem>().AsSingle();
         
         Container.BindInterfacesAndSelfTo<FileUpgraderSystem>().AsSingle();
+        
+        // Utilities
+        Container.BindInterfacesAndSelfTo<FileIOUtility>().AsSingle();
     }
 }
