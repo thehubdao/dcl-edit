@@ -10,10 +10,10 @@ namespace Assets.Scripts.System
     public class FileManagerSystem
     {
         // Dependencies
-        private PathState pathState;
+        private IPathState pathState;
 
         [Inject]
-        private void Construct(PathState pathState)
+        public void Construct(IPathState pathState)
         {
             this.pathState = pathState;
         }

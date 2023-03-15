@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,45 +12,12 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 using Zenject;
+using static Assets.Scripts.System.SettingsSystem;
 
 namespace Assets.Scripts.System
 {
     public class CustomComponentMarkupSystem
     {
-#pragma warning disable CS0649 // unassigned field
-
-        public struct DceCompComponentData
-        {
-            public string @className;
-
-            [CanBeNull]
-            public string @componentName;
-
-            [CanBeNull]
-            public string @importFile;
-
-            [CanBeNull]
-            public List<DceCompPropertyData> @properties;
-        }
-
-        public struct DceCompPropertyData
-        {
-            public string @name;
-
-            /// <summary>
-            /// possible values:<br/>
-            /// string<br/>
-            /// number<br/>
-            /// vector3
-            /// </summary>
-            public JsonLineNumbers.JTokenWithLineInfo @type;
-
-            [CanBeNull]
-            public JsonLineNumbers.JTokenWithLineInfo @default;
-        }
-
-#pragma warning restore CS0649
-
         public class CustomComponentProblem : IFileReadingProblem
         {
             public CustomComponentProblem(string description, string location)
@@ -73,20 +41,25 @@ namespace Assets.Scripts.System
                 this.lineText = lineText;
             }
 
-            public CustomComponentException(string description, JsonLineNumbers.JTokenWithLineInfo token)
+            public CustomComponentException(string description, JToken token, string path)
             {
+                if (token is IJsonLineInfo lineInfo)
+                {
+                    lineInfo.HasLineInfo();
+
+                    this.line = lineInfo.LineNumber;
+                    this.column = lineInfo.LinePosition;
+                }
+
                 this.description = description;
-                this.line = token.line;
-                this.column = token.column;
-                this.path = token.path;
-                this.lineText = token.lineText;
+                this.path = path;
             }
 
             public string description { get; }
             public string path { get; }
 
-            private readonly int line;
-            private readonly int column;
+            private readonly int line = -1;
+            private readonly int column = -1;
             private readonly string lineText;
 
             public override string Message =>
@@ -101,18 +74,25 @@ namespace Assets.Scripts.System
         // Dependencies
         private FileManagerSystem fileManagerSystem;
         private AvailableComponentsState availableComponentsState;
-        private PathState pathState;
+        private IPathState pathState;
 
         [Inject]
-        private void Construct(
+        public void Construct(
             FileManagerSystem fileManagerSystem,
             AvailableComponentsState availableComponentsState,
-            PathState pathState)
+            IPathState pathState)
         {
             this.fileManagerSystem = fileManagerSystem;
             this.availableComponentsState = availableComponentsState;
             this.pathState = pathState;
         }
+
+        private const string sourcePathKey = "shiylheavarojzbhqacgzybfge"; // magic string
+
+        private const string classKey = "class";
+        private const string componentKey = "component";
+        private const string importFileKey = "import-file";
+        private const string propertiesKey = "properties";
 
 
         public void SetupCustomComponents()
@@ -126,37 +106,13 @@ namespace Assets.Scripts.System
                         .GetAllFilesWithExtension(".js", ".ts", ".dcecomp")
                         .SelectMany(path => FindCustomComponentMarkups(path, customComponentProblems));
 
-                foreach (var componentData in markUpDates)
+                foreach (var componentObject in markUpDates)
                 {
+                    var path = componentObject[sourcePathKey]!.Value<string>();
+
                     try
                     {
-                        var properties = componentData.properties ?? new List<DceCompPropertyData>();
-
-                        var propertyDefinitions = properties
-                            .Select(p =>
-                            {
-                                var typeFromString = GetTypeFromString(p.type);
-                                return new DclComponent.DclComponentProperty.PropertyDefinition(
-                                    p.name,
-                                    typeFromString,
-                                    GetDefaultPropertyValue(typeFromString, p.@default));
-                            })
-                            .ToArray();
-
-                        var componentDefinition = new DclComponent.ComponentDefinition(
-                            componentData.className,
-                            componentData.componentName ?? componentData.className,
-                            componentData.importFile,
-                            propertyDefinitions);
-
-                        var availableComponent = new AvailableComponentsState.AvailableComponent
-                        {
-                            category = "Custom",
-                            availableInAddComponentMenu = true,
-                            componentDefinition = componentDefinition
-                        };
-
-                        availableComponentsState.UpdateCustomComponent(availableComponent);
+                        MakeComponent(componentObject, path);
                     }
                     catch (CustomComponentException cce)
                     {
@@ -175,28 +131,111 @@ namespace Assets.Scripts.System
             }
         }
 
-        private DclComponent.DclComponentProperty.PropertyType GetTypeFromString(JsonLineNumbers.JTokenWithLineInfo typeToken)
+        private void MakeComponent(JObject componentData, string path)
         {
-            string typeString;
-            try
+            // Component Class
+            // Get class
+            var classToken = componentData[classKey] ?? throw new CustomComponentException("A component has to have a class, that contains the name of the component class", componentData, path);
+
+            // Interpret class
+            var classValue = classToken.Value<string?>() ?? throw new CustomComponentException("Class has to be a string, that contains the class name of the component", classToken, path);
+
+
+            // Component Name
+            // Get component name
+            var componentToken = componentData[componentKey];
+
+            // Interpret component name
+            string? componentValue = null;
+            if (componentToken != null)
             {
-                typeString = typeToken.token.Value<string>();
+                componentValue = componentToken.Value<string?>() ?? throw new CustomComponentException("Component has to be a string, that contains the component name", componentToken, path);
             }
-            catch (Exception)
+
+
+            // Import File
+            // Get import file
+            var importFileToken = componentData[importFileKey] ?? throw new CustomComponentException("A component in a .dcecomp file has to have a import-file property, that contains the path to the file to import the component from relative to the project root", componentData, path);
+
+            // Interpret import file
+            var importFileValue = importFileToken.Value<string?>() ?? throw new CustomComponentException("Import file has to be a string, that contains the path to the file to import the component from relative to the project root", importFileToken, path);
+
+
+            // Properties
+            // Get properties
+            var propertiesToken = componentData[propertiesKey];
+
+            // Get definitions
+            var propertyDefinitions = GetPropertyDefinitions(propertiesToken, path);
+
+
+            // Setup
+            // Setup component definition
+            var componentDefinition = new DclComponent.ComponentDefinition(
+                classValue,
+                componentValue ?? classValue,
+                importFileValue,
+                propertyDefinitions);
+
+            // Setup available component
+            var availableComponent = new AvailableComponentsState.AvailableComponent
             {
-                throw new CustomComponentException("The type has to have a string value", typeToken);
-            }
+                category = "Custom",
+                availableInAddComponentMenu = true,
+                componentDefinition = componentDefinition
+            };
+
+            // Push available component (set or overwrite)
+            availableComponentsState.UpdateCustomComponent(availableComponent);
+        }
+
+        private DclComponent.DclComponentProperty.PropertyDefinition[] GetPropertyDefinitions(JToken? propertiesToken, string path)
+        {
+            return propertiesToken?
+                .Select(p =>
+                {
+                    // Get name
+                    var nameToken = p["name"] ?? throw new CustomComponentException("Properties has to have a name", p, path);
+
+                    // Interpret name
+                    var nameValue = nameToken.Value<string?>() ?? throw new CustomComponentException("The name has to be a string", nameToken, path);
+
+
+                    // Get type
+                    var type = p["type"] ?? throw new CustomComponentException($"The property {nameToken} has to have a type", p, path);
+
+                    // Interpret type
+                    var typeValue = GetTypeFromString(type, path);
+
+
+                    // Get default
+                    var defaultToken = p["default"];
+
+                    // Interpret type
+                    var defaultValue = GetDefaultPropertyValue(typeValue, defaultToken, path);
+
+                    return new DclComponent.DclComponentProperty.PropertyDefinition(
+                        nameValue,
+                        typeValue,
+                        defaultValue);
+                })
+                .ToArray() ?? Array.Empty<DclComponent.DclComponentProperty.PropertyDefinition>(); // if properties is not present, create an empty property definition list
+        }
+
+        private DclComponent.DclComponentProperty.PropertyType GetTypeFromString(JToken typeToken, string path)
+        {
+            var typeString = typeToken.Value<string?>() ?? throw new CustomComponentException("The type has to have a string value", typeToken, path);
 
             return typeString switch
             {
                 "string" => DclComponent.DclComponentProperty.PropertyType.String,
                 "number" => DclComponent.DclComponentProperty.PropertyType.Float,
                 "vector3" => DclComponent.DclComponentProperty.PropertyType.Vector3,
-                _ => throw new CustomComponentException("Type has to be one of the following values: \"string\", \"number\", \"vector3\" ", typeToken)
+                _ => throw new CustomComponentException("Type has to be one of the following values: \"string\", \"number\", \"vector3\" ", typeToken, "")
             };
         }
 
-        private dynamic GetDefaultPropertyValue(DclComponent.DclComponentProperty.PropertyType type, [CanBeNull] JsonLineNumbers.JTokenWithLineInfo value)
+        private dynamic? GetDefaultPropertyValue(DclComponent.DclComponentProperty.PropertyType type, JToken? value, string path)
         {
             if (value == null)
             {
@@ -206,70 +245,42 @@ namespace Assets.Scripts.System
             return type switch
             {
                 DclComponent.DclComponentProperty.PropertyType.None => null,
-                DclComponent.DclComponentProperty.PropertyType.String => GetStringFromJObject(value),
-                DclComponent.DclComponentProperty.PropertyType.Int => GetIntFromJObject(value),
-                DclComponent.DclComponentProperty.PropertyType.Float => GetFloatFromJObject(value),
-                DclComponent.DclComponentProperty.PropertyType.Boolean => GetBoolFromJObject(value),
-                DclComponent.DclComponentProperty.PropertyType.Vector3 => GetVector3FromJObject(value),
-                DclComponent.DclComponentProperty.PropertyType.Quaternion => GetQuaternionFromJObject(value),
-                DclComponent.DclComponentProperty.PropertyType.Asset => GetGuidFromJObject(value),
+                DclComponent.DclComponentProperty.PropertyType.String => GetStringFromJToken(value, path),
+                DclComponent.DclComponentProperty.PropertyType.Int => GetIntFromJToken(value, path),
+                DclComponent.DclComponentProperty.PropertyType.Float => GetFloatFromJObject(value, path),
+                DclComponent.DclComponentProperty.PropertyType.Boolean => GetBoolFromJObject(value, path),
+                DclComponent.DclComponentProperty.PropertyType.Vector3 => GetVector3FromJObject(value, path),
+                DclComponent.DclComponentProperty.PropertyType.Quaternion => GetQuaternionFromJObject(value, path),
+                DclComponent.DclComponentProperty.PropertyType.Asset => GetGuidFromJObject(value, path),
                 _ => throw new ArgumentOutOfRangeException(nameof(type))
             };
         }
 
-        private string GetStringFromJObject(JsonLineNumbers.JTokenWithLineInfo token)
+        private string GetStringFromJToken(JToken token, string path)
         {
-            try
-            {
-                return token.token.Value<string>();
-            }
-            catch (Exception)
-            {
-                throw new CustomComponentException("The default of a property of type string has to be a string", token);
-            }
+            return token.Value<string?>() ?? throw new CustomComponentException("The default of a property of type string has to be a string", token, path);
         }
 
-        private int GetIntFromJObject(JsonLineNumbers.JTokenWithLineInfo token)
+        private int GetIntFromJToken(JToken token, string path)
         {
-            try
-            {
-                return token.token.Value<int>();
-            }
-            catch (Exception)
-            {
-                throw new CustomComponentException("The default of a property of type int has to be an number", token);
-            }
+            return token.Value<int?>() ?? throw new CustomComponentException("The default of a property of type int has to be an number", token, path);
         }
 
-        private float GetFloatFromJObject(JsonLineNumbers.JTokenWithLineInfo token)
+        private float GetFloatFromJObject(JToken token, string path)
         {
-            try
-            {
-                return token.token.Value<float>();
-            }
-            catch (Exception)
-            {
-                throw new CustomComponentException("The default of a property of type number has to be a number", token);
-            }
+            return token.Value<float?>() ?? throw new CustomComponentException("The default of a property of type number has to be a number", token, path);
         }
 
-        private bool GetBoolFromJObject(JsonLineNumbers.JTokenWithLineInfo token)
+        private bool GetBoolFromJObject(JToken token, string path)
         {
-            try
-            {
-                return token.token.Value<bool>();
-            }
-            catch (Exception)
-            {
-                throw new CustomComponentException("The default of a property of type bool has to be a bool", token);
-            }
+            return token.Value<bool?>() ?? throw new CustomComponentException("The default of a property of type bool has to be a bool", token, path);
         }
 
-        private Vector3 GetVector3FromJObject(JsonLineNumbers.JTokenWithLineInfo token)
+        private Vector3 GetVector3FromJObject(JToken token, string path)
         {
             // value is a list with 3 numbers
             // extract that list
-            var list = token.token.Value<JArray>();
+            var list = token.Value<JArray>();
 
             // TODO: catch errors
 
@@ -282,18 +293,18 @@ namespace Assets.Scripts.System
             return new Vector3(x, y, z);
         }
 
-        private Quaternion GetQuaternionFromJObject(JsonLineNumbers.JTokenWithLineInfo token)
+        private Quaternion GetQuaternionFromJObject(JToken token, string path)
         {
             return Quaternion.identity; // TODO: get actual default value
         }
 
-        private Guid GetGuidFromJObject(JsonLineNumbers.JTokenWithLineInfo token)
+        private Guid GetGuidFromJObject(JToken token, string path)
         {
             return Guid.Empty;
         }
 
 
-        private dynamic GetDefaultDefaultFromType(DclComponent.DclComponentProperty.PropertyType type)
+        private dynamic? GetDefaultDefaultFromType(DclComponent.DclComponentProperty.PropertyType type)
         {
             return type switch
             {
@@ -309,7 +320,7 @@ namespace Assets.Scripts.System
             };
         }
 
-        public DceCompComponentData[] FindCustomComponentMarkups(string path, List<IFileReadingProblem> problems)
+        public JObject[] FindCustomComponentMarkups(string path, List<IFileReadingProblem> problems)
         {
             try
             {
@@ -330,7 +341,7 @@ namespace Assets.Scripts.System
 
                 var enumerable = jsonTexts as string[] ?? jsonTexts.ToArray();
                 if (enumerable.Length == 0)
-                    return Array.Empty<DceCompComponentData>();
+                    return Array.Empty<JObject>();
 
                 //Debug.Log($"jsonTexts.First(): {enumerable.First()}");
 
@@ -340,19 +351,21 @@ namespace Assets.Scripts.System
                     {
                         try
                         {
-                            return JsonConvert.DeserializeObject<DceCompComponentData>(t, new JsonLineNumbers(t, path)).InEnumerable();
+                            var jObject = JObject.Load(new JsonTextReader(new StringReader(t)));
+                            jObject[sourcePathKey] = path;
+                            return jObject.InEnumerable();
                         }
                         catch (Exception)
                         {
                             problems.Add(new CustomComponentProblem("A #DCECOMP tag was not followed by valid Json", path));
-                            return Enumerable.Empty<DceCompComponentData>();
+                            return Enumerable.Empty<JObject>();
                         }
                     })
                     .Select(d =>
                     {
-                        if (isJsOrTs && d.importFile is null)
+                        if (isJsOrTs && d[importFileKey] is null)
                         {
-                            d.importFile = GetImportPathFromFilePath(path);
+                            d[importFileKey] = GetImportPathFromFilePath(path);
                         }
 
                         return d;
@@ -363,7 +376,7 @@ namespace Assets.Scripts.System
             {
                 problems.Add(new CustomComponentProblem(e.Message, path));
 
-                return Array.Empty<DceCompComponentData>();
+                return Array.Empty<JObject>();
             }
         }
 
