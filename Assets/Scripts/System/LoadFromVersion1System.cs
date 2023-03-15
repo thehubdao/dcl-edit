@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Assets.Scripts.ClassModels;
 using Assets.Scripts.EditorState;
 using UnityEngine;
 
@@ -209,20 +210,6 @@ namespace Assets.Scripts.System
             throw new IOException($"File {path} not found");
         }
 
-        [Serializable]
-        private class AssetsJsonWrapper
-        {
-            [Serializable]
-            public struct GltfAssetWrapper
-            {
-                public string name;
-                public string id;
-                public string gltfPath;
-            }
-
-            public List<GltfAssetWrapper> gltfAssets;
-        }
-
         private struct SpecificTransformJson
         {
             public Vector3 pos;
@@ -252,31 +239,15 @@ namespace Assets.Scripts.System
             var specificTransformJson = JsonUtility.FromJson<SpecificGLTFShapeJson>(componentJson.specifics);
 
             var assetJson = assetsJson.gltfAssets.Find(a => a.id == specificTransformJson.assetID);
-            var (didParse, realId) = GetAssetIdFromAssetPath(assetJson.gltfPath);
 
             var newGltfShapeComponent = new DclComponent("GLTFShape", "Shape");
-            newGltfShapeComponent.Properties.Add(new DclComponent.DclComponentProperty<Guid>("asset", didParse ? realId : Guid.Parse(specificTransformJson.assetID)));
+            newGltfShapeComponent.Properties.Add(new DclComponent.DclComponentProperty<Guid>("asset", Guid.Parse(specificTransformJson.assetID)));
             newGltfShapeComponent.Properties.Add(new DclComponent.DclComponentProperty<bool>("visible", true));
             newGltfShapeComponent.Properties.Add(new DclComponent.DclComponentProperty<bool>("withCollisions", true));
             newGltfShapeComponent.Properties.Add(new DclComponent.DclComponentProperty<bool>("isPointerBlocker", true));
 
             return newGltfShapeComponent;
         }
-
-        private (bool didParse, Guid assetId) GetAssetIdFromAssetPath(string assetJsonGltfPath)
-        {
-            var folderStructureArray = assetJsonGltfPath.Split('/');
-            foreach (var folder in folderStructureArray)
-            {
-                if (Guid.TryParse(folder, out var realId))
-                {
-                    return (true, realId);
-                }
-            }
-            
-            return (false, Guid.Empty);
-        }
-
 
         private DclComponent MakeBoxShapeComponentFromJson(EntityComponentJson _)
         {
