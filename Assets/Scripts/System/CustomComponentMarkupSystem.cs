@@ -32,13 +32,13 @@ namespace Assets.Scripts.System
 
         public class CustomComponentException : Exception, IFileReadingProblem
         {
-            public CustomComponentException(string description, int line, int column, string path, string lineText)
+            public CustomComponentException(string description, int line, int column, string path /*, string lineText*/)
             {
                 this.description = description;
                 this.line = line;
                 this.column = column;
                 this.path = path;
-                this.lineText = lineText;
+                //this.lineText = lineText;
             }
 
             public CustomComponentException(string description, JToken token, string path)
@@ -60,7 +60,7 @@ namespace Assets.Scripts.System
 
             private readonly int line = -1;
             private readonly int column = -1;
-            private readonly string lineText;
+            //private readonly string lineText;
 
             public override string Message =>
                 $"{description}\n  at {location}";
@@ -68,7 +68,7 @@ namespace Assets.Scripts.System
 
             public string location => $"{path}:{line}:{column}";
 
-            public string faultyCode => $"{lineText}\n{"^".Indent(column, " ")}";
+            //public string faultyCode => $"{lineText}\n{"^".Indent(column, " ")}";
         }
 
         // Dependencies
@@ -94,8 +94,28 @@ namespace Assets.Scripts.System
         private const string importFileKey = "import-file";
         private const string propertiesKey = "properties";
 
+        private const string fileExtensionTs = ".ts";
+        private const string fileExtensionJs = ".js";
+        private const string fileExtensionCompFile = ".dcecomp";
 
-        public void SetupCustomComponents()
+        public const string exceptionMessageClassNotPresent = "A component has to have a class, that contains the name of the component class";
+        public const string exceptionMessageClassWrongType = "Class has to be a string, that contains the class name of the component";
+        public const string exceptionMessageComponentWrongType = "Component has to be a string, that contains the component name";
+        public const string exceptionMessageImportFileNotPresent = "A component in a .dcecomp file has to have a import-file property, that contains the path to the file to import the component from relative to the project root";
+        public const string exceptionMessageImportFileWrongType = "Import file has to be a string, that contains the path to the file to import the component from relative to the project root";
+        public const string exceptionMessagePropertyNameNotPresent = "The property has to have a name";
+        public const string exceptionMessagePropertyNameWrongType = "The property name has to be a string";
+        public const string exceptionMessagePropertyTypeNotPresent = "The property has to have a type";
+        public const string exceptionMessagePropertyTypeWrongType = "The property type has to be a string";
+        public const string exceptionMessagePropertyTypeWrongOption = "Type has to be one of the following values: \"string\", \"number\", \"vector3\"";
+        public const string exceptionMessageDefaultWrongTypeString = "The default of a property of type string has to be a string";
+        public const string exceptionMessageDefaultWrongTypeInt = "The default of a property of type int has to be an number";
+        public const string exceptionMessageDefaultWrongTypeNumber = "The default of a property of type number has to be a number";
+        public const string exceptionMessageDefaultWrongTypeBool = "The default of a property of type bool has to be a bool";
+        public const string exceptionMessageInvalidJson = "A #DCECOMP tag was not followed by valid Json";
+
+
+        public List<IFileReadingProblem> SetupCustomComponents()
         {
             try
             {
@@ -103,7 +123,7 @@ namespace Assets.Scripts.System
 
                 var markUpDates =
                     fileManagerSystem
-                        .GetAllFilesWithExtension(".js", ".ts", ".dcecomp")
+                        .GetAllFilesWithExtension(fileExtensionJs, fileExtensionTs, fileExtensionCompFile)
                         .SelectMany(path => FindCustomComponentMarkups(path, customComponentProblems));
 
                 foreach (var componentObject in markUpDates)
@@ -124,10 +144,17 @@ namespace Assets.Scripts.System
                 {
                     Debug.LogWarning($"{problem.description} at {problem.location}");
                 }
+
+                return customComponentProblems;
             }
             catch (Exception e)
             {
                 Debug.LogException(e);
+
+                return new List<IFileReadingProblem>
+                {
+                    new CustomComponentProblem(e.Message, "")
+                };
             }
         }
 
@@ -135,10 +162,10 @@ namespace Assets.Scripts.System
         {
             // Component Class
             // Get class
-            var classToken = componentData[classKey] ?? throw new CustomComponentException("A component has to have a class, that contains the name of the component class", componentData, path);
+            var classToken = componentData[classKey] ?? throw new CustomComponentException(exceptionMessageClassNotPresent, componentData, path);
 
             // Interpret class
-            var classValue = classToken.Value<string?>() ?? throw new CustomComponentException("Class has to be a string, that contains the class name of the component", classToken, path);
+            var classValue = classToken.Value<string?>() ?? throw new CustomComponentException(exceptionMessageClassWrongType, classToken, path);
 
 
             // Component Name
@@ -149,16 +176,16 @@ namespace Assets.Scripts.System
             string? componentValue = null;
             if (componentToken != null)
             {
-                componentValue = componentToken.Value<string?>() ?? throw new CustomComponentException("Component has to be a string, that contains the component name", componentToken, path);
+                componentValue = componentToken.Value<string?>() ?? throw new CustomComponentException(exceptionMessageComponentWrongType, componentToken, path);
             }
 
 
             // Import File
             // Get import file
-            var importFileToken = componentData[importFileKey] ?? throw new CustomComponentException("A component in a .dcecomp file has to have a import-file property, that contains the path to the file to import the component from relative to the project root", componentData, path);
+            var importFileToken = componentData[importFileKey] ?? throw new CustomComponentException(exceptionMessageImportFileNotPresent, componentData, path);
 
             // Interpret import file
-            var importFileValue = importFileToken.Value<string?>() ?? throw new CustomComponentException("Import file has to be a string, that contains the path to the file to import the component from relative to the project root", importFileToken, path);
+            var importFileValue = importFileToken.Value<string?>() ?? throw new CustomComponentException(exceptionMessageImportFileWrongType, importFileToken, path);
 
 
             // Properties
@@ -195,14 +222,14 @@ namespace Assets.Scripts.System
                 .Select(p =>
                 {
                     // Get name
-                    var nameToken = p["name"] ?? throw new CustomComponentException("Properties has to have a name", p, path);
+                    var nameToken = p["name"] ?? throw new CustomComponentException(exceptionMessagePropertyNameNotPresent, p, path);
 
                     // Interpret name
-                    var nameValue = nameToken.Value<string?>() ?? throw new CustomComponentException("The name has to be a string", nameToken, path);
+                    var nameValue = nameToken.Value<string?>() ?? throw new CustomComponentException(exceptionMessagePropertyNameWrongType, nameToken, path);
 
 
                     // Get type
-                    var type = p["type"] ?? throw new CustomComponentException($"The property {nameToken} has to have a type", p, path);
+                    var type = p["type"] ?? throw new CustomComponentException(exceptionMessagePropertyTypeNotPresent, p, path);
 
                     // Interpret type
                     var typeValue = GetTypeFromString(type, path);
@@ -224,14 +251,14 @@ namespace Assets.Scripts.System
 
         private DclComponent.DclComponentProperty.PropertyType GetTypeFromString(JToken typeToken, string path)
         {
-            var typeString = typeToken.Value<string?>() ?? throw new CustomComponentException("The type has to have a string value", typeToken, path);
+            var typeString = typeToken.Value<string?>() ?? throw new CustomComponentException(exceptionMessagePropertyTypeWrongType, typeToken, path);
 
             return typeString switch
             {
                 "string" => DclComponent.DclComponentProperty.PropertyType.String,
                 "number" => DclComponent.DclComponentProperty.PropertyType.Float,
                 "vector3" => DclComponent.DclComponentProperty.PropertyType.Vector3,
-                _ => throw new CustomComponentException("Type has to be one of the following values: \"string\", \"number\", \"vector3\" ", typeToken, "")
+                _ => throw new CustomComponentException(exceptionMessagePropertyTypeWrongOption, typeToken, "")
             };
         }
 
@@ -258,22 +285,22 @@ namespace Assets.Scripts.System
 
         private string GetStringFromJToken(JToken token, string path)
         {
-            return token.Value<string?>() ?? throw new CustomComponentException("The default of a property of type string has to be a string", token, path);
+            return token.Value<string?>() ?? throw new CustomComponentException(exceptionMessageDefaultWrongTypeString, token, path);
         }
 
         private int GetIntFromJToken(JToken token, string path)
         {
-            return token.Value<int?>() ?? throw new CustomComponentException("The default of a property of type int has to be an number", token, path);
+            return token.Value<int?>() ?? throw new CustomComponentException(exceptionMessageDefaultWrongTypeInt, token, path);
         }
 
         private float GetFloatFromJObject(JToken token, string path)
         {
-            return token.Value<float?>() ?? throw new CustomComponentException("The default of a property of type number has to be a number", token, path);
+            return token.Value<float?>() ?? throw new CustomComponentException(exceptionMessageDefaultWrongTypeNumber, token, path);
         }
 
         private bool GetBoolFromJObject(JToken token, string path)
         {
-            return token.Value<bool?>() ?? throw new CustomComponentException("The default of a property of type bool has to be a bool", token, path);
+            return token.Value<bool?>() ?? throw new CustomComponentException(exceptionMessageDefaultWrongTypeBool, token, path);
         }
 
         private Vector3 GetVector3FromJObject(JToken token, string path)
@@ -327,7 +354,7 @@ namespace Assets.Scripts.System
                 var fileContents = File.ReadAllText(path);
 
                 // if file is js or ts, filter out everything, that is not a comment
-                var isJsOrTs = Path.GetExtension(path) == ".js" || Path.GetExtension(path) == ".ts";
+                var isJsOrTs = Path.GetExtension(path) == fileExtensionJs || Path.GetExtension(path) == fileExtensionTs;
                 if (isJsOrTs)
                 {
                     fileContents = FilterComments(fileContents);
@@ -357,7 +384,7 @@ namespace Assets.Scripts.System
                         }
                         catch (Exception)
                         {
-                            problems.Add(new CustomComponentProblem("A #DCECOMP tag was not followed by valid Json", path));
+                            problems.Add(new CustomComponentProblem(exceptionMessageInvalidJson, path));
                             return Enumerable.Empty<JObject>();
                         }
                     })
