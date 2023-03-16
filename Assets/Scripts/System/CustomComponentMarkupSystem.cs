@@ -98,6 +98,8 @@ namespace Assets.Scripts.System
         private const string fileExtensionJs = ".js";
         private const string fileExtensionCompFile = ".dcecomp";
 
+        private const string componentStartTag = "#DCECOMP";
+
         public const string exceptionMessageClassNotPresent = "A component has to have a class, that contains the name of the component class";
         public const string exceptionMessageClassWrongType = "Class has to be a string, that contains the class name of the component";
         public const string exceptionMessageComponentWrongType = "Component has to be a string, that contains the component name";
@@ -124,7 +126,7 @@ namespace Assets.Scripts.System
                 var markUpDates =
                     fileManagerSystem
                         .GetAllFilesWithExtension(fileExtensionJs, fileExtensionTs, fileExtensionCompFile)
-                        .SelectMany(path => FindCustomComponentMarkups(path, customComponentProblems));
+                        .SelectMany(path => FindCustomComponentMarkupsInFile(path, customComponentProblems));
 
                 foreach (var componentObject in markUpDates)
                 {
@@ -347,7 +349,7 @@ namespace Assets.Scripts.System
             };
         }
 
-        public JObject[] FindCustomComponentMarkups(string path, List<IFileReadingProblem> problems)
+        public IEnumerable<JObject> FindCustomComponentMarkupsInFile(string path, List<IFileReadingProblem> problems)
         {
             try
             {
@@ -361,43 +363,35 @@ namespace Assets.Scripts.System
                 }
 
                 // find raw component markup texts
-                var indices = GetIndicesOf(fileContents, "#DCECOMP");
+                var indices = GetIndicesOf(fileContents, componentStartTag);
 
                 // limit markup texts to the json only
-                var jsonTexts = indices.Select(i => ExtractJsonFromRawString(fileContents, i + 8));
+                var jObjects = new List<JObject>();
+                for (var i = 0; i < indices.Count; i++)
+                {
+                    var currentIndex = indices[i];
+                    var lengthToNextIndex = (i + 1 < indices.Count) ? (indices[i + 1] - currentIndex) : -1;
+                    var extractedJson = ExtractJsonFromRawString(fileContents, currentIndex, lengthToNextIndex);
 
-                var enumerable = jsonTexts as string[] ?? jsonTexts.ToArray();
-                if (enumerable.Length == 0)
-                    return Array.Empty<JObject>();
-
-                //Debug.Log($"jsonTexts.First(): {enumerable.First()}");
-
-
-                return enumerable
-                    .SelectMany(t =>
+                    try
                     {
-                        try
+                        var jObject = JObject.Load(new JsonTextReader(new StringReader(extractedJson)));
+                        jObject[sourcePathKey] = path;
+
+                        if (isJsOrTs && jObject[importFileKey] is null)
                         {
-                            var jObject = JObject.Load(new JsonTextReader(new StringReader(t)));
-                            jObject[sourcePathKey] = path;
-                            return jObject.InEnumerable();
-                        }
-                        catch (Exception)
-                        {
-                            problems.Add(new CustomComponentProblem(exceptionMessageInvalidJson, path));
-                            return Enumerable.Empty<JObject>();
-                        }
-                    })
-                    .Select(d =>
-                    {
-                        if (isJsOrTs && d[importFileKey] is null)
-                        {
-                            d[importFileKey] = GetImportPathFromFilePath(path);
+                            jObject[importFileKey] = GetImportPathFromFilePath(path);
                         }
 
-                        return d;
-                    })
-                    .ToArray();
+                        jObjects.Add(jObject);
+                    }
+                    catch (Exception)
+                    {
+                        problems.Add(new CustomComponentProblem(exceptionMessageInvalidJson, path));
+                    }
+                }
+
+                return jObjects;
             }
             catch (Exception e)
             {
@@ -440,14 +434,19 @@ namespace Assets.Scripts.System
             return pathWithForwardSlashes;
         }
 
-        private string ExtractJsonFromRawString(string value, int startingFrom)
+        private string ExtractJsonFromRawString(string value, int startingFrom, int maxLength)
         {
             var reader = new StringReader(value);
             var result = new StringBuilder();
             var bracketLevel = 0;
 
+            if (maxLength < 0)
+            {
+                maxLength = int.MaxValue;
+            }
+
             // go to start
-            for (int i = 0; i < startingFrom; i++)
+            for (var i = 0; i < startingFrom + componentStartTag.Length; i++)
             {
                 var c = (char) reader.Read();
 
@@ -465,10 +464,14 @@ namespace Assets.Scripts.System
                 }
             }
 
+            var j = 0;
+
+
             // find start
-            while (reader.Peek() >= 0)
+            while (reader.Peek() >= 0 && j < maxLength)
             {
                 var c = (char) reader.Read();
+                j++;
 
                 if (c == '{')
                 {
@@ -492,9 +495,10 @@ namespace Assets.Scripts.System
             }
 
             // extract json
-            while (reader.Peek() >= 0)
+            while (reader.Peek() >= 0 && j < maxLength)
             {
                 var c = (char) reader.Read();
+                j++;
 
                 switch (c)
                 {
