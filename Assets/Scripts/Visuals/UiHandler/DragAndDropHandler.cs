@@ -2,14 +2,13 @@ using System.Linq;
 using Assets.Scripts.Visuals.UiBuilder;
 using Assets.Scripts.Visuals.UiHandler;
 using TMPro;
+using Assets.Scripts.SceneState;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace Visuals.UiHandler
 {
-    using Assets.Scripts.SceneState;
-    using UnityEngine;
-    using UnityEngine.EventSystems;
-    using UnityEngine.UI;
-
     public class DragAndDropHandler : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler,
         IPointerEnterHandler, IPointerExitHandler
     {
@@ -20,22 +19,14 @@ namespace Visuals.UiHandler
         public DropHandler dropHandlerCenter;
         public DropHandler dropHandlerLower;
         public RightClickHandler rightClickHandler;
-        
-        private VerticalLayoutGroup verticalLayoutGroupParent;
-        private bool isBeingDragged = false;
-        private bool init = false;
-        private TextHandler.TextStyle previousTextStyle;
         public bool isExpanded = false;
         public bool isParentExpanded = false;
-
+        private VerticalLayoutGroup verticalLayoutGroupParent =>
+            transform.parent.gameObject.GetComponent<VerticalLayoutGroup>();
+        private bool isBeingDragged = false;
+        private TextHandler.TextStyle previousTextStyle;
+        
         private static bool isAnyDragged = false; // Quick and dirty fix TODO: Change it
-
-
-        private void Start()
-        {
-            init = true;
-            verticalLayoutGroupParent = transform.parent.gameObject.GetComponent<VerticalLayoutGroup>();
-        }
 
         public void OnBeginDrag(PointerEventData eventData)
         {
@@ -43,7 +34,6 @@ namespace Visuals.UiHandler
             clickableTextHandler.textStyle = TextHandler.TextStyle.Disabled;
             SetDragHandlerEnabled(false);
             rightClickHandler.enabled = false;
-
 
             isBeingDragged = true;
             isAnyDragged = true;
@@ -109,7 +99,7 @@ namespace Visuals.UiHandler
                 dropHandlerLower.SetCurrentHoverImageDefault();
             }
         }
-        
+
         /// <summary>
         /// Updates the upper drop handlers current hover image
         /// </summary>
@@ -124,7 +114,7 @@ namespace Visuals.UiHandler
             }
 
             var firstChild = parent.Children.OrderBy(e => e.hierarchyOrder).First();
-            
+
             if (firstChild.Id.Equals(draggedEntity.Id))
             {
                 if (isParentExpanded)
@@ -133,7 +123,7 @@ namespace Visuals.UiHandler
                     return;
                 }
             }
-            
+
             dropHandlerUpper.SetCurrentHoverImageDefault();
         }
 
@@ -144,17 +134,14 @@ namespace Visuals.UiHandler
 
         public void ResetHandler()
         {
-            if (init)
-            {
-                SetDropHandlersEnabled(false);
-                SetDragHandlerEnabled(true);
+            SetDropHandlersEnabled(false);
+            SetDragHandlerEnabled(true);
 
-                rightClickHandler.enabled = true;
+            rightClickHandler.enabled = true;
 
-                dropHandlerUpper.ResetHandler();
-                dropHandlerCenter.ResetHandler();
-                dropHandlerLower.ResetHandler();
-            }
+            dropHandlerUpper.ResetHandler();
+            dropHandlerCenter.ResetHandler();
+            dropHandlerLower.ResetHandler();
         }
 
         public void UpdateDropHandlers(DropActions dropActions)
@@ -163,8 +150,10 @@ namespace Visuals.UiHandler
             dropHandlerCenter.onDrop = dropActions.dropActionMiddle;
             dropHandlerLower.onDrop = dropActions.dropActionLower;
         }
-        
+
         //Don't remove!
-        public void OnDrag(PointerEventData eventData) { }
+        public void OnDrag(PointerEventData eventData)
+        {
+        }
     }
 }
