@@ -6,7 +6,6 @@ using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
 using Assets.Scripts.System.Utility;
 using Assets.Scripts.Utility;
-using Newtonsoft.Json;
 using UnityEngine;
 using Zenject;
 using Object = UnityEngine.Object;
@@ -177,8 +176,7 @@ namespace Assets.Scripts.System
                             metadata.assetMetadata.assetDisplayName
                         ),
                         metadata.thumbnail);
-                    var json = JsonConvert.SerializeObject(contents, Formatting.Indented);
-                    fileUtility.WriteToFile(metadata.metadataFilePath, json);
+                    fileUtility.WriteJsonToFile(metadata.metadataFilePath, contents);
                     break;
             }
         }

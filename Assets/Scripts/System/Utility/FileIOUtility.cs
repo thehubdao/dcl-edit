@@ -59,6 +59,14 @@ namespace Assets.Scripts.System.Utility
             }
         }
 
+        public bool WriteJsonToFile(string path, object contents)
+        {
+            if (contents == null) return false;
+            
+            var json = JsonConvert.SerializeObject(contents, Formatting.Indented);
+            return WriteToFile(path, json);
+        }
+
         public (bool success, byte[] result) ReadAllBytes(string path)
         {
             try
