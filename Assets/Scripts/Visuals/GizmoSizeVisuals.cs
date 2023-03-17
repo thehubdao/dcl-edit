@@ -11,7 +11,6 @@ namespace Assets.Scripts.Visuals
         private GizmoSizeSystem gizmoSizeSystem;
         private CameraState cameraState;
 
-        public GameObject doubleCoords;
 
         [Inject]
         private void Construct(GizmoSizeSystem gizmoSizeSystem, CameraState cameraState)
@@ -25,7 +24,6 @@ namespace Assets.Scripts.Visuals
             var size = gizmoSizeSystem.GetGizmoSize(transform.position);
 
             transform.localScale = new Vector3(size, size, size);
-            doubleCoords.transform.LookAt(cameraState.Position);
         }
     }
 }
