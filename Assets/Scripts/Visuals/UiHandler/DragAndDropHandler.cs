@@ -25,7 +25,7 @@ namespace Visuals.UiHandler
             transform.parent.gameObject.GetComponent<VerticalLayoutGroup>();
         private TextHandler.TextStyle previousTextStyle;
         private bool isDragging;
-        private event Action onDragStartEvent;
+        private static event Action onDragStartEvent;
 
         private void Awake()
         {
@@ -46,15 +46,18 @@ namespace Visuals.UiHandler
         
         public void OnEndDrag(PointerEventData eventData)
         {
-            clickableTextHandler.textStyle = previousTextStyle;
-            verticalLayoutGroupParent.enabled = false;
-
-            isDragging = false;
-            //SetDragHandlerEnabled(true);
-
-            verticalLayoutGroupParent.enabled = true;
+            EnterDefaultMode();
         }
 
+        private void EnterDefaultMode()
+        {
+            clickableTextHandler.textStyle = previousTextStyle;
+            verticalLayoutGroupParent.enabled = false;
+            SetDragHandlerEnabled(true);
+            verticalLayoutGroupParent.enabled = true;
+            isDragging = false;
+        }
+        
         private void EnterDragMode()
         {
             previousTextStyle = clickableTextHandler.textStyle;
@@ -65,6 +68,11 @@ namespace Visuals.UiHandler
 
         private void EnterDropModeOthers()
         {
+            if (isDragging)
+            {
+                return;
+            }
+
             SetDragHandlerEnabled(false);
             SetDropHandlersEnabled(true);
         }
@@ -77,7 +85,6 @@ namespace Visuals.UiHandler
 
         public void ResetHandler()
         {
-            Debug.Log("RESET");
             SetDropHandlersEnabled(false);
             SetDragHandlerEnabled(true);
             
