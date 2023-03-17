@@ -76,7 +76,7 @@ namespace Assets.Scripts.Visuals.UiHandler
         {
             actions = newHierarchyItemData.actions;
             rightClickHandler.onRightClick = newHierarchyItemData.rightClickAction;
-            dragAndDropHandler.UpdateDropHandlers(newHierarchyItemData.dropActions);
+            dragAndDropHandler.UpdateDropHandlerActions(newHierarchyItemData.dropActions);
             dragAndDropHandler.draggedEntity = newHierarchyItemData.draggedEntity;
             dragAndDropHandler.isExpanded = newHierarchyItemData.isExpanded;
             dragAndDropHandler.isParentExpanded = newHierarchyItemData.isParentExpanded;

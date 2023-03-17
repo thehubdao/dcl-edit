@@ -6,7 +6,6 @@ using TMPro;
 using Assets.Scripts.SceneState;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 namespace Visuals.UiHandler
 {
@@ -21,20 +20,21 @@ namespace Visuals.UiHandler
         public RightClickHandler rightClickHandler;
         public bool isExpanded = false;
         public bool isParentExpanded = false;
-        private VerticalLayoutGroup verticalLayoutGroupParent =>
-            transform.parent.gameObject.GetComponent<VerticalLayoutGroup>();
-        private TextHandler.TextStyle previousTextStyle;
         private bool isDragging;
+        private TextHandler.TextStyle previousTextStyle;
         private static event Action onDragStartEvent;
+        private static event Action onDragEndEvent;
 
         private void Awake()
         {
             onDragStartEvent += EnterDropModeOthers;
+            onDragEndEvent += EnterDefaultMode;
         }
 
         private void OnDestroy()
         {
             onDragStartEvent -= EnterDropModeOthers;
+            onDragEndEvent -= EnterDefaultMode;
         }
 
         public void OnBeginDrag(PointerEventData eventData)
@@ -46,16 +46,18 @@ namespace Visuals.UiHandler
         
         public void OnEndDrag(PointerEventData eventData)
         {
-            EnterDefaultMode();
+            if (isDragging)
+            {
+                clickableTextHandler.textStyle = previousTextStyle;
+                isDragging = false;
+            }
+            
+            onDragEndEvent?.Invoke();
         }
 
         private void EnterDefaultMode()
         {
-            clickableTextHandler.textStyle = previousTextStyle;
-            verticalLayoutGroupParent.enabled = false;
-            SetDragHandlerEnabled(true);
-            verticalLayoutGroupParent.enabled = true;
-            isDragging = false;
+            ResetHandler();
         }
         
         private void EnterDragMode()
@@ -85,12 +87,7 @@ namespace Visuals.UiHandler
 
         public void ResetHandler()
         {
-            SetDropHandlersEnabled(false);
             SetDragHandlerEnabled(true);
-            
-            UpdateDropHandlerLowerHoverImage();
-            UpdateDropHandlerUpperHoverImage();
-
             ResetDropHandlers();
         }
 
@@ -143,7 +140,7 @@ namespace Visuals.UiHandler
             dropHandlerUpper.SetCurrentHoverImageDefault();
         }
         
-        public void UpdateDropHandlers(DropActions dropActions)
+        public void UpdateDropHandlerActions(DropActions dropActions)
         {
             dropHandlerUpper.onDrop = dropActions.dropActionUpper;
             dropHandlerCenter.onDrop = dropActions.dropActionMiddle;
@@ -152,6 +149,9 @@ namespace Visuals.UiHandler
 
         private void ResetDropHandlers()
         {
+            UpdateDropHandlerLowerHoverImage();
+            UpdateDropHandlerUpperHoverImage();
+            
             dropHandlerUpper.ResetHandler();
             dropHandlerCenter.ResetHandler();
             dropHandlerLower.ResetHandler();

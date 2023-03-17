@@ -154,7 +154,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   clickableImage: {fileID: 3792036319085715899}
   hoverImageDefault: {fileID: 513654065776394079}
-  hoverImageOnTop: {fileID: 513654065776394079}
+  hoverImageSpecial: {fileID: 513654065776394079}
   rayCastTarget: 0
 --- !u!1 &6912314521369820767
 GameObject:
@@ -214,7 +214,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.22745098, g: 0.50980395, b: 0.9372549, a: 0}
+  m_Color: {r: 0.05490196, g: 0.16078432, b: 0.32941177, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 0

@@ -1,3 +1,5 @@
+using JetBrains.Annotations;
+
 namespace Visuals.UiHandler
 {
     using System;
@@ -14,12 +16,10 @@ namespace Visuals.UiHandler
         private Image currentHoverImage;
         [HideInInspector]
         public bool rayCastTarget = false;
-        private bool init = false;
 
-        private void Start()
+        private void Awake()
         {
             currentHoverImage = hoverImageDefault;
-            init = true;
         }
 
         public void OnDrop(PointerEventData eventData)
@@ -40,9 +40,9 @@ namespace Visuals.UiHandler
             if (!rayCastTarget || eventData.pointerDrag == null || !CheckIsDraggable(eventData))
             {
                 return;
-            };
+            }
             
-            ChangeImageAlpha(0.1f);
+            ShowCurrentImage();
         }
 
         //TODO make more efficient by preventing all scroll rects from being draggable
@@ -53,33 +53,31 @@ namespace Visuals.UiHandler
                 return;
             }
 
-            ChangeImageAlpha(0);
+            HideImages();
         }
 
-        private void ChangeImageAlpha(float alpha)
+        private void ShowCurrentImage()
         {
-            var value = Mathf.Clamp(alpha, 0, 1);
+            currentHoverImage.enabled = true;
+        }
 
-            var imageColor = currentHoverImage.color;
-            imageColor.a = value;
-            currentHoverImage.color = imageColor;
+        private void HideImages()
+        {
+            currentHoverImage.enabled = false;
+            hoverImageDefault.enabled = false;
+            hoverImageSpecial.enabled = false;
         }
         
         public void SetEnabled(bool enabled)
         {
             clickableImage.raycastTarget = enabled;
-            this.rayCastTarget = enabled;
+            rayCastTarget = enabled;
         }
 
         public void ResetHandler()
         {
-            if (!init)
-            {
-                return;
-            }
-            
+            HideImages();
             SetEnabled(false);
-            ChangeImageAlpha(0);
         }
 
         private static bool CheckIsDraggable(PointerEventData eventData)
