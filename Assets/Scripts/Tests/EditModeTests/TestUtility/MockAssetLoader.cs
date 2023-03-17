@@ -35,7 +35,7 @@ namespace Assets.Scripts.Tests.EditModeTests.TestUtility
                                 assetType = t.type
                             }
                         },
-                        $"/{t.filename}"
+                        $"/{t.filename}.dclasset"
                     )
                 );
 

@@ -15,11 +15,11 @@ namespace Assets.Scripts.System
     public class FileUpgraderSystem
     {
         [Inject]
-        public void Construct()
+        private void Construct()
         {
             SetupUpgrades();
         }
-
+        
         public struct Version
         {
             public int major;
@@ -151,8 +151,13 @@ namespace Assets.Scripts.System
             return new Version(versionString);
         }
 
-        public void SetFileVersion(string path, Version version)
+        private static void SetFileVersion(string path, Version version)
         {
+            if (!File.Exists(path))
+            {
+                return;
+            }
+            
             var fileContents = File.ReadAllText(path);
             var json = JObject.Parse(fileContents);
             json["dclEditVersionNumber"] = (JToken)version.ToString();
@@ -173,7 +178,7 @@ namespace Assets.Scripts.System
 
             try
             {
-                foreach (var (version, action) in upgradeActions)
+                foreach (var (version, actions) in upgradeActions)
                 {
                     if (version <= fileVersion)
                     {
@@ -185,7 +190,10 @@ namespace Assets.Scripts.System
                         break;
                     }
 
-                    action(path);
+                    foreach (var action in actions)
+                    {
+                        action(path);
+                    }
                 }
 
                 SetFileVersion(path, currentVersion);
@@ -223,11 +231,52 @@ namespace Assets.Scripts.System
         }
 
         // Upgrades
-        private readonly SortedDictionary<Version, Action<string>> upgradeActions = new SortedDictionary<Version, Action<string>>( /*Comparer<Version>.Create((l, r) => l > r ? -1 : l < r ? 1 : 0)*/);
+        private readonly SortedDictionary<Version, List<Action<string>>> upgradeActions = new SortedDictionary<Version, List<Action<string>>>( /*Comparer<Version>.Create((l, r) => l > r ? -1 : l < r ? 1 : 0)*/);
 
         private void SetupUpgrades()
         {
-            upgradeActions.Add((1, 0, 1), UpgradePropertySceneIdToSceneInSceneComponent);
+            upgradeActions.Add((1, 0, 2), new List<Action<string>>
+            {
+                UpgradeDclAssetFileNamesToIncludeOriginalFileEnding,
+                UpgradePropertySceneIdToSceneInSceneComponent
+            } );
+        }
+
+        private void UpgradeDclAssetFileNamesToIncludeOriginalFileEnding(string path)
+        {
+            if (!IsDclAssetFile(path))
+            {
+                return;
+            }
+            
+            try
+            {
+                var fileContents = File.ReadAllText(path);
+                var json = JObject.Parse(fileContents);
+
+                var assetMetaData = json["metadata"];
+                
+                if (assetMetaData == null)
+                {
+                    throw new Exception("No metadata in file!");
+                }
+                
+                var newMetaFileName = assetMetaData["assetFilename"] + ".dclasset";
+                var newPath = Path.Combine(Path.GetDirectoryName(path), newMetaFileName);
+                
+                var currentVersion = new Version(Application.version);
+                json["dclEditVersionNumber"] = currentVersion.ToString();
+                
+                var newFileContents = json.ToString(Formatting.Indented);
+                File.WriteAllText(newPath, newFileContents);
+                
+                File.Delete(path);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+                throw;
+            }
         }
 
         private void UpgradePropertySceneIdToSceneInSceneComponent(string path)

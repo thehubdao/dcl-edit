@@ -20,7 +20,7 @@ namespace Assets.Scripts.System
         private EditorEvents editorEvents;
         private LoadGltfFromFileSystem loadGltfFromFileSystem;
         private AssetThumbnailGeneratorSystem assetThumbnailGeneratorSystem;
-
+        private FileUpgraderSystem fileUpgraderSystem;
         private string relativePathInProject = "assets";
         private bool readOnly = false;
 
@@ -33,13 +33,15 @@ namespace Assets.Scripts.System
             PathState pathState,
             EditorEvents editorEvents,
             LoadGltfFromFileSystem loadGltfFromFileSystem,
-            AssetThumbnailGeneratorSystem assetThumbnailGeneratorSystem)
+            AssetThumbnailGeneratorSystem assetThumbnailGeneratorSystem,
+            FileUpgraderSystem fileUpgraderSystem)
         {
             this.loaderState = loaderState;
             this.pathState = pathState;
             this.editorEvents = editorEvents;
             this.loadGltfFromFileSystem = loadGltfFromFileSystem;
             this.assetThumbnailGeneratorSystem = assetThumbnailGeneratorSystem;
+            this.fileUpgraderSystem = fileUpgraderSystem;
 
             CheckAssetDirectoryExists();
         }
@@ -116,7 +118,7 @@ namespace Assets.Scripts.System
         {
             if (!assetMetadataCache.TryGetValue(id, out var metadata))
             {
-                return null; // sorry but this id is in another loader system. Mamma Mia!
+                return null; // sorry but this id is in another loader system. Mamma Mia Pizzeria!
             }
 
             if (metadata.thumbnail != null)
@@ -178,6 +180,8 @@ namespace Assets.Scripts.System
         #region Metadata related methods
         private AssetHierarchyItem ScanDirectory(string fileSystemPath, string pathInHierarchy = "")
         {
+            CheckUpgrades(Directory.GetFiles(fileSystemPath, "*.dclasset"));
+            
             string dirname = Path.GetFileName(fileSystemPath);
             string[] files = Directory.GetFiles(fileSystemPath, "*.*");
             string[] subdirs = Directory.GetDirectories(fileSystemPath);
@@ -186,6 +190,7 @@ namespace Assets.Scripts.System
 
             List<AssetMetadata> assets = new List<AssetMetadata>();
             List<AssetHierarchyItem> childDirectories = new List<AssetHierarchyItem>();
+
 
             foreach (string assetFile in files)
             {
@@ -211,6 +216,14 @@ namespace Assets.Scripts.System
             }
 
             return new AssetHierarchyItem(dirname, pathInHierarchy, childDirectories, assets);
+        }
+
+        private void CheckUpgrades(string[] files)
+        {
+            foreach (var assetFile in files)
+            {
+                fileUpgraderSystem.CheckUpgrades(assetFile);
+            }
         }
 
         private AssetMetadataFile ReadSceneDirectory(string pathToScene)
@@ -255,7 +268,7 @@ namespace Assets.Scripts.System
                     case ".gltf":
                         if (readOnly) break;
                         if (MetadataFileExists(pathToFile)) break;
-                        AssetMetadataFile modelMetadataFile = new AssetMetadataFile(Path.ChangeExtension(pathToFile, ".dclasset"), fileName, new AssetMetadata(displayName, Guid.NewGuid(), AssetMetadata.AssetType.Model));
+                        AssetMetadataFile modelMetadataFile = new AssetMetadataFile(pathToFile + ".dclasset", fileName, new AssetMetadata(displayName, Guid.NewGuid(), AssetMetadata.AssetType.Model));
                         WriteMetadataToFile(modelMetadataFile);
                         assetMetadataCache[modelMetadataFile.assetMetadata.assetId] = modelMetadataFile;
                         result = new AssetMetadata(displayName, modelMetadataFile.assetMetadata.assetId, AssetMetadata.AssetType.Model);
@@ -263,7 +276,7 @@ namespace Assets.Scripts.System
                     case ".png":
                         if (readOnly) break;
                         if (MetadataFileExists(pathToFile)) break;
-                        AssetMetadataFile imageMetadataFile = new AssetMetadataFile(Path.ChangeExtension(pathToFile, ".dclasset"), fileName, new AssetMetadata(displayName, Guid.NewGuid(), AssetMetadata.AssetType.Image));
+                        AssetMetadataFile imageMetadataFile = new AssetMetadataFile(pathToFile + ".dclasset", fileName, new AssetMetadata(displayName, Guid.NewGuid(), AssetMetadata.AssetType.Image));
                         WriteMetadataToFile(imageMetadataFile);
                         assetMetadataCache[imageMetadataFile.assetMetadata.assetId] = imageMetadataFile;
                         result = new AssetMetadata(displayName, imageMetadataFile.assetMetadata.assetId, AssetMetadata.AssetType.Image);
@@ -284,7 +297,7 @@ namespace Assets.Scripts.System
         /// </summary>
         /// <param name="pathToAssetFile"></param>
         /// <returns></returns>
-        private bool MetadataFileExists(string pathToAssetFile) => File.Exists(Path.ChangeExtension(pathToAssetFile, ".dclasset"));
+        private bool MetadataFileExists(string pathToAssetFile) => File.Exists(pathToAssetFile + ".dclasset");
 
         /// <summary>
         /// Writes the given metadata to a .dclasset file.
