@@ -91,7 +91,7 @@ public class AssetButtonInteraction : MonoBehaviour, IBeginDragHandler, IDragHan
     public void OnEndDrag(PointerEventData eventData)
     {
         if (!enableDragAndDrop) return;
-        if (!inputHelperSystem.IsMouseOverScenePanel()) return;
+        if (!entityInScene) return;
 
         AddEntityToScene(mousePositionInScene);
     }
@@ -133,7 +133,6 @@ public class AssetButtonInteraction : MonoBehaviour, IBeginDragHandler, IDragHan
         {
             case AssetMetadata.AssetType.Model:
                 addEntitySystem.AddModelAssetEntityAsCommand(newEntity, assetMetadata, position);
-
                 break;
             case AssetMetadata.AssetType.Image:
                 break;
