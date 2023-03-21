@@ -79,7 +79,7 @@ namespace Assets.Scripts.Visuals.UiHandler
             dragAndDropHandler.UpdateDropHandlerActions(newHierarchyItemData.dropActions);
             dragAndDropHandler.draggedEntity = newHierarchyItemData.draggedEntity;
             dragAndDropHandler.isExpanded = newHierarchyItemData.isExpanded;
-            dragAndDropHandler.isParentExpanded = newHierarchyItemData.isParentExpanded;
+            dragAndDropHandler.isFirstChild = newHierarchyItemData.isFirstChild;
             
             primarySelection = newHierarchyItemData.isPrimarySelected;
             

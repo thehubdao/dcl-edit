@@ -192,10 +192,11 @@ namespace Assets.Scripts.Visuals
                 }
 
                 var isExpanded = hierarchyChangeSystem.IsExpanded(entity);
-                var isParentExpanded = entity.Parent != null && hierarchyChangeSystem.IsExpanded(entity.Parent);
+                var isFirstChild = entity.Parent != null && entity.Parent.Children.OrderBy(e => e.hierarchyOrder)
+                    .First().Id.Equals(entity.Id);
                 var isNothingOrHoveredEntitySelected = selectionState.PrimarySelectedEntity == null || selectionState.PrimarySelectedEntity.Id.Equals(entity.Id);
 
-                mainPanelData.AddHierarchyItem(entity.ShownName, level, entity.Children.Any(), isExpanded, isParentExpanded, style,
+                mainPanelData.AddHierarchyItem(entity.ShownName, level, entity.Children.Any(), isExpanded, isFirstChild, style,
                     isPrimarySelection,
                     new HierarchyItemHandler.UiHierarchyItemActions
                     {

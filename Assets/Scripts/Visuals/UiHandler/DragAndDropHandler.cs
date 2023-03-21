@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using Assets.Scripts.Visuals.UiBuilder;
 using Assets.Scripts.Visuals.UiHandler;
 using TMPro;
@@ -19,7 +18,7 @@ namespace Visuals.UiHandler
         public DropHandler dropHandlerLower;
         public RightClickHandler rightClickHandler;
         public bool isExpanded = false;
-        public bool isParentExpanded = false;
+        public bool isFirstChild = false;
         private bool isDragging;
         private TextHandler.TextStyle previousTextStyle;
         private static event Action onDragStartEvent;
@@ -118,26 +117,14 @@ namespace Visuals.UiHandler
         /// </summary>
         private void UpdateDropHandlerUpperHoverImage()
         {
-            var parent = draggedEntity?.Parent;
-
-            if (parent == null)
+            if (isFirstChild)
+            {
+                dropHandlerUpper.SetCurrentHoverImageSpecial();
+            }
+            else
             {
                 dropHandlerUpper.SetCurrentHoverImageDefault();
-                return;
             }
-
-            var firstChild = parent.Children.OrderBy(e => e.hierarchyOrder).First();
-
-            if (firstChild.Id.Equals(draggedEntity.Id))
-            {
-                if (isParentExpanded)
-                {
-                    dropHandlerUpper.SetCurrentHoverImageSpecial();
-                    return;
-                }
-            }
-
-            dropHandlerUpper.SetCurrentHoverImageDefault();
         }
         
         public void UpdateDropHandlerActions(DropActions dropActions)
