@@ -55,6 +55,7 @@ public class NumberInputHandler : MonoBehaviour
                     if (numberValue == null)
                     {
                         onAbort?.Invoke(0);
+                        TextInputHandler.ReturnPreviousSubmitValue();
                     }
                     else
                     {
