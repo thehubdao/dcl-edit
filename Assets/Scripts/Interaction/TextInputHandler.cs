@@ -13,6 +13,8 @@ public class TextInputHandler : MonoBehaviour
 
     private Color _currentHighlightedBorderColor;
     private Color _validHighlightedBorderColor;
+
+    private string prevValidValue;
     
     // dependencies
     private InputState _inputState;
@@ -28,6 +30,7 @@ public class TextInputHandler : MonoBehaviour
     public void SetCurrentText(string text)
     {
         inputField.text = text;
+        prevValidValue = text;
     }
 
     public string GetCurrentText()
@@ -92,6 +95,11 @@ public class TextInputHandler : MonoBehaviour
         var inputFieldColors = inputField.colors;
         inputFieldColors.selectedColor = _validHighlightedBorderColor;
         inputField.colors = inputFieldColors;
+    }
+
+    public void ReturnPreviousSubmitValue()
+    {
+        inputField.text = prevValidValue;
     }
 }
 
