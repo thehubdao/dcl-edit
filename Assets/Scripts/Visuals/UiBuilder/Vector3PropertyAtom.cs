@@ -55,12 +55,15 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
                 vector3PropertyHandler.propertyNameText.text = newVector3PropertyData.name;
 
+                vector3PropertyHandler.numberInputX.SetDefaultColors();
                 vector3PropertyHandler.numberInputX.SetCurrentNumber(newVector3PropertyData.currentContents.x);
                 vector3PropertyHandler.numberInputX.TextInputHandler.SetPlaceHolder(newVector3PropertyData.placeholders[0]);
 
+                vector3PropertyHandler.numberInputY.SetDefaultColors();
                 vector3PropertyHandler.numberInputY.SetCurrentNumber(newVector3PropertyData.currentContents.y);
                 vector3PropertyHandler.numberInputY.TextInputHandler.SetPlaceHolder(newVector3PropertyData.placeholders[1]);
 
+                vector3PropertyHandler.numberInputZ.SetDefaultColors();
                 vector3PropertyHandler.numberInputZ.SetCurrentNumber(newVector3PropertyData.currentContents.z);
                 vector3PropertyHandler.numberInputZ.TextInputHandler.SetPlaceHolder(newVector3PropertyData.placeholders[2]);
 

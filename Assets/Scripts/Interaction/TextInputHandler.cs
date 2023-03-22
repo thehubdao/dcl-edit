@@ -82,5 +82,16 @@ public class TextInputHandler : MonoBehaviour
         inputFieldColors.selectedColor = color;
         inputField.colors = inputFieldColors;
     }
+
+    public void SetDefaultInputColors()
+    {
+        if (_currentHighlightedBorderColor.Equals(_validHighlightedBorderColor))
+            return;
+
+        _currentHighlightedBorderColor = _validHighlightedBorderColor;
+        var inputFieldColors = inputField.colors;
+        inputFieldColors.selectedColor = _validHighlightedBorderColor;
+        inputField.colors = inputFieldColors;
+    }
 }
 

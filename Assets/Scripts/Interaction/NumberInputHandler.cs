@@ -79,5 +79,10 @@ public class NumberInputHandler : MonoBehaviour
     {
         return value.ToString(CultureInfo.InvariantCulture);
     }
+
+    public void SetDefaultColors()
+    {
+        TextInputHandler.SetDefaultInputColors();
+    }
 }
 
