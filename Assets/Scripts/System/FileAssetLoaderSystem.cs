@@ -85,7 +85,7 @@ namespace Assets.Scripts.System
             {
                 string directoryPath = Path.Combine(pathState.ProjectPath, relativePathInProject);
 
-                loaderState.assetHierarchy = ScanDirectory(directoryPath);
+                loaderState.assetHierarchy = ScanDirectory(directoryPath, overrideDirname: StringToTitleCase(relativePathInProject));
 
                 editorEvents.InvokeAssetMetadataCacheUpdatedEvent();
             }
@@ -179,11 +179,11 @@ namespace Assets.Scripts.System
         #endregion
 
         #region Metadata related methods
-        private AssetHierarchyItem ScanDirectory(string fileSystemPath, string pathInHierarchy = "")
+        private AssetHierarchyItem ScanDirectory(string fileSystemPath, string pathInHierarchy = "", string overrideDirname = null)
         {
             CheckUpgrades(Directory.GetFiles(fileSystemPath, "*.dclasset"));
             
-            string dirname = FixDirName(Path.GetFileName(fileSystemPath));
+            string dirname = Path.GetFileName(fileSystemPath);
             string[] files = Directory.GetFiles(fileSystemPath, "*.*");
             string[] subdirs = Directory.GetDirectories(fileSystemPath);
 
@@ -216,14 +216,12 @@ namespace Assets.Scripts.System
                 childDirectories.Add(ScanDirectory(subdir, pathInHierarchy));
             }
 
-            return new AssetHierarchyItem(dirname, pathInHierarchy, childDirectories, assets);
+            return new AssetHierarchyItem(overrideDirname ?? dirname, pathInHierarchy, childDirectories, assets);
         }
 
-        private string FixDirName(string dirname)
+        private string StringToTitleCase(string dirname)
         {
-            return dirname == relativePathInProject ?
-                new CultureInfo("en-US", false).TextInfo.ToTitleCase(dirname) :
-                dirname;
+            return new CultureInfo("en-US", false).TextInfo.ToTitleCase(dirname);
         }
 
         private void CheckUpgrades(string[] files)
