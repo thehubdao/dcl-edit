@@ -4,12 +4,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Assets.Scripts.EditorState;
-using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
 using Assets.Scripts.Tests.EditModeTests.TestUtility;
+using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using UnityEngine;
-using UnityEngine.TestTools;
 using static Assets.Scripts.SceneState.DclComponent.DclComponentProperty;
 
 namespace Assets.Scripts.Tests.EditModeTests
@@ -96,7 +95,7 @@ First comment second line
             }
         }
 
-        private (AvailableComponentsState, List<IFileReadingProblem>) SetupCustomComponentsTests()
+        private (AvailableComponentsState, List<IFileReadingProblem>, CustomComponentMarkupSystem) SetupCustomComponentsTests()
         {
             var mockPath = new MockPathState("custom-components");
 
@@ -110,13 +109,13 @@ First comment second line
 
             var problems = ccms.SetupCustomComponents();
 
-            return (availableComponentsState, problems);
+            return (availableComponentsState, problems, ccms);
         }
 
         [Test]
         public void CheckValidCustomComponents()
         {
-            var (availableComponent, _) = SetupCustomComponentsTests();
+            var (availableComponent, _, _) = SetupCustomComponentsTests();
 
             // Minimal
             var minimal = availableComponent.GetComponentDefinitionByName("Minimal");
@@ -264,7 +263,7 @@ First comment second line
         [Test]
         public void FailInvalidJson()
         {
-            var (_, problems) = SetupCustomComponentsTests();
+            var (_, problems, _) = SetupCustomComponentsTests();
 
             var invalidJsonProblems = problems.Where(p => p.description == CustomComponentMarkupSystem.exceptionMessageInvalidJson).ToList();
 
@@ -274,6 +273,183 @@ First comment second line
             Assert.IsTrue(Path.GetFullPath(invalidJsonProblems[1].location).EndsWith($"src{Path.DirectorySeparatorChar}invalid_json.ts"), $"{invalidJsonProblems[0].location} should end with \"src/invalid_json.ts\"");
             Assert.IsTrue(Path.GetFullPath(invalidJsonProblems[2].location).EndsWith($"src{Path.DirectorySeparatorChar}invalid_json.ts"), $"{invalidJsonProblems[0].location} should end with \"src/invalid_json.ts\"");
             Assert.IsTrue(Path.GetFullPath(invalidJsonProblems[3].location).EndsWith($"src{Path.DirectorySeparatorChar}invalid_json.ts"), $"{invalidJsonProblems[0].location} should end with \"src/invalid_json.ts\"");
+        }
+
+        /*
+// class is missing
+#DCECOMP {
+}
+
+// class is not a string
+#DCECOMP {
+    "class": 5
+}
+
+// class is empty
+#DCECOMP {
+    "class": ""
+}
+
+// component is not a string
+#DCECOMP {
+    "class": "ClassAndComponent",
+    "component": 5
+}
+
+// import file is not a string
+#DCECOMP {
+    "class": "ClassAndComponent",
+    "import-file": 5
+}
+
+// property not a list (number)
+#DCECOMP {
+    "class": "ClassAndComponent",
+    "properties": 5
+}
+
+// property not a list (object)
+#DCECOMP {
+    "class": "ClassAndComponent",
+    "properties": {}
+}
+
+// property name is missing
+#DCECOMP {
+    "class": "ClassAndComponent",
+    "properties": [
+        {
+            "type": "number"
+        }
+    ]
+}
+
+// property name is not a string
+#DCECOMP {
+    "class": "ClassAndComponent",
+    "properties": [
+        {
+            "name": 5,
+            "type": "number"
+        }
+    ]
+}
+
+// property name is empty
+#DCECOMP {
+    "class": "ClassAndComponent",
+    "properties": [
+        {
+            "name": "",
+            "type": "number"
+        }
+    ]
+}
+
+// property type is missing
+#DCECOMP {
+    "class": "ClassAndComponent",
+    "properties": [
+        {
+            "name": "property1"
+        }
+    ]
+}
+
+// property type is not a string
+#DCECOMP {
+    "class": "ClassAndComponent",
+    "properties": [
+        {
+            "name": "property1",
+            "type": 5
+        }
+    ]
+}
+
+// property type is not a valid type
+#DCECOMP {
+    "class": "ClassAndComponent",
+    "properties": [
+        {
+            "name": "property1",
+            "type": "invalid"
+        }
+    ]
+}
+
+// property default is not a valid type (number)
+#DCECOMP {
+    "class": "ClassAndComponent",
+    "properties": [
+        {
+            "name": "property1",
+            "type": "number",
+            "default": "invalid"
+        }
+    ]
+}
+
+// property default is not a valid type (string)
+#DCECOMP {
+    "class": "ClassAndComponent",
+    "properties": [
+        {
+            "name": "property1",
+            "type": "string",
+            "default": 5
+        }
+    ]
+}
+
+// property default is not a valid type (vector3)
+#DCECOMP {
+    "class": "ClassAndComponent",
+    "properties": [
+        {
+            "name": "property1",
+            "type": "vector3",
+            "default": "invalid"
+        }
+    ]
+}
+*/
+
+        [Test]
+        public void InterpretJson()
+        {
+            var (_, _, ccms) = SetupCustomComponentsTests();
+
+            var classIsMissingString =
+                @"{
+                }";
+
+            var classIsMissingException = Assert.Throws<CustomComponentMarkupSystem.CustomComponentException>(() => ccms.MakeComponent(JObject.Parse(classIsMissingString), "inline_test.ts"));
+
+            Assert.AreEqual(CustomComponentMarkupSystem.exceptionMessageClassNotPresent, classIsMissingException.description);
+            Assert.AreEqual("inline_test.ts:1:1", classIsMissingException.location);
+
+            var classIsNotAStringString =
+                @"{
+                    ""class"": []
+                }";
+
+            var classIsNotAStringException = Assert.Throws<CustomComponentMarkupSystem.CustomComponentException>(() => ccms.MakeComponent(JObject.Parse(classIsNotAStringString), "inline_test.ts"));
+
+            Assert.AreEqual(CustomComponentMarkupSystem.exceptionMessageClassWrongType, classIsNotAStringException.description);
+            Assert.AreEqual("inline_test.ts:2:30", classIsNotAStringException.location);
+
+            var classIsEmptyString =
+                @"{
+                    ""class"": """"
+                }";
+                
+            var classIsEmptyException = Assert.Throws<CustomComponentMarkupSystem.CustomComponentException>(() => ccms.MakeComponent(JObject.Parse(classIsEmptyString), "inline_test.ts"));
+
+            Assert.AreEqual(CustomComponentMarkupSystem.exceptionMessageClassWrongType, classIsEmptyException.description);
+            Assert.AreEqual("inline_test.ts:2:30", classIsEmptyException.location);
+
+
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -200,6 +201,18 @@ namespace Assets.Scripts.Utility
         public static Vector3 VectorFromTo(Vector3 from, Vector3 to)
         {
             return to - from;
+        }
+
+        public static T GetValueOrNull<T>(this JToken token)
+        {
+            try
+            {
+                return token.Value<T>();
+            }
+            catch (Exception)
+            {
+                return default(T);
+            }
         }
     }
 }

@@ -114,6 +114,7 @@ namespace Assets.Scripts.System
         public const string exceptionMessageDefaultWrongTypeInt = "The default of a property of type int has to be an number";
         public const string exceptionMessageDefaultWrongTypeNumber = "The default of a property of type number has to be a number";
         public const string exceptionMessageDefaultWrongTypeBool = "The default of a property of type bool has to be a bool";
+        public const string exceptionMessageDefaultWrongTypeVector3 = "The default of a property of type vector3 has to be a list of 3 numbers. E.g.: `default: [1, 2, 3]`";
         public const string exceptionMessageInvalidJson = "A #DCECOMP tag was not followed by valid Json";
 
 
@@ -155,19 +156,19 @@ namespace Assets.Scripts.System
 
                 return new List<IFileReadingProblem>
                 {
-                    new CustomComponentProblem(e.Message, "")
+                    new CustomComponentProblem(e.Message, e.StackTrace)
                 };
             }
         }
 
-        private void MakeComponent(JObject componentData, string path)
+        public void MakeComponent(JObject componentData, string path)
         {
             // Component Class
             // Get class
             var classToken = componentData[classKey] ?? throw new CustomComponentException(exceptionMessageClassNotPresent, componentData, path);
 
             // Interpret class
-            var classValue = classToken.Value<string?>() ?? throw new CustomComponentException(exceptionMessageClassWrongType, classToken, path);
+            var classValue = classToken.GetValueOrNull<string?>() ?? throw new CustomComponentException(exceptionMessageClassWrongType, classToken, path);
 
 
             // Component Name
@@ -178,7 +179,7 @@ namespace Assets.Scripts.System
             string? componentValue = null;
             if (componentToken != null)
             {
-                componentValue = componentToken.Value<string?>() ?? throw new CustomComponentException(exceptionMessageComponentWrongType, componentToken, path);
+                componentValue = componentToken.GetValueOrNull<string?>() ?? throw new CustomComponentException(exceptionMessageComponentWrongType, componentToken, path);
             }
 
 
@@ -187,7 +188,7 @@ namespace Assets.Scripts.System
             var importFileToken = componentData[importFileKey] ?? throw new CustomComponentException(exceptionMessageImportFileNotPresent, componentData, path);
 
             // Interpret import file
-            var importFileValue = importFileToken.Value<string?>() ?? throw new CustomComponentException(exceptionMessageImportFileWrongType, importFileToken, path);
+            var importFileValue = importFileToken.GetValueOrNull<string?>() ?? throw new CustomComponentException(exceptionMessageImportFileWrongType, importFileToken, path);
 
 
             // Properties
@@ -227,8 +228,10 @@ namespace Assets.Scripts.System
                     var nameToken = p["name"] ?? throw new CustomComponentException(exceptionMessagePropertyNameNotPresent, p, path);
 
                     // Interpret name
-                    var nameValue = nameToken.Value<string?>() ?? throw new CustomComponentException(exceptionMessagePropertyNameWrongType, nameToken, path);
+                    var nameValue = nameToken.GetValueOrNull<string?>() ?? throw new CustomComponentException(exceptionMessagePropertyNameWrongType, nameToken, path);
 
+                    // Check for empty name
+                    if (nameValue == "") throw new CustomComponentException(exceptionMessagePropertyNameWrongType, nameToken, path);
 
                     // Get type
                     var type = p["type"] ?? throw new CustomComponentException(exceptionMessagePropertyTypeNotPresent, p, path);
@@ -253,7 +256,7 @@ namespace Assets.Scripts.System
 
         private DclComponent.DclComponentProperty.PropertyType GetTypeFromString(JToken typeToken, string path)
         {
-            var typeString = typeToken.Value<string?>() ?? throw new CustomComponentException(exceptionMessagePropertyTypeWrongType, typeToken, path);
+            var typeString = typeToken.GetValueOrNull<string?>() ?? throw new CustomComponentException(exceptionMessagePropertyTypeWrongType, typeToken, path);
 
             return typeString switch
             {
@@ -287,36 +290,35 @@ namespace Assets.Scripts.System
 
         private string GetStringFromJToken(JToken token, string path)
         {
-            return token.Value<string?>() ?? throw new CustomComponentException(exceptionMessageDefaultWrongTypeString, token, path);
+            return token.GetValueOrNull<string?>() ?? throw new CustomComponentException(exceptionMessageDefaultWrongTypeString, token, path);
         }
 
         private int GetIntFromJToken(JToken token, string path)
         {
-            return token.Value<int?>() ?? throw new CustomComponentException(exceptionMessageDefaultWrongTypeInt, token, path);
+            return token.GetValueOrNull<int?>() ?? throw new CustomComponentException(exceptionMessageDefaultWrongTypeInt, token, path);
         }
 
         private float GetFloatFromJObject(JToken token, string path)
         {
-            return token.Value<float?>() ?? throw new CustomComponentException(exceptionMessageDefaultWrongTypeNumber, token, path);
+            return token.GetValueOrNull<float?>() ?? throw new CustomComponentException(exceptionMessageDefaultWrongTypeNumber, token, path);
         }
 
         private bool GetBoolFromJObject(JToken token, string path)
         {
-            return token.Value<bool?>() ?? throw new CustomComponentException(exceptionMessageDefaultWrongTypeBool, token, path);
+            return token.GetValueOrNull<bool?>() ?? throw new CustomComponentException(exceptionMessageDefaultWrongTypeBool, token, path);
         }
 
         private Vector3 GetVector3FromJObject(JToken token, string path)
         {
             // value is a list with 3 numbers
             // extract that list
-            var list = token.Value<JArray>();
+            var list = token.GetValueOrNull<JArray>() ?? throw new CustomComponentException(exceptionMessageDefaultWrongTypeVector3, token, path);
 
-            // TODO: catch errors
 
             // extract the numbers
-            var x = list[0].Value<float>();
-            var y = list[1].Value<float>();
-            var z = list[2].Value<float>();
+            var x = list[0].GetValueOrNull<float?>() ?? throw new CustomComponentException(exceptionMessageDefaultWrongTypeVector3, token, path);
+            var y = list[1].GetValueOrNull<float?>() ?? throw new CustomComponentException(exceptionMessageDefaultWrongTypeVector3, token, path);
+            var z = list[2].GetValueOrNull<float?>() ?? throw new CustomComponentException(exceptionMessageDefaultWrongTypeVector3, token, path);
 
             // return the vector
             return new Vector3(x, y, z);
