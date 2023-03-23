@@ -4,6 +4,7 @@ using Assets.Scripts.Utility;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -182,7 +183,7 @@ namespace Assets.Scripts.System
         {
             CheckUpgrades(Directory.GetFiles(fileSystemPath, "*.dclasset"));
             
-            string dirname = Path.GetFileName(fileSystemPath);
+            string dirname = FixDirName(Path.GetFileName(fileSystemPath));
             string[] files = Directory.GetFiles(fileSystemPath, "*.*");
             string[] subdirs = Directory.GetDirectories(fileSystemPath);
 
@@ -216,6 +217,13 @@ namespace Assets.Scripts.System
             }
 
             return new AssetHierarchyItem(dirname, pathInHierarchy, childDirectories, assets);
+        }
+
+        private string FixDirName(string dirname)
+        {
+            return dirname == relativePathInProject ?
+                new CultureInfo("en-US", false).TextInfo.ToTitleCase(dirname) :
+                dirname;
         }
 
         private void CheckUpgrades(string[] files)
