@@ -27,10 +27,12 @@ namespace Assets.Scripts.EditorState
                 }
 
 #else
-                _projectPath = Path.GetFullPath(".");
+                //_projectPath = Path.GetFullPath(".");
 #endif
                 return _projectPath;
             }
+
+            set { _projectPath = value; }
         }
     }
 }

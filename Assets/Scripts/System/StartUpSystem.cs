@@ -1,6 +1,7 @@
 using Assets.Scripts.EditorState;
 using UnityEngine;
 using Zenject;
+using System;
 
 namespace Assets.Scripts.System
 {
@@ -38,6 +39,8 @@ namespace Assets.Scripts.System
 
         void Awake()
         {
+            InterpretArgs(Environment.GetCommandLineArgs());
+
             assetManagerSystem.CacheAllAssetMetadata();
 
             sceneManagerSystem.DiscoverScenes();
@@ -50,6 +53,24 @@ namespace Assets.Scripts.System
             workspaceSaveSystem.Load();
 
             frameTimeSystem.SetApplicationTargetFramerate();
+        }
+
+        private void InterpretArgs(string[] args)
+        {
+            string projectPath = null;
+            for (var i = 0; i < args.Length; i++)
+            {
+                Debug.Log("ARG " + i + ": " + args[i]);
+                if (args[i] == "--projectPath")
+                {
+                    projectPath = args[i + 1];
+                }
+            }
+
+            if (projectPath != null)
+            {
+                pathState.ProjectPath = projectPath;
+            }
         }
     }
 }
