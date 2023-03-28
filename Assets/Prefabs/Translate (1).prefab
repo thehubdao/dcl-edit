@@ -44,6 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2eb7704382625004ca9d719458bb46a6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  axis: 0
 --- !u!1 &4030547528136072337
 GameObject:
   m_ObjectHideFlags: 0
@@ -991,7 +992,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3226247445797414364}
-  - component: {fileID: 3719721255318437916}
+  - component: {fileID: 6997628572640478234}
   m_Layer: 0
   m_Name: ZXCoord
   m_TagString: Untagged
@@ -1014,7 +1015,7 @@ Transform:
   m_Father: {fileID: 4030547528416928527}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3719721255318437916
+--- !u!114 &6997628572640478234
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1023,9 +1024,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 6669027295433338210}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6e32b2828db5d3348b84fe123f5331d6, type: 3}
+  m_Script: {fileID: 11500000, guid: 2eb7704382625004ca9d719458bb46a6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  axis: 1
 --- !u!1 &8005524798596379162
 GameObject:
   m_ObjectHideFlags: 0
@@ -1035,7 +1037,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3548505739338762435}
-  - component: {fileID: 2284903823440428524}
+  - component: {fileID: 1070755109197171527}
   m_Layer: 0
   m_Name: XYCoord
   m_TagString: Untagged
@@ -1058,7 +1060,7 @@ Transform:
   m_Father: {fileID: 4030547528416928527}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2284903823440428524
+--- !u!114 &1070755109197171527
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1067,6 +1069,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8005524798596379162}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6eb1888be07ee2c49a069d1a660c7b5b, type: 3}
+  m_Script: {fileID: 11500000, guid: 2eb7704382625004ca9d719458bb46a6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  axis: 2
