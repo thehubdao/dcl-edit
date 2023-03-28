@@ -35,6 +35,7 @@ namespace Assets.Scripts.System
             this.sceneManagerSystem = sceneManagerSystem;
             this.sceneViewSystem = sceneViewSystem;
             this.settingsSystem = settingsSystem;
+            this.pathState = pathState;
         }
 
         void Awake()
