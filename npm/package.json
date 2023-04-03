@@ -1,10 +1,10 @@
 {
   "name": "dcl-edit",
-  "version": "1.0.9",
+  "version": "1.0.18",
   "description": "A scene editor for the Decentraland SDK",
   "main": "./index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "echo \"Error: no test specified\" \u0026\u0026 exit 1",
     "postinstall": "node ./install.js",
     "preinstall": "node ./uninstall.js"
   },
