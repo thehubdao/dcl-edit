@@ -89,10 +89,10 @@ namespace Assets.Scripts.System
 
         private const string sourcePathKey = "shiylheavarojzbhqacgzybfge"; // magic string
 
-        private const string classKey = "class";
-        private const string componentKey = "component";
-        private const string importFileKey = "import-file";
-        private const string propertiesKey = "properties";
+        public const string classKey = "class";
+        public const string componentKey = "component";
+        public const string importFileKey = "import-file";
+        public const string propertiesKey = "properties";
 
         private const string fileExtensionTs = ".ts";
         private const string fileExtensionJs = ".js";
@@ -116,6 +116,7 @@ namespace Assets.Scripts.System
         public const string exceptionMessageDefaultWrongTypeBool = "The default of a property of type bool has to be a bool";
         public const string exceptionMessageDefaultWrongTypeVector3 = "The default of a property of type vector3 has to be a list of 3 numbers. E.g.: `default: [1, 2, 3]`";
         public const string exceptionMessageInvalidJson = "A #DCECOMP tag was not followed by valid Json";
+        public const string exceptionMessagePropertyListWrongType = "The properties have to be a list of objects";
 
 
         public List<IFileReadingProblem> SetupCustomComponents()
@@ -170,6 +171,10 @@ namespace Assets.Scripts.System
             // Interpret class
             var classValue = classToken.GetValueOrNull<string?>() ?? throw new CustomComponentException(exceptionMessageClassWrongType, classToken, path);
 
+            if (classValue == "")
+            {
+                throw new CustomComponentException(exceptionMessageClassWrongType, classToken, path);
+            }
 
             // Component Name
             // Get component name
@@ -180,6 +185,11 @@ namespace Assets.Scripts.System
             if (componentToken != null)
             {
                 componentValue = componentToken.GetValueOrNull<string?>() ?? throw new CustomComponentException(exceptionMessageComponentWrongType, componentToken, path);
+
+                if (componentValue == "")
+                {
+                    throw new CustomComponentException(exceptionMessageClassWrongType, componentToken, path);
+                }
             }
 
 
@@ -221,7 +231,16 @@ namespace Assets.Scripts.System
 
         private DclComponent.DclComponentProperty.PropertyDefinition[] GetPropertyDefinitions(JToken? propertiesToken, string path)
         {
-            return propertiesToken?
+            // check if properties is present
+            if (propertiesToken == null) 
+                // if properties is not present, create an empty property definition list
+                return Array.Empty<DclComponent.DclComponentProperty.PropertyDefinition>();
+
+            // check if properties is a list
+            if(propertiesToken.Type != JTokenType.Array) 
+                throw new CustomComponentException(exceptionMessagePropertyListWrongType, propertiesToken, path);
+
+            return propertiesToken
                 .Select(p =>
                 {
                     // Get name
@@ -251,7 +270,7 @@ namespace Assets.Scripts.System
                         typeValue,
                         defaultValue);
                 })
-                .ToArray() ?? Array.Empty<DclComponent.DclComponentProperty.PropertyDefinition>(); // if properties is not present, create an empty property definition list
+                .ToArray();
         }
 
         private DclComponent.DclComponentProperty.PropertyType GetTypeFromString(JToken typeToken, string path)
@@ -263,7 +282,7 @@ namespace Assets.Scripts.System
                 "string" => DclComponent.DclComponentProperty.PropertyType.String,
                 "number" => DclComponent.DclComponentProperty.PropertyType.Float,
                 "vector3" => DclComponent.DclComponentProperty.PropertyType.Vector3,
-                _ => throw new CustomComponentException(exceptionMessagePropertyTypeWrongOption, typeToken, "")
+                _ => throw new CustomComponentException(exceptionMessagePropertyTypeWrongOption, typeToken, path)
             };
         }
 
@@ -379,7 +398,7 @@ namespace Assets.Scripts.System
                     {
                         var jObject = JObject.Load(new JsonTextReader(new StringReader(extractedJson)));
                         jObject[sourcePathKey] = path;
-
+                        
                         if (isJsOrTs && jObject[importFileKey] is null)
                         {
                             jObject[importFileKey] = GetImportPathFromFilePath(path);

@@ -9,6 +9,7 @@ using Assets.Scripts.Tests.EditModeTests.TestUtility;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.Rendering;
 using static Assets.Scripts.SceneState.DclComponent.DclComponentProperty;
 
 namespace Assets.Scripts.Tests.EditModeTests
@@ -275,181 +276,401 @@ First comment second line
             Assert.IsTrue(Path.GetFullPath(invalidJsonProblems[3].location).EndsWith($"src{Path.DirectorySeparatorChar}invalid_json.ts"), $"{invalidJsonProblems[0].location} should end with \"src/invalid_json.ts\"");
         }
 
-        /*
-// class is missing
-#DCECOMP {
-}
-
-// class is not a string
-#DCECOMP {
-    "class": 5
-}
-
-// class is empty
-#DCECOMP {
-    "class": ""
-}
-
-// component is not a string
-#DCECOMP {
-    "class": "ClassAndComponent",
-    "component": 5
-}
-
-// import file is not a string
-#DCECOMP {
-    "class": "ClassAndComponent",
-    "import-file": 5
-}
-
-// property not a list (number)
-#DCECOMP {
-    "class": "ClassAndComponent",
-    "properties": 5
-}
-
-// property not a list (object)
-#DCECOMP {
-    "class": "ClassAndComponent",
-    "properties": {}
-}
-
-// property name is missing
-#DCECOMP {
-    "class": "ClassAndComponent",
-    "properties": [
-        {
-            "type": "number"
-        }
-    ]
-}
-
-// property name is not a string
-#DCECOMP {
-    "class": "ClassAndComponent",
-    "properties": [
-        {
-            "name": 5,
-            "type": "number"
-        }
-    ]
-}
-
-// property name is empty
-#DCECOMP {
-    "class": "ClassAndComponent",
-    "properties": [
-        {
-            "name": "",
-            "type": "number"
-        }
-    ]
-}
-
-// property type is missing
-#DCECOMP {
-    "class": "ClassAndComponent",
-    "properties": [
-        {
-            "name": "property1"
-        }
-    ]
-}
-
-// property type is not a string
-#DCECOMP {
-    "class": "ClassAndComponent",
-    "properties": [
-        {
-            "name": "property1",
-            "type": 5
-        }
-    ]
-}
-
-// property type is not a valid type
-#DCECOMP {
-    "class": "ClassAndComponent",
-    "properties": [
-        {
-            "name": "property1",
-            "type": "invalid"
-        }
-    ]
-}
-
-// property default is not a valid type (number)
-#DCECOMP {
-    "class": "ClassAndComponent",
-    "properties": [
-        {
-            "name": "property1",
-            "type": "number",
-            "default": "invalid"
-        }
-    ]
-}
-
-// property default is not a valid type (string)
-#DCECOMP {
-    "class": "ClassAndComponent",
-    "properties": [
-        {
-            "name": "property1",
-            "type": "string",
-            "default": 5
-        }
-    ]
-}
-
-// property default is not a valid type (vector3)
-#DCECOMP {
-    "class": "ClassAndComponent",
-    "properties": [
-        {
-            "name": "property1",
-            "type": "vector3",
-            "default": "invalid"
-        }
-    ]
-}
-*/
 
         [Test]
         public void InterpretJson()
         {
             var (_, _, ccms) = SetupCustomComponentsTests();
+            /*
+            // class is missing
+            #DCECOMP {
+            }
+            */
 
             var classIsMissingString =
                 @"{
                 }";
 
-            var classIsMissingException = Assert.Throws<CustomComponentMarkupSystem.CustomComponentException>(() => ccms.MakeComponent(JObject.Parse(classIsMissingString), "inline_test.ts"));
+            var classIsMissingException = Assert.Throws<CustomComponentMarkupSystem.CustomComponentException>(() => ccms.MakeComponent(JObject.Parse(classIsMissingString).WithImportFile("src/inline_test"), "inline_test.ts"));
 
             Assert.AreEqual(CustomComponentMarkupSystem.exceptionMessageClassNotPresent, classIsMissingException.description);
             Assert.AreEqual("inline_test.ts:1:1", classIsMissingException.location);
 
+            /*
+            // class is not a string
+            #DCECOMP {
+                "class": []
+            }
+            */
             var classIsNotAStringString =
                 @"{
                     ""class"": []
                 }";
 
-            var classIsNotAStringException = Assert.Throws<CustomComponentMarkupSystem.CustomComponentException>(() => ccms.MakeComponent(JObject.Parse(classIsNotAStringString), "inline_test.ts"));
+            var classIsNotAStringException = Assert.Throws<CustomComponentMarkupSystem.CustomComponentException>(() => ccms.MakeComponent(JObject.Parse(classIsNotAStringString).WithImportFile("src/inline_test"), "inline_test.ts"));
 
             Assert.AreEqual(CustomComponentMarkupSystem.exceptionMessageClassWrongType, classIsNotAStringException.description);
             Assert.AreEqual("inline_test.ts:2:30", classIsNotAStringException.location);
 
+            /*
+            // class is empty
+            #DCECOMP {
+                "class": ""
+            }
+            */
             var classIsEmptyString =
                 @"{
                     ""class"": """"
                 }";
-                
-            var classIsEmptyException = Assert.Throws<CustomComponentMarkupSystem.CustomComponentException>(() => ccms.MakeComponent(JObject.Parse(classIsEmptyString), "inline_test.ts"));
+
+            var classIsEmptyException = Assert.Throws<CustomComponentMarkupSystem.CustomComponentException>(() => ccms.MakeComponent(JObject.Parse(classIsEmptyString).WithImportFile("src/inline_test"), "inline_test.ts"));
 
             Assert.AreEqual(CustomComponentMarkupSystem.exceptionMessageClassWrongType, classIsEmptyException.description);
-            Assert.AreEqual("inline_test.ts:2:30", classIsEmptyException.location);
+            Assert.AreEqual("inline_test.ts:2:31", classIsEmptyException.location);
+
+            /*
+            // component is not a string
+            #DCECOMP {
+                "class": "ClassAndComponent",
+                "component": []
+            }
+            */
+            var componentIsNotAStringString =
+                @"{
+                    ""class"": ""ClassAndComponent"",
+                    ""component"": []
+                }";
+
+            var componentIsNotAStringException = Assert.Throws<CustomComponentMarkupSystem.CustomComponentException>(() => ccms.MakeComponent(JObject.Parse(componentIsNotAStringString).WithImportFile("src/inline_test"), "inline_test.ts"));
+
+            Assert.AreEqual(CustomComponentMarkupSystem.exceptionMessageComponentWrongType, componentIsNotAStringException.description);
+            Assert.AreEqual("inline_test.ts:3:34", componentIsNotAStringException.location);
+            /*
+            // import file is not a string
+            #DCECOMP {
+                "class": "ClassAndComponent",
+                "import-file": []
+            }
+            */
+            var importFileIsNotAStringString =
+                @"{
+                    ""class"": ""ClassAndComponent"",
+                    ""import-file"": []
+                }";
+
+            var importFileIsNotAStringException = Assert.Throws<CustomComponentMarkupSystem.CustomComponentException>(() => ccms.MakeComponent(JObject.Parse(importFileIsNotAStringString), "inline_test.ts"));
+
+            Assert.AreEqual(CustomComponentMarkupSystem.exceptionMessageImportFileWrongType, importFileIsNotAStringException.description);
+            Assert.AreEqual("inline_test.ts:3:36", importFileIsNotAStringException.location);
+            /*
+            // property not a list (number)
+            #DCECOMP {
+                "class": "ClassAndComponent",
+                "properties": 5
+            }
+            */
+            var propertiesIsNotAListNumberString =
+                @"{
+                    ""class"": ""ClassAndComponent"",
+                    ""properties"": 5
+                }";
+
+            var propertiesIsNotAListNumberException = Assert.Throws<CustomComponentMarkupSystem.CustomComponentException>(() => ccms.MakeComponent(JObject.Parse(propertiesIsNotAListNumberString).WithImportFile("src/inline_test"), "inline_test.ts"));
+
+            Assert.AreEqual(CustomComponentMarkupSystem.exceptionMessagePropertyListWrongType, propertiesIsNotAListNumberException.description);
+            Assert.AreEqual("inline_test.ts:3:35", propertiesIsNotAListNumberException.location);
+            /*
+            // property not a list (object)
+            #DCECOMP {
+                "class": "ClassAndComponent",
+                "properties": {}
+            }
+            */
+            var propertiesIsNotAListObjectString =
+                @"{
+                    ""class"": ""ClassAndComponent"",
+                    ""properties"": {}
+                }";
+
+            var propertiesIsNotAListObjectException = Assert.Throws<CustomComponentMarkupSystem.CustomComponentException>(() => ccms.MakeComponent(JObject.Parse(propertiesIsNotAListObjectString).WithImportFile("src/inline_test"), "inline_test.ts"));
+
+            Assert.AreEqual(CustomComponentMarkupSystem.exceptionMessagePropertyListWrongType, propertiesIsNotAListObjectException.description);
+            Assert.AreEqual("inline_test.ts:3:35", propertiesIsNotAListObjectException.location);
+            /*
+            // property name is missing
+            #DCECOMP {
+                "class": "ClassAndComponent",
+                "properties": [
+                    {
+                        "type": "number"
+                    }
+                ]
+            }
+            */
+            var propertyNameIsMissingString =
+                @"{
+                    ""class"": ""ClassAndComponent"",
+                    ""properties"": [
+                        {
+                            ""type"": ""number""
+                        }
+                    ]
+                }";
+
+            var propertyNameIsMissingException = Assert.Throws<CustomComponentMarkupSystem.CustomComponentException>(() => ccms.MakeComponent(JObject.Parse(propertyNameIsMissingString).WithImportFile("src/inline_test"), "inline_test.ts"));
+
+            Assert.AreEqual(CustomComponentMarkupSystem.exceptionMessagePropertyNameNotPresent, propertyNameIsMissingException.description);
+            Assert.AreEqual("inline_test.ts:4:25", propertyNameIsMissingException.location);
+            /*
+            // property name is not a string
+            #DCECOMP {
+                "class": "ClassAndComponent",
+                "properties": [
+                    {
+                        "name": [],
+                        "type": "number"
+                    }
+                ]
+            }
+            */
+            var propertyNameIsNotAStringString =
+                @"{
+                    ""class"": ""ClassAndComponent"",
+                    ""properties"": [
+                        {
+                            ""name"": [],
+                            ""type"": ""number""
+                        }
+                    ]
+                }";
 
 
+            var propertyNameIsNotAStringException = Assert.Throws<CustomComponentMarkupSystem.CustomComponentException>(() => ccms.MakeComponent(JObject.Parse(propertyNameIsNotAStringString).WithImportFile("src/inline_test"), "inline_test.ts"));
+
+            Assert.AreEqual(CustomComponentMarkupSystem.exceptionMessagePropertyNameWrongType, propertyNameIsNotAStringException.description);
+            Assert.AreEqual("inline_test.ts:5:37", propertyNameIsNotAStringException.location);
+            /*
+            // property name is empty
+            #DCECOMP {
+                "class": "ClassAndComponent",
+                "properties": [
+                    {
+                        "name": "",
+                        "type": "number"
+                    }
+                ]
+            }
+            */
+            var propertyNameIsEmptyString =
+                @"{
+                    ""class"": ""ClassAndComponent"",
+                    ""properties"": [
+                        {
+                            ""name"": """",
+                            ""type"": ""number""
+                        }
+                    ]
+                }";
+
+            var propertyNameIsEmptyException = Assert.Throws<CustomComponentMarkupSystem.CustomComponentException>(() => ccms.MakeComponent(JObject.Parse(propertyNameIsEmptyString).WithImportFile("src/inline_test"), "inline_test.ts"));
+
+            Assert.AreEqual(CustomComponentMarkupSystem.exceptionMessagePropertyNameWrongType, propertyNameIsEmptyException.description);
+            Assert.AreEqual("inline_test.ts:5:38", propertyNameIsEmptyException.location);
+            /*
+            // property type is missing
+            #DCECOMP {
+                "class": "ClassAndComponent",
+                "properties": [
+                    {
+                        "name": "property1"
+                    }
+                ]
+            }
+            */
+            var propertyTypeIsMissingString =
+                @"{
+                    ""class"": ""ClassAndComponent"",
+                    ""properties"": [
+                        {
+                            ""name"": ""property1""
+                        }
+                    ]
+                }";
+
+            var propertyTypeIsMissingException = Assert.Throws<CustomComponentMarkupSystem.CustomComponentException>(() => ccms.MakeComponent(JObject.Parse(propertyTypeIsMissingString).WithImportFile("src/inline_test"), "inline_test.ts"));
+
+            Assert.AreEqual(CustomComponentMarkupSystem.exceptionMessagePropertyTypeNotPresent, propertyTypeIsMissingException.description);
+            Assert.AreEqual("inline_test.ts:4:25", propertyTypeIsMissingException.location);
+            /*
+            // property type is not a string
+            #DCECOMP {
+                "class": "ClassAndComponent",
+                "properties": [
+                    {
+                        "name": "property1",
+                        "type": []
+                    }
+                ]
+            }
+            */
+            var propertyTypeIsNotAStringString =
+                @"{
+                    ""class"": ""ClassAndComponent"",
+                    ""properties"": [
+                        {
+                            ""name"": ""property1"",
+                            ""type"": []
+                        }
+                    ]
+                }";
+
+            var propertyTypeIsNotAStringException = Assert.Throws<CustomComponentMarkupSystem.CustomComponentException>(() => ccms.MakeComponent(JObject.Parse(propertyTypeIsNotAStringString).WithImportFile("src/inline_test"), "inline_test.ts"));
+
+            Assert.AreEqual(CustomComponentMarkupSystem.exceptionMessagePropertyTypeWrongType, propertyTypeIsNotAStringException.description);
+            Assert.AreEqual("inline_test.ts:6:37", propertyTypeIsNotAStringException.location);
+            /*
+            // property type is not a valid type
+            #DCECOMP {
+                "class": "ClassAndComponent",
+                "properties": [
+                    {
+                        "name": "property1",
+                        "type": "invalid"
+                    }
+                ]
+            }
+            */
+            var propertyTypeIsEmptyString =
+                @"{
+                    ""class"": ""ClassAndComponent"",
+                    ""properties"": [
+                        {
+                            ""name"": ""property1"",
+                            ""type"": """"
+                        }
+                    ]
+                }";
+
+            var propertyTypeIsEmptyException = Assert.Throws<CustomComponentMarkupSystem.CustomComponentException>(() => ccms.MakeComponent(JObject.Parse(propertyTypeIsEmptyString).WithImportFile("src/inline_test"), "inline_test.ts"));
+
+            Assert.AreEqual(CustomComponentMarkupSystem.exceptionMessagePropertyTypeWrongOption, propertyTypeIsEmptyException.description);
+            Assert.AreEqual("inline_test.ts:6:38", propertyTypeIsEmptyException.location);
+            /*
+            // property type is not a valid type
+            #DCECOMP {
+                "class": "ClassAndComponent",
+                "properties": [
+                    {
+                        "name": "property1",
+                        "type": "not a valid type"
+                    }
+                ]
+            }
+            */
+            var propertyTypeIsNotValidString =
+                @"{
+                    ""class"": ""ClassAndComponent"",
+                    ""properties"": [
+                        {
+                            ""name"": ""property1"",
+                            ""type"": ""not a valid type""
+                        }
+                    ]
+                }";
+
+            var propertyTypeIsNotValidException = Assert.Throws<CustomComponentMarkupSystem.CustomComponentException>(() => ccms.MakeComponent(JObject.Parse(propertyTypeIsNotValidString).WithImportFile("src/inline_test"), "inline_test.ts"));
+
+            Assert.AreEqual(CustomComponentMarkupSystem.exceptionMessagePropertyTypeWrongOption, propertyTypeIsNotValidException.description);
+            Assert.AreEqual("inline_test.ts:6:54", propertyTypeIsNotValidException.location);
+            /*
+            // property default is not a valid type (number)
+            #DCECOMP {
+                "class": "ClassAndComponent",
+                "properties": [
+                    {
+                        "name": "property1",
+                        "type": "number",
+                        "default": "invalid"
+                    }
+                ]
+            }
+            */
+            var defaultIsWrongType =
+                @"{
+                    ""class"": ""ClassAndComponent"",
+                    ""properties"": [
+                        {
+                            ""name"": ""property1"",
+                            ""type"": ""number"",
+                            ""default"": ""invalid""
+                        }
+                    ]
+                }";
+
+            var defaultIsWrongTypeException = Assert.Throws<CustomComponentMarkupSystem.CustomComponentException>(() => ccms.MakeComponent(JObject.Parse(defaultIsWrongType).WithImportFile("src/inline_test"), "inline_test.ts"));
+
+            Assert.AreEqual(CustomComponentMarkupSystem.exceptionMessageDefaultWrongTypeNumber, defaultIsWrongTypeException.description);
+            Assert.AreEqual("inline_test.ts:7:48", defaultIsWrongTypeException.location);
+
+            /*
+            // property default is not a valid type (string)
+            #DCECOMP {
+                "class": "ClassAndComponent",
+                "properties": [
+                    {
+                        "name": "property1",
+                        "type": "string",
+                        "default": 5
+                    }
+                ]
+            }
+            */
+            var defaultIsWrongTypeString =
+                @"{
+                    ""class"": ""ClassAndComponent"",
+                    ""properties"": [
+                        {
+                            ""name"": ""property1"",
+                            ""type"": ""string"",
+                            ""default"": []
+                        }
+                    ]
+                }";
+
+            var defaultIsWrongTypeStringException = Assert.Throws<CustomComponentMarkupSystem.CustomComponentException>(() => ccms.MakeComponent(JObject.Parse(defaultIsWrongTypeString).WithImportFile("src/inline_test"), "inline_test.ts"));
+
+            Assert.AreEqual(CustomComponentMarkupSystem.exceptionMessageDefaultWrongTypeString, defaultIsWrongTypeStringException.description);
+            Assert.AreEqual("inline_test.ts:7:40", defaultIsWrongTypeStringException.location);
+
+            /*
+            // property default is not a valid type (vector3)
+            #DCECOMP {
+                "class": "ClassAndComponent",
+                "properties": [
+                    {
+                        "name": "property1",
+                        "type": "vector3",
+                        "default": "invalid"
+                    }
+                ]
+            }
+            */
+            var defaultIsWrongTypeVector3 =
+                @"{
+                    ""class"": ""ClassAndComponent"",
+                    ""properties"": [
+                        {
+                            ""name"": ""property1"",
+                            ""type"": ""vector3"",
+                            ""default"": ""invalid""
+                        }
+                    ]
+                }";
+
+            var defaultIsWrongTypeVector3Exception = Assert.Throws<CustomComponentMarkupSystem.CustomComponentException>(() => ccms.MakeComponent(JObject.Parse(defaultIsWrongTypeVector3).WithImportFile("src/inline_test"), "inline_test.ts"));
+
+            Assert.AreEqual(CustomComponentMarkupSystem.exceptionMessageDefaultWrongTypeVector3, defaultIsWrongTypeVector3Exception.description);
+            Assert.AreEqual("inline_test.ts:7:48", defaultIsWrongTypeVector3Exception.location);
         }
     }
 }
