@@ -260,6 +260,87 @@ First comment second line
             Assert.AreEqual("src/components/class_with_import_file", classWithImportFile.SourceFile);
         }
 
+        [Test]
+        public void RotationProperty()
+        {
+            var (availableComponentsState, _, ccms) = SetupCustomComponentsTests();
+
+            var componentWithValidRotationEulerString =
+                @"{
+                    ""class"": ""ComponentWithValidRotationEuler"",
+                    ""properties"": [
+                        {
+                            ""name"": ""property1"",
+                            ""type"": ""rotation"",
+                            ""default"": "" E (20 ,40.5, 60) ""
+                        }
+                    ]
+                }";
+
+            ccms.MakeComponent(JObject.Parse(componentWithValidRotationEulerString).WithImportFile("src/inline_test"), "inline_test.ts");
+
+            var componentWithValidRotationEulerComponent = availableComponentsState.GetComponentDefinitionByName("ComponentWithValidRotationEuler");
+            
+            Assert.AreEqual("ComponentWithValidRotationEuler", componentWithValidRotationEulerComponent.NameInCode);
+            Assert.AreEqual("ComponentWithValidRotationEuler", componentWithValidRotationEulerComponent.NameOfSlot);
+
+            Assert.AreEqual(1, componentWithValidRotationEulerComponent.properties.Count);
+
+            var property = componentWithValidRotationEulerComponent.properties[0];
+            Assert.AreEqual("property1", property.name);
+            Assert.AreEqual(PropertyType.Quaternion, property.type);
+            Assert.AreEqual(Quaternion.Euler(20,40.5f,60), property.defaultValue);
+
+
+
+            var componentWithValidRotationQuaternionString =
+                @"{
+                    ""class"": ""ComponentWithValidRotationQuaternion"",
+                    ""properties"": [
+                        {
+                            ""name"": ""property1"",
+                            ""type"": ""rotation"",
+                            ""default"": "" Q (0.5, 0.5, 0.5, 0.5) ""
+                        }
+                    ]
+                }";
+
+            ccms.MakeComponent(JObject.Parse(componentWithValidRotationQuaternionString).WithImportFile("src/inline_test"), "inline_test.ts");
+
+            var componentWithValidRotationQuaternionComponent = 
+                availableComponentsState.GetComponentDefinitionByName("ComponentWithValidRotationQuaternion");
+
+            Assert.AreEqual("ComponentWithValidRotationQuaternion", componentWithValidRotationQuaternionComponent.NameInCode);
+            Assert.AreEqual("ComponentWithValidRotationQuaternion", componentWithValidRotationQuaternionComponent.NameOfSlot);
+
+            Assert.AreEqual(1, componentWithValidRotationQuaternionComponent.properties.Count);
+
+            property = componentWithValidRotationQuaternionComponent.properties[0];
+            Assert.AreEqual("property1", property.name);
+            Assert.AreEqual(PropertyType.Quaternion, property.type);
+            Assert.AreEqual(new Quaternion(0.5f, 0.5f, 0.5f, 0.5f), property.defaultValue);
+
+
+
+            var componentWithInvalidRotationString =
+                @"{
+                    ""class"": ""ComponentWithInvalidRotation"",
+                    ""properties"": [
+                        {
+                            ""name"": ""property1"",
+                            ""type"": ""rotation"",
+                            ""default"": ""invalid""
+                        }
+                    ]
+                }";
+
+            var componentWithInvalidRotationException= 
+                Assert.Throws<CustomComponentMarkupSystem.CustomComponentException>(() => 
+                ccms.MakeComponent(JObject.Parse(componentWithInvalidRotationString).WithImportFile("src/inline_test"), "inline_test.ts"));
+
+            Assert.AreEqual(CustomComponentMarkupSystem.exceptionMessageDefaultWrongTypeRotation, componentWithInvalidRotationException.description);
+        }
+
         // Invalid json
         [Test]
         public void FailInvalidJson()

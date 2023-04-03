@@ -1,6 +1,7 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -115,6 +116,7 @@ namespace Assets.Scripts.System
         public const string exceptionMessageDefaultWrongTypeNumber = "The default of a property of type number has to be a number";
         public const string exceptionMessageDefaultWrongTypeBool = "The default of a property of type bool has to be a bool";
         public const string exceptionMessageDefaultWrongTypeVector3 = "The default of a property of type vector3 has to be a list of 3 numbers. E.g.: `default: [1, 2, 3]`";
+        public const string exceptionMessageDefaultWrongTypeRotation = "The default of a property of type rotation has to be a string with the format `E(0,90,45)` for euler angle notation or `Q(1,0,0,0)` for quaternion notation";
         public const string exceptionMessageInvalidJson = "A #DCECOMP tag was not followed by valid Json";
         public const string exceptionMessagePropertyListWrongType = "The properties have to be a list of objects";
 
@@ -232,12 +234,12 @@ namespace Assets.Scripts.System
         private DclComponent.DclComponentProperty.PropertyDefinition[] GetPropertyDefinitions(JToken? propertiesToken, string path)
         {
             // check if properties is present
-            if (propertiesToken == null) 
+            if (propertiesToken == null)
                 // if properties is not present, create an empty property definition list
                 return Array.Empty<DclComponent.DclComponentProperty.PropertyDefinition>();
 
             // check if properties is a list
-            if(propertiesToken.Type != JTokenType.Array) 
+            if (propertiesToken.Type != JTokenType.Array)
                 throw new CustomComponentException(exceptionMessagePropertyListWrongType, propertiesToken, path);
 
             return propertiesToken
@@ -282,6 +284,7 @@ namespace Assets.Scripts.System
                 "string" => DclComponent.DclComponentProperty.PropertyType.String,
                 "number" => DclComponent.DclComponentProperty.PropertyType.Float,
                 "vector3" => DclComponent.DclComponentProperty.PropertyType.Vector3,
+                "rotation" => DclComponent.DclComponentProperty.PropertyType.Quaternion,
                 _ => throw new CustomComponentException(exceptionMessagePropertyTypeWrongOption, typeToken, path)
             };
         }
@@ -345,7 +348,46 @@ namespace Assets.Scripts.System
 
         private Quaternion GetQuaternionFromJObject(JToken token, string path)
         {
-            return Quaternion.identity; // TODO: get actual default value
+            // extract the string. This can be "E (0, 40, 80 )" for euler or "Q (0, 0, 0, 1)" for quaternion
+            var valueString = token.GetValueOrNull<string?>() ?? throw new CustomComponentException(exceptionMessageDefaultWrongTypeRotation, token, path);
+
+            // remove all white spaces like space tab and new line
+            valueString = valueString.Replace(" ", "");
+            valueString = valueString.Replace("\t", "");
+            valueString = valueString.Replace("\n", "");
+
+            // check if the string starts with "E" or "Q"
+            if (valueString.StartsWith("E"))
+            {
+                // extract the numbers
+                var numbers = valueString.Substring(2, valueString.Length - 3).Split(',');
+
+                // convert to float
+                var x = float.Parse(numbers[0], CultureInfo.InvariantCulture);
+                var y = float.Parse(numbers[1], CultureInfo.InvariantCulture);
+                var z = float.Parse(numbers[2], CultureInfo.InvariantCulture);
+
+                // return the quaternion
+                return Quaternion.Euler(x, y, z);
+            }
+            else if (valueString.StartsWith("Q"))
+            {
+                // extract the numbers
+                var numbers = valueString.Substring(2, valueString.Length - 3).Split(',');
+
+                // convert to float
+                var x = float.Parse(numbers[0], CultureInfo.InvariantCulture);
+                var y = float.Parse(numbers[1], CultureInfo.InvariantCulture);
+                var z = float.Parse(numbers[2], CultureInfo.InvariantCulture);
+                var w = float.Parse(numbers[3], CultureInfo.InvariantCulture);
+
+                // return the quaternion
+                return new Quaternion(x, y, z, w);
+            }
+            else
+            {
+                throw new CustomComponentException(exceptionMessageDefaultWrongTypeRotation, token, path);
+            }
         }
 
         private Guid GetGuidFromJObject(JToken token, string path)
@@ -398,7 +440,7 @@ namespace Assets.Scripts.System
                     {
                         var jObject = JObject.Load(new JsonTextReader(new StringReader(extractedJson)));
                         jObject[sourcePathKey] = path;
-                        
+
                         if (isJsOrTs && jObject[importFileKey] is null)
                         {
                             jObject[importFileKey] = GetImportPathFromFilePath(path);
@@ -469,7 +511,7 @@ namespace Assets.Scripts.System
             // go to start
             for (var i = 0; i < startingFrom + componentStartTag.Length; i++)
             {
-                var c = (char) reader.Read();
+                var c = (char)reader.Read();
 
                 if (c == '\r')
                 {
@@ -491,7 +533,7 @@ namespace Assets.Scripts.System
             // find start
             while (reader.Peek() >= 0 && j < maxLength)
             {
-                var c = (char) reader.Read();
+                var c = (char)reader.Read();
                 j++;
 
                 if (c == '{')
@@ -518,7 +560,7 @@ namespace Assets.Scripts.System
             // extract json
             while (reader.Peek() >= 0 && j < maxLength)
             {
-                var c = (char) reader.Read();
+                var c = (char)reader.Read();
                 j++;
 
                 switch (c)
