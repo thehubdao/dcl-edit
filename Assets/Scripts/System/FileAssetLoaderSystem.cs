@@ -4,6 +4,7 @@ using Assets.Scripts.Utility;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -84,7 +85,7 @@ namespace Assets.Scripts.System
             {
                 string directoryPath = Path.Combine(pathState.ProjectPath, relativePathInProject);
 
-                loaderState.assetHierarchy = ScanDirectory(directoryPath);
+                loaderState.assetHierarchy = ScanDirectory(directoryPath, overrideDirname: StringToTitleCase(relativePathInProject));
 
                 editorEvents.InvokeAssetMetadataCacheUpdatedEvent();
             }
@@ -178,7 +179,7 @@ namespace Assets.Scripts.System
         #endregion
 
         #region Metadata related methods
-        private AssetHierarchyItem ScanDirectory(string fileSystemPath, string pathInHierarchy = "")
+        private AssetHierarchyItem ScanDirectory(string fileSystemPath, string pathInHierarchy = "", string overrideDirname = null)
         {
             CheckUpgrades(Directory.GetFiles(fileSystemPath, "*.dclasset"));
             
@@ -215,7 +216,12 @@ namespace Assets.Scripts.System
                 childDirectories.Add(ScanDirectory(subdir, pathInHierarchy));
             }
 
-            return new AssetHierarchyItem(dirname, pathInHierarchy, childDirectories, assets);
+            return new AssetHierarchyItem(overrideDirname ?? dirname, pathInHierarchy, childDirectories, assets);
+        }
+
+        private string StringToTitleCase(string dirname)
+        {
+            return new CultureInfo("en-US", false).TextInfo.ToTitleCase(dirname);
         }
 
         private void CheckUpgrades(string[] files)
