@@ -13,7 +13,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
             public int level;
             public bool hasChildren;
             public bool isExpanded;
-            public bool isParentExpanded;
+            public bool isFirstChild;
             public TextHandler.TextStyle style;
             public bool isPrimarySelected;
             public HierarchyItemHandler.UiHierarchyItemActions actions;
@@ -34,7 +34,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
                     hasChildren.Equals(otherHierarchyItem.hasChildren) &&
                     isExpanded.Equals(otherHierarchyItem.isExpanded) &&
                     isPrimarySelected.Equals(otherHierarchyItem.isPrimarySelected) &&
-                    isParentExpanded.Equals(otherHierarchyItem.isParentExpanded) &&
+                    isFirstChild.Equals(otherHierarchyItem.isFirstChild) &&
                     style.Equals(otherHierarchyItem.style) &&
                     actions.Equals(otherHierarchyItem.actions) &&
                     rightClickAction.Equals(otherHierarchyItem.rightClickAction) &&
@@ -85,7 +85,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
     public static class HierarchyItemPanelHelper
     {
         public static HierarchyItemAtom.Data AddHierarchyItem(this PanelAtom.Data panelAtomData, string name, int level,
-            bool hasChildren, bool isExpanded, bool isParentExpanded, TextHandler.TextStyle textStyle, bool isPrimarySelected,
+            bool hasChildren, bool isExpanded, bool isFirstChild, TextHandler.TextStyle textStyle, bool isPrimarySelected,
             HierarchyItemHandler.UiHierarchyItemActions actions, Action<Vector3> rightClickAction,
             Action<GameObject> dropActionUpper, Action<GameObject> dropActionMiddle, Action<GameObject> dropActionLower, DclEntity entity = null)
         {
@@ -95,7 +95,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
                 level = level,
                 hasChildren = hasChildren,
                 isExpanded = isExpanded,
-                isParentExpanded = isParentExpanded,
+                isFirstChild = isFirstChild,
                 style = textStyle,
                 isPrimarySelected = isPrimarySelected,
                 actions = actions,
