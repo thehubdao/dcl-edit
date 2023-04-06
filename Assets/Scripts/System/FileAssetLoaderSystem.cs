@@ -43,8 +43,6 @@ namespace Assets.Scripts.System
             this.loadGltfFromFileSystem = loadGltfFromFileSystem;
             this.assetThumbnailGeneratorSystem = assetThumbnailGeneratorSystem;
             this.fileUpgraderSystem = fileUpgraderSystem;
-
-            CheckAssetDirectoryExists();
         }
 
         /// <summary>
@@ -80,6 +78,8 @@ namespace Assets.Scripts.System
 
         public void CacheAllAssetMetadata()
         {
+            CheckAssetDirectoryExists();
+
             ClearAllData();
             try
             {
