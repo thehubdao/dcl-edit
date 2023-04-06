@@ -9,14 +9,12 @@ namespace Assets.Scripts.Visuals
     {
         // Dependencies
         private GizmoSizeSystem gizmoSizeSystem;
-        private CameraState cameraState;
 
 
         [Inject]
         private void Construct(GizmoSizeSystem gizmoSizeSystem, CameraState cameraState)
         {
             this.gizmoSizeSystem = gizmoSizeSystem;
-            this.cameraState = cameraState;
         }
 
         void LateUpdate()
