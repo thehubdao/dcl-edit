@@ -39,10 +39,10 @@ let binaryArgs = [
 
 // check graphics api
 // @type {string}
-let graphicsAPI = args.g.toLowerCase();
+let graphicsAPI = args.g;
 
 if (graphicsAPI) {
-    switch (graphicsAPI) {
+    switch (graphicsAPI.toLowerCase()) {
         case "auto":
             break;
         case "d11":
