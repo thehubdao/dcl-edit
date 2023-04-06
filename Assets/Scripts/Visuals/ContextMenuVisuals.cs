@@ -198,7 +198,7 @@ namespace Assets.Scripts.Visuals
         RectTransform CreateMenuParent()
         {
             var menu = Instantiate(unityState.ContextMenuAtom).GetComponent<RectTransform>();
-            menu.SetParent(transform);
+            menu.SetParent(transform, false);
             menu.pivot = new Vector2(0, 1);
             menu.sizeDelta = new Vector2(width, 0);
             return menu;
