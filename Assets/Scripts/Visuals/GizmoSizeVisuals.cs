@@ -1,4 +1,3 @@
-using Assets.Scripts.EditorState;
 using Assets.Scripts.System;
 using UnityEngine;
 using Zenject;
@@ -10,9 +9,8 @@ namespace Assets.Scripts.Visuals
         // Dependencies
         private GizmoSizeSystem gizmoSizeSystem;
 
-
         [Inject]
-        private void Construct(GizmoSizeSystem gizmoSizeSystem, CameraState cameraState)
+        private void Construct(GizmoSizeSystem gizmoSizeSystem)
         {
             this.gizmoSizeSystem = gizmoSizeSystem;
         }
