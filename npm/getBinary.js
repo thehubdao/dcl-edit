@@ -21,7 +21,7 @@ function getBinary(){
         throw new Error(`Unsupported platform`)
     }
     
-    return new Binary(binaryName,`https://github.com/cblech/dcl-edit-automation/releases/download/${version}/dcl-edit-${version}-${platformName}.tar.gz`)
+    return new Binary(binaryName,`https://github.com/metagamehub/dcl-edit/releases/download/${version}/dcl-edit-${version}-${platformName}.tar.gz`)
 }
 
 module.exports = getBinary;
