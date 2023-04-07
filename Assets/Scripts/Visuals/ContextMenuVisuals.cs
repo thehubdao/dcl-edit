@@ -21,6 +21,7 @@ namespace Assets.Scripts.Visuals
         ContextMenuSystem contextMenuSystem;
         UiBuilder.UiBuilder.Factory uiBuilderFactory;
         UnityState unityState;
+        float CanvasScale => GetComponentInParent<CanvasScaler>().scaleFactor;
 
         [Inject]
         void Construct(
@@ -106,7 +107,7 @@ namespace Assets.Scripts.Visuals
                     case ContextSubmenuItem subItem:
                         var isDisabled = CheckAllSubItemsDisabledRecursive(subItem.items);
                         menuPanel.AddContextSubmenu(menuData.menuId, subItem.submenuId, subItem.title, subItem.items,
-                            width, contextMenuSystem, isDisabled);
+                            width * CanvasScale, contextMenuSystem, isDisabled);
                         break;
                     case ContextMenuSpacerItem spItem:
                         menuPanel.AddContextMenuSpacer(menuData.menuId, contextMenuSystem);
@@ -117,9 +118,7 @@ namespace Assets.Scripts.Visuals
             itemsBuilder.Update(menuPanel);
 
             LayoutRebuilder.ForceRebuildLayoutImmediate(itemsBuilder.parentObject.GetComponent<RectTransform>());
-
             menuRect.sizeDelta = new Vector2(width, Mathf.Min(Screen.height, itemsBuilder.height));
-
 
             // Find a placement for the new menu where it is fully visible on the screen
             // Info: 0,0 is bottom left of screen
@@ -156,7 +155,7 @@ namespace Assets.Scripts.Visuals
                             continue;
                         }
 
-                        pos = new Vector3(pos.x - width, pos.y, pos.z);
+                        pos = new Vector3(pos.x - width * CanvasScale, pos.y, pos.z);
                         break;
                     case ContextMenuState.Placement.Direction.Right:
                         if (bottomRightCorner.x > Screen.width)
@@ -198,7 +197,7 @@ namespace Assets.Scripts.Visuals
         RectTransform CreateMenuParent()
         {
             var menu = Instantiate(unityState.ContextMenuAtom).GetComponent<RectTransform>();
-            menu.SetParent(transform);
+            menu.SetParent(transform, false);
             menu.pivot = new Vector2(0, 1);
             menu.sizeDelta = new Vector2(width, 0);
             return menu;
