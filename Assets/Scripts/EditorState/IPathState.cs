@@ -2,6 +2,6 @@ namespace Assets.Scripts.EditorState
 {
     public interface IPathState
     {
-        string ProjectPath { get; }
+        string ProjectPath { get; set; }
     }
 }

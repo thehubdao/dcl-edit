@@ -6,7 +6,7 @@ using System;
 using System.IO;
 using System.Linq;
 using UnityEngine;
-using USFB;
+using SFB;
 using Zenject;
 
 namespace Assets.Scripts.System

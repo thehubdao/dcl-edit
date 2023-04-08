@@ -55,6 +55,7 @@ public class NumberInputHandler : MonoBehaviour
                     if (numberValue == null)
                     {
                         onAbort?.Invoke(0);
+                        TextInputHandler.ReturnPreviousSubmitValue();
                     }
                     else
                     {
@@ -78,6 +79,11 @@ public class NumberInputHandler : MonoBehaviour
     private string NumberToString(float value)
     {
         return value.ToString(CultureInfo.InvariantCulture);
+    }
+
+    public void SetDefaultColors()
+    {
+        TextInputHandler.SetDefaultInputColors();
     }
 }
 

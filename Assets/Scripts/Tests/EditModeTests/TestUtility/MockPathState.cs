@@ -17,7 +17,7 @@ namespace Assets.Scripts.Tests.EditModeTests.TestUtility
             }
         }
 
-        public string ProjectPath { get; private set; }
+        public string ProjectPath { get; set; }
 
         /**
          * Changes ProjectPath to a new temporary folder and copies the content from the old ProjectPath to the new folder.
