@@ -12,6 +12,7 @@ using JetBrains.Annotations;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
+using UnityEngine.Assertions;
 using Zenject;
 using static Assets.Scripts.System.SettingsSystem;
 
@@ -60,6 +61,7 @@ namespace Assets.Scripts.System
             public string path { get; }
 
             private readonly int line = -1;
+
             private readonly int column = -1;
             //private readonly string lineText;
 
@@ -73,9 +75,11 @@ namespace Assets.Scripts.System
         }
 
         // Dependencies
+#pragma warning disable CS8618
         private FileManagerSystem fileManagerSystem;
         private AvailableComponentsState availableComponentsState;
         private IPathState pathState;
+#pragma warning restore CS8618
 
         [Inject]
         public void Construct(
@@ -136,9 +140,11 @@ namespace Assets.Scripts.System
                 {
                     var path = componentObject[sourcePathKey]!.Value<string>();
 
+                    Assert.IsNotNull(path);
+
                     try
                     {
-                        MakeComponent(componentObject, path);
+                        MakeComponent(componentObject, path!);
                     }
                     catch (CustomComponentException cce)
                     {
@@ -511,7 +517,7 @@ namespace Assets.Scripts.System
             // go to start
             for (var i = 0; i < startingFrom + componentStartTag.Length; i++)
             {
-                var c = (char)reader.Read();
+                var c = (char) reader.Read();
 
                 if (c == '\r')
                 {
@@ -533,7 +539,7 @@ namespace Assets.Scripts.System
             // find start
             while (reader.Peek() >= 0 && j < maxLength)
             {
-                var c = (char)reader.Read();
+                var c = (char) reader.Read();
                 j++;
 
                 if (c == '{')
@@ -560,7 +566,7 @@ namespace Assets.Scripts.System
             // extract json
             while (reader.Peek() >= 0 && j < maxLength)
             {
-                var c = (char)reader.Read();
+                var c = (char) reader.Read();
                 j++;
 
                 switch (c)
