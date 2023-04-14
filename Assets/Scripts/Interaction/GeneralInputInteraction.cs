@@ -70,11 +70,13 @@ namespace Assets.Scripts.Interaction
             inputSystemAsset.CameraMovement.Enable();
             inputSystemAsset.Modifier.Enable();
             inputSystemAsset.Hotkeys.Enable();
+            inputSystemAsset.Mouse.Enable();
         }
 
         // Update is called once per frame
         void Update()
         {
+            CheckMouseScrollWheel();
             ProcessHotKeys();
 
             InvokeMouseButtonDownEvent();
@@ -110,6 +112,15 @@ namespace Assets.Scripts.Interaction
                     inputState.InState = InputState.InStateType.NoInput;
                     break;
             }
+        }
+
+        private void CheckMouseScrollWheel()
+        {
+            var z = inputSystemAsset.Mouse.ScrollPanel.ReadValue<float>();
+            if (z > 0)
+                Debug.Log("Scroll UP");
+            else if (z < 0)
+                Debug.Log("Scroll DOWN");
         }
 
         private void InvokeMouseButtonDownEvent()

@@ -659,6 +659,34 @@ public partial class @InputSystemAsset: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Mouse"",
+            ""id"": ""3bfe8e29-7f07-4ba7-8a82-8ef9fecfa7fa"",
+            ""actions"": [
+                {
+                    ""name"": ""ScrollPanel"",
+                    ""type"": ""PassThrough"",
+                    ""id"": ""a0bbda80-8991-44c7-9e02-cef5ec7bb905"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""299f2b39-8130-498b-9e79-f43cd772a4c6"",
+                    ""path"": ""<Mouse>/scroll/y"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ScrollPanel"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -687,6 +715,9 @@ public partial class @InputSystemAsset: IInputActionCollection2, IDisposable
         m_Modifier_Shift = m_Modifier.FindAction("Shift", throwIfNotFound: true);
         m_Modifier_Ctrl = m_Modifier.FindAction("Ctrl", throwIfNotFound: true);
         m_Modifier_Alt = m_Modifier.FindAction("Alt", throwIfNotFound: true);
+        // Mouse
+        m_Mouse = asset.FindActionMap("Mouse", throwIfNotFound: true);
+        m_Mouse_ScrollPanel = m_Mouse.FindAction("ScrollPanel", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -1002,6 +1033,52 @@ public partial class @InputSystemAsset: IInputActionCollection2, IDisposable
         }
     }
     public ModifierActions @Modifier => new ModifierActions(this);
+
+    // Mouse
+    private readonly InputActionMap m_Mouse;
+    private List<IMouseActions> m_MouseActionsCallbackInterfaces = new List<IMouseActions>();
+    private readonly InputAction m_Mouse_ScrollPanel;
+    public struct MouseActions
+    {
+        private @InputSystemAsset m_Wrapper;
+        public MouseActions(@InputSystemAsset wrapper) { m_Wrapper = wrapper; }
+        public InputAction @ScrollPanel => m_Wrapper.m_Mouse_ScrollPanel;
+        public InputActionMap Get() { return m_Wrapper.m_Mouse; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(MouseActions set) { return set.Get(); }
+        public void AddCallbacks(IMouseActions instance)
+        {
+            if (instance == null || m_Wrapper.m_MouseActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_MouseActionsCallbackInterfaces.Add(instance);
+            @ScrollPanel.started += instance.OnScrollPanel;
+            @ScrollPanel.performed += instance.OnScrollPanel;
+            @ScrollPanel.canceled += instance.OnScrollPanel;
+        }
+
+        private void UnregisterCallbacks(IMouseActions instance)
+        {
+            @ScrollPanel.started -= instance.OnScrollPanel;
+            @ScrollPanel.performed -= instance.OnScrollPanel;
+            @ScrollPanel.canceled -= instance.OnScrollPanel;
+        }
+
+        public void RemoveCallbacks(IMouseActions instance)
+        {
+            if (m_Wrapper.m_MouseActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(IMouseActions instance)
+        {
+            foreach (var item in m_Wrapper.m_MouseActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_MouseActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public MouseActions @Mouse => new MouseActions(this);
     public interface ICameraMovementActions
     {
         void OnForwardBackward(InputAction.CallbackContext context);
@@ -1028,5 +1105,9 @@ public partial class @InputSystemAsset: IInputActionCollection2, IDisposable
         void OnShift(InputAction.CallbackContext context);
         void OnCtrl(InputAction.CallbackContext context);
         void OnAlt(InputAction.CallbackContext context);
+    }
+    public interface IMouseActions
+    {
+        void OnScrollPanel(InputAction.CallbackContext context);
     }
 }
