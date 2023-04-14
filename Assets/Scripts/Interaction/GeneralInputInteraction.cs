@@ -143,10 +143,10 @@ namespace Assets.Scripts.Interaction
                 // Get the ray from the Camera, that corresponds to the mouse position in the panel
                 mouseRay = unityState.MainCamera.ViewportPointToRay(mousePosViewport);
                 // Figure out, if the mouse is over the Game window
-                isMouseOverGameWindow = mousePosViewport.x >= 0 &&
-                                        mousePosViewport.x < 1 &&
-                                        mousePosViewport.y >= 0 &&
-                                        mousePosViewport.y < 1;
+                isMouseOverGameWindow = mousePosViewport.x >= 0.01 &&
+                                        mousePosViewport.x < 0.99 &&
+                                        mousePosViewport.y >= 0.01 &&
+                                        mousePosViewport.y < 0.99;
                 isMouseOverContextMenu = contextMenuSystem.IsMouseOverMenu();
                 isMouseOverDialog = dialogSystem.IsMouseOverDialog();
                 isMouseOverSceneButtons = unityState.sceneViewButtons.GetComponent<GizmoToolButtonInteraction>().IsMouseOverButtons();
