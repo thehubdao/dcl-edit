@@ -114,7 +114,7 @@ namespace Assets.Scripts.System
         public const string exceptionMessagePropertyNameWrongType = "The property name has to be a string";
         public const string exceptionMessagePropertyTypeNotPresent = "The property has to have a type";
         public const string exceptionMessagePropertyTypeWrongType = "The property type has to be a string";
-        public const string exceptionMessagePropertyTypeWrongOption = "Type has to be one of the following values: \"string\", \"number\", \"vector3\"";
+        public const string exceptionMessagePropertyTypeWrongOption = "Type has to be one of the following values: \"string\", \"number\", \"bool\", \"vector3\", \"rotation\", \"asset:model\" ";
         public const string exceptionMessageDefaultWrongTypeString = "The default of a property of type string has to be a string";
         public const string exceptionMessageDefaultWrongTypeInt = "The default of a property of type int has to be an number";
         public const string exceptionMessageDefaultWrongTypeNumber = "The default of a property of type number has to be a number";
@@ -291,6 +291,7 @@ namespace Assets.Scripts.System
             {
                 "string" => (DclComponent.DclComponentProperty.PropertyType.String, Array.Empty<PropertyFlags>()),
                 "number" => (DclComponent.DclComponentProperty.PropertyType.Float, Array.Empty<PropertyFlags>()),
+                "bool" => (DclComponent.DclComponentProperty.PropertyType.Boolean, Array.Empty<PropertyFlags>()),
                 "vector3" => (DclComponent.DclComponentProperty.PropertyType.Vector3, Array.Empty<PropertyFlags>()),
                 "rotation" => (DclComponent.DclComponentProperty.PropertyType.Quaternion, Array.Empty<PropertyFlags>()),
                 "asset:model" => (DclComponent.DclComponentProperty.PropertyType.Asset, new[] {PropertyFlags.ModelAssets}),

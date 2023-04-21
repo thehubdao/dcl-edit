@@ -436,6 +436,98 @@ First comment second line
             Assert.AreEqual(CustomComponentMarkupSystem.exceptionMessageDefaultWrongTypeAsset, propertyTypeIsAssetModelAndDefaultValueIsInvalidException.description);
         }
 
+        // test for property type bool
+        [Test]
+        public void BoolProperty()
+        {
+            var (availableComponentsState, _, ccms) = SetupCustomComponentsTests();
+
+            /*
+            // property type is bool
+            #DCECOMP {
+                "class": "ClassAndComponent",
+                "properties": [
+                    {
+                        "name": "property1",
+                        "type": "bool"
+                    }
+                ]
+            }
+            */
+            var propertyTypeIsBoolString =
+                @"{
+                    ""class"": ""ClassAndComponent"",
+                    ""properties"": [
+                        {
+                            ""name"": ""property1"",
+                            ""type"": ""bool""
+                        }
+                    ]
+                }";
+
+            ccms.MakeComponent(JObject.Parse(propertyTypeIsBoolString).WithImportFile("src/inline_test"), "inline_test.ts");
+
+            var component = availableComponentsState.GetComponentDefinitionByName("ClassAndComponent");
+
+            Assert.AreEqual("ClassAndComponent", component.NameInCode);
+            Assert.AreEqual("ClassAndComponent", component.NameOfSlot);
+
+            Assert.AreEqual(1, component.properties.Count);
+
+            var property = component.properties[0];
+
+            Assert.AreEqual("property1", property.name);
+            Assert.AreEqual(PropertyType.Boolean, property.type);
+            Assert.AreEqual(false, property.defaultValue);
+
+            // property type is bool and default value is valid
+            var propertyTypeIsBoolAndDefaultValueIsValidString =
+                @"{
+                    ""class"": ""ClassAndComponent2"",
+                    ""properties"": [
+                        {
+                            ""name"": ""property1"",
+                            ""type"": ""bool"",
+                            ""default"": true
+                        }
+                    ]
+                }";
+
+            ccms.MakeComponent(JObject.Parse(propertyTypeIsBoolAndDefaultValueIsValidString).WithImportFile("src/inline_test"), "inline_test.ts");
+
+            component = availableComponentsState.GetComponentDefinitionByName("ClassAndComponent2");
+
+            Assert.AreEqual("ClassAndComponent2", component.NameInCode);
+            Assert.AreEqual("ClassAndComponent2", component.NameOfSlot);
+
+            Assert.AreEqual(1, component.properties.Count);
+
+            property = component.properties[0];
+
+            Assert.AreEqual("property1", property.name);
+            Assert.AreEqual(PropertyType.Boolean, property.type);
+            Assert.AreEqual(true, property.defaultValue);
+
+            // property type is bool and default value is invalid
+            var propertyTypeIsBoolAndDefaultValueIsInvalidString =
+                @"{
+                    ""class"": ""ClassAndComponent3"",
+                    ""properties"": [
+                        {
+                            ""name"": ""property1"",
+                            ""type"": ""bool"",
+                            ""default"": ""invalid""
+                        }
+                    ]
+                }";
+
+            var propertyTypeIsBoolAndDefaultValueIsInvalidException =
+                Assert.Throws<CustomComponentMarkupSystem.CustomComponentException>(() =>
+                    ccms.MakeComponent(JObject.Parse(propertyTypeIsBoolAndDefaultValueIsInvalidString).WithImportFile("src/inline_test"), "inline_test.ts"));
+
+            Assert.AreEqual(CustomComponentMarkupSystem.exceptionMessageDefaultWrongTypeBool, propertyTypeIsBoolAndDefaultValueIsInvalidException.description);
+        }
+
         // Invalid json
         [Test]
         public void FailInvalidJson()
