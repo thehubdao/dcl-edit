@@ -14,7 +14,7 @@ using Newtonsoft.Json.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
 using Zenject;
-using static Assets.Scripts.System.SettingsSystem;
+using PropertyFlags = Assets.Scripts.SceneState.DclComponent.DclComponentProperty.PropertyDefinition.Flags;
 
 namespace Assets.Scripts.System
 {
@@ -121,6 +121,7 @@ namespace Assets.Scripts.System
         public const string exceptionMessageDefaultWrongTypeBool = "The default of a property of type bool has to be a bool";
         public const string exceptionMessageDefaultWrongTypeVector3 = "The default of a property of type vector3 has to be a list of 3 numbers. E.g.: `default: [1, 2, 3]`";
         public const string exceptionMessageDefaultWrongTypeRotation = "The default of a property of type rotation has to be a string with the format `E(0,90,45)` for euler angle notation or `Q(1,0,0,0)` for quaternion notation";
+        public const string exceptionMessageDefaultWrongTypeAsset = "The default of a property of type asset:model has to be a string with a Guid";
         public const string exceptionMessageInvalidJson = "A #DCECOMP tag was not followed by valid Json";
         public const string exceptionMessagePropertyListWrongType = "The properties have to be a list of objects";
 
@@ -264,7 +265,7 @@ namespace Assets.Scripts.System
                     var type = p["type"] ?? throw new CustomComponentException(exceptionMessagePropertyTypeNotPresent, p, path);
 
                     // Interpret type
-                    var typeValue = GetTypeFromString(type, path);
+                    var (typeValue, propertyFlags) = GetTypeFromString(type, path);
 
 
                     // Get default
@@ -276,21 +277,23 @@ namespace Assets.Scripts.System
                     return new DclComponent.DclComponentProperty.PropertyDefinition(
                         nameValue,
                         typeValue,
-                        defaultValue);
+                        defaultValue,
+                        propertyFlags);
                 })
                 .ToArray();
         }
 
-        private DclComponent.DclComponentProperty.PropertyType GetTypeFromString(JToken typeToken, string path)
+        private (DclComponent.DclComponentProperty.PropertyType, PropertyFlags[]) GetTypeFromString(JToken typeToken, string path)
         {
             var typeString = typeToken.GetValueOrNull<string?>() ?? throw new CustomComponentException(exceptionMessagePropertyTypeWrongType, typeToken, path);
 
             return typeString switch
             {
-                "string" => DclComponent.DclComponentProperty.PropertyType.String,
-                "number" => DclComponent.DclComponentProperty.PropertyType.Float,
-                "vector3" => DclComponent.DclComponentProperty.PropertyType.Vector3,
-                "rotation" => DclComponent.DclComponentProperty.PropertyType.Quaternion,
+                "string" => (DclComponent.DclComponentProperty.PropertyType.String, Array.Empty<PropertyFlags>()),
+                "number" => (DclComponent.DclComponentProperty.PropertyType.Float, Array.Empty<PropertyFlags>()),
+                "vector3" => (DclComponent.DclComponentProperty.PropertyType.Vector3, Array.Empty<PropertyFlags>()),
+                "rotation" => (DclComponent.DclComponentProperty.PropertyType.Quaternion, Array.Empty<PropertyFlags>()),
+                "asset:model" => (DclComponent.DclComponentProperty.PropertyType.Asset, new[] {PropertyFlags.ModelAssets}),
                 _ => throw new CustomComponentException(exceptionMessagePropertyTypeWrongOption, typeToken, path)
             };
         }
@@ -342,7 +345,6 @@ namespace Assets.Scripts.System
             // extract that list
             var list = token.GetValueOrNull<JArray>() ?? throw new CustomComponentException(exceptionMessageDefaultWrongTypeVector3, token, path);
 
-
             // extract the numbers
             var x = list[0].GetValueOrNull<float?>() ?? throw new CustomComponentException(exceptionMessageDefaultWrongTypeVector3, token, path);
             var y = list[1].GetValueOrNull<float?>() ?? throw new CustomComponentException(exceptionMessageDefaultWrongTypeVector3, token, path);
@@ -376,7 +378,9 @@ namespace Assets.Scripts.System
                 // return the quaternion
                 return Quaternion.Euler(x, y, z);
             }
-            else if (valueString.StartsWith("Q"))
+
+            /*else*/
+            if (valueString.StartsWith("Q"))
             {
                 // extract the numbers
                 var numbers = valueString.Substring(2, valueString.Length - 3).Split(',');
@@ -390,7 +394,8 @@ namespace Assets.Scripts.System
                 // return the quaternion
                 return new Quaternion(x, y, z, w);
             }
-            else
+
+            /*else*/
             {
                 throw new CustomComponentException(exceptionMessageDefaultWrongTypeRotation, token, path);
             }
@@ -398,7 +403,15 @@ namespace Assets.Scripts.System
 
         private Guid GetGuidFromJObject(JToken token, string path)
         {
-            return Guid.Empty;
+            var guidString = token.GetValueOrNull<string?>() ?? throw new CustomComponentException(exceptionMessageDefaultWrongTypeAsset, token, path);
+
+            if (Guid.TryParse(guidString, out var guid))
+            {
+                return guid;
+            }
+
+            // else
+            throw new CustomComponentException(exceptionMessageDefaultWrongTypeAsset, token, path);
         }
 
 

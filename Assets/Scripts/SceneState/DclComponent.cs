@@ -18,7 +18,10 @@ namespace Assets.Scripts.SceneState
                 public enum Flags
                 {
                     None = 0,
-                    ParseInConstructor = 0b1,
+                    ParseInConstructor = 1 << 0,
+                    ModelAssets = 1 << 1,
+                    SceneAssets = 1 << 2,
+                    // Reserved for assets: 1 << 3 - 7
                 }
 
                 public string name;

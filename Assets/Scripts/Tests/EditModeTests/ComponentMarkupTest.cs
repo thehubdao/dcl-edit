@@ -341,6 +341,101 @@ First comment second line
             Assert.AreEqual(CustomComponentMarkupSystem.exceptionMessageDefaultWrongTypeRotation, componentWithInvalidRotationException.description);
         }
 
+
+        // test for property type asset:model
+        [Test]
+        public void AssetModelProperty()
+        {
+            var (availableComponentsState, _, ccms) = SetupCustomComponentsTests();
+
+            /*
+            // property type is asset:model
+            #DCECOMP {
+                "class": "ClassAndComponent",
+                "properties": [
+                    {
+                        "name": "property1",
+                        "type": "asset:model"
+                    }
+                ]
+            }
+            */
+            var propertyTypeIsAssetModelString =
+                @"{
+                    ""class"": ""ClassAndComponent"",
+                    ""properties"": [
+                        {
+                            ""name"": ""property1"",
+                            ""type"": ""asset:model""
+                        }
+                    ]
+                }";
+
+            ccms.MakeComponent(JObject.Parse(propertyTypeIsAssetModelString).WithImportFile("src/inline_test"), "inline_test.ts");
+
+            var component = availableComponentsState.GetComponentDefinitionByName("ClassAndComponent");
+
+            Assert.AreEqual("ClassAndComponent", component.NameInCode);
+            Assert.AreEqual("ClassAndComponent", component.NameOfSlot);
+
+            Assert.AreEqual(1, component.properties.Count);
+
+            var property = component.properties[0];
+
+            Assert.AreEqual("property1", property.name);
+            Assert.AreEqual(PropertyType.Asset, property.type);
+            Assert.AreEqual(Guid.Empty, property.defaultValue);
+            Assert.AreEqual(PropertyDefinition.Flags.ModelAssets, property.flags);
+
+            // property type is asset:model and default value is valid
+            var propertyTypeIsAssetModelAndDefaultValueIsValidString =
+                @"{
+                    ""class"": ""ClassAndComponent2"",
+                    ""properties"": [
+                        {
+                            ""name"": ""property1"",
+                            ""type"": ""asset:model"",
+                            ""default"": ""2a8c3e61-3b9e-4f9c-8c9c-1c9c3e61b9e4""
+                        }
+                    ]
+                }";
+
+            ccms.MakeComponent(JObject.Parse(propertyTypeIsAssetModelAndDefaultValueIsValidString).WithImportFile("src/inline_test"), "inline_test.ts");
+
+            component = availableComponentsState.GetComponentDefinitionByName("ClassAndComponent2");
+
+            Assert.AreEqual("ClassAndComponent2", component.NameInCode);
+            Assert.AreEqual("ClassAndComponent2", component.NameOfSlot);
+
+            Assert.AreEqual(1, component.properties.Count);
+
+            property = component.properties[0];
+
+            Assert.AreEqual("property1", property.name);
+            Assert.AreEqual(PropertyType.Asset, property.type);
+            Assert.AreEqual(new Guid("2a8c3e61-3b9e-4f9c-8c9c-1c9c3e61b9e4"), property.defaultValue);
+            Assert.AreEqual(PropertyDefinition.Flags.ModelAssets, property.flags);
+
+            // property type is asset:model and default value is invalid
+            var propertyTypeIsAssetModelAndDefaultValueIsInvalidString =
+                @"{
+                    ""class"": ""ClassAndComponent3"",
+                    ""properties"": [
+                        {
+                            ""name"": ""property1"",
+                            ""type"": ""asset:model"",
+                            ""default"": ""invalid""
+                        }
+                    ]
+                }";
+
+            var propertyTypeIsAssetModelAndDefaultValueIsInvalidException =
+                Assert.Throws<CustomComponentMarkupSystem.CustomComponentException>(() =>
+                    ccms.MakeComponent(JObject.Parse(propertyTypeIsAssetModelAndDefaultValueIsInvalidString).WithImportFile("src/inline_test"), "inline_test.ts"));
+
+            Assert.AreEqual(CustomComponentMarkupSystem.exceptionMessageDefaultWrongTypeAsset, propertyTypeIsAssetModelAndDefaultValueIsInvalidException.description);
+        }
+
         // Invalid json
         [Test]
         public void FailInvalidJson()
