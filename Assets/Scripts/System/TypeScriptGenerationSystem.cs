@@ -96,6 +96,7 @@ namespace Assets.Scripts.System
             public SpecialComponent specialComponent;
 
             public List<PropertyInfo> gatheredPropertyInfos;
+            public bool shouldGenerateInitFunction;
         }
 
         private struct UsedComponentInfo
@@ -275,7 +276,8 @@ namespace Assets.Scripts.System
                     inEntitySymbol = "childScene",
                     internalScriptSymbol = internalEntityComponentSymbol,
                     specialComponent = specialComponent,
-                    gatheredPropertyInfos = new List<PropertyInfo>()
+                    gatheredPropertyInfos = new List<PropertyInfo>(),
+                    shouldGenerateInitFunction = false
                 };
             }
 
@@ -309,7 +311,8 @@ namespace Assets.Scripts.System
                 inEntitySymbol = inEntitySymbol,
                 internalScriptSymbol = internalEntityComponentSymbol,
                 specialComponent = specialComponent,
-                gatheredPropertyInfos = new List<PropertyInfo>()
+                gatheredPropertyInfos = new List<PropertyInfo>(),
+                shouldGenerateInitFunction = true
             };
 
             // Generate Property info
@@ -637,11 +640,6 @@ export type DceEntity = {
                         }
                         else
                         {
-                            // Temporary solution TODO: Change it
-                            //generatedScript.AppendLine(componentInfo.symbol == "GLTFShape" ?
-                            //    $"const {componentInfo.internalScriptSymbol} = new {componentInfo.symbol}(\"\")".Indent(2) : // use empty initializer until assets can be used here
-                            //    $"const {componentInfo.internalScriptSymbol} = new {componentInfo.symbol}()".Indent(2));
-
                             // setup component constructor
                             // get constructor parameters
                             var constructorParameters =
@@ -658,6 +656,14 @@ export type DceEntity = {
                             foreach (var propertyInfo in componentInfo.gatheredPropertyInfos.Where(pi => !pi.isConstructorParameter).Where(pi => pi.value != null))
                             {
                                 generatedScript.AppendLine($"{componentInfo.internalScriptSymbol}.{propertyInfo.symbol} = {propertyInfo.value}".Indent(2));
+                            }
+
+                            if (componentInfo.shouldGenerateInitFunction)
+                            {
+                                generatedScript.AppendLine($"if(\"init\" in {componentInfo.internalScriptSymbol} && typeof {componentInfo.internalScriptSymbol}.init === \"function\")".Indent(2));
+                                generatedScript.AppendLine("{".Indent(2));
+                                generatedScript.AppendLine($"{componentInfo.internalScriptSymbol}.init({entityInfo.internalScriptSymbol})".Indent(3));
+                                generatedScript.AppendLine("}".Indent(2));
                             }
 
                             if (obfuscate)
