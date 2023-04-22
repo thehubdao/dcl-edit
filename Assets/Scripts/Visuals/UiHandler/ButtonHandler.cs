@@ -4,6 +4,6 @@ using UnityEngine.UI;
 
 public class ButtonHandler : MonoBehaviour
 {
-    public Button button;
+    public ClickHandler click;
     public TextHandler text;
 }

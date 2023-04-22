@@ -6,8 +6,8 @@ namespace Visuals.UiHandler
     public class SpacerHandler: MonoBehaviour
     {
         [SerializeField]
-        public RightClickHandler rightClickHandler;
-        
+        public ClickHandler clickHandler;
+
         [SerializeField]
         public DropHandler dropHandler;
     }

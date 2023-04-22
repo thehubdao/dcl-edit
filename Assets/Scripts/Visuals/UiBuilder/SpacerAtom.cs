@@ -11,7 +11,10 @@ namespace Assets.Scripts.Visuals.UiBuilder
         public new class Data : Atom.Data
         {
             public int height;
-            [CanBeNull] public Action<Vector3> rightClickAction;
+
+            [CanBeNull]
+            public RightClickStrategy rightClickStrategy;
+
             [CanBeNull] public Action<GameObject> dropAction;
 
             public override bool Equals(Atom.Data other)
@@ -23,7 +26,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
                 return
                     height.Equals(otherSpacer.height) &&
-                    rightClickAction == otherSpacer.rightClickAction &&
+                    rightClickStrategy == otherSpacer.rightClickStrategy &&
                     dropAction == otherSpacer.dropAction;
             }
         }
@@ -51,7 +54,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
                 var le = gameObject.gameObject.GetComponent<LayoutElement>();
                 
                 le.minHeight = newSpacerData.height;
-                spacerHandler.rightClickHandler.onRightClick = newSpacerData.rightClickAction;
+                spacerHandler.clickHandler.rightClickStrategy = newSpacerData.rightClickStrategy;
                 spacerHandler.dropHandler.onDrop = newSpacerData.dropAction;
                 spacerHandler.dropHandler.ResetHandler();
                 
@@ -78,12 +81,12 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
     public static class SpacerPanelHelper
     {
-        public static SpacerAtom.Data AddSpacer(this PanelAtom.Data panelAtomData, int height, Action<Vector3> rightClickAction = null, Action<GameObject> dropAction = null)
+        public static SpacerAtom.Data AddSpacer(this PanelAtom.Data panelAtomData, int height, RightClickStrategy rightClickStrategy = null, Action<GameObject> dropAction = null)
         {
             var data = new SpacerAtom.Data
             {
                 height = height,
-                rightClickAction = rightClickAction,
+                rightClickStrategy = rightClickStrategy,
                 dropAction = dropAction
             };
 

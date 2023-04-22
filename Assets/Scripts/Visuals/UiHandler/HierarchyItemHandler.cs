@@ -22,8 +22,8 @@ namespace Assets.Scripts.Visuals.UiHandler
         public RectTransform indent;
 
         [SerializeField]
-        public RightClickHandler rightClickHandler;
-        
+        public ClickHandler clickHandler;
+
         [SerializeField]
         public DragAndDropHandler dragAndDropHandler;
 
@@ -75,7 +75,7 @@ namespace Assets.Scripts.Visuals.UiHandler
         public void UpdateHandlers(HierarchyItemAtom.Data newHierarchyItemData)
         {
             actions = newHierarchyItemData.actions;
-            rightClickHandler.onRightClick = newHierarchyItemData.rightClickAction;
+            clickHandler.rightClickStrategy = newHierarchyItemData.rightClickStrategy;
             dragAndDropHandler.UpdateDropHandlerActions(newHierarchyItemData.dropActions);
             dragAndDropHandler.draggedEntity = newHierarchyItemData.draggedEntity;
             dragAndDropHandler.isExpanded = newHierarchyItemData.isExpanded;

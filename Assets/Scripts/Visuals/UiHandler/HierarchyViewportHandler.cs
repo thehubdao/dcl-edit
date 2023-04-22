@@ -8,6 +8,6 @@ namespace Assets.Scripts.Visuals.UiHandler
     public class HierarchyViewportHandler : MonoBehaviour
     {
         [SerializeField]
-        public RightClickHandler rightClickHandler;
+        public ClickHandler clickHandler;
     }
 }

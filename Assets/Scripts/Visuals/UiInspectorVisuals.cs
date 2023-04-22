@@ -276,70 +276,73 @@ namespace Assets.Scripts.Visuals
 
             inspectorPanel.AddSpacer(20);
 
-            inspectorPanel.AddButton("Add Component", go =>
+            inspectorPanel.AddButton("Add Component", new LeftClickStrategy
             {
-                var rect = go.GetComponent<RectTransform>();
-
-                var menuItemCategories = new Dictionary<string, List<ContextMenuItem>>
+                onLeftClick = eventData =>
                 {
-                    {"", new List<ContextMenuItem>()}
-                };
+                    var rect = eventData.gameObject.GetComponent<RectTransform>();
 
-                List<ContextMenuItem> GetCategoryList(string categoryPath)
-                {
-                    // Try to get the category list
-                    if (menuItemCategories.TryGetValue(categoryPath, out var categoryList)) return categoryList;
-
-                    // if category list does NOT exist yet
-                    // split category by '/'
-                    var categoryParts = categoryPath.Split('/');
-
-                    // Generate parent category name. Either by concatenating the previews path parts or "" for the root category
-                    var parentCategoryPath =
-                        categoryParts.Length > 1 ?
-                            string.Join("/", categoryParts.Take(categoryParts.Length - 1)) :
-                            "";
-
-                    // recursively get the parent category list
-                    var parentCategoryList = GetCategoryList(parentCategoryPath);
-
-                    // Create new list
-                    categoryList = new List<ContextMenuItem>();
-
-                    // add the list to the parent category
-                    parentCategoryList.Add(new ContextSubmenuItem(categoryParts[categoryParts.Length - 1], categoryList));
-
-                    // add the list to the categories dictionary
-                    menuItemCategories.Add(categoryPath, categoryList);
-
-                    // return the list
-                    return categoryList;
-                }
-
-                foreach (var component in availableComponentsState.allAvailableComponents.Where(c => c.availableInAddComponentMenu))
-                {
-                    var categoryMenu = GetCategoryList(component.category);
-
-                    categoryMenu.Add(
-                        new ContextMenuTextItem(
-                            component.name,
-                            () => addComponentSystem.AddComponent(selectedEntity.Id, component.componentDefinition),
-                            !addComponentSystem.CanComponentBeAdded(selectedEntity, component.componentDefinition)));
-                }
-
-                contextMenuSystem.OpenMenu(new List<ContextMenuState.Placement>
-                {
-                    new ContextMenuState.Placement
+                    var menuItemCategories = new Dictionary<string, List<ContextMenuItem>>
                     {
-                        position = rect.position + new Vector3(0, -rect.sizeDelta.y, 0),
-                        expandDirection = ContextMenuState.Placement.Direction.Right,
-                    },
-                    new ContextMenuState.Placement
+                        {"", new List<ContextMenuItem>()}
+                    };
+
+                    List<ContextMenuItem> GetCategoryList(string categoryPath)
                     {
-                        position = rect.position + new Vector3(rect.sizeDelta.x, -rect.sizeDelta.y, 0),
-                        expandDirection = ContextMenuState.Placement.Direction.Left,
+                        // Try to get the category list
+                        if (menuItemCategories.TryGetValue(categoryPath, out var categoryList)) return categoryList;
+
+                        // if category list does NOT exist yet
+                        // split category by '/'
+                        var categoryParts = categoryPath.Split('/');
+
+                        // Generate parent category name. Either by concatenating the previews path parts or "" for the root category
+                        var parentCategoryPath =
+                            categoryParts.Length > 1 ?
+                                string.Join("/", categoryParts.Take(categoryParts.Length - 1)) :
+                                "";
+
+                        // recursively get the parent category list
+                        var parentCategoryList = GetCategoryList(parentCategoryPath);
+
+                        // Create new list
+                        categoryList = new List<ContextMenuItem>();
+
+                        // add the list to the parent category
+                        parentCategoryList.Add(new ContextSubmenuItem(categoryParts[categoryParts.Length - 1], categoryList));
+
+                        // add the list to the categories dictionary
+                        menuItemCategories.Add(categoryPath, categoryList);
+
+                        // return the list
+                        return categoryList;
                     }
-                }, menuItemCategories[""]);
+
+                    foreach (var component in availableComponentsState.allAvailableComponents.Where(c => c.availableInAddComponentMenu))
+                    {
+                        var categoryMenu = GetCategoryList(component.category);
+
+                        categoryMenu.Add(
+                            new ContextMenuTextItem(
+                                component.name,
+                                () => addComponentSystem.AddComponent(selectedEntity.Id, component.componentDefinition),
+                                !addComponentSystem.CanComponentBeAdded(selectedEntity, component.componentDefinition)));
+                    }
+
+                    contextMenuSystem.OpenMenu(new List<ContextMenuState.Placement>
+                    {
+                        new ContextMenuState.Placement
+                        {
+                            position = rect.position + new Vector3(0, -rect.sizeDelta.y, 0),
+                            expandDirection = ContextMenuState.Placement.Direction.Right,
+                        },
+                        new ContextMenuState.Placement
+                        {
+                            position = rect.position + new Vector3(rect.sizeDelta.x, -rect.sizeDelta.y, 0),
+                            expandDirection = ContextMenuState.Placement.Direction.Left,
+                        }
+                    }, menuItemCategories[""]);
+                }
             });
 
             inspectorPanel.AddSpacer(20);

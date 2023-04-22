@@ -13,9 +13,9 @@ GameObject:
   - component: {fileID: 3336561996357884837}
   - component: {fileID: 8951285334110812333}
   - component: {fileID: 3792036319085715899}
-  - component: {fileID: 4796978486173793332}
   - component: {fileID: 2093113546583741110}
   - component: {fileID: 971809147286760089}
+  - component: {fileID: 7286054265076365472}
   m_Layer: 0
   m_Name: Spacer
   m_TagString: Untagged
@@ -33,6 +33,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2122490060808443073}
   m_Father: {fileID: 0}
@@ -75,7 +76,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 84579e1bc33d4889a61af6b0ca9480e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rightClickHandler: {fileID: 4796978486173793332}
+  clickHandler: {fileID: 7286054265076365472}
   dropHandler: {fileID: 971809147286760089}
 --- !u!222 &8951285334110812333
 CanvasRenderer:
@@ -115,18 +116,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &4796978486173793332
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 889315105189934788}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6f0ae3498c713ae4cbdcca21dc117379, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &2093113546583741110
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -156,6 +145,18 @@ MonoBehaviour:
   hoverImageDefault: {fileID: 513654065776394079}
   hoverImageSpecial: {fileID: 513654065776394079}
   rayCastTarget: 0
+--- !u!114 &7286054265076365472
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 889315105189934788}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f9d52485e2b8484d897d75bacc0cba9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6912314521369820767
 GameObject:
   m_ObjectHideFlags: 0
@@ -184,6 +185,7 @@ RectTransform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6451589943504269030}
   m_RootOrder: 0

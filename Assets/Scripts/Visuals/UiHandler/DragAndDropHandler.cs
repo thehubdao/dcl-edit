@@ -16,7 +16,7 @@ namespace Visuals.UiHandler
         public DropHandler dropHandlerUpper;
         public DropHandler dropHandlerCenter;
         public DropHandler dropHandlerLower;
-        public RightClickHandler rightClickHandler;
+        public ClickHandler clickHandler;
         public bool isExpanded = false;
         public bool isFirstChild = false;
         private bool isDragging;
@@ -81,7 +81,7 @@ namespace Visuals.UiHandler
         private void SetDragHandlerEnabled(bool enabled)
         {
             clickableText.raycastTarget = enabled;
-            rightClickHandler.enabled = enabled;
+            clickHandler.enabled = enabled;
         }
 
         public void ResetHandler()

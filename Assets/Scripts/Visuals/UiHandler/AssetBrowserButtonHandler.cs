@@ -49,13 +49,13 @@ public class AssetBrowserButtonHandler : ButtonHandler
         SetTypeIndicator(metadata);
         if (IsCyclicScene())
         {
-            button.enabled = false;
+            //button.enabled = false;
             assetButtonInteraction.enableDragAndDrop = false;
             maskedImage.color = Color.red;
         }
         else
         {
-            button.enabled = true;
+            //button.enabled = true;
             assetButtonInteraction.enableDragAndDrop = enableDragAndDrop;
             maskedImage.color = Color.white;
             SetOnClickAction(metadata, onClick);
@@ -148,23 +148,22 @@ public class AssetBrowserButtonHandler : ButtonHandler
 
         text.text = this.metadata.assetDisplayName;
     }
+
     private void SetOnClickAction(AssetMetadata metadata, Action<Guid> onClick)
     {
-        button.onClick.RemoveAllListeners();
-
         if (onClick == null)
         {
-            button.onClick.AddListener(assetButtonInteraction.OnClick);
+            click.leftClickStrategy = new LeftClickStrategy {onLeftClick = _ => assetButtonInteraction.OnClick()};
             return;
         }
 
         if (metadata == null)
         {
-            button.onClick.AddListener(() => onClick(Guid.Empty));
+            click.leftClickStrategy = new LeftClickStrategy {onLeftClick = _ => onClick(Guid.Empty)};
             return;
         }
 
-        button.onClick.AddListener(() => onClick(metadata.assetId));
+        click.leftClickStrategy = new LeftClickStrategy {onLeftClick = _ => onClick(metadata.assetId)};
     }
     #endregion
 

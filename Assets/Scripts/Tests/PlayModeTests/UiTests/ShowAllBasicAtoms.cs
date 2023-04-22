@@ -5,6 +5,7 @@ using Assets.Scripts.Tests.PlayModeTests.UiTests.Utility;
 using Assets.Scripts.Visuals.UiBuilder;
 using Assets.Scripts.Visuals.UiHandler;
 using NUnit.Framework;
+using NUnit.Framework.Constraints;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
@@ -114,6 +115,23 @@ namespace Assets.Scripts.Tests.PlayModeTests.UiTests
         }
 
         [UnityTest]
+        public IEnumerator ShowButton()
+        {
+            var testerPrompt = UiTester.instance.uiTesterPrompt;
+            var mainPanel = UiBuilder.NewPanelData();
+
+            var completion = new UiTesterPrompt.CheckCompletionByEvent();
+
+            mainPanel.AddButton("Don't press here", new LeftClickStrategy {onLeftClick = _ => completion.Fail()});
+            mainPanel.AddButton("Press here", new LeftClickStrategy {onLeftClick = _ => completion.Success()});
+            mainPanel.AddButton("Don't press here", new LeftClickStrategy {onLeftClick = _ => completion.Fail()});
+
+            uiBuilder.Update(mainPanel);
+
+            yield return testerPrompt.WaitForTaskPrompt("Press the marked button", completion);
+        }
+
+        [UnityTest]
         public IEnumerator ShowStringProperty()
         {
             var testerPrompt = UiTester.instance.uiTesterPrompt;
@@ -194,9 +212,9 @@ namespace Assets.Scripts.Tests.PlayModeTests.UiTests
             var testerPrompt = UiTester.instance.uiTesterPrompt;
             var mainPanel = UiBuilder.NewPanelData();
 
-            mainPanel.AddHierarchyItem("This is some header", 0, true, true, false, TextHandler.TextStyle.Normal, false, new HierarchyItemHandler.UiHierarchyItemActions(), _ => { }, _ => { }, _ => { }, _ => { });
-            mainPanel.AddHierarchyItem("This is some more header", 1, true, false, false, TextHandler.TextStyle.Normal, false, new HierarchyItemHandler.UiHierarchyItemActions(), _ => { }, _ => { }, _ => { }, _ => { });
-            mainPanel.AddHierarchyItem("This is even more header", 1, false, true, false, TextHandler.TextStyle.Normal, false, new HierarchyItemHandler.UiHierarchyItemActions(), _ => { }, _ => { }, _ => { }, _ => { });
+            mainPanel.AddHierarchyItem("This is some header", 0, true, true, false, TextHandler.TextStyle.Normal, false, new HierarchyItemHandler.UiHierarchyItemActions(), _ => { }, _ => { }, _ => { });
+            mainPanel.AddHierarchyItem("This is some more header", 1, true, false, false, TextHandler.TextStyle.Normal, false, new HierarchyItemHandler.UiHierarchyItemActions(), _ => { }, _ => { }, _ => { });
+            mainPanel.AddHierarchyItem("This is even more header", 1, false, true, false, TextHandler.TextStyle.Normal, false, new HierarchyItemHandler.UiHierarchyItemActions(), _ => { }, _ => { }, _ => { });
 
             uiBuilder.Update(mainPanel);
 

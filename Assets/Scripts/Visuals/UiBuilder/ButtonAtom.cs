@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -8,7 +9,9 @@ namespace Assets.Scripts.Visuals.UiBuilder
         public new class Data : Atom.Data
         {
             public string text;
-            public UnityAction<GameObject> onClick;
+
+            [CanBeNull]
+            public LeftClickStrategy leftClickStrategy;
 
             public override bool Equals(Atom.Data other)
             {
@@ -17,7 +20,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
                     return false;
                 }
 
-                if (onClick != otherBtn.onClick)
+                if (leftClickStrategy != otherBtn.leftClickStrategy)
                 {
                     return false;
                 }
@@ -47,8 +50,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
                 // Update data
                 var btnHandler = gameObject.gameObject.GetComponent<ButtonHandler>();
                 btnHandler.text.text = newBtnData.text;
-                btnHandler.button.onClick.RemoveAllListeners();
-                btnHandler.button.onClick.AddListener(() => newBtnData.onClick(btnHandler.button.gameObject));
+                btnHandler.click.leftClickStrategy = newBtnData.leftClickStrategy;
                 data = newBtnData;
             }
         }
@@ -68,12 +70,12 @@ namespace Assets.Scripts.Visuals.UiBuilder
     public static class ButtonPanelHelper
     {
         // The GameObject parameter of the onClick action gives access to the button UI game object.
-        public static ButtonAtom.Data AddButton(this PanelAtom.Data panelAtomData, string text, UnityAction<GameObject> onClick)
+        public static ButtonAtom.Data AddButton(this PanelAtom.Data panelAtomData, string text, [CanBeNull] LeftClickStrategy leftClickStrategy = null)
         {
             var data = new ButtonAtom.Data
             {
                 text = text,
-                onClick = onClick
+                leftClickStrategy = leftClickStrategy
             };
 
             panelAtomData.childDates.Add(data);

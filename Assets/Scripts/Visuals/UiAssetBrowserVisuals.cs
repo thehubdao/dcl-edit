@@ -109,32 +109,35 @@ namespace Assets.Scripts.Visuals
             headerData.AddText("Filter:");
             foreach (AssetMetadata.AssetType type in assetBrowserSystem.filters)
             {
-                headerData.AddButton(type.ToString() + " x", _ => assetBrowserSystem.RemoveFilter(type));
+                headerData.AddButton(type.ToString() + " x", new LeftClickStrategy {onLeftClick = _ => assetBrowserSystem.RemoveFilter(type)});
             }
 
-            headerData.AddButton("+", btn =>
+            headerData.AddButton("+", new LeftClickStrategy
             {
-                var rect = btn.GetComponent<RectTransform>();
-                contextMenuSystem.OpenMenu(new List<ContextMenuState.Placement>
+                onLeftClick = eventData =>
                 {
-                    new ContextMenuState.Placement
+                    var rect = eventData.gameObject.GetComponent<RectTransform>();
+                    contextMenuSystem.OpenMenu(new List<ContextMenuState.Placement>
                     {
-                        position = rect.position + new Vector3(0, -rect.sizeDelta.y, 0),
-                        expandDirection = ContextMenuState.Placement.Direction.Right,
-                    },
-                    new ContextMenuState.Placement
+                        new ContextMenuState.Placement
+                        {
+                            position = rect.position + new Vector3(0, -rect.sizeDelta.y, 0),
+                            expandDirection = ContextMenuState.Placement.Direction.Right,
+                        },
+                        new ContextMenuState.Placement
+                        {
+                            position = rect.position + new Vector3(rect.sizeDelta.x, -rect.sizeDelta.y, 0),
+                            expandDirection = ContextMenuState.Placement.Direction.Left,
+                        }
+                    }, new List<ContextMenuItem>
                     {
-                        position = rect.position + new Vector3(rect.sizeDelta.x, -rect.sizeDelta.y, 0),
-                        expandDirection = ContextMenuState.Placement.Direction.Left,
-                    }
-                }, new List<ContextMenuItem>
-                {
-                    new ContextMenuTextItem("Add model filter", () => assetBrowserSystem.AddFilter(AssetMetadata.AssetType.Model)),
-                    //new ContextMenuTextItem("Add image filter", () => assetBrowserSystem.AddFilter(AssetMetadata.AssetType.Image)),
-                    new ContextMenuTextItem("Add scene filter", () => assetBrowserSystem.AddFilter(AssetMetadata.AssetType.Scene)),
-                    new ContextMenuTextItem("Sort by name (A-Z)", () => assetBrowserSystem.ChangeSorting(AssetBrowserState.Sorting.NameAscending)),
-                    new ContextMenuTextItem("Sort by name (Z-A)", () => assetBrowserSystem.ChangeSorting(AssetBrowserState.Sorting.NameDescending)),
-                });
+                        new ContextMenuTextItem("Add model filter", () => assetBrowserSystem.AddFilter(AssetMetadata.AssetType.Model)),
+                        //new ContextMenuTextItem("Add image filter", () => assetBrowserSystem.AddFilter(AssetMetadata.AssetType.Image)),
+                        new ContextMenuTextItem("Add scene filter", () => assetBrowserSystem.AddFilter(AssetMetadata.AssetType.Scene)),
+                        new ContextMenuTextItem("Sort by name (A-Z)", () => assetBrowserSystem.ChangeSorting(AssetBrowserState.Sorting.NameAscending)),
+                        new ContextMenuTextItem("Sort by name (Z-A)", () => assetBrowserSystem.ChangeSorting(AssetBrowserState.Sorting.NameDescending)),
+                    });
+                }
             });
 
             headerUiBuilder.Update(headerData);
@@ -161,7 +164,7 @@ namespace Assets.Scripts.Visuals
                 useFullWidth = false
             };
 
-            footerData.AddButton("Refresh", _ => assetManagerSystem.CacheAllAssetMetadata());
+            footerData.AddButton("Refresh", new LeftClickStrategy {onLeftClick = _ => assetManagerSystem.CacheAllAssetMetadata()});
             footerUiBuilder.Update(footerData);
         }
 

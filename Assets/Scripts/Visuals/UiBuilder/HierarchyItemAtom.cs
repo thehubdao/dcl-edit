@@ -1,6 +1,7 @@
 using System;
 using Assets.Scripts.SceneState;
 using Assets.Scripts.Visuals.UiHandler;
+using JetBrains.Annotations;
 using UnityEngine;
 
 namespace Assets.Scripts.Visuals.UiBuilder
@@ -17,7 +18,9 @@ namespace Assets.Scripts.Visuals.UiBuilder
             public TextHandler.TextStyle style;
             public bool isPrimarySelected;
             public HierarchyItemHandler.UiHierarchyItemActions actions;
-            public Action<Vector3> rightClickAction;
+
+            [CanBeNull]
+            public RightClickStrategy rightClickStrategy;
             public DropActions dropActions;
             public DclEntity draggedEntity;
 
@@ -37,7 +40,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
                     isFirstChild.Equals(otherHierarchyItem.isFirstChild) &&
                     style.Equals(otherHierarchyItem.style) &&
                     actions.Equals(otherHierarchyItem.actions) &&
-                    rightClickAction.Equals(otherHierarchyItem.rightClickAction) &&
+                    (rightClickStrategy?.Equals(otherHierarchyItem.rightClickStrategy) ?? otherHierarchyItem.rightClickStrategy == null) &&
                     dropActions.Equals(otherHierarchyItem.dropActions) &&
                     draggedEntity.Equals(otherHierarchyItem.draggedEntity);
             }
@@ -86,8 +89,9 @@ namespace Assets.Scripts.Visuals.UiBuilder
     {
         public static HierarchyItemAtom.Data AddHierarchyItem(this PanelAtom.Data panelAtomData, string name, int level,
             bool hasChildren, bool isExpanded, bool isFirstChild, TextHandler.TextStyle textStyle, bool isPrimarySelected,
-            HierarchyItemHandler.UiHierarchyItemActions actions, Action<Vector3> rightClickAction,
-            Action<GameObject> dropActionUpper, Action<GameObject> dropActionMiddle, Action<GameObject> dropActionLower, DclEntity entity = null)
+            HierarchyItemHandler.UiHierarchyItemActions actions,
+            Action<GameObject> dropActionUpper, Action<GameObject> dropActionMiddle, Action<GameObject> dropActionLower, RightClickStrategy rightClickStrategy = null,
+            DclEntity entity = null)
         {
             var data = new HierarchyItemAtom.Data
             {
@@ -99,7 +103,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
                 style = textStyle,
                 isPrimarySelected = isPrimarySelected,
                 actions = actions,
-                rightClickAction = rightClickAction,
+                rightClickStrategy = rightClickStrategy,
                 dropActions =
                 {
                     dropActionUpper = dropActionUpper,
