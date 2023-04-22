@@ -31,8 +31,15 @@ namespace Assets.Scripts.Command
             var affectedEntity  = sceneState.GetEntityById(affectedEntityId);
             var newParent = newParentId == default ? null : sceneState.GetEntityById(newParentId);
 
+            DclTransformComponent affectedTransform = affectedEntity.GetTransformComponent();
+            var oldPosition = affectedTransform.globalPosition;
+            var oldRotation = affectedTransform.globalRotation;
+
             affectedEntity.hierarchyOrder = newHierarchyOrder;
             affectedEntity.Parent = newParent;
+
+            affectedTransform.globalPosition = oldPosition;
+            affectedTransform.globalRotation = oldRotation;
 
             editorEvents.InvokeHierarchyChangedEvent();
             editorEvents.InvokeSelectionChangedEvent();
@@ -44,8 +51,15 @@ namespace Assets.Scripts.Command
             var affectedEntity  = sceneState.GetEntityById(affectedEntityId);
             var startParent = startParentId == default ? null : sceneState.GetEntityById(startParentId);
 
+            DclTransformComponent affectedTransform = affectedEntity.GetTransformComponent();
+            var oldPosition = affectedTransform.globalPosition;
+            var oldRotation = affectedTransform.globalRotation;
+
             affectedEntity.Parent = startParent;
             affectedEntity.hierarchyOrder = startHierarchyOrder;
+
+            affectedTransform.globalPosition = oldPosition;
+            affectedTransform.globalRotation = oldRotation;
 
             editorEvents.InvokeHierarchyChangedEvent();
             editorEvents.InvokeSelectionChangedEvent();
