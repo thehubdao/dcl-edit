@@ -514,7 +514,7 @@ First comment second line
                     ""class"": ""ClassAndComponent3"",
                     ""properties"": [
                         {
-                            ""name"": ""property1"",
+                            ""name"": ""property1"", 
                             ""type"": ""bool"",
                             ""default"": ""invalid""
                         }
@@ -526,6 +526,73 @@ First comment second line
                     ccms.MakeComponent(JObject.Parse(propertyTypeIsBoolAndDefaultValueIsInvalidString).WithImportFile("src/inline_test"), "inline_test.ts"));
 
             Assert.AreEqual(CustomComponentMarkupSystem.exceptionMessageDefaultWrongTypeBool, propertyTypeIsBoolAndDefaultValueIsInvalidException.description);
+        }
+
+        // test category
+        [Test]
+        public void Category()
+        {
+            var (availableComponentsState, _, ccms) = SetupCustomComponentsTests();
+
+            /*
+            // category is valid
+            #DCECOMP {
+                "class": "ClassAndComponent",
+                "category": "category1"
+            }
+            */
+            var categoryIsValidString =
+                @"{
+                    ""class"": ""ClassAndComponent"",
+                    ""category"": ""category1""
+                }";
+
+            ccms.MakeComponent(JObject.Parse(categoryIsValidString).WithImportFile("src/inline_test"), "inline_test.ts");
+
+            var category = availableComponentsState.allAvailableComponents.First(c => c.componentDefinition.NameInCode == "ClassAndComponent").category;
+
+            Assert.AreEqual("category1", category);
+
+            // subcategories
+            /*
+            // category is valid
+            #DCECOMP {
+                "class": "ClassAndComponent2",
+                "category": "category1/subcategory1"
+            }
+            */
+            var categoryIsValidString2 =
+                @"{
+                    ""class"": ""ClassAndComponent2"",
+                    ""category"": ""category1/subcategory1""
+                }";
+
+            ccms.MakeComponent(JObject.Parse(categoryIsValidString2).WithImportFile("src/inline_test"), "inline_test.ts");
+
+            category = availableComponentsState.allAvailableComponents.First(c => c.componentDefinition.NameInCode == "ClassAndComponent2").category;
+
+            Assert.AreEqual("category1/subcategory1", category);
+
+            // category is invalid
+            /*
+            // category is invalid
+            #DCECOMP {
+                "class": "ClassAndComponent3",
+                "category": []
+            }
+            */
+
+            var categoryIsInvalidString =
+                @"{
+                    ""class"": ""ClassAndComponent3"",
+                    ""category"": []
+                }";
+
+            var categoryIsInvalidException =
+                Assert.Throws<CustomComponentMarkupSystem.CustomComponentException>(() =>
+                    ccms.MakeComponent(JObject.Parse(categoryIsInvalidString).WithImportFile("src/inline_test"), "inline_test.ts"));
+
+            Assert.AreEqual(CustomComponentMarkupSystem.exceptionMessageCategoryWrongType, categoryIsInvalidException.description);
         }
 
         // Invalid json

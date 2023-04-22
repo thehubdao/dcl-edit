@@ -97,6 +97,7 @@ namespace Assets.Scripts.System
         public const string classKey = "class";
         public const string componentKey = "component";
         public const string importFileKey = "import-file";
+        public const string categoryKey = "category";
         public const string propertiesKey = "properties";
 
         private const string fileExtensionTs = ".ts";
@@ -110,6 +111,7 @@ namespace Assets.Scripts.System
         public const string exceptionMessageComponentWrongType = "Component has to be a string, that contains the component name";
         public const string exceptionMessageImportFileNotPresent = "A component in a .dcecomp file has to have a import-file property, that contains the path to the file to import the component from relative to the project root";
         public const string exceptionMessageImportFileWrongType = "Import file has to be a string, that contains the path to the file to import the component from relative to the project root";
+        public const string exceptionMessageCategoryWrongType = "Category has to be a string";
         public const string exceptionMessagePropertyNameNotPresent = "The property has to have a name";
         public const string exceptionMessagePropertyNameWrongType = "The property name has to be a string";
         public const string exceptionMessagePropertyTypeNotPresent = "The property has to have a type";
@@ -210,6 +212,17 @@ namespace Assets.Scripts.System
             var importFileValue = importFileToken.GetValueOrNull<string?>() ?? throw new CustomComponentException(exceptionMessageImportFileWrongType, importFileToken, path);
 
 
+            // Category
+            // Get category token
+            var categoryToken = componentData[categoryKey];
+
+            // Get category string
+            var categoryString =
+                categoryToken == null ?
+                    "Custom" :
+                    categoryToken.GetValueOrNull<string?>() ?? throw new CustomComponentException(exceptionMessageCategoryWrongType, importFileToken, path);
+
+
             // Properties
             // Get properties
             var propertiesToken = componentData[propertiesKey];
@@ -229,7 +242,7 @@ namespace Assets.Scripts.System
             // Setup available component
             var availableComponent = new AvailableComponentsState.AvailableComponent
             {
-                category = "Custom",
+                category = categoryString,
                 availableInAddComponentMenu = true,
                 componentDefinition = componentDefinition
             };
