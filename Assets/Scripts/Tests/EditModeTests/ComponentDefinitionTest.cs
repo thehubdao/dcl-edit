@@ -12,7 +12,7 @@ namespace Assets.Scripts.Tests.EditModeTests
         [Test]
         public void MakeNewComponentFromDefinition()
         {
-            var definition1 = new DclComponent.ComponentDefinition("C1", "C1", new PropertyDefinition("P1", PropertyType.String, "Some string"));
+            var definition1 = new DclComponent.ComponentDefinition("C1", "C1", null, new PropertyDefinition("P1", PropertyType.String, "Some string"));
 
             var component1 = new DclComponent(definition1);
 
@@ -23,7 +23,7 @@ namespace Assets.Scripts.Tests.EditModeTests
             Assert.AreEqual("Some string", component1.Properties[0].GetConcrete<string>().Value);
             Assert.AreEqual("Some string", component1.Properties[0].GetConcrete<string>().FixedValue);
 
-            var definition2 = new DclComponent.ComponentDefinition("C2", "C2", new PropertyDefinition("P2", PropertyType.Int, 1234));
+            var definition2 = new DclComponent.ComponentDefinition("C2", "C2", null, new PropertyDefinition("P2", PropertyType.Int, 1234));
 
             var component2 = new DclComponent(definition2);
 
@@ -34,7 +34,7 @@ namespace Assets.Scripts.Tests.EditModeTests
             Assert.AreEqual(1234, component2.Properties[0].GetConcrete<int>().Value);
             Assert.AreEqual(1234, component2.Properties[0].GetConcrete<int>().FixedValue);
 
-            var definition3 = new DclComponent.ComponentDefinition("C3", "C3", new PropertyDefinition("P3", PropertyType.Float, 1234.0f));
+            var definition3 = new DclComponent.ComponentDefinition("C3", "C3", null, new PropertyDefinition("P3", PropertyType.Float, 1234.0f));
 
             var component3 = new DclComponent(definition3);
 
@@ -45,7 +45,7 @@ namespace Assets.Scripts.Tests.EditModeTests
             Assert.AreEqual(1234.0f, component3.Properties[0].GetConcrete<float>().Value);
             Assert.AreEqual(1234.0f, component3.Properties[0].GetConcrete<float>().FixedValue);
 
-            var definition4 = new DclComponent.ComponentDefinition("C4", "C4", new PropertyDefinition("P4", PropertyType.Boolean, true));
+            var definition4 = new DclComponent.ComponentDefinition("C4", "C4", null, new PropertyDefinition("P4", PropertyType.Boolean, true));
 
             var component4 = new DclComponent(definition4);
 
@@ -56,7 +56,7 @@ namespace Assets.Scripts.Tests.EditModeTests
             Assert.AreEqual(true, component4.Properties[0].GetConcrete<bool>().Value);
             Assert.AreEqual(true, component4.Properties[0].GetConcrete<bool>().FixedValue);
 
-            var definition5 = new DclComponent.ComponentDefinition("C5", "C5", new PropertyDefinition("P5", PropertyType.Vector3, new Vector3(1, 2, 3)));
+            var definition5 = new DclComponent.ComponentDefinition("C5", "C5", null, new PropertyDefinition("P5", PropertyType.Vector3, new Vector3(1, 2, 3)));
 
             var component5 = new DclComponent(definition5);
 
@@ -67,7 +67,7 @@ namespace Assets.Scripts.Tests.EditModeTests
             Assert.AreEqual(new Vector3(1, 2, 3), component5.Properties[0].GetConcrete<Vector3>().Value);
             Assert.AreEqual(new Vector3(1, 2, 3), component5.Properties[0].GetConcrete<Vector3>().FixedValue);
 
-            var definition6 = new DclComponent.ComponentDefinition("C6", "C6", new PropertyDefinition("P6", PropertyType.Quaternion, new Quaternion(1, 2, 3, 4)));
+            var definition6 = new DclComponent.ComponentDefinition("C6", "C6", null, new PropertyDefinition("P6", PropertyType.Quaternion, new Quaternion(1, 2, 3, 4)));
 
             var component6 = new DclComponent(definition6);
 
@@ -78,7 +78,7 @@ namespace Assets.Scripts.Tests.EditModeTests
             Assert.AreEqual(new Quaternion(1, 2, 3, 4), component6.Properties[0].GetConcrete<Quaternion>().Value);
             Assert.AreEqual(new Quaternion(1, 2, 3, 4), component6.Properties[0].GetConcrete<Quaternion>().FixedValue);
 
-            var definition7 = new DclComponent.ComponentDefinition("C7", "C7", new PropertyDefinition("P7", PropertyType.Asset, Guid.Empty));
+            var definition7 = new DclComponent.ComponentDefinition("C7", "C7", null, new PropertyDefinition("P7", PropertyType.Asset, Guid.Empty));
 
             var component7 = new DclComponent(definition7);
 
@@ -130,6 +130,7 @@ namespace Assets.Scripts.Tests.EditModeTests
                 new DclComponent.ComponentDefinition(
                     "C1",
                     "S1",
+                    null,
                     new PropertyDefinition("P1", PropertyType.Int, 1234),
                     new PropertyDefinition("P2", PropertyType.Float, 1234.0f),
                     new PropertyDefinition("P3", PropertyType.Boolean, true),
@@ -179,6 +180,7 @@ namespace Assets.Scripts.Tests.EditModeTests
             var definition1 = new DclComponent.ComponentDefinition(
                 "Name1",
                 "Slot1",
+                null,
                 new PropertyDefinition("Property1", PropertyType.String, "Some string"),
                 new PropertyDefinition("Property2", PropertyType.Int, 1234),
                 new PropertyDefinition("Property3", PropertyType.Float, 1234.0f));
@@ -193,6 +195,7 @@ namespace Assets.Scripts.Tests.EditModeTests
             var definition2 = new DclComponent.ComponentDefinition(
                 "Name2",
                 "Slot2",
+                null,
                 new PropertyDefinition("Property1", PropertyType.Vector3, Vector3.one),
                 new PropertyDefinition("Property2", PropertyType.Quaternion, Quaternion.identity),
                 new PropertyDefinition("Property3", PropertyType.Asset, Guid.NewGuid()));
@@ -208,6 +211,7 @@ namespace Assets.Scripts.Tests.EditModeTests
             var definition3 = new DclComponent.ComponentDefinition(
                 "Name3",
                 "Slot3",
+                null,
                 new PropertyDefinition("Property1", PropertyType.Vector3, Vector3.one),
                 new PropertyDefinition("Property2", PropertyType.Quaternion, Quaternion.identity),
                 new PropertyDefinition("Property3", PropertyType.Asset, Guid.NewGuid()));
@@ -223,6 +227,7 @@ namespace Assets.Scripts.Tests.EditModeTests
             var definition4 = new DclComponent.ComponentDefinition(
                 "Name4",
                 "Slot4",
+                null,
                 new PropertyDefinition("Property1", PropertyType.Vector3, Vector3.one),
                 new PropertyDefinition("Property2", PropertyType.Quaternion, Quaternion.identity),
                 new PropertyDefinition("Property3", PropertyType.Asset, Guid.NewGuid()));
@@ -236,6 +241,7 @@ namespace Assets.Scripts.Tests.EditModeTests
             var definition5 = new DclComponent.ComponentDefinition(
                 "Name5",
                 "Slot5",
+                null,
                 new PropertyDefinition("PropertyInt", PropertyType.Int, 0));
 
             Assert.IsFalse(component5.IsFollowingDefinition(definition5));
@@ -247,6 +253,7 @@ namespace Assets.Scripts.Tests.EditModeTests
             var definition6 = new DclComponent.ComponentDefinition(
                 "Name6",
                 "Slot6",
+                null,
                 new PropertyDefinition("Property", PropertyType.Int, 0));
 
             Assert.IsFalse(component6.IsFollowingDefinition(definition6));
@@ -259,6 +266,7 @@ namespace Assets.Scripts.Tests.EditModeTests
             var definition7 = new DclComponent.ComponentDefinition(
                 "Name7",
                 "Slot7",
+                null,
                 new PropertyDefinition("Property1", PropertyType.Float, 0.0f));
 
             Assert.IsFalse(component7.IsFollowingDefinition(definition7));
@@ -270,6 +278,7 @@ namespace Assets.Scripts.Tests.EditModeTests
             var definition8 = new DclComponent.ComponentDefinition(
                 "Name8",
                 "Slot8",
+                null,
                 new PropertyDefinition("Property1", PropertyType.Float, 0.0f),
                 new PropertyDefinition("Property2", PropertyType.Float, 0.0f));
 
@@ -283,6 +292,7 @@ namespace Assets.Scripts.Tests.EditModeTests
             var definition9 = new DclComponent.ComponentDefinition(
                 "Name9",
                 "Slot9",
+                null,
                 new PropertyDefinition("Property2", PropertyType.Float, 0.0f),
                 new PropertyDefinition("Property1", PropertyType.Float, 0.0f));
 

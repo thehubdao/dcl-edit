@@ -9,7 +9,8 @@
         "EditorState",
         "Interaction",
         "Events",
-        "Command"
+        "Command",
+        "Utility"
     ],
     "includePlatforms": [
         "Editor"
@@ -18,7 +19,8 @@
     "allowUnsafeCode": false,
     "overrideReferences": true,
     "precompiledReferences": [
-        "nunit.framework.dll"
+        "nunit.framework.dll",
+        "Newtonsoft.Json.dll"
     ],
     "autoReferenced": false,
     "defineConstraints": [

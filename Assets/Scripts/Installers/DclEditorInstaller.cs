@@ -149,6 +149,10 @@ public class DclEditorInstaller : MonoInstaller
 
         Container.BindInterfacesAndSelfTo<AddComponentSystem>().AsSingle();
 
+        Container.BindInterfacesAndSelfTo<FileManagerSystem>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<CustomComponentMarkupSystem>().AsSingle();
+
         Container.BindInterfacesAndSelfTo<AvailableComponentsState>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<CheckVersionSystem>().AsSingle();
