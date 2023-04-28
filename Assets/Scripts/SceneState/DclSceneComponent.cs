@@ -8,6 +8,7 @@ namespace Assets.Scripts.SceneState
             new ComponentDefinition(
                 "Scene",
                 "Scene",
+                null,
                 new DclComponentProperty.PropertyDefinition("scene", DclComponentProperty.PropertyType.Asset, Guid.Empty));
 
         public DclSceneComponent(Guid sceneId) : base("Scene", "Scene")

@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Newtonsoft.Json.Linq;
+using JetBrains.Annotations;
 using UnityEngine;
 
 namespace Assets.Scripts.SceneState
@@ -19,7 +18,10 @@ namespace Assets.Scripts.SceneState
                 public enum Flags
                 {
                     None = 0,
-                    ParseInConstructor = 0b1,
+                    ParseInConstructor = 1 << 0,
+                    ModelAssets = 1 << 1,
+                    SceneAssets = 1 << 2,
+                    // Reserved for assets: 1 << 3 - 7
                 }
 
                 public string name;
@@ -239,12 +241,16 @@ namespace Assets.Scripts.SceneState
 
             public string NameOfSlot { get; }
 
+            [CanBeNull]
+            public string SourceFile { get; }
+
             public List<DclComponentProperty.PropertyDefinition> properties;
 
-            public ComponentDefinition(string nameInCode, string nameOfSlot, params DclComponentProperty.PropertyDefinition[] properties)
+            public ComponentDefinition(string nameInCode, string nameOfSlot, [CanBeNull] string sourceFile = null, params DclComponentProperty.PropertyDefinition[] properties)
             {
                 NameInCode = nameInCode;
                 NameOfSlot = nameOfSlot;
+                SourceFile = sourceFile;
                 this.properties = properties.ToList();
             }
 

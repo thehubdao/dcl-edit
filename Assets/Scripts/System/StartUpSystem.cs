@@ -18,6 +18,7 @@ namespace Assets.Scripts.System
         private SceneManagerSystem sceneManagerSystem;
         private SceneViewSystem sceneViewSystem;
         private SettingsSystem settingsSystem;
+        private CustomComponentMarkupSystem customComponentMarkupSystem;
 
         [Inject]
         private void Construct(
@@ -27,7 +28,8 @@ namespace Assets.Scripts.System
             ApplicationSystem frameTimeSystem,
             SceneManagerSystem sceneManagerSystem,
             SceneViewSystem sceneViewSystem,
-            SettingsSystem settingsSystem)
+            SettingsSystem settingsSystem,
+            CustomComponentMarkupSystem customComponentMarkupSystem)
         {
             this.assetManagerSystem = assetManagerSystem;
             this.workspaceSaveSystem = workspaceSaveSystem;
@@ -36,6 +38,7 @@ namespace Assets.Scripts.System
             this.sceneViewSystem = sceneViewSystem;
             this.settingsSystem = settingsSystem;
             this.pathState = pathState;
+            this.customComponentMarkupSystem = customComponentMarkupSystem;
         }
 
         void Awake()
@@ -43,6 +46,8 @@ namespace Assets.Scripts.System
             InterpretArgs(Environment.GetCommandLineArgs());
 
             assetManagerSystem.CacheAllAssetMetadata();
+
+            customComponentMarkupSystem.SetupCustomComponents();
 
             sceneManagerSystem.DiscoverScenes();
 

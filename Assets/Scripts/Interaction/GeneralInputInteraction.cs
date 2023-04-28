@@ -140,13 +140,14 @@ namespace Assets.Scripts.Interaction
             bool isMouseOverSceneButtons;
             {
                 var mousePosViewport = inputHelper.GetMousePositionInScenePanel();
+                var bound = CalculateBounds();
                 // Get the ray from the Camera, that corresponds to the mouse position in the panel
                 mouseRay = unityState.MainCamera.ViewportPointToRay(mousePosViewport);
                 // Figure out, if the mouse is over the Game window
-                isMouseOverGameWindow = mousePosViewport.x >= 0 &&
-                                        mousePosViewport.x < 1 &&
-                                        mousePosViewport.y >= 0 &&
-                                        mousePosViewport.y < 1;
+                isMouseOverGameWindow = mousePosViewport.x >= 0 + bound.W &&
+                                        mousePosViewport.x < 1 - bound.W &&
+                                        mousePosViewport.y >= 0 + bound.H &&
+                                        mousePosViewport.y < 1 - bound.H;
                 isMouseOverContextMenu = contextMenuSystem.IsMouseOverMenu();
                 isMouseOverDialog = dialogSystem.IsMouseOverDialog();
                 isMouseOverSceneButtons = unityState.sceneViewButtons.GetComponent<GizmoToolButtonInteraction>().IsMouseOverButtons();
@@ -485,6 +486,20 @@ namespace Assets.Scripts.Interaction
             {
                 commandSystem.RedoCommand();
             }
+        }
+
+        private (float W, float H) CalculateBounds()
+        {
+            var fourCorners = new Vector3[4];
+            unityState.SceneImage.rectTransform.GetWorldCorners(fourCorners);
+            
+            var width = fourCorners[2].x - fourCorners[0].x;
+            var height = fourCorners[2].y - fourCorners[0].y;
+
+            var resultH = height < 600 ? 0.07f - 0.0001f * height : 0.01f;
+            var resultW = width < 600 ? 0.07f - 0.0001f * width : 0.01f;
+            
+            return (resultW, resultH);
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -47,13 +48,13 @@ namespace Assets.Scripts.Utility
             return guidString.Substring(0, 4) + " ... " + guidString.Substring(guidString.Length - 4, 4);
         }
 
-        public static string Indent(this string value, int level)
+        public static string Indent(this string value, int level, string prependWith = "    ")
         {
-            var builder = new StringBuilder(value.Length + (level * 4));
+            var builder = new StringBuilder(value.Length + (level * prependWith.Length));
 
             for (int i = 0; i < level; i++)
             {
-                builder.Append("    ");
+                builder.Append(prependWith);
             }
 
             builder.Append(value);
@@ -200,6 +201,18 @@ namespace Assets.Scripts.Utility
         public static Vector3 VectorFromTo(Vector3 from, Vector3 to)
         {
             return to - from;
+        }
+
+        public static T GetValueOrNull<T>(this JToken token)
+        {
+            try
+            {
+                return token.Value<T>();
+            }
+            catch (Exception)
+            {
+                return default(T);
+            }
         }
     }
 }

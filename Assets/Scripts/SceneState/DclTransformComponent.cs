@@ -8,6 +8,7 @@ namespace Assets.Scripts.SceneState
             new ComponentDefinition(
                 "Transform",
                 "Transform",
+                null,
                 new DclComponentProperty.PropertyDefinition("position", DclComponentProperty.PropertyType.Vector3, Vector3.zero),
                 new DclComponentProperty.PropertyDefinition("rotation", DclComponentProperty.PropertyType.Quaternion, Quaternion.identity),
                 new DclComponentProperty.PropertyDefinition("scale", DclComponentProperty.PropertyType.Vector3, Vector3.one));

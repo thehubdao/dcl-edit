@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Assets.Scripts.EditorState;
 using Assets.Scripts.SceneState;
 using Assets.Scripts.Utility;
+using JetBrains.Annotations;
 using UnityEngine;
 using Zenject;
 using static Assets.Scripts.SceneState.DclComponent.DclComponentProperty.PropertyDefinition.Flags;
@@ -95,6 +96,7 @@ namespace Assets.Scripts.System
             public SpecialComponent specialComponent;
 
             public List<PropertyInfo> gatheredPropertyInfos;
+            public bool shouldGenerateInitFunction;
         }
 
         private struct UsedComponentInfo
@@ -102,6 +104,10 @@ namespace Assets.Scripts.System
             public string symbol;
             public string withTypeSymbol;
             public string inEntitySymbol;
+
+            [CanBeNull]
+            public string sourceFile;
+
             public EntityComponentInfo.SpecialComponent specialComponent;
         }
 
@@ -195,17 +201,15 @@ namespace Assets.Scripts.System
 
         private async Task<EntityInfo> GatherEntityInfo(DclEntity entity, ICollection<UsedComponentInfo> usedComponentInfos, ICollection<string> uniqueSymbols, IReadOnlyDictionary<Guid, string> sceneNames, Dictionary<Guid, string> neededAssets)
         {
-            var internalEntitySymbol = exposeEntitySystem.GenerateValidSymbol(obfuscate ? "e" : entity.CustomName);
-
             // make the internal symbol unique within the generated scene
+            var i = 0;
+            string internalEntitySymbol;
+            do
             {
-                var i = 0;
-                while (uniqueSymbols.Contains(internalEntitySymbol))
-                {
-                    i++;
-                    internalEntitySymbol = exposeEntitySystem.GenerateValidSymbol((obfuscate ? "e" : entity.CustomName) + i);
-                }
-            }
+                i++;
+                internalEntitySymbol = exposeEntitySystem.GenerateValidSymbol((obfuscate ? "e" : ("ent4_" + entity.CustomName)) + i);
+            } while (uniqueSymbols.Contains(internalEntitySymbol));
+
 
             uniqueSymbols.Add(internalEntitySymbol);
 
@@ -272,7 +276,8 @@ namespace Assets.Scripts.System
                     inEntitySymbol = "childScene",
                     internalScriptSymbol = internalEntityComponentSymbol,
                     specialComponent = specialComponent,
-                    gatheredPropertyInfos = new List<PropertyInfo>()
+                    gatheredPropertyInfos = new List<PropertyInfo>(),
+                    shouldGenerateInitFunction = false
                 };
             }
 
@@ -306,7 +311,8 @@ namespace Assets.Scripts.System
                 inEntitySymbol = inEntitySymbol,
                 internalScriptSymbol = internalEntityComponentSymbol,
                 specialComponent = specialComponent,
-                gatheredPropertyInfos = new List<PropertyInfo>()
+                gatheredPropertyInfos = new List<PropertyInfo>(),
+                shouldGenerateInitFunction = true
             };
 
             // Generate Property info
@@ -315,6 +321,8 @@ namespace Assets.Scripts.System
                 componentInfo.gatheredPropertyInfos.Add(await GatherPropertyInfo(component, property, neededAssets));
             }
 
+            // find the correct component definition
+            var componentDefinition = availableComponentsState.GetComponentDefinitionByName(component.NameInCode);
 
             // update the list of all used components
             //if (entity.IsExposed)
@@ -328,6 +336,7 @@ namespace Assets.Scripts.System
                         symbol = component.NameInCode,
                         withTypeSymbol = withTypeSymbol,
                         inEntitySymbol = inEntitySymbol,
+                        sourceFile = componentDefinition.SourceFile,
                         specialComponent = specialComponent
                     });
                 }
@@ -398,9 +407,16 @@ namespace Assets.Scripts.System
 
         private string GenerateActualScript(GenerationInfo generationInfo)
         {
+            var generatedScript = new StringBuilder();
+
+            // add imports
+            foreach (var componentInfo in generationInfo.usedComponentInfos.Where(c => c.sourceFile != null))
+            {
+                generatedScript.AppendLine($"import {{ {componentInfo.symbol} }} from \"{componentInfo.sourceFile}\"");
+            }
+
             // Default script. This is always in the script
             // This contains the types for the dce entity and the dce scene
-            var generatedScript = new StringBuilder();
             generatedScript.Append(@"export type DceScene = {
     /**
      * The root entity of the scene. All entities in this scene are children of either this scene root entity, or of another entity in the scene
@@ -624,11 +640,6 @@ export type DceEntity = {
                         }
                         else
                         {
-                            // Temporary solution TODO: Change it
-                            //generatedScript.AppendLine(componentInfo.symbol == "GLTFShape" ?
-                            //    $"const {componentInfo.internalScriptSymbol} = new {componentInfo.symbol}(\"\")".Indent(2) : // use empty initializer until assets can be used here
-                            //    $"const {componentInfo.internalScriptSymbol} = new {componentInfo.symbol}()".Indent(2));
-
                             // setup component constructor
                             // get constructor parameters
                             var constructorParameters =
@@ -645,6 +656,14 @@ export type DceEntity = {
                             foreach (var propertyInfo in componentInfo.gatheredPropertyInfos.Where(pi => !pi.isConstructorParameter).Where(pi => pi.value != null))
                             {
                                 generatedScript.AppendLine($"{componentInfo.internalScriptSymbol}.{propertyInfo.symbol} = {propertyInfo.value}".Indent(2));
+                            }
+
+                            if (componentInfo.shouldGenerateInitFunction)
+                            {
+                                generatedScript.AppendLine($"if(\"init\" in {componentInfo.internalScriptSymbol} && typeof {componentInfo.internalScriptSymbol}.init === \"function\")".Indent(2));
+                                generatedScript.AppendLine("{".Indent(2));
+                                generatedScript.AppendLine($"{componentInfo.internalScriptSymbol}.init({entityInfo.internalScriptSymbol})".Indent(3));
+                                generatedScript.AppendLine("}".Indent(2));
                             }
 
                             if (obfuscate)

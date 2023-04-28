@@ -127,6 +127,7 @@ namespace Assets.Scripts.Tests.EditModeTests
             var componentDefinition = new DclComponent.ComponentDefinition(
                 "MoveUp",
                 "MoveUp",
+                null,
                 new PropertyDefinition("speed", PropertyType.Float, 1f),
                 new PropertyDefinition("distance", PropertyType.Float, 1f),
                 new PropertyDefinition("direction", PropertyType.Vector3, new Vector3(0, 1, 0))
@@ -172,6 +173,7 @@ namespace Assets.Scripts.Tests.EditModeTests
             var componentDefinition2 = new DclComponent.ComponentDefinition(
                 "MoveUp",
                 "MoveUp",
+                null,
                 new PropertyDefinition("speed", PropertyType.Float, 1f),
                 new PropertyDefinition("distance", PropertyType.Float, 1f),
                 new PropertyDefinition("direction", PropertyType.Vector3, new Vector3(0, 1, 0))
@@ -195,6 +197,7 @@ namespace Assets.Scripts.Tests.EditModeTests
             var componentDefinition = new DclComponent.ComponentDefinition(
                 "MoveUp",
                 "MoveUp",
+                null,
                 new PropertyDefinition("speed", PropertyType.Float, 1f),
                 new PropertyDefinition("distance", PropertyType.Float, 1f),
                 new PropertyDefinition("direction", PropertyType.Vector3, new Vector3(0, 1, 0))

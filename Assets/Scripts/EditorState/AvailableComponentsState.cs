@@ -32,9 +32,22 @@ namespace Assets.Scripts.EditorState
             /// The ComponentDefinition of the component
             /// </summary>
             public DclComponent.ComponentDefinition componentDefinition;
+
+            public override bool Equals(object obj)
+            {
+                return obj is AvailableComponent other &&
+                       category.Equals(other.category) &&
+                       availableInAddComponentMenu.Equals(other.availableInAddComponentMenu) &&
+                       componentDefinition.Equals(other.componentDefinition);
+            }
+
+            public override int GetHashCode()
+            {
+                return (category, availableInAddComponentMenu, componentDefinition).GetHashCode();
+            }
         }
 
-        public IEnumerable<AvailableComponent> allAvailableComponents => buildInComponents;
+        public IEnumerable<AvailableComponent> allAvailableComponents => buildInComponents.Concat(customComponents);
 
 
         private readonly IReadOnlyList<AvailableComponent> buildInComponents = new List<AvailableComponent>
@@ -89,6 +102,8 @@ namespace Assets.Scripts.EditorState
             }
         };
 
+        private readonly List<AvailableComponent> customComponents = new List<AvailableComponent>();
+
         public DclComponent.ComponentDefinition GetComponentDefinitionByName(string name)
         {
             try
@@ -99,6 +114,25 @@ namespace Assets.Scripts.EditorState
             {
                 throw new ArgumentException($"No component definition for the name {name} found");
             }
+        }
+
+        public void UpdateCustomComponent(AvailableComponent newComponent)
+        {
+            // see if component already exists
+            AvailableComponent? existingCustomComponent = null;
+            foreach (var c in customComponents.Where(c => c.name == newComponent.name))
+            {
+                existingCustomComponent = c;
+                break;
+            }
+
+            // delete existing
+            if (existingCustomComponent.HasValue)
+            {
+                customComponents.Remove(existingCustomComponent.Value);
+            }
+
+            customComponents.Add(newComponent);
         }
     }
 }

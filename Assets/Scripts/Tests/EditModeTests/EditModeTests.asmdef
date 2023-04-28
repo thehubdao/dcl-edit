@@ -9,7 +9,8 @@
         "GUID:b7320dc7496b5b14ab96b7aeb158b775",
         "GUID:e0946e506e3794c42a0a4080d32eea3a",
         "GUID:b882599d087b02e4691b090e7e01ffbb",
-        "GUID:6756ec8e32f5a594081909037fcd0fc9"
+        "GUID:6756ec8e32f5a594081909037fcd0fc9",
+        "GUID:d59dd11f4f3ab1b4291fbf9a2d7f964c"
     ],
     "includePlatforms": [
         "Editor"
@@ -18,7 +19,8 @@
     "allowUnsafeCode": false,
     "overrideReferences": true,
     "precompiledReferences": [
-        "nunit.framework.dll"
+        "nunit.framework.dll",
+        "Newtonsoft.Json.dll"
     ],
     "autoReferenced": false,
     "defineConstraints": [
