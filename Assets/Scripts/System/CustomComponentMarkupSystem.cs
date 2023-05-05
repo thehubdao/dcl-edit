@@ -101,7 +101,6 @@ namespace Assets.Scripts.System
         public const string propertiesKey = "properties";
 
         private const string fileExtensionTs = ".ts";
-        private const string fileExtensionJs = ".js";
         private const string fileExtensionCompFile = ".dcecomp";
 
         private const string componentStartTag = "#DCECOMP";
@@ -136,7 +135,7 @@ namespace Assets.Scripts.System
 
                 var markUpDates =
                     fileManagerSystem
-                        .GetAllFilesWithExtension(fileExtensionJs, fileExtensionTs, fileExtensionCompFile)
+                        .GetAllFilesWithExtension(fileExtensionTs, fileExtensionCompFile)
                         .SelectMany(path => FindCustomComponentMarkupsInFile(path, customComponentProblems));
 
                 foreach (var componentObject in markUpDates)
@@ -449,11 +448,16 @@ namespace Assets.Scripts.System
         {
             try
             {
-                var fileContents = File.ReadAllText(path);
+                if (!FileCanContainComponentTag(path))
+                {
+                    return Array.Empty<JObject>();
+                }
+
+                var fileContents = File.OpenText(path).ReadToEnd();
 
                 // if file is js or ts, filter out everything, that is not a comment
-                var isJsOrTs = Path.GetExtension(path) == fileExtensionJs || Path.GetExtension(path) == fileExtensionTs;
-                if (isJsOrTs)
+                var isTsFile = Path.GetExtension(path) == fileExtensionTs;
+                if (isTsFile)
                 {
                     fileContents = FilterComments(fileContents);
                 }
@@ -474,7 +478,7 @@ namespace Assets.Scripts.System
                         var jObject = JObject.Load(new JsonTextReader(new StringReader(extractedJson)));
                         jObject[sourcePathKey] = path;
 
-                        if (isJsOrTs && jObject[importFileKey] is null)
+                        if (isTsFile && jObject[importFileKey] is null)
                         {
                             jObject[importFileKey] = GetImportPathFromFilePath(path);
                         }
@@ -495,6 +499,22 @@ namespace Assets.Scripts.System
 
                 return Array.Empty<JObject>();
             }
+        }
+
+        // Discriminates files, that can not contain a component start tag
+        // Might still return true for files without a start tag
+        private bool FileCanContainComponentTag(string path)
+        {
+            var stream = File.OpenText(path);
+            while (!stream.EndOfStream)
+            {
+                if (stream.Read() == componentStartTag[0] && stream.Peek() == componentStartTag[1])
+                {
+                    return true; // returns true, if the file contains '#D'
+                }
+            }
+
+            return false;
         }
 
         private List<int> GetIndicesOf(string haystack, string needle)

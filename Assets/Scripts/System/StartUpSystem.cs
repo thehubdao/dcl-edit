@@ -66,7 +66,6 @@ namespace Assets.Scripts.System
             string projectPath = null;
             for (var i = 0; i < args.Length; i++)
             {
-                Debug.Log("ARG " + i + ": " + args[i]);
                 if (args[i] == "--projectPath")
                 {
                     projectPath = args[i + 1];
