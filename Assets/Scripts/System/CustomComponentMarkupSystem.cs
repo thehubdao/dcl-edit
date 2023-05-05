@@ -101,7 +101,6 @@ namespace Assets.Scripts.System
         public const string propertiesKey = "properties";
 
         private const string fileExtensionTs = ".ts";
-        private const string fileExtensionJs = ".js";
         private const string fileExtensionCompFile = ".dcecomp";
 
         private const string componentStartTag = "#DCECOMP";
@@ -136,7 +135,7 @@ namespace Assets.Scripts.System
 
                 var markUpDates =
                     fileManagerSystem
-                        .GetAllFilesWithExtension(fileExtensionJs, fileExtensionTs, fileExtensionCompFile)
+                        .GetAllFilesWithExtension(fileExtensionTs, fileExtensionCompFile)
                         .SelectMany(path => FindCustomComponentMarkupsInFile(path, customComponentProblems));
 
                 foreach (var componentObject in markUpDates)
@@ -457,8 +456,8 @@ namespace Assets.Scripts.System
                 var fileContents = File.OpenText(path).ReadToEnd();
 
                 // if file is js or ts, filter out everything, that is not a comment
-                var isJsOrTs = Path.GetExtension(path) == fileExtensionJs || Path.GetExtension(path) == fileExtensionTs;
-                if (isJsOrTs)
+                var isTsFile = Path.GetExtension(path) == fileExtensionTs;
+                if (isTsFile)
                 {
                     fileContents = FilterComments(fileContents);
                 }
@@ -479,7 +478,7 @@ namespace Assets.Scripts.System
                         var jObject = JObject.Load(new JsonTextReader(new StringReader(extractedJson)));
                         jObject[sourcePathKey] = path;
 
-                        if (isJsOrTs && jObject[importFileKey] is null)
+                        if (isTsFile && jObject[importFileKey] is null)
                         {
                             jObject[importFileKey] = GetImportPathFromFilePath(path);
                         }
