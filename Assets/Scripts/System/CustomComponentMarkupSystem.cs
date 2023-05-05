@@ -449,7 +449,12 @@ namespace Assets.Scripts.System
         {
             try
             {
-                var fileContents = File.ReadAllText(path);
+                if (!FileCanContainComponentTag(path))
+                {
+                    return Array.Empty<JObject>();
+                }
+
+                var fileContents = File.OpenText(path).ReadToEnd();
 
                 // if file is js or ts, filter out everything, that is not a comment
                 var isJsOrTs = Path.GetExtension(path) == fileExtensionJs || Path.GetExtension(path) == fileExtensionTs;
@@ -495,6 +500,22 @@ namespace Assets.Scripts.System
 
                 return Array.Empty<JObject>();
             }
+        }
+
+        // Discriminates files, that can not contain a component start tag
+        // Might still return true for files without a start tag
+        private bool FileCanContainComponentTag(string path)
+        {
+            var stream = File.OpenText(path);
+            while (!stream.EndOfStream)
+            {
+                if (stream.Read() == componentStartTag[0] && stream.Peek() == componentStartTag[1])
+                {
+                    return true; // returns true, if the file contains '#D'
+                }
+            }
+
+            return false;
         }
 
         private List<int> GetIndicesOf(string haystack, string needle)
