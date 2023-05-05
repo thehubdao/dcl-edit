@@ -131,9 +131,37 @@ namespace Assets.Scripts.SceneState
 
                 return position;
             }
+            set
+            {
+                if (Entity.Parent != null)
+                {
+                    position.SetFixedValue(Entity.Parent.GetTransformComponent().InverseTransformPoint(value));
+                }
+                else
+                {
+                    position.SetFixedValue(value);
+                }
+            }
         }
 
-        public Quaternion globalFixedRotation => Entity.Parent == null ? rotation.FixedValue : Entity.Parent.GetTransformComponent().globalFixedRotation * rotation.FixedValue;
+        public Quaternion globalFixedRotation
+        {
+            get
+            {
+                 return Entity.Parent == null ? rotation.FixedValue : Entity.Parent.GetTransformComponent().globalFixedRotation* rotation.FixedValue;
+            }
+            set
+            {
+                if (Entity.Parent == null)
+                {
+                    rotation.SetFixedValue(value);
+                }
+                else
+                {
+                    rotation.SetFixedValue(Quaternion.Inverse(Entity.Parent.GetTransformComponent().globalRotation) * value);
+                }
+            }
+        }
 
         public bool Validate()
         {

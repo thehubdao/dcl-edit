@@ -32,19 +32,19 @@ namespace Assets.Scripts.Command
             var newParent = newParentId == default ? null : sceneState.GetEntityById(newParentId);
 
             DclTransformComponent affectedTransform = affectedEntity.GetTransformComponent();
-            var oldPosition = affectedTransform.globalPosition;
-            var oldRotation = affectedTransform.globalRotation;
+            
+            var oldPosition = affectedTransform.globalFixedPosition;
+            var oldRotation = affectedTransform.globalFixedRotation;
 
             affectedEntity.hierarchyOrder = newHierarchyOrder;
             affectedEntity.Parent = newParent;
 
-            affectedTransform.globalPosition = oldPosition;
-            affectedTransform.globalRotation = oldRotation;
+            affectedTransform.globalFixedPosition = oldPosition;
+            affectedTransform.globalFixedRotation = oldRotation;
 
             editorEvents.InvokeHierarchyChangedEvent();
             editorEvents.InvokeSelectionChangedEvent();
         }
-
 
         public override void Undo(DclScene sceneState, EditorEvents editorEvents)
         {
@@ -52,14 +52,14 @@ namespace Assets.Scripts.Command
             var startParent = startParentId == default ? null : sceneState.GetEntityById(startParentId);
 
             DclTransformComponent affectedTransform = affectedEntity.GetTransformComponent();
-            var oldPosition = affectedTransform.globalPosition;
-            var oldRotation = affectedTransform.globalRotation;
+            var oldPosition = affectedTransform.globalFixedPosition;
+            var oldRotation = affectedTransform.globalFixedRotation;
 
             affectedEntity.Parent = startParent;
             affectedEntity.hierarchyOrder = startHierarchyOrder;
 
-            affectedTransform.globalPosition = oldPosition;
-            affectedTransform.globalRotation = oldRotation;
+            affectedTransform.globalFixedPosition = oldPosition;
+            affectedTransform.globalFixedRotation = oldRotation;
 
             editorEvents.InvokeHierarchyChangedEvent();
             editorEvents.InvokeSelectionChangedEvent();
