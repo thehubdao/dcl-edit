@@ -11,18 +11,21 @@ namespace Assets.Scripts.System
         private EditorEvents editorEvents;
         private SceneManagerSystem sceneManagerSystem;
         private MenuBarSystem menuBarSystem;
+        private SceneChangeDetectSystem sceneChangeDetectSystem;
 
         [Inject]
         public void Construct(
             CommandFactorySystem commandFactory,
             EditorEvents editorEvents,
             SceneManagerSystem sceneManagerSystem,
-            MenuBarSystem menuBarSystem)
+            MenuBarSystem menuBarSystem,
+            SceneChangeDetectSystem sceneChangeDetectSystem)
         {
             CommandFactory = commandFactory;
             this.editorEvents = editorEvents;
             this.sceneManagerSystem = sceneManagerSystem;
             this.menuBarSystem = menuBarSystem;
+            this.sceneChangeDetectSystem = sceneChangeDetectSystem;
 
             CreateMenuBarItems();
         }
@@ -40,16 +43,21 @@ namespace Assets.Scripts.System
                 return;
             }
 
+            bool historyOverwritten = false;
             if (commandState.CommandHistory.Count > commandState.CurrentCommandIndex + 1)
             {
                 var firstDeprecatedCommandIndex = commandState.CurrentCommandIndex + 1;
                 commandState.CommandHistory.RemoveRange(firstDeprecatedCommandIndex, commandState.CommandHistory.Count - firstDeprecatedCommandIndex);
+                historyOverwritten = true;
             }
 
             commandState.CommandHistory.Add(command);
             commandState.CurrentCommandIndex = commandState.CommandHistory.Count - 1;
 
             command.Do(sceneManagerSystem.GetCurrentSceneOrNull(), editorEvents);
+
+            if (historyOverwritten) sceneChangeDetectSystem.Reevaluate(commandState, SceneChangeDetectSystem.CommandEvent.OverwriteHistory);
+            else sceneChangeDetectSystem.Reevaluate(commandState, SceneChangeDetectSystem.CommandEvent.ExecuteNew);
         }
 
         public void UndoCommand()
@@ -66,6 +74,7 @@ namespace Assets.Scripts.System
             {
                 commandState.CommandHistory[commandState.CurrentCommandIndex].Undo(sceneManagerSystem.GetCurrentSceneOrNull(), editorEvents);
                 commandState.CurrentCommandIndex--;
+                sceneChangeDetectSystem.Reevaluate(commandState, SceneChangeDetectSystem.CommandEvent.Undo);
             }
         }
 
@@ -83,6 +92,7 @@ namespace Assets.Scripts.System
             {
                 commandState.CurrentCommandIndex++;
                 commandState.CommandHistory[commandState.CurrentCommandIndex].Do(sceneManagerSystem.GetCurrentSceneOrNull(), editorEvents);
+                sceneChangeDetectSystem.Reevaluate(commandState, SceneChangeDetectSystem.CommandEvent.Redo);
             }
         }
 

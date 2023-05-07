@@ -34,14 +34,15 @@ namespace Assets.Scripts.Visuals
         private PanelSystem panelSystem;
         private EditorEvents events;
         private SceneManagerState sceneManagerState;
-        
+        private SceneChangeDetectSystem sceneChangeDetectSystem;
+
         [Inject]
-        private void Construct(PanelSystem panelSystem, EditorEvents events, SceneManagerState sceneManagerState)
+        private void Construct(PanelSystem panelSystem, EditorEvents events, SceneManagerState sceneManagerState, SceneChangeDetectSystem sceneChangeDetectSystem)
         {
             this.panelSystem = panelSystem;
             this.events = events;
             this.sceneManagerState = sceneManagerState;
-            
+            this.sceneChangeDetectSystem = sceneChangeDetectSystem;
             SetupEventListeners();
         }
 
@@ -62,7 +63,11 @@ namespace Assets.Scripts.Visuals
             var currentDirectoryState = sceneManagerState.GetCurrentDirectoryState();
 
             if (currentDirectoryState != null)
-                panelSystem.ChangePanelTabTitle(scenePanelTab, currentDirectoryState.name);
+            {
+                string title = currentDirectoryState.name;
+                if (sceneChangeDetectSystem.HasSceneChanged()) title += "*";
+                panelSystem.ChangePanelTabTitle(scenePanelTab, title);
+            }
         }
     }
 }
