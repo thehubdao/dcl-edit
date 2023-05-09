@@ -11,7 +11,8 @@
                     "id": "19adcab2-cea0-462b-891d-ca39c5901845",
                     "expectedControlType": "",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": true
                 },
                 {
                     "name": "Left/Right",
@@ -19,7 +20,8 @@
                     "id": "e2befcce-1cad-4942-8065-d9d593bf0f0f",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": true
                 },
                 {
                     "name": "Up/Down",
@@ -27,7 +29,8 @@
                     "id": "759fe602-bd95-42fc-8824-dc15d88d66e9",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": true
                 },
                 {
                     "name": "Fast",
@@ -35,7 +38,8 @@
                     "id": "15b4e1e9-5d26-46a3-a627-6032e0b07275",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "Focus",
@@ -43,7 +47,8 @@
                     "id": "2a63dfac-bca3-4b2a-94a0-116b4d50d553",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -279,7 +284,8 @@
                     "id": "09891e6f-29c4-4c3d-a79b-7c3f2231788e",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "Redo",
@@ -287,7 +293,8 @@
                     "id": "88a78b3a-dfb4-4fdf-a322-8301ba9f34ee",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "Save",
@@ -295,7 +302,8 @@
                     "id": "8426de5b-6dfe-4cf4-a9f4-bb9d6e4bf68a",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "Translate",
@@ -303,7 +311,8 @@
                     "id": "ae1e3c65-3c80-4b5d-ae3a-fce036399c9c",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "Rotate",
@@ -311,7 +320,8 @@
                     "id": "2513e2b5-bea4-466b-8c6c-7d406d9a27c2",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "Scale",
@@ -319,7 +329,8 @@
                     "id": "2dea60ed-d46e-4c2c-96fb-7b684bf4c9a8",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "Duplicate",
@@ -327,7 +338,8 @@
                     "id": "a89fc159-e2c8-43e8-835b-b3abe72d9a23",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "Delete",
@@ -335,7 +347,8 @@
                     "id": "57999a8f-1f67-41a8-95ca-23f8ae77af75",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "Cancel",
@@ -343,7 +356,8 @@
                     "id": "63e5cb43-05ec-4a36-a575-5bc290cc4dc3",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "InvertGizmoToolSnapping",
@@ -351,7 +365,26 @@
                     "id": "4870a501-3ba8-4a99-afdc-d8326569c3ec",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "HierarchyDown",
+                    "type": "Button",
+                    "id": "386fe3d6-63c1-4a6a-aa9c-a664d7d606d5",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "HierarchyUp",
+                    "type": "Button",
+                    "id": "2ba9aeae-5516-42f6-86a1-ea4c0637f852",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -552,6 +585,28 @@
                     "action": "InvertGizmoToolSnapping",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "25e66a5d-72a8-46d0-a8da-bbe751edd0a4",
+                    "path": "<Keyboard>/downArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HierarchyDown",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "6a63a8e7-4a2c-44da-8060-60b7e4c4566d",
+                    "path": "<Keyboard>/upArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HierarchyUp",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         },
@@ -565,7 +620,8 @@
                     "id": "63f7c2e6-f5ab-46f4-a6cd-da2db9a93de1",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "Ctrl",
@@ -573,7 +629,8 @@
                     "id": "07cd1e4b-e5e8-4f6a-a545-0c04dd83ef88",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "Alt",
@@ -581,7 +638,8 @@
                     "id": "81ec1c81-b16a-4f90-827b-e7eae4f8d02b",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [

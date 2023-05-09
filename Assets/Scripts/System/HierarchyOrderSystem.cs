@@ -395,5 +395,46 @@ namespace Assets.Scripts.System
                 DropMiddle(selectedEntity, hoveredEntity);
             }
         }
+
+        /// <summary>
+        /// Get the last Successor of an Entity
+        /// </summary>
+        /// <param name="entity">The (included) entity to start from</param>
+        /// <returns>The last Successor</returns>
+        public DclEntity GetLastExpandedSuccessor([NotNull] DclEntity entity)
+        {
+            var newParent = entity;
+
+            while (hierarchyExpansionState.IsExpanded(newParent.Id))
+            {
+                var lastChild = newParent.Children?.OrderByDescending((e) => e.hierarchyOrder).FirstOrDefault();
+                
+                if (lastChild == null)
+                {
+                    break;
+                }
+
+                newParent = lastChild;
+            }
+
+            return newParent;
+        }
+
+        public DclEntity GetNextPossibleBelowSiblingOfClosestAncestor([NotNull] DclEntity entity)
+        {
+            while (entity.Parent != null)
+            {
+                var nextEntity = GetBelowSibling(entity.Parent);
+                
+                if (nextEntity != null)
+                {
+                    return nextEntity;
+                }
+
+                entity = entity.Parent;
+            }
+
+            return null;
+        }
     }
 }

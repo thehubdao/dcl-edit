@@ -29,6 +29,8 @@ namespace Assets.Scripts.Interaction
         private SceneManagerSystem sceneManagerSystem;
         private DialogSystem dialogSystem;
         private AddEntitySystem addEntitySystem;
+        private HierarchyOrderSystem hierarchyOrderSystem;
+        private HierarchyExpansionState hierarchyExpansionState;
 
         [Inject]
         private void Construct(
@@ -45,7 +47,9 @@ namespace Assets.Scripts.Interaction
             ContextMenuSystem contextMenuSystem,
             SceneManagerSystem sceneManagerSystem,
             DialogSystem dialogSystem,
-            AddEntitySystem addEntitySystem)
+            AddEntitySystem addEntitySystem,
+            HierarchyOrderSystem hierarchyOrderSystem,
+            HierarchyExpansionState hierarchyExpansionState)
         {
             this.sceneSaveSystem = sceneSaveSystem;
             this.commandSystem = commandSystem;
@@ -61,6 +65,8 @@ namespace Assets.Scripts.Interaction
             this.sceneManagerSystem = sceneManagerSystem;
             this.dialogSystem = dialogSystem;
             this.addEntitySystem = addEntitySystem;
+            this.hierarchyOrderSystem = hierarchyOrderSystem;
+            this.hierarchyExpansionState = hierarchyExpansionState;
         }
 
 
@@ -118,6 +124,7 @@ namespace Assets.Scripts.Interaction
             {
                 editorEvents.InvokeOnMouseButtonDownEvent(0);
             }
+
             if (Input.GetMouseButtonDown(1))
             {
                 editorEvents.InvokeOnMouseButtonDownEvent(1);
@@ -150,12 +157,14 @@ namespace Assets.Scripts.Interaction
                                         mousePosViewport.y < 1 - bound.H;
                 isMouseOverContextMenu = contextMenuSystem.IsMouseOverMenu();
                 isMouseOverDialog = dialogSystem.IsMouseOverDialog();
-                isMouseOverSceneButtons = unityState.sceneViewButtons.GetComponent<GizmoToolButtonInteraction>().IsMouseOverButtons();
+                isMouseOverSceneButtons = unityState.sceneViewButtons.GetComponent<GizmoToolButtonInteraction>()
+                    .IsMouseOverButtons();
             }
 
 
             // Figure out, if the mouse is over the 3D viewport (not hovering over any UI)
-            var isMouseIn3DView = /*!EventSystem.current.IsPointerOverGameObject() &&*/ isMouseOverGameWindow && !isMouseOverContextMenu && !isMouseOverDialog && !isMouseOverSceneButtons;
+            var isMouseIn3DView = /*!EventSystem.current.IsPointerOverGameObject() &&*/ isMouseOverGameWindow &&
+                !isMouseOverContextMenu && !isMouseOverDialog && !isMouseOverSceneButtons;
 
             // The position the mouse currently points to in the 3D viewport
             Vector3? mousePositionIn3DView = null;
@@ -172,7 +181,8 @@ namespace Assets.Scripts.Interaction
                         Interface3DState.HoveredObjectType.Gizmo;
                 }
                 // Secondly check, if mouse is hovering over a Entity
-                else if (Physics.Raycast(mouseRay, out RaycastHit hitInfoEntity, 10000, LayerMask.GetMask("Entity Click"))) // mouse click layer
+                else if (Physics.Raycast(mouseRay, out RaycastHit hitInfoEntity, 10000,
+                             LayerMask.GetMask("Entity Click"))) // mouse click layer
                 {
                     mousePositionIn3DView = hitInfoEntity.point;
                     interface3DState.CurrentlyHoveredObject = hitInfoEntity.transform.gameObject;
@@ -277,6 +287,78 @@ namespace Assets.Scripts.Interaction
                 }
             }
 
+            //When pressing up arrow, select entity above selected entity in hierarchy
+            if (inputSystemAsset.Hotkeys.HierarchyUp.triggered)
+            {
+                var selectedEntity = sceneManagerSystem.GetCurrentSceneOrNull()?.SelectionState.PrimarySelectedEntity;
+
+                if (selectedEntity == null)
+                {
+                    return;
+                }
+
+                var aboveSibling = hierarchyOrderSystem.GetAboveSibling(selectedEntity);
+
+                if (aboveSibling == null)
+                {
+                    if (selectedEntity.Parent != null)
+                    {
+                        entitySelectSystem.SelectSingle(selectedEntity.ParentId);
+                    }
+                }
+                else
+                {
+                    if (!hierarchyExpansionState.IsExpanded(aboveSibling.Id))
+                    {
+                        entitySelectSystem.SelectSingle(aboveSibling.Id);
+                    }
+                    else
+                    {
+                        var aboveEntity = hierarchyOrderSystem.GetLastExpandedSuccessor(aboveSibling);
+                        entitySelectSystem.SelectSingle(aboveEntity.Id);
+                    }
+                }
+            }
+
+            //When pressing down arrow, select entity below selected entity in hierarchy
+            if (inputSystemAsset.Hotkeys.HierarchyDown.triggered)
+            {
+                var selectedEntity = sceneManagerSystem.GetCurrentSceneOrNull()?.SelectionState.PrimarySelectedEntity;
+
+                if (selectedEntity == null)
+                {
+                    return;
+                }
+
+                if (hierarchyExpansionState.IsExpanded(selectedEntity.Id))
+                {
+                    var belowEntity = selectedEntity.Children?.OrderBy(e => e.hierarchyOrder).FirstOrDefault();
+
+                    if (belowEntity != null)
+                    {
+                        entitySelectSystem.SelectSingle(belowEntity.Id);
+                    }
+                }
+                else
+                {
+                    var belowSibling = hierarchyOrderSystem.GetBelowSibling(selectedEntity);
+
+                    if (belowSibling != null)
+                    {
+                        entitySelectSystem.SelectSingle(belowSibling.Id);
+                    }
+                    else
+                    {
+                        var belowEntity = hierarchyOrderSystem.GetNextPossibleBelowSiblingOfClosestAncestor(selectedEntity);
+
+                        if (belowEntity != null)
+                        {
+                            entitySelectSystem.SelectSingle(belowEntity.Id);
+                        }
+                    }
+                }
+            }
+
             // When pressing Right mouse button (without alt), switch to Camera WASD moving state
             if (inputHelper.IsRightMouseButtonPressed() && !pressingAlt && isMouseIn3DView)
             {
@@ -318,7 +400,8 @@ namespace Assets.Scripts.Interaction
             }
 
             // When pressing the focus hotkey and having a selected primary entity, switch to Focus Transition state
-            if (inputSystemAsset.CameraMovement.Focus.triggered && sceneManagerSystem.GetCurrentSceneOrNull()?.SelectionState.PrimarySelectedEntity != null)
+            if (inputSystemAsset.CameraMovement.Focus.triggered &&
+                sceneManagerSystem.GetCurrentSceneOrNull()?.SelectionState.PrimarySelectedEntity != null)
             {
                 // Fetch position of selected object
                 var selectedEntity = sceneManagerSystem.GetCurrentSceneOrNull()?.SelectionState.PrimarySelectedEntity;
@@ -441,7 +524,7 @@ namespace Assets.Scripts.Interaction
             }
 
 
-            if (cameraState.MoveTowards((Vector3)inputState.FocusTransitionDestination, true))
+            if (cameraState.MoveTowards((Vector3) inputState.FocusTransitionDestination, true))
             {
                 inputState.InState = InputState.InStateType.NoInput;
             }
@@ -455,7 +538,7 @@ namespace Assets.Scripts.Interaction
         private void UpdateHoldingGizmoTool()
         {
             // Cancel the current gizmo operation
-            if (inputSystemAsset.Hotkeys.Cancel.triggered) 
+            if (inputSystemAsset.Hotkeys.Cancel.triggered)
             {
                 inputState.InState = InputState.InStateType.NoInput;
                 gizmoToolSystem.CancelHolding();
