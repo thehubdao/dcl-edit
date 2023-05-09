@@ -385,6 +385,24 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "HierarchyExpand",
+                    "type": "Button",
+                    "id": "d7411137-dad7-47be-afd1-843cf5edda92",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "HierarchyCollapse",
+                    "type": "Button",
+                    "id": "8fc29f71-a1a6-4486-b7c5-76df3e3d92e3",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -605,6 +623,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "HierarchyUp",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "82aea7ba-6298-4186-8b7d-be1c6adc828e",
+                    "path": "<Keyboard>/rightArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HierarchyExpand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d7ac444a-94c2-4d99-8bf4-d429e7e449e9",
+                    "path": "<Keyboard>/leftArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HierarchyCollapse",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

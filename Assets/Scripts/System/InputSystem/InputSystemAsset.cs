@@ -407,6 +407,24 @@ public partial class @InputSystemAsset: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""HierarchyExpand"",
+                    ""type"": ""Button"",
+                    ""id"": ""d7411137-dad7-47be-afd1-843cf5edda92"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""HierarchyCollapse"",
+                    ""type"": ""Button"",
+                    ""id"": ""8fc29f71-a1a6-4486-b7c5-76df3e3d92e3"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -629,6 +647,28 @@ public partial class @InputSystemAsset: IInputActionCollection2, IDisposable
                     ""action"": ""HierarchyUp"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""82aea7ba-6298-4186-8b7d-be1c6adc828e"",
+                    ""path"": ""<Keyboard>/rightArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""HierarchyExpand"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d7ac444a-94c2-4d99-8bf4-d429e7e449e9"",
+                    ""path"": ""<Keyboard>/leftArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""HierarchyCollapse"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -724,6 +764,8 @@ public partial class @InputSystemAsset: IInputActionCollection2, IDisposable
         m_Hotkeys_InvertGizmoToolSnapping = m_Hotkeys.FindAction("InvertGizmoToolSnapping", throwIfNotFound: true);
         m_Hotkeys_HierarchyDown = m_Hotkeys.FindAction("HierarchyDown", throwIfNotFound: true);
         m_Hotkeys_HierarchyUp = m_Hotkeys.FindAction("HierarchyUp", throwIfNotFound: true);
+        m_Hotkeys_HierarchyExpand = m_Hotkeys.FindAction("HierarchyExpand", throwIfNotFound: true);
+        m_Hotkeys_HierarchyCollapse = m_Hotkeys.FindAction("HierarchyCollapse", throwIfNotFound: true);
         // Modifier
         m_Modifier = asset.FindActionMap("Modifier", throwIfNotFound: true);
         m_Modifier_Shift = m_Modifier.FindAction("Shift", throwIfNotFound: true);
@@ -880,6 +922,8 @@ public partial class @InputSystemAsset: IInputActionCollection2, IDisposable
     private readonly InputAction m_Hotkeys_InvertGizmoToolSnapping;
     private readonly InputAction m_Hotkeys_HierarchyDown;
     private readonly InputAction m_Hotkeys_HierarchyUp;
+    private readonly InputAction m_Hotkeys_HierarchyExpand;
+    private readonly InputAction m_Hotkeys_HierarchyCollapse;
     public struct HotkeysActions
     {
         private @InputSystemAsset m_Wrapper;
@@ -896,6 +940,8 @@ public partial class @InputSystemAsset: IInputActionCollection2, IDisposable
         public InputAction @InvertGizmoToolSnapping => m_Wrapper.m_Hotkeys_InvertGizmoToolSnapping;
         public InputAction @HierarchyDown => m_Wrapper.m_Hotkeys_HierarchyDown;
         public InputAction @HierarchyUp => m_Wrapper.m_Hotkeys_HierarchyUp;
+        public InputAction @HierarchyExpand => m_Wrapper.m_Hotkeys_HierarchyExpand;
+        public InputAction @HierarchyCollapse => m_Wrapper.m_Hotkeys_HierarchyCollapse;
         public InputActionMap Get() { return m_Wrapper.m_Hotkeys; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -941,6 +987,12 @@ public partial class @InputSystemAsset: IInputActionCollection2, IDisposable
             @HierarchyUp.started += instance.OnHierarchyUp;
             @HierarchyUp.performed += instance.OnHierarchyUp;
             @HierarchyUp.canceled += instance.OnHierarchyUp;
+            @HierarchyExpand.started += instance.OnHierarchyExpand;
+            @HierarchyExpand.performed += instance.OnHierarchyExpand;
+            @HierarchyExpand.canceled += instance.OnHierarchyExpand;
+            @HierarchyCollapse.started += instance.OnHierarchyCollapse;
+            @HierarchyCollapse.performed += instance.OnHierarchyCollapse;
+            @HierarchyCollapse.canceled += instance.OnHierarchyCollapse;
         }
 
         private void UnregisterCallbacks(IHotkeysActions instance)
@@ -981,6 +1033,12 @@ public partial class @InputSystemAsset: IInputActionCollection2, IDisposable
             @HierarchyUp.started -= instance.OnHierarchyUp;
             @HierarchyUp.performed -= instance.OnHierarchyUp;
             @HierarchyUp.canceled -= instance.OnHierarchyUp;
+            @HierarchyExpand.started -= instance.OnHierarchyExpand;
+            @HierarchyExpand.performed -= instance.OnHierarchyExpand;
+            @HierarchyExpand.canceled -= instance.OnHierarchyExpand;
+            @HierarchyCollapse.started -= instance.OnHierarchyCollapse;
+            @HierarchyCollapse.performed -= instance.OnHierarchyCollapse;
+            @HierarchyCollapse.canceled -= instance.OnHierarchyCollapse;
         }
 
         public void RemoveCallbacks(IHotkeysActions instance)
@@ -1082,6 +1140,8 @@ public partial class @InputSystemAsset: IInputActionCollection2, IDisposable
         void OnInvertGizmoToolSnapping(InputAction.CallbackContext context);
         void OnHierarchyDown(InputAction.CallbackContext context);
         void OnHierarchyUp(InputAction.CallbackContext context);
+        void OnHierarchyExpand(InputAction.CallbackContext context);
+        void OnHierarchyCollapse(InputAction.CallbackContext context);
     }
     public interface IModifierActions
     {

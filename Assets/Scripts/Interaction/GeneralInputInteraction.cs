@@ -358,6 +358,40 @@ namespace Assets.Scripts.Interaction
                     }
                 }
             }
+            
+            //When pressing left arrow, collapse selected entity in hierarchy
+            if (inputSystemAsset.Hotkeys.HierarchyCollapse.triggered)
+            {
+                var selectedEntity = sceneManagerSystem.GetCurrentSceneOrNull()?.SelectionState.PrimarySelectedEntity;
+
+                if (selectedEntity == null)
+                {
+                    return;
+                }
+
+                if (hierarchyExpansionState.IsExpanded(selectedEntity.Id))
+                {
+                    hierarchyExpansionState.ToggleExpanded(selectedEntity.Id);
+                    editorEvents.InvokeHierarchyChangedEvent();
+                }
+            }
+            
+            //When pressing right arrow, expand selected entity in hierarchy
+            if (inputSystemAsset.Hotkeys.HierarchyExpand.triggered)
+            {
+                var selectedEntity = sceneManagerSystem.GetCurrentSceneOrNull()?.SelectionState.PrimarySelectedEntity;
+
+                if (selectedEntity == null)
+                {
+                    return;
+                }
+
+                if (!hierarchyExpansionState.IsExpanded(selectedEntity.Id))
+                {
+                    hierarchyExpansionState.ToggleExpanded(selectedEntity.Id);
+                    editorEvents.InvokeHierarchyChangedEvent();
+                }
+            }
 
             // When pressing Right mouse button (without alt), switch to Camera WASD moving state
             if (inputHelper.IsRightMouseButtonPressed() && !pressingAlt && isMouseIn3DView)
