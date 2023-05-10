@@ -10,7 +10,7 @@ namespace Assets.Scripts.System
     public class SceneChangeDetectSystem
     {
         // Dependencies
-        private SceneViewSystem sceneViewSystem;
+        private ISceneViewSystem sceneViewSystem;
 
         // Commands are referenced in the command history by an index. To remember which command was the last one when the scene
         // is saved, the offset to the index of that command is remembered.
@@ -25,7 +25,7 @@ namespace Assets.Scripts.System
         }
 
         [Inject]
-        public void Construct(SceneViewSystem sceneViewSystem)
+        public void Construct(ISceneViewSystem sceneViewSystem)
         {
             this.sceneViewSystem = sceneViewSystem;
         }

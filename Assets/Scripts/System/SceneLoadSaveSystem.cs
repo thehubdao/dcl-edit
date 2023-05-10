@@ -41,12 +41,12 @@ namespace Assets.Scripts.System
         // Dependencies
         private LoadFromVersion1System loadFromVersion1System;
         private FileUpgraderSystem fileUpgraderSystem;
-        private SceneViewSystem sceneViewSystem;
+        private ISceneViewSystem sceneViewSystem;
         private SceneChangeDetectSystem sceneChangeDetectSystem;
 
         [Inject]
         public void Construct(
-            LoadFromVersion1System loadFromVersion1System, FileUpgraderSystem fileUpgraderSystem, SceneViewSystem sceneViewSystem, SceneChangeDetectSystem sceneChangeDetectSystem)
+            LoadFromVersion1System loadFromVersion1System, FileUpgraderSystem fileUpgraderSystem, ISceneViewSystem sceneViewSystem, SceneChangeDetectSystem sceneChangeDetectSystem)
         {
             this.loadFromVersion1System = loadFromVersion1System;
             this.fileUpgraderSystem = fileUpgraderSystem;

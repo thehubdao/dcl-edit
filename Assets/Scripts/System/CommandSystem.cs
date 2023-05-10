@@ -9,16 +9,16 @@ namespace Assets.Scripts.System
         // Dependencies
         public CommandFactorySystem CommandFactory { get; private set; }
         private EditorEvents editorEvents;
-        private SceneManagerSystem sceneManagerSystem;
-        private MenuBarSystem menuBarSystem;
+        private ISceneManagerSystem sceneManagerSystem;
+        private IMenuBarSystem menuBarSystem;
         private SceneChangeDetectSystem sceneChangeDetectSystem;
 
         [Inject]
         public void Construct(
             CommandFactorySystem commandFactory,
             EditorEvents editorEvents,
-            SceneManagerSystem sceneManagerSystem,
-            MenuBarSystem menuBarSystem,
+            ISceneManagerSystem sceneManagerSystem,
+            IMenuBarSystem menuBarSystem,
             SceneChangeDetectSystem sceneChangeDetectSystem)
         {
             CommandFactory = commandFactory;
