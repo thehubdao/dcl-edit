@@ -59,13 +59,17 @@ namespace Assets.Scripts.Tests.EditModeTests
         {
             // Execute new command, save and execute another command.
             commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateTranslateTransform(Guid.NewGuid(), Vector3.zero, Vector3.one));
+            commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateTranslateTransform(Guid.NewGuid(), Vector3.one, Vector3.zero));
+            commandSystem.UndoCommand();
             sceneChangeDetectSystem.RememberCurrentState();
+            Assert.False(sceneChangeDetectSystem.HasSceneChanged());
             commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateTranslateTransform(Guid.NewGuid(), Vector3.one, Vector3.zero));
             Assert.True(sceneChangeDetectSystem.HasSceneChanged());
 
             // Return to the command before the scene was saved. That makes it so that the saved state lies in the future.
             // Then overwrite the command history by executing a new command
             commandSystem.UndoCommand();
+            Assert.False(sceneChangeDetectSystem.HasSceneChanged());
             commandSystem.UndoCommand();
             commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateTranslateTransform(Guid.NewGuid(), Vector3.one, Vector3.zero));
             Assert.True(sceneChangeDetectSystem.HasSceneChanged());
