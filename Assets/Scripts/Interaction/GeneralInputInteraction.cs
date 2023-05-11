@@ -1,9 +1,6 @@
 using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
-using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
-using ModestTree;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Zenject;
@@ -15,7 +12,6 @@ namespace Assets.Scripts.Interaction
         private InputSystemAsset inputSystemAsset;
 
         // Dependencies
-        private ISceneSaveSystem sceneSaveSystem;
         private ICommandSystem commandSystem;
         private InputState inputState;
         private Interface3DState interface3DState;
@@ -29,8 +25,7 @@ namespace Assets.Scripts.Interaction
         private SceneManagerSystem sceneManagerSystem;
         private DialogSystem dialogSystem;
         private AddEntitySystem addEntitySystem;
-        private HierarchyOrderSystem hierarchyOrderSystem;
-        private HierarchyExpansionState hierarchyExpansionState;
+        private HierarchyNavigationInteraction hierarchyNavigationInteraction;
 
         [Inject]
         private void Construct(
@@ -48,10 +43,8 @@ namespace Assets.Scripts.Interaction
             SceneManagerSystem sceneManagerSystem,
             DialogSystem dialogSystem,
             AddEntitySystem addEntitySystem,
-            HierarchyOrderSystem hierarchyOrderSystem,
-            HierarchyExpansionState hierarchyExpansionState)
+            HierarchyNavigationInteraction hierarchyNavigationInteraction)
         {
-            this.sceneSaveSystem = sceneSaveSystem;
             this.commandSystem = commandSystem;
             this.inputState = inputState;
             this.interface3DState = interface3DState;
@@ -65,8 +58,7 @@ namespace Assets.Scripts.Interaction
             this.sceneManagerSystem = sceneManagerSystem;
             this.dialogSystem = dialogSystem;
             this.addEntitySystem = addEntitySystem;
-            this.hierarchyOrderSystem = hierarchyOrderSystem;
-            this.hierarchyExpansionState = hierarchyExpansionState;
+            this.hierarchyNavigationInteraction = hierarchyNavigationInteraction;
         }
 
 
@@ -287,112 +279,6 @@ namespace Assets.Scripts.Interaction
                 }
             }
 
-            //When pressing up arrow, select entity above selected entity in hierarchy
-            if (inputSystemAsset.Hotkeys.HierarchyUp.triggered)
-            {
-                var selectedEntity = sceneManagerSystem.GetCurrentSceneOrNull()?.SelectionState.PrimarySelectedEntity;
-
-                if (selectedEntity == null)
-                {
-                    return;
-                }
-
-                var aboveSibling = hierarchyOrderSystem.GetAboveSibling(selectedEntity);
-
-                if (aboveSibling == null)
-                {
-                    if (selectedEntity.Parent != null)
-                    {
-                        entitySelectSystem.SelectSingle(selectedEntity.ParentId);
-                    }
-                }
-                else
-                {
-                    if (!hierarchyExpansionState.IsExpanded(aboveSibling.Id))
-                    {
-                        entitySelectSystem.SelectSingle(aboveSibling.Id);
-                    }
-                    else
-                    {
-                        var aboveEntity = hierarchyOrderSystem.GetLastExpandedSuccessor(aboveSibling);
-                        entitySelectSystem.SelectSingle(aboveEntity.Id);
-                    }
-                }
-            }
-
-            //When pressing down arrow, select entity below selected entity in hierarchy
-            if (inputSystemAsset.Hotkeys.HierarchyDown.triggered)
-            {
-                var selectedEntity = sceneManagerSystem.GetCurrentSceneOrNull()?.SelectionState.PrimarySelectedEntity;
-
-                if (selectedEntity == null)
-                {
-                    return;
-                }
-
-                if (hierarchyExpansionState.IsExpanded(selectedEntity.Id))
-                {
-                    var belowEntity = selectedEntity.Children?.OrderBy(e => e.hierarchyOrder).FirstOrDefault();
-
-                    if (belowEntity != null)
-                    {
-                        entitySelectSystem.SelectSingle(belowEntity.Id);
-                    }
-                }
-                else
-                {
-                    var belowSibling = hierarchyOrderSystem.GetBelowSibling(selectedEntity);
-
-                    if (belowSibling != null)
-                    {
-                        entitySelectSystem.SelectSingle(belowSibling.Id);
-                    }
-                    else
-                    {
-                        var belowEntity = hierarchyOrderSystem.GetNextPossibleBelowSiblingOfClosestAncestor(selectedEntity);
-
-                        if (belowEntity != null)
-                        {
-                            entitySelectSystem.SelectSingle(belowEntity.Id);
-                        }
-                    }
-                }
-            }
-            
-            //When pressing left arrow, collapse selected entity in hierarchy
-            if (inputSystemAsset.Hotkeys.HierarchyCollapse.triggered)
-            {
-                var selectedEntity = sceneManagerSystem.GetCurrentSceneOrNull()?.SelectionState.PrimarySelectedEntity;
-
-                if (selectedEntity == null)
-                {
-                    return;
-                }
-
-                if (hierarchyExpansionState.IsExpanded(selectedEntity.Id))
-                {
-                    hierarchyExpansionState.ToggleExpanded(selectedEntity.Id);
-                    editorEvents.InvokeHierarchyChangedEvent();
-                }
-            }
-            
-            //When pressing right arrow, expand selected entity in hierarchy
-            if (inputSystemAsset.Hotkeys.HierarchyExpand.triggered)
-            {
-                var selectedEntity = sceneManagerSystem.GetCurrentSceneOrNull()?.SelectionState.PrimarySelectedEntity;
-
-                if (selectedEntity == null)
-                {
-                    return;
-                }
-
-                if (!hierarchyExpansionState.IsExpanded(selectedEntity.Id))
-                {
-                    hierarchyExpansionState.ToggleExpanded(selectedEntity.Id);
-                    editorEvents.InvokeHierarchyChangedEvent();
-                }
-            }
-
             // When pressing Right mouse button (without alt), switch to Camera WASD moving state
             if (inputHelper.IsRightMouseButtonPressed() && !pressingAlt && isMouseIn3DView)
             {
@@ -471,6 +357,30 @@ namespace Assets.Scripts.Interaction
             if (inputSystemAsset.Hotkeys.Scale.triggered)
             {
                 gizmoToolSystem.gizmoToolMode = GizmoToolSystem.ToolMode.Scale;
+            }
+
+            //When pressing up arrow, select entity above selected entity in hierarchy
+            if (inputSystemAsset.Hotkeys.HierarchyUp.triggered)
+            {
+                hierarchyNavigationInteraction.HandleHierarchyUp();
+            }
+            
+            //When pressing down arrow, select entity below selected entity in hierarchy
+            if (inputSystemAsset.Hotkeys.HierarchyDown.triggered)
+            {
+                hierarchyNavigationInteraction.HandleHierarchyDown();
+            }
+            
+            //When pressing right arrow, expand selected entity in hierarchy
+            if (inputSystemAsset.Hotkeys.HierarchyExpand.triggered)
+            {
+                hierarchyNavigationInteraction.HandleHierarchyExpand();
+            }
+            
+            //When pressing left arrow, collapse selected entity in hierarchy
+            if (inputSystemAsset.Hotkeys.HierarchyCollapse.triggered)
+            {
+                hierarchyNavigationInteraction.HandleHierarchyCollapse();
             }
         }
 
