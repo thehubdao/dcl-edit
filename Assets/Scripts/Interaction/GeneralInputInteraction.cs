@@ -7,7 +7,7 @@ using Zenject;
 
 namespace Assets.Scripts.Interaction
 {
-    public class GeneralInputInteraction : MonoBehaviour
+    public class GeneralInputInteraction : IInitializable, ITickable
     {
         private InputSystemAsset inputSystemAsset;
 
@@ -60,9 +60,8 @@ namespace Assets.Scripts.Interaction
             this.addEntitySystem = addEntitySystem;
             this.hierarchyNavigationInteraction = hierarchyNavigationInteraction;
         }
-
-
-        void Awake()
+        
+        public void Initialize()
         {
             inputSystemAsset = new InputSystemAsset();
             inputSystemAsset.CameraMovement.Enable();
@@ -70,8 +69,7 @@ namespace Assets.Scripts.Interaction
             inputSystemAsset.Hotkeys.Enable();
         }
 
-        // Update is called once per frame
-        void Update()
+        public void Tick()
         {
             ProcessHotKeys();
 
