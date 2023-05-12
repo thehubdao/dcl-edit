@@ -19,9 +19,14 @@ namespace Assets.Scripts.System
         }
 
 
-        public IEnumerable<string> GetAllFilesWithExtension(params string[] extensions)
+        public IEnumerable<string> GetAllFilePathsWithExtension(params string[] extensions)
         {
             return extensions.SelectMany(extension => Directory.GetFiles(pathState.ProjectPath, $"*{extension}", SearchOption.AllDirectories));
+        }
+
+        public string GetFilePath(string path)
+        {
+            return Path.Combine(pathState.ProjectPath, path);
         }
     }
 }
