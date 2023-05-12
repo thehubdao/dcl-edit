@@ -1,4 +1,3 @@
-using System.Linq;
 using Assets.Scripts.Events;
 using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
@@ -28,7 +27,6 @@ namespace Assets.Scripts.Interaction
             this.editorEvents = editorEvents;
         }
 
-
         public void HandleHierarchyUp()
         {
             var selectedEntity = sceneManagerSystem.GetCurrentSceneOrNull()?.SelectionState.PrimarySelectedEntity;
@@ -38,27 +36,14 @@ namespace Assets.Scripts.Interaction
                 return;
             }
 
-            var aboveSibling = hierarchyOrderSystem.GetAboveSibling(selectedEntity);
+            var previousEntityInHierarchy = hierarchyOrderSystem.GetPreviousEntityInHierarchy(selectedEntity);
 
-            if (aboveSibling == null)
+            if (previousEntityInHierarchy == null)
             {
-                if (selectedEntity.Parent != null)
-                {
-                    entitySelectSystem.SelectSingle(selectedEntity.ParentId);
-                }
+                return;
             }
-            else
-            {
-                if (!hierarchyExpansionState.IsExpanded(aboveSibling.Id))
-                {
-                    entitySelectSystem.SelectSingle(aboveSibling.Id);
-                }
-                else
-                {
-                    var aboveEntity = hierarchyOrderSystem.GetLastExpandedSuccessor(aboveSibling);
-                    entitySelectSystem.SelectSingle(aboveEntity.Id);
-                }
-            }
+
+            entitySelectSystem.SelectSingle(previousEntityInHierarchy.Id);
         }
 
         public void HandleHierarchyDown()
@@ -70,34 +55,14 @@ namespace Assets.Scripts.Interaction
                 return;
             }
 
-            if (hierarchyExpansionState.IsExpanded(selectedEntity.Id))
+            var nextEntityInHierarchy = hierarchyOrderSystem.GetNextEntityInHierarchy(selectedEntity);
+
+            if (nextEntityInHierarchy == null)
             {
-                var belowEntity = selectedEntity.Children?.OrderBy(e => e.hierarchyOrder).FirstOrDefault();
-
-                if (belowEntity != null)
-                {
-                    entitySelectSystem.SelectSingle(belowEntity.Id);
-                }
+                return;
             }
-            else
-            {
-                var belowSibling = hierarchyOrderSystem.GetBelowSibling(selectedEntity);
 
-                if (belowSibling != null)
-                {
-                    entitySelectSystem.SelectSingle(belowSibling.Id);
-                }
-                else
-                {
-                    var belowEntity =
-                        hierarchyOrderSystem.GetNextPossibleBelowSiblingOfClosestAncestor(selectedEntity);
-
-                    if (belowEntity != null)
-                    {
-                        entitySelectSystem.SelectSingle(belowEntity.Id);
-                    }
-                }
-            }
+            entitySelectSystem.SelectSingle(nextEntityInHierarchy.Id);
         }
 
         public void HandleHierarchyCollapse()
@@ -109,13 +74,19 @@ namespace Assets.Scripts.Interaction
                 return;
             }
 
-            if (!hierarchyExpansionState.IsExpanded(selectedEntity.Id))
+            if (hierarchyExpansionState.IsExpanded(selectedEntity.Id))
+            {
+                hierarchyExpansionState.ToggleExpanded(selectedEntity.Id);
+                editorEvents.InvokeHierarchyChangedEvent();
+                return;
+            }
+
+            if (selectedEntity.Parent == null)
             {
                 return;
             }
 
-            hierarchyExpansionState.ToggleExpanded(selectedEntity.Id);
-            editorEvents.InvokeHierarchyChangedEvent();
+            entitySelectSystem.SelectSingle(selectedEntity.Parent.Id);
         }
 
         public void HandleHierarchyExpand()
@@ -127,13 +98,21 @@ namespace Assets.Scripts.Interaction
                 return;
             }
 
-            if (hierarchyExpansionState.IsExpanded(selectedEntity.Id))
+            if (!hierarchyExpansionState.IsExpanded(selectedEntity.Id))
+            {
+                hierarchyExpansionState.ToggleExpanded(selectedEntity.Id);
+                editorEvents.InvokeHierarchyChangedEvent();
+                return;
+            }
+
+            var nextEntityWithChildren = hierarchyOrderSystem.GetNextEntityWithChildrenInHierarchy(selectedEntity);
+
+            if (nextEntityWithChildren == null)
             {
                 return;
             }
 
-            hierarchyExpansionState.ToggleExpanded(selectedEntity.Id);
-            editorEvents.InvokeHierarchyChangedEvent();
+            entitySelectSystem.SelectSingle(nextEntityWithChildren.Id);
         }
     }
 }
