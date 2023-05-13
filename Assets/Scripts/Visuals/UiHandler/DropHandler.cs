@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using Assets.Scripts.Utility;
 using JetBrains.Annotations;
 using UnityEngine;
@@ -8,8 +10,6 @@ namespace Visuals.UiHandler
 {
     public class DropHandler : MonoBehaviour, IDropHandler, IPointerEnterHandler, IPointerExitHandler, IDropZoneHandler
     {
-        
-
         // Dependencies
         private DragAndDropState dragAndDropState;
 
@@ -30,7 +30,18 @@ namespace Visuals.UiHandler
             get => dropStrategyInternal;
             set
             {
-                dragAndDropState.RegisterHandler(this, value?.dropZoneCategory);
+                var dropCategories = new List<DragAndDropState.DropZoneCategory>();
+                if (value?.dropEntityStrategy != null)
+                {
+                    dropCategories.Add(DragAndDropState.DropZoneCategory.Entity);
+                }
+
+                if (value?.dropModelAssetStrategy != null)
+                {
+                    dropCategories.Add(DragAndDropState.DropZoneCategory.ModelAsset);
+                }
+
+                dragAndDropState.RegisterHandler(this, dropCategories);
                 dropStrategyInternal = value;
             }
         }

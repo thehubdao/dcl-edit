@@ -7,26 +7,33 @@ using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.Windows.WebCam;
 
-public abstract class DropStrategy
+public class DropStrategy
 {
-    public abstract DragAndDropState.DropZoneCategory dropZoneCategory { get; }
+    [CanBeNull]
+    public DropEntityStrategy dropEntityStrategy;
+
+    [CanBeNull]
+    public DropModelAssetStrategy dropModelAssetStrategy;
 
     public void OnDropped(DragStrategy dragStrategy)
     {
         if (dragStrategy == null) return;
 
-        Assert.AreEqual(dropZoneCategory, dragStrategy.category);
 
-        switch (dragStrategy)
+        switch (dragStrategy.category)
         {
-            case DragEntityStrategy dragEntityStrategy:
-                Assert.IsTrue(this is DropEntityStrategy);
-                (this as DropEntityStrategy)!.onEntityDropped(dragEntityStrategy.entity);
+            case DragAndDropState.DropZoneCategory.Entity:
+                Assert.IsNotNull(dropEntityStrategy);
+                Assert.IsNotNull(dragStrategy as DragEntityStrategy);
+
+                dropEntityStrategy!.onEntityDropped((dragStrategy as DragEntityStrategy)!.entity);
                 break;
 
-            case DragModeAssetStrategy dragModeAssetStrategy:
-                Assert.IsTrue(this is DropModelAssetStrategy);
-                (this as DropModelAssetStrategy)!.onModelDropped(dragModeAssetStrategy.asset);
+            case DragAndDropState.DropZoneCategory.ModelAsset:
+                Assert.IsNotNull(dropModelAssetStrategy);
+                Assert.IsNotNull(dragStrategy as DragModelAssetStrategy);
+
+                dropModelAssetStrategy!.onModelDropped((dragStrategy as DragModelAssetStrategy)!.asset);
                 break;
 
             default:
@@ -35,14 +42,22 @@ public abstract class DropStrategy
     }
 }
 
-public class DropEntityStrategy : DropStrategy
+public class DropEntityStrategy
 {
-    public override DragAndDropState.DropZoneCategory dropZoneCategory => DragAndDropState.DropZoneCategory.Entity;
     public Action<DclEntity> onEntityDropped;
+
+    public static implicit operator DropStrategy(DropEntityStrategy dropEntityStrategy)
+    {
+        return new DropStrategy {dropEntityStrategy = dropEntityStrategy};
+    }
 }
 
-public class DropModelAssetStrategy : DropStrategy
+public class DropModelAssetStrategy
 {
-    public override DragAndDropState.DropZoneCategory dropZoneCategory => DragAndDropState.DropZoneCategory.ModelAsset;
     public Action<Guid> onModelDropped;
+
+    public static implicit operator DropStrategy(DropModelAssetStrategy dropModelAssetStrategy)
+    {
+        return new DropStrategy {dropModelAssetStrategy = dropModelAssetStrategy};
+    }
 }

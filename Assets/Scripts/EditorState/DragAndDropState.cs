@@ -32,7 +32,7 @@ public class DragAndDropState
         }
     }
 
-    public void RegisterHandler(IDropZoneHandler dropHandler, DropZoneCategory? dropZoneCategory)
+    public void RegisterHandler(IDropZoneHandler dropHandler, IEnumerable<DropZoneCategory> dropZoneCategories)
     {
         // dropHandler can already be in dropZones. So, it needs to be removed first
         foreach (var dropZone in dropZones.Values)
@@ -40,16 +40,16 @@ public class DragAndDropState
             dropZone.Remove(dropHandler);
         }
 
-        // when the category is null, don't add it anywhere
-        if (!dropZoneCategory.HasValue) return;
-
-        // dropHandler should end up in only the correct dropZone category
-        if (!dropZones.ContainsKey(dropZoneCategory.Value))
+        // dropHandler should end up in only the correct dropZone categories
+        foreach (var dropZoneCategory in dropZoneCategories)
         {
-            dropZones.Add(dropZoneCategory.Value, new List<IDropZoneHandler>());
-        }
+            if (!dropZones.ContainsKey(dropZoneCategory))
+            {
+                dropZones.Add(dropZoneCategory, new List<IDropZoneHandler>());
+            }
 
-        dropZones[dropZoneCategory.Value].Add(dropHandler);
+            dropZones[dropZoneCategory].Add(dropHandler);
+        }
     }
 }
 

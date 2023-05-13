@@ -14,9 +14,9 @@ public class DragEntityStrategy : DragStrategy
     public DclEntity entity;
 }
 
-public class DragModeAssetStrategy : DragStrategy
+public class DragModelAssetStrategy : DragStrategy
 {
-    public override DragAndDropState.DropZoneCategory category { get; }
+    public override DragAndDropState.DropZoneCategory category => DragAndDropState.DropZoneCategory.ModelAsset;
 
     public Guid asset;
 }
