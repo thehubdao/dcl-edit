@@ -178,5 +178,7 @@ public class DclEditorInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<FileUpgraderSystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<SceneChangeDetectSystem>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<SnackbarState>().AsSingle();
     }
 }
