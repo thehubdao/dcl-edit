@@ -3,7 +3,13 @@ using Zenject;
 
 namespace Assets.Scripts.System
 {
-    public class SceneViewSystem
+    public interface ISceneViewSystem
+    {
+        void SetUpCurrentScene();
+        void UpdateSceneTabTitle();
+    }
+
+    public class SceneViewSystem : ISceneViewSystem
     {
         // Dependencies
         private CameraSystem cameraSystem;

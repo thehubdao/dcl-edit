@@ -71,7 +71,7 @@ namespace Assets.Scripts.Tests.EditModeTests
             CheckVersionSystem checkVersionSystem = new CheckVersionSystem();
             WorkspaceSaveSystem workspaceSaveSystem = new WorkspaceSaveSystem();
             TypeScriptGenerationSystem typeScriptGenerationSystem = new TypeScriptGenerationSystem();
-            SceneViewSystem sceneViewSystem = new SceneViewSystem();
+            ISceneViewSystem sceneViewSystem = new SceneViewSystem();
             MenuBarSystem menuBarSystem = new MenuBarSystem();
             SceneManagerSystem sceneManagerSystem = new SceneManagerSystem();
             EditorEvents editorEvents = new EditorEvents();

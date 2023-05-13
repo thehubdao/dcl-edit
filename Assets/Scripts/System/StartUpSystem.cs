@@ -1,7 +1,7 @@
 using Assets.Scripts.EditorState;
+using System;
 using UnityEngine;
 using Zenject;
-using System;
 
 namespace Assets.Scripts.System
 {
@@ -16,7 +16,7 @@ namespace Assets.Scripts.System
         private IPathState pathState;
         private ApplicationSystem frameTimeSystem;
         private SceneManagerSystem sceneManagerSystem;
-        private SceneViewSystem sceneViewSystem;
+        private ISceneViewSystem sceneViewSystem;
         private SettingsSystem settingsSystem;
         private CustomComponentMarkupSystem customComponentMarkupSystem;
 
@@ -27,7 +27,7 @@ namespace Assets.Scripts.System
             IPathState pathState,
             ApplicationSystem frameTimeSystem,
             SceneManagerSystem sceneManagerSystem,
-            SceneViewSystem sceneViewSystem,
+            ISceneViewSystem sceneViewSystem,
             SettingsSystem settingsSystem,
             CustomComponentMarkupSystem customComponentMarkupSystem)
         {

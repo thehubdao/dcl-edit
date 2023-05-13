@@ -2,16 +2,35 @@ using Assets.Scripts.EditorState;
 using Assets.Scripts.SceneState;
 using JetBrains.Annotations;
 using Newtonsoft.Json.Linq;
+using SFB;
 using System;
 using System.IO;
 using System.Linq;
 using UnityEngine;
-using SFB;
 using Zenject;
 
 namespace Assets.Scripts.System
 {
-    public class SceneManagerSystem
+    public interface ISceneManagerSystem
+    {
+        void DiscoverScenes();
+        SceneDirectoryState GetCurrentDirectoryState();
+        DclScene GetCurrentScene();
+        DclScene GetCurrentSceneOrNull();
+        DclScene GetScene(Guid id);
+        void SaveCurrentScene();
+        void SaveCurrentSceneAs();
+        void SaveScene(Guid id);
+        void SaveSceneAs(Guid id);
+        void SetCurrentScene(Guid id);
+        void SetCurrentScene(string path);
+        void SetDialogAsCurrentScene();
+        void SetFirstSceneAsCurrentScene();
+        void SetLastOpenedSceneAsCurrentScene();
+        void SetNewSceneAsCurrentScene();
+    }
+
+    public class SceneManagerSystem : ISceneManagerSystem
     {
         // Dependencies
         private SceneManagerState sceneManagerState;
@@ -22,7 +41,7 @@ namespace Assets.Scripts.System
         private CheckVersionSystem checkVersionSystem;
         private WorkspaceSaveSystem workspaceSaveSystem;
         private TypeScriptGenerationSystem typeScriptGenerationSystem;
-        private SceneViewSystem sceneViewSystem;
+        private ISceneViewSystem sceneViewSystem;
         private MenuBarSystem menuBarSystem;
         private SettingsSystem settingsSystem;
 
@@ -36,7 +55,7 @@ namespace Assets.Scripts.System
             CheckVersionSystem checkVersionSystem,
             WorkspaceSaveSystem workspaceSaveSystem,
             TypeScriptGenerationSystem typeScriptGenerationSystem,
-            SceneViewSystem sceneViewSystem,
+            ISceneViewSystem sceneViewSystem,
             MenuBarSystem menuBarSystem,
             SettingsSystem settingsSystem)
         {
