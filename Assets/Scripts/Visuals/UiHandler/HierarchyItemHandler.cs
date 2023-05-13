@@ -4,6 +4,7 @@ using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.UI;
 using Visuals.UiHandler;
+using Zenject;
 
 namespace Assets.Scripts.Visuals.UiHandler
 {
@@ -22,33 +23,40 @@ namespace Assets.Scripts.Visuals.UiHandler
         public RectTransform indent;
 
         [SerializeField]
-        public ClickHandler clickHandler;
+        public ClickHandler rightClickHandler;
 
         [SerializeField]
-        public DragAndDropHandler dragAndDropHandler;
+        private ClickHandler textClickHandler;
+
+        [SerializeField]
+        private ClickHandler arrowClickHandler;
+
+        [SerializeField]
+        public DragHandler dragHandler;
+
+        [SerializeField]
+        private DropHandler upperDropHandler;
+
+        [SerializeField]
+        private DropHandler middleDropHandler;
+
+        [SerializeField]
+        private DropHandler lowerDropHandler;
 
         public bool primarySelection;
 
-        public struct UiHierarchyItemActions
-        {
-            [CanBeNull]
-            public Action onArrowClick;
 
-            [CanBeNull]
-            public Action onNameClick;
-        }
-
-        public UiHierarchyItemActions actions
-        {
-            set
-            {
-                arrow.GetComponent<Toggle>().onValueChanged.RemoveAllListeners();
-                text.GetComponent<Button>().onClick.RemoveAllListeners();
-
-                arrow.GetComponent<Toggle>().onValueChanged.AddListener(_ => value.onArrowClick?.Invoke());
-                text.GetComponent<Button>().onClick.AddListener(() => value.onNameClick?.Invoke());
-            }
-        }
+        //public UiHierarchyItemActions actions
+        //{
+        //    set
+        //    {
+        //        arrow.GetComponent<Toggle>().onValueChanged.RemoveAllListeners();
+        //        text.GetComponent<Button>().onClick.RemoveAllListeners();
+        //
+        //        arrow.GetComponent<Toggle>().onValueChanged.AddListener(_ => value.onArrowClick?.Invoke());
+        //        text.GetComponent<Button>().onClick.AddListener(() => value.onNameClick?.Invoke());
+        //    }
+        //}
 
         public bool isExpanded
         {
@@ -74,20 +82,28 @@ namespace Assets.Scripts.Visuals.UiHandler
 
         public void UpdateHandlers(HierarchyItemAtom.Data newHierarchyItemData)
         {
-            actions = newHierarchyItemData.actions;
-            clickHandler.rightClickStrategy = newHierarchyItemData.rightClickStrategy;
-            dragAndDropHandler.UpdateDropHandlerActions(newHierarchyItemData.dropActions);
-            dragAndDropHandler.draggedEntity = newHierarchyItemData.draggedEntity;
-            dragAndDropHandler.isExpanded = newHierarchyItemData.isExpanded;
-            dragAndDropHandler.isFirstChild = newHierarchyItemData.isFirstChild;
-            
-            primarySelection = newHierarchyItemData.isPrimarySelected;
-            
+            gameObject.name = newHierarchyItemData.name;
             text.text = newHierarchyItemData.name;
             text.textStyle = newHierarchyItemData.style;
+
+
+            rightClickHandler.rightClickStrategy = newHierarchyItemData.rightClickStrategy;
+            textClickHandler.leftClickStrategy = newHierarchyItemData.clickTextStrategy;
+            arrowClickHandler.leftClickStrategy = newHierarchyItemData.clickArrowStrategy;
+
+
+            primarySelection = newHierarchyItemData.isPrimarySelected;
+
             text.TextComponent.enabled = true;
-            
+
+
             indent.offsetMin = new Vector2(20 * newHierarchyItemData.level, 0);
+
+            dragHandler.dragStrategy = newHierarchyItemData.dragStrategy;
+
+            upperDropHandler.dropStrategy = newHierarchyItemData.dropStrategyUpper;
+            middleDropHandler.dropStrategy = newHierarchyItemData.dropStrategyMiddle;
+            lowerDropHandler.dropStrategy = newHierarchyItemData.dropStrategyLower;
 
             if (newHierarchyItemData.hasChildren)
             {
@@ -98,9 +114,10 @@ namespace Assets.Scripts.Visuals.UiHandler
             {
                 showArrow = false;
             }
-            
-            dragAndDropHandler.ResetHandler();
         }
-        
+
+        public class Factory : PlaceholderFactory<HierarchyItemHandler>
+        {
+        }
     }
 }

@@ -1,5 +1,6 @@
 using Assets.Scripts.Visuals.UiHandler;
 using UnityEngine;
+using Zenject;
 
 namespace Visuals.UiHandler
 {
@@ -10,5 +11,9 @@ namespace Visuals.UiHandler
 
         [SerializeField]
         public DropHandler dropHandler;
+
+        public class Factory : PlaceholderFactory<SpacerHandler>
+        {
+        }
     }
 }

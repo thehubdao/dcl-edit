@@ -214,5 +214,23 @@ namespace Assets.Scripts.Utility
                 return default(T);
             }
         }
+
+        public static IEnumerable<T> Flatten<T>(this IEnumerable<IEnumerable<T>> listOfLists)
+        {
+            return listOfLists.SelectMany(list => list);
+        }
+
+        public static string ListGameObjectStack(GameObject gameObject)
+        {
+            var queue = new Queue<string>();
+            var current = gameObject;
+            while (current != null)
+            {
+                queue.Enqueue(current.name);
+                current = current.transform.parent?.gameObject;
+            }
+
+            return string.Join(" -> ", queue);
+        }
     }
 }

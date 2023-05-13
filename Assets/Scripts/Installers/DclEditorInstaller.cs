@@ -5,7 +5,9 @@ using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
 using Assets.Scripts.Visuals;
 using Assets.Scripts.Visuals.UiBuilder;
+using Assets.Scripts.Visuals.UiHandler;
 using UnityEngine;
+using Visuals.UiHandler;
 using Zenject;
 
 public class DclEditorInstaller : MonoInstaller
@@ -137,11 +139,17 @@ public class DclEditorInstaller : MonoInstaller
 
         Container.BindFactory<AssetBrowserFolderHandler, AssetBrowserFolderHandler.Factory>().FromComponentInNewPrefab(unityState.AssetBrowserFolderAtom);
 
+        Container.BindFactory<HierarchyItemHandler, HierarchyItemHandler.Factory>().FromComponentInNewPrefab(unityState.HierarchyItemAtom);
+
+        Container.BindFactory<SpacerHandler, SpacerHandler.Factory>().FromComponentInNewPrefab(unityState.SpacerAtom);
+
         Container.BindInterfacesAndSelfTo<SceneManagerSystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<SceneManagerState>().AsSingle();
 
         Container.Bind<ISceneViewSystem>().To<SceneViewSystem>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<DragAndDropState>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<MenuBarState>().AsSingle();
 

@@ -15,7 +15,8 @@ namespace Assets.Scripts.Visuals.UiBuilder
             [CanBeNull]
             public RightClickStrategy rightClickStrategy;
 
-            [CanBeNull] public Action<GameObject> dropAction;
+            [CanBeNull]
+            public DropStrategy dropStrategy;
 
             public override bool Equals(Atom.Data other)
             {
@@ -27,7 +28,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
                 return
                     height.Equals(otherSpacer.height) &&
                     rightClickStrategy == otherSpacer.rightClickStrategy &&
-                    dropAction == otherSpacer.dropAction;
+                    dropStrategy == otherSpacer.dropStrategy;
             }
         }
 
@@ -55,13 +56,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
                 
                 le.minHeight = newSpacerData.height;
                 spacerHandler.clickHandler.rightClickStrategy = newSpacerData.rightClickStrategy;
-                spacerHandler.dropHandler.onDrop = newSpacerData.dropAction;
-                spacerHandler.dropHandler.ResetHandler();
-                
-                if (newSpacerData.dropAction != null)
-                {
-                    spacerHandler.dropHandler.SetEnabled(true);
-                }
+                spacerHandler.dropHandler.dropStrategy = newSpacerData.dropStrategy;
 
                 data = newSpacerData;
             }
@@ -81,13 +76,13 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
     public static class SpacerPanelHelper
     {
-        public static SpacerAtom.Data AddSpacer(this PanelAtom.Data panelAtomData, int height, RightClickStrategy rightClickStrategy = null, Action<GameObject> dropAction = null)
+        public static SpacerAtom.Data AddSpacer(this PanelAtom.Data panelAtomData, int height, RightClickStrategy rightClickStrategy = null, DropStrategy dropStrategy = null)
         {
             var data = new SpacerAtom.Data
             {
                 height = height,
                 rightClickStrategy = rightClickStrategy,
-                dropAction = dropAction
+                dropStrategy = dropStrategy
             };
 
             panelAtomData.childDates.Add(data);

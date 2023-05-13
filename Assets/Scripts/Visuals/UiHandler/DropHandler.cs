@@ -1,96 +1,69 @@
+using Assets.Scripts.Utility;
+using JetBrains.Annotations;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using Zenject;
+
 namespace Visuals.UiHandler
 {
-    using System;
-    using UnityEngine;
-    using UnityEngine.EventSystems;
-    using UnityEngine.UI;
-
-    public class DropHandler : MonoBehaviour, IDropHandler, IPointerEnterHandler, IPointerExitHandler
+    public class DropHandler : MonoBehaviour, IDropHandler, IPointerEnterHandler, IPointerExitHandler, IDropZoneHandler
     {
-        public Action<GameObject> onDrop;
-        public Image clickableImage;
-        public Image hoverImageDefault;
-        public Image hoverImageSpecial;
-        private Image currentHoverImage;
-        [HideInInspector]
-        public bool rayCastTarget = false;
+        
 
-        private void Awake()
+        // Dependencies
+        private DragAndDropState dragAndDropState;
+
+
+        [Inject]
+        private void Construct(DragAndDropState dragAndDropState)
         {
-            currentHoverImage = hoverImageDefault;
+            this.dragAndDropState = dragAndDropState;
+        }
+
+
+        [CanBeNull]
+        private DropStrategy dropStrategyInternal;
+
+        [CanBeNull]
+        public DropStrategy dropStrategy
+        {
+            get => dropStrategyInternal;
+            set
+            {
+                dragAndDropState.RegisterHandler(this, value?.dropZoneCategory);
+                dropStrategyInternal = value;
+            }
         }
 
         public void OnDrop(PointerEventData eventData)
         {
-            var draggedGameObject = eventData.pointerDrag;
+            //Debug.Log($"Dropped on {StaticUtilities.ListGameObjectStack(gameObject)}");
 
-            if (!rayCastTarget || draggedGameObject == null || !CheckIsDraggable(eventData))
+            if (eventData.pointerDrag == null) return;
+            if (dropStrategy == null) return;
+
+            if (eventData.pointerDrag.TryGetComponent(out DragHandler dragHandler))
             {
-                return;
+                dropStrategy.OnDropped(dragHandler.dragStrategy);
             }
-
-            onDrop?.Invoke(draggedGameObject);
         }
 
-        //TODO make more efficient by preventing all scroll rects from being draggable
         public void OnPointerEnter(PointerEventData eventData)
         {
-            if (!rayCastTarget || eventData.pointerDrag == null || !CheckIsDraggable(eventData))
-            {
-                return;
-            }
-            
-            ShowCurrentImage();
         }
 
-        //TODO make more efficient by preventing all scroll rects from being draggable
         public void OnPointerExit(PointerEventData eventData)
         {
-            if (!rayCastTarget || eventData.pointerDrag == null ||!CheckIsDraggable(eventData))
-            {
-                return;
-            }
-
-            HideImages();
         }
 
-        private void ShowCurrentImage()
+        public void Enable()
         {
-            currentHoverImage.enabled = true;
+            gameObject.SetActive(true);
         }
 
-        private void HideImages()
+        public void Disable()
         {
-            currentHoverImage.enabled = false;
-            hoverImageDefault.enabled = false;
-            hoverImageSpecial.enabled = false;
-        }
-        
-        public void SetEnabled(bool enabled)
-        {
-            clickableImage.raycastTarget = enabled;
-            rayCastTarget = enabled;
-        }
-
-        public void ResetHandler()
-        {
-            HideImages();
-            SetEnabled(false);
-        }
-
-        private static bool CheckIsDraggable(PointerEventData eventData)
-        {
-            return eventData.pointerDrag.TryGetComponent(out DragAndDropHandler dragAndDropHandler);
-        }
-
-        public void SetCurrentHoverImageDefault()
-        {
-            currentHoverImage = hoverImageDefault;
-        }
-        
-        public void SetCurrentHoverImageSpecial()
-        {
-            currentHoverImage = hoverImageSpecial;
+            gameObject.SetActive(false);
         }
     }
 }

@@ -1,11 +1,12 @@
 using System;
+using Assets.Scripts.Utility;
 using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace Assets.Scripts.Visuals.UiHandler
 {
-    public class ClickHandler : MonoBehaviour, IPointerDownHandler
+    public class ClickHandler : MonoBehaviour, IPointerClickHandler
     {
         [CanBeNull]
         public RightClickStrategy rightClickStrategy;
@@ -13,8 +14,10 @@ namespace Assets.Scripts.Visuals.UiHandler
         [CanBeNull]
         public LeftClickStrategy leftClickStrategy;
 
-        public void OnPointerDown(PointerEventData eventData)
+        public void OnPointerClick(PointerEventData eventData)
         {
+            //Debug.Log($"Pointer Click from ClickHandler in {StaticUtilities.ListGameObjectStack(gameObject)}");
+
             switch (eventData.button)
             {
                 case PointerEventData.InputButton.Right:

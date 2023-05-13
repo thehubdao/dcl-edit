@@ -72,7 +72,7 @@ namespace Assets.Scripts.Tests.PlayModeTests.UiTests
             thirdPanel.AddBooleanProperty("Bool property", true, new StringPropertyAtom.UiPropertyActions<bool>());
 
             mainPanel.AddSpacer(100);
-            mainPanel.AddHierarchyItem("Hierarchy Item", 0, false, false, false,TextHandler.TextStyle.Normal, false, new HierarchyItemHandler.UiHierarchyItemActions(), null, null, null, null);
+            mainPanel.AddHierarchyItem("Hierarchy Item", 0, false, false, false, TextHandler.TextStyle.Normal, false);
 
             centerUiBuilder.Update(mainPanel);
 
@@ -212,9 +212,9 @@ namespace Assets.Scripts.Tests.PlayModeTests.UiTests
             var testerPrompt = UiTester.instance.uiTesterPrompt;
             var mainPanel = UiBuilder.NewPanelData();
 
-            mainPanel.AddHierarchyItem("This is some header", 0, true, true, false, TextHandler.TextStyle.Normal, false, new HierarchyItemHandler.UiHierarchyItemActions(), _ => { }, _ => { }, _ => { });
-            mainPanel.AddHierarchyItem("This is some more header", 1, true, false, false, TextHandler.TextStyle.Normal, false, new HierarchyItemHandler.UiHierarchyItemActions(), _ => { }, _ => { }, _ => { });
-            mainPanel.AddHierarchyItem("This is even more header", 1, false, true, false, TextHandler.TextStyle.Normal, false, new HierarchyItemHandler.UiHierarchyItemActions(), _ => { }, _ => { }, _ => { });
+            mainPanel.AddHierarchyItem("This is some header", 0, true, true, false, TextHandler.TextStyle.Normal, false);
+            mainPanel.AddHierarchyItem("This is some more header", 1, true, false, false, TextHandler.TextStyle.Normal, false);
+            mainPanel.AddHierarchyItem("This is even more header", 1, false, true, false, TextHandler.TextStyle.Normal, false);
 
             uiBuilder.Update(mainPanel);
 
