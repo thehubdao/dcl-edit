@@ -80,6 +80,7 @@ namespace Assets.Scripts.Visuals
         {
             editorEvents.onAssetMetadataCacheUpdatedEvent += UpdateVisuals;
             editorEvents.onUiChangedEvent += UpdateVisuals;
+            editorEvents.OnCurrentSceneChangedEvent += assetManagerSystem.CacheAllAssetMetadata;
         }
 
         private void OnDestroy()
