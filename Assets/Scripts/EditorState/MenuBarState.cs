@@ -62,7 +62,7 @@ namespace Assets.Scripts.EditorState
                 item = new MenuBarItem(title, sortingPriority);
                 
                 int i = 0;
-                while (i < menuItems.Count && menuItems[i].sortingPriotiry.CompareTo(sortingPriority) <= 0)
+                while (i < menuItems.Count && menuItems[i].sortingPriority.CompareTo(sortingPriority) <= 0)
                 {
                     i++;
                 }
@@ -87,7 +87,7 @@ namespace Assets.Scripts.EditorState
                 }
 
                 ContextSubmenuItem foundItem = (ContextSubmenuItem)items.SingleOrDefault(item => (item as ContextSubmenuItem)?.title == path.FirstTitle);
-
+                
                 if (foundItem != null)
                 {
                     // recursive

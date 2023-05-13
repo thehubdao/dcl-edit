@@ -31,6 +31,7 @@ namespace Assets.Scripts.System
             this.menuBarSystem = menuBarSystem;
 
             CreateMenuBarItems();
+            CreateHelpMenuBarItems();
 
             // subscribe events
             this.editorEvents.onSettingsChangedEvent += SetApplicationTargetFramerate;
@@ -39,6 +40,21 @@ namespace Assets.Scripts.System
         private void CreateMenuBarItems()
         {
             menuBarSystem.AddMenuItem("File#1/Exit#1000", QuitApplication);
+        }
+
+        private void CreateHelpMenuBarItems()
+        {
+            menuBarSystem.AddMenuItem("Help#30/Support",
+                () =>
+                {
+                    Application.OpenURL("https://discord.com/channels/843557607373275206/1033310423010775120");
+                });
+            menuBarSystem.AddMenuItem("Help#30/Tweet about us",
+                () =>
+                {
+                    Application.OpenURL(
+                        "https://twitter.com/intent/tweet?text=Using%20%23DCLEdit%20by%20%40MGH_DAO%20right%20now");
+                });
         }
 
         /// <summary>
