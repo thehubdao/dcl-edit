@@ -29,6 +29,7 @@ namespace Assets.Scripts.Visuals
         private AvailableComponentsState availableComponentsState;
         private AssetManagerSystem assetManagerSystem;
         private DialogSystem dialogSystem;
+        private ExposeEntitySystem exposeEntitySystem;
 
         [Inject]
         private void Construct(
@@ -42,7 +43,8 @@ namespace Assets.Scripts.Visuals
             AddComponentSystem addComponentSystem,
             AvailableComponentsState availableComponentsState,
             AssetManagerSystem assetManagerSystem,
-            DialogSystem dialogSystem)
+            DialogSystem dialogSystem,
+            ExposeEntitySystem exposeEntitySystem)
         {
             this.inputState = inputState;
             this.updatePropertiesSystem = updatePropertiesSystem;
@@ -55,6 +57,7 @@ namespace Assets.Scripts.Visuals
             this.availableComponentsState = availableComponentsState;
             this.assetManagerSystem = assetManagerSystem;
             this.dialogSystem = dialogSystem;
+            this.exposeEntitySystem = exposeEntitySystem;
 
             SetupEventListeners();
         }
@@ -128,6 +131,11 @@ namespace Assets.Scripts.Visuals
             var entityHeadPanel = inspectorPanel.AddPanelWithBorder();
             entityHeadPanel.AddStringProperty("Name", "Name", selectedEntity.CustomName ?? "", nameInputActions);
             entityHeadPanel.AddBooleanProperty("Is Exposed", selectedEntity.IsExposed, exposedInputActions);
+            
+            if (selectedEntity.IsExposed)
+            {
+                entityHeadPanel.AddText($"Exposed Name: {exposeEntitySystem.ExposedName(selectedEntity)}");
+            }
 
             foreach (var component in selectedEntity.Components ?? new List<DclComponent>())
             {
