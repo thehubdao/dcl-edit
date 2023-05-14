@@ -19,6 +19,7 @@ namespace Assets.Scripts.System
         private ISceneViewSystem sceneViewSystem;
         private SettingsSystem settingsSystem;
         private CustomComponentMarkupSystem customComponentMarkupSystem;
+        private static SceneChangeDetectSystem sceneChangeDetectSystem;
 
         [Inject]
         private void Construct(
@@ -29,7 +30,8 @@ namespace Assets.Scripts.System
             SceneManagerSystem sceneManagerSystem,
             ISceneViewSystem sceneViewSystem,
             SettingsSystem settingsSystem,
-            CustomComponentMarkupSystem customComponentMarkupSystem)
+            CustomComponentMarkupSystem customComponentMarkupSystem,
+            SceneChangeDetectSystem sceneChangeDetectSystem)
         {
             this.assetManagerSystem = assetManagerSystem;
             this.workspaceSaveSystem = workspaceSaveSystem;
@@ -39,6 +41,7 @@ namespace Assets.Scripts.System
             this.settingsSystem = settingsSystem;
             this.pathState = pathState;
             this.customComponentMarkupSystem = customComponentMarkupSystem;
+            StartUpSystem.sceneChangeDetectSystem = sceneChangeDetectSystem;
         }
 
         void Awake()
@@ -76,6 +79,22 @@ namespace Assets.Scripts.System
             {
                 pathState.ProjectPath = projectPath;
             }
+        }
+
+        static bool AllowQuitWhenNoUnsavedScene()
+        {
+            bool allowed = !sceneChangeDetectSystem.HasSceneChanged();
+            if (!allowed)
+            {
+                // TODO display message to user that the scene is not saved
+            }
+            return allowed;
+        }
+
+        [RuntimeInitializeOnLoadMethod]
+        static void RunOnStart()
+        {
+            Application.wantsToQuit += AllowQuitWhenNoUnsavedScene;
         }
     }
 }
