@@ -12,12 +12,16 @@ public class DragAndDropState
     {
         Entity,
         ModelAsset,
+        SceneAsset,
+        ImageAsset
     }
 
     public Dictionary<DropZoneCategory, List<IDropZoneHandler>> dropZones = new Dictionary<DropZoneCategory, List<IDropZoneHandler>>();
 
     public void BeginDrag(DropZoneCategory category)
     {
+        if (!dropZones.ContainsKey(category)) return;
+
         foreach (var dropZoneHandler in dropZones[category])
         {
             dropZoneHandler.Enable();

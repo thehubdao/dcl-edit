@@ -52,7 +52,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
             {
                 var assetPropertyHandler = gameObject.gameObject.GetComponent<AssetPropertyHandler>();
                 assetPropertyHandler.propertyNameText.text = newAssetPropertyData.propertyName;
-                assetPropertyHandler.assetBrowserButtonHandler.Init(newAssetPropertyData.assetMetadata, false, newAssetPropertyData.onClick);
+                //assetPropertyHandler.assetButtonHandler.Init(newAssetPropertyData.assetMetadata, false, newAssetPropertyData.onClick);
             }
         }
 

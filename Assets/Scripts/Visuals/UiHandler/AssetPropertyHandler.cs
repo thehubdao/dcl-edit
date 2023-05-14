@@ -7,5 +7,5 @@ public class AssetPropertyHandler : MonoBehaviour
     public TextMeshProUGUI propertyNameText;
 
     [SerializeField]
-    public AssetBrowserButtonHandler assetBrowserButtonHandler;
+    public AssetButtonHandler assetButtonHandler;
 }

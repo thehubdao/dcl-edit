@@ -20,10 +20,20 @@ public class LeftClickStrategy : ClickStrategy
 {
     [NotNull]
     public Action<EventData> onLeftClick;
+
+    public LeftClickStrategy([NotNull] Action<EventData> onLeftClick)
+    {
+        this.onLeftClick = onLeftClick;
+    }
 }
 
 public class RightClickStrategy : ClickStrategy
 {
     [NotNull]
     public Action<EventData> onRightClick;
+
+    public RightClickStrategy([NotNull] Action<EventData> onRightClick)
+    {
+        this.onRightClick = onRightClick;
+    }
 }

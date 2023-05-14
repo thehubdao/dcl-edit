@@ -246,6 +246,7 @@ GameObject:
   - component: {fileID: 5522565053440742496}
   - component: {fileID: 5832586162984013352}
   - component: {fileID: 241064390834428990}
+  - component: {fileID: 4674482475007595279}
   m_Layer: 5
   m_Name: AssetBrowserButton
   m_TagString: Untagged
@@ -384,12 +385,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 613464f475f949542afad1bff5236ff7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  click: {fileID: 241064390834428990}
-  text: {fileID: 7958016555338386204}
   maskedImage: {fileID: 4534782707941783284}
   assetTypeIndicatorImage: {fileID: 5138599711966974024}
-  assetButtonInteraction: {fileID: 5522565053440742496}
   loadingSymbol: {fileID: 1556659948189263386}
+  clickHandler: {fileID: 241064390834428990}
+  textHandler: {fileID: 7958016555338386204}
+  dragHandler: {fileID: 4674482475007595279}
   modelTypeIndicator: {fileID: 21300000, guid: fe476aebf1136394a9100229fa339276, type: 3}
   imageTypeIndicator: {fileID: 21300000, guid: 0ebbff0ce96e9244ea03a1752ad226fd, type: 3}
   sceneTypeIndicator: {fileID: 21300000, guid: 1661184fe66d1b549b019069599645d5, type: 3}
@@ -437,6 +438,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8f9d52485e2b8484d897d75bacc0cba9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &4674482475007595279
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9199737783199215851}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c9470e0cb680ca6428c80b42857146bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &1322820978301253624

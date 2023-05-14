@@ -122,9 +122,9 @@ namespace Assets.Scripts.Tests.PlayModeTests.UiTests
 
             var completion = new UiTesterPrompt.CheckCompletionByEvent();
 
-            mainPanel.AddButton("Don't press here", new LeftClickStrategy {onLeftClick = _ => completion.Fail()});
-            mainPanel.AddButton("Press here", new LeftClickStrategy {onLeftClick = _ => completion.Success()});
-            mainPanel.AddButton("Don't press here", new LeftClickStrategy {onLeftClick = _ => completion.Fail()});
+            mainPanel.AddButton("Don't press here", new LeftClickStrategy(_ => completion.Fail()));
+            mainPanel.AddButton("Press here", new LeftClickStrategy(_ => completion.Success()));
+            mainPanel.AddButton("Don't press here", new LeftClickStrategy(_ => completion.Fail()));
 
             uiBuilder.Update(mainPanel);
 

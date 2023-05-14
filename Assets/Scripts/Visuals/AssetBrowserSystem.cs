@@ -1,8 +1,11 @@
+using System;
 using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 using Zenject;
+using UnityEngine;
 
 namespace Assets.Scripts.System
 {
@@ -14,13 +17,22 @@ namespace Assets.Scripts.System
         private AssetManagerSystem assetManagerSystem;
         private AssetBrowserState assetBrowserState;
         private EditorEvents editorEvents;
+        private CameraState cameraState;
+        private AddEntitySystem addEntitySystem;
 
         [Inject]
-        public void Construct(AssetManagerSystem assetManagerSystem, AssetBrowserState assetBrowserState, EditorEvents editorEvents)
+        public void Construct(
+            AssetManagerSystem assetManagerSystem,
+            AssetBrowserState assetBrowserState,
+            EditorEvents editorEvents,
+            CameraState cameraState,
+            AddEntitySystem addEntitySystem)
         {
             this.assetManagerSystem = assetManagerSystem;
             this.assetBrowserState = assetBrowserState;
             this.editorEvents = editorEvents;
+            this.cameraState = cameraState;
+            this.addEntitySystem = addEntitySystem;
         }
 
 
@@ -40,6 +52,16 @@ namespace Assets.Scripts.System
             }
 
             return filteredHierarchy;
+        }
+
+        public void AddAssetToSceneInViewportCenter(AssetMetadata asset)
+        {
+            Ray ray = new Ray(cameraState.Position, cameraState.Forward);
+            var position = Physics.Raycast(ray, out RaycastHit hit, 50) ?
+                hit.point :
+                ray.GetPoint(10);
+
+            addEntitySystem.AddModelAssetEntityAsCommand(asset.assetDisplayName, asset.assetId, position);
         }
 
 

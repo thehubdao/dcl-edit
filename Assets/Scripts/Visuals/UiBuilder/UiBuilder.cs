@@ -65,7 +65,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
         // Dependencies
         private UnityState unityState;
-        private AssetBrowserButtonHandler.Factory assetBrowserButtonHandlerFactory;
+        private AssetButtonHandler.Factory assetBrowserButtonHandlerFactory;
         private AssetBrowserFolderHandler.Factory assetBrowserFolderHandlerFactory;
         private HierarchyItemHandler.Factory hierarchyItemHandlerFactory;
         private SpacerHandler.Factory spacerHandlerFactory;
@@ -73,7 +73,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
         [Inject]
         public void Constructor(
             UnityState unityState,
-            AssetBrowserButtonHandler.Factory assetBrowserButtonHandlerFactory,
+            AssetButtonHandler.Factory assetBrowserButtonHandlerFactory,
             AssetBrowserFolderHandler.Factory assetBrowserFolderHandlerFactory,
             HierarchyItemHandler.Factory hierarchyItemHandlerFactory,
             SpacerHandler.Factory spacerHandlerFactory)

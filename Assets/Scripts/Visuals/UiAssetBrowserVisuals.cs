@@ -109,12 +109,11 @@ namespace Assets.Scripts.Visuals
             headerData.AddText("Filter:");
             foreach (AssetMetadata.AssetType type in assetBrowserSystem.filters)
             {
-                headerData.AddButton(type.ToString() + " x", new LeftClickStrategy {onLeftClick = _ => assetBrowserSystem.RemoveFilter(type)});
+                headerData.AddButton(type.ToString() + " x", new LeftClickStrategy(_ => assetBrowserSystem.RemoveFilter(type)));
             }
 
             headerData.AddButton("+", new LeftClickStrategy
-            {
-                onLeftClick = eventData =>
+            (eventData =>
                 {
                     var rect = eventData.gameObject.GetComponent<RectTransform>();
                     contextMenuSystem.OpenMenu(new List<ContextMenuState.Placement>
@@ -138,7 +137,7 @@ namespace Assets.Scripts.Visuals
                         new ContextMenuTextItem("Sort by name (Z-A)", () => assetBrowserSystem.ChangeSorting(AssetBrowserState.Sorting.NameDescending)),
                     });
                 }
-            });
+            ));
 
             headerUiBuilder.Update(headerData);
         }
@@ -164,7 +163,7 @@ namespace Assets.Scripts.Visuals
                 useFullWidth = false
             };
 
-            footerData.AddButton("Refresh", new LeftClickStrategy {onLeftClick = _ => assetManagerSystem.CacheAllAssetMetadata()});
+            footerData.AddButton("Refresh", new LeftClickStrategy(_ => assetManagerSystem.CacheAllAssetMetadata()));
             footerUiBuilder.Update(footerData);
         }
 
@@ -187,10 +186,25 @@ namespace Assets.Scripts.Visuals
             if (hierarchyItem.assets.Count == 0) return;
 
             var grid = panel.AddGrid(indentationLevel);
-            bool enableDragAndDrop = assetButtonOnClickOverride == null;
-            foreach (AssetMetadata asset in hierarchyItem.assets)
+
+            foreach (var assetMetadata in hierarchyItem.assets)
             {
-                grid.AddAssetBrowserButton(asset, enableDragAndDrop, assetButtonOnClickOverride, scrollViewRect);
+                DragStrategy dragStrategy = assetMetadata.assetType switch
+                {
+                    AssetMetadata.AssetType.Unknown => null,
+                    AssetMetadata.AssetType.Model => new DragModelAssetStrategy(assetMetadata.assetId),
+                    AssetMetadata.AssetType.Image => new DragImageAssetStrategy(assetMetadata.assetId),
+                    AssetMetadata.AssetType.Scene => new DragSceneAssetStrategy(assetMetadata.assetId),
+                    _ => throw new ArgumentOutOfRangeException(nameof(assetMetadata.assetType))
+                };
+
+                grid.AddAssetBrowserButton(
+                    assetMetadata.assetDisplayName,
+                    assetType: assetMetadata.assetType,
+                    dragStrategy: dragStrategy,
+                    leftClick: new LeftClickStrategy(
+                        _ => assetBrowserSystem.AddAssetToSceneInViewportCenter(assetMetadata))
+                );
             }
         }
 

@@ -135,7 +135,7 @@ public class DclEditorInstaller : MonoInstaller
 
         Container.BindInterfacesAndSelfTo<AssetThumbnailGeneratorState>().AsSingle();
 
-        Container.BindFactory<AssetBrowserButtonHandler, AssetBrowserButtonHandler.Factory>().FromComponentInNewPrefab(unityState.AssetBrowserButtonAtom);
+        Container.BindFactory<AssetButtonHandler, AssetButtonHandler.Factory>().FromComponentInNewPrefab(unityState.AssetBrowserButtonAtom);
 
         Container.BindFactory<AssetBrowserFolderHandler, AssetBrowserFolderHandler.Factory>().FromComponentInNewPrefab(unityState.AssetBrowserFolderAtom);
 

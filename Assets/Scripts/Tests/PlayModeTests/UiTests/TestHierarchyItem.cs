@@ -140,9 +140,9 @@ namespace Assets.Scripts.Tests.PlayModeTests.UiTests
                     false,
                     TextHandler.TextStyle.Normal,
                     false,
-                    clickArrowStrategy: new LeftClickStrategy {onLeftClick = _ => clickChecker.Success()},
-                    clickTextStrategy: new LeftClickStrategy {onLeftClick = _ => clickChecker.Fail("The user clicked on the text")},
-                    rightClickStrategy: new RightClickStrategy {onRightClick = _ => clickChecker.Fail("The user right clicked")});
+                    clickArrowStrategy: new LeftClickStrategy(_ => clickChecker.Success()),
+                    clickTextStrategy: new LeftClickStrategy(_ => clickChecker.Fail("The user clicked on the text")),
+                    rightClickStrategy: new RightClickStrategy(_ => clickChecker.Fail("The user right clicked")));
 
                 uiBuilder.Update(mainPanel);
 
@@ -162,9 +162,9 @@ namespace Assets.Scripts.Tests.PlayModeTests.UiTests
                     false,
                     TextHandler.TextStyle.Normal,
                     false,
-                    clickArrowStrategy: new LeftClickStrategy {onLeftClick = _ => clickChecker.Fail("The user clicked on the arrow")},
-                    clickTextStrategy: new LeftClickStrategy {onLeftClick = _ => clickChecker.Success()},
-                    rightClickStrategy: new RightClickStrategy {onRightClick = _ => clickChecker.Fail("The user right clicked")});
+                    clickArrowStrategy: new LeftClickStrategy(_ => clickChecker.Fail("The user clicked on the arrow")),
+                    clickTextStrategy: new LeftClickStrategy(_ => clickChecker.Success()),
+                    rightClickStrategy: new RightClickStrategy(_ => clickChecker.Fail("The user right clicked")));
 
 
                 uiBuilder.Update(mainPanel);
@@ -185,9 +185,9 @@ namespace Assets.Scripts.Tests.PlayModeTests.UiTests
                     false,
                     TextHandler.TextStyle.Normal,
                     false,
-                    clickArrowStrategy: new LeftClickStrategy {onLeftClick = _ => clickChecker.Fail("The user clicked on the arrow")},
-                    clickTextStrategy: new LeftClickStrategy {onLeftClick = _ => clickChecker.Fail("The user clicked on the text")},
-                    rightClickStrategy: new RightClickStrategy {onRightClick = _ => clickChecker.Success()});
+                    clickArrowStrategy: new LeftClickStrategy(_ => clickChecker.Fail("The user clicked on the arrow")),
+                    clickTextStrategy: new LeftClickStrategy(_ => clickChecker.Fail("The user clicked on the text")),
+                    rightClickStrategy: new RightClickStrategy(_ => clickChecker.Success()));
 
 
                 uiBuilder.Update(mainPanel);

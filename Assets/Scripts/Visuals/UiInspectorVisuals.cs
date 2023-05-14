@@ -277,8 +277,7 @@ namespace Assets.Scripts.Visuals
             inspectorPanel.AddSpacer(20);
 
             inspectorPanel.AddButton("Add Component", new LeftClickStrategy
-            {
-                onLeftClick = eventData =>
+                (eventData =>
                 {
                     var rect = eventData.gameObject.GetComponent<RectTransform>();
 
@@ -342,8 +341,8 @@ namespace Assets.Scripts.Visuals
                             expandDirection = ContextMenuState.Placement.Direction.Left,
                         }
                     }, menuItemCategories[""]);
-                }
-            });
+                })
+            );
 
             inspectorPanel.AddSpacer(20);
 

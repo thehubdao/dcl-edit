@@ -132,7 +132,7 @@ public class AssetButtonInteraction : MonoBehaviour, IBeginDragHandler, IDragHan
         switch (assetMetadata.assetType)
         {
             case AssetMetadata.AssetType.Model:
-                addEntitySystem.AddModelAssetEntityAsCommand(newEntity, assetMetadata, position);
+                //addEntitySystem.AddModelAssetEntityAsCommand(newEntity, assetMetadata, position);
                 break;
             case AssetMetadata.AssetType.Image:
                 break;
@@ -143,6 +143,7 @@ public class AssetButtonInteraction : MonoBehaviour, IBeginDragHandler, IDragHan
                 {
                     scene.AddEntity(entity.Value);
                 }
+
                 scene.ClearFloatingEntities();
 
                 addEntitySystem.AddSceneAssetEntityAsCommand(newEntity, assetMetadata, position);

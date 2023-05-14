@@ -99,23 +99,21 @@ namespace Assets.Scripts.Visuals
         private void SetupRightClickHandler()
         {
             hierarchyViewportHandler.clickHandler.rightClickStrategy = new RightClickStrategy
+            (eventData =>
             {
-                onRightClick = eventData =>
+                var addEntityMenuItems = new List<ContextMenuItem>();
+
+                foreach (var preset in hierarchyContextMenuSystem.GetPresets())
                 {
-                    var addEntityMenuItems = new List<ContextMenuItem>();
-
-                    foreach (var preset in hierarchyContextMenuSystem.GetPresets())
-                    {
-                        addEntityMenuItems.Add(new ContextMenuTextItem(preset.name,
-                            () => hierarchyContextMenuSystem.AddEntityFromPreset(preset)));
-                    }
-
-                    contextMenuSystem.OpenMenu(eventData.position, new List<ContextMenuItem>
-                    {
-                        new ContextSubmenuItem("Add entity...", addEntityMenuItems),
-                    });
+                    addEntityMenuItems.Add(new ContextMenuTextItem(preset.name,
+                        () => hierarchyContextMenuSystem.AddEntityFromPreset(preset)));
                 }
-            };
+
+                contextMenuSystem.OpenMenu(eventData.position, new List<ContextMenuItem>
+                {
+                    new ContextSubmenuItem("Add entity...", addEntityMenuItems),
+                });
+            });
         }
 
 
@@ -149,24 +147,21 @@ namespace Assets.Scripts.Visuals
 
                 mainPanelData.AddSpacer(
                     300,
-                    new RightClickStrategy
+                    new RightClickStrategy(eventData =>
                     {
-                        onRightClick = eventData =>
+                        var addEntityMenuItems = new List<ContextMenuItem>();
+
+                        foreach (var preset in hierarchyContextMenuSystem.GetPresets())
                         {
-                            var addEntityMenuItems = new List<ContextMenuItem>();
-
-                            foreach (var preset in hierarchyContextMenuSystem.GetPresets())
-                            {
-                                addEntityMenuItems.Add(new ContextMenuTextItem(preset.name,
-                                    () => hierarchyContextMenuSystem.AddEntityFromPreset(preset)));
-                            }
-
-                            contextMenuSystem.OpenMenu(eventData.position, new List<ContextMenuItem>
-                            {
-                                new ContextSubmenuItem("Add entity...", addEntityMenuItems),
-                            });
+                            addEntityMenuItems.Add(new ContextMenuTextItem(preset.name,
+                                () => hierarchyContextMenuSystem.AddEntityFromPreset(preset)));
                         }
-                    },
+
+                        contextMenuSystem.OpenMenu(eventData.position, new List<ContextMenuItem>
+                        {
+                            new ContextSubmenuItem("Add entity...", addEntityMenuItems),
+                        });
+                    }),
                     new DropEntityStrategy
                     {
                         onEntityDropped = entity => { hierarchyOrderSystem.DropSpacer(entity); }
@@ -206,47 +201,45 @@ namespace Assets.Scripts.Visuals
                 var isNothingOrHoveredEntitySelected = selectionState.PrimarySelectedEntity == null || selectionState.PrimarySelectedEntity.Id.Equals(entity.Id);
 
                 var hierarchyItemRightClickStrategy = new RightClickStrategy
+                (eventData =>
                 {
-                    onRightClick = eventData =>
+                    var addEntityMenuItems = new List<ContextMenuItem>();
+
+                    foreach (var preset in hierarchyContextMenuSystem.GetPresets())
                     {
-                        var addEntityMenuItems = new List<ContextMenuItem>();
-
-                        foreach (var preset in hierarchyContextMenuSystem.GetPresets())
-                        {
-                            addEntityMenuItems.Add(new ContextMenuTextItem(preset.name,
-                                () => hierarchyContextMenuSystem.AddEntityFromPreset(preset, entity.Id)));
-                        }
-
-                        var placeSelectedEntityMenuItems = new List<ContextMenuItem>()
-                        {
-                            new ContextMenuTextItem("Place above",
-                                () => hierarchyOrderSystem.PlaceAbove(entity), isNothingOrHoveredEntitySelected),
-                            new ContextMenuTextItem("Place below",
-                                () => hierarchyOrderSystem.PlaceBelow(entity), isNothingOrHoveredEntitySelected),
-                            new ContextMenuTextItem("Place as Child",
-                                () => hierarchyOrderSystem.PlaceAsChild(entity), isNothingOrHoveredEntitySelected)
-                        };
-
-                        var belowSibling = hierarchyOrderSystem.GetBelowSibling(entity);
-                        var newHierarchyOrderForDuplicatedEntity =
-                            belowSibling != null ?
-                                hierarchyOrderSystem.GetHierarchyOrderPlaceBetweenSiblings(entity, belowSibling) :
-                                hierarchyOrderSystem.GetHierarchyOrderPlaceBeneathSibling(entity);
-
-
-                        contextMenuSystem.OpenMenu(eventData.position, new List<ContextMenuItem>
-                        {
-                            new ContextSubmenuItem("Add entity...", addEntityMenuItems),
-                            new ContextMenuTextItem("Duplicate",
-                                () => commandSystem.ExecuteCommand(
-                                    commandSystem.CommandFactory.CreateDuplicateEntity(entity.Id, newHierarchyOrderForDuplicatedEntity))),
-                            new ContextMenuTextItem("Delete",
-                                () => commandSystem.ExecuteCommand(
-                                    commandSystem.CommandFactory.CreateRemoveEntity(entity))),
-                            new ContextSubmenuItem("Selected entity...", placeSelectedEntityMenuItems)
-                        });
+                        addEntityMenuItems.Add(new ContextMenuTextItem(preset.name,
+                            () => hierarchyContextMenuSystem.AddEntityFromPreset(preset, entity.Id)));
                     }
-                };
+
+                    var placeSelectedEntityMenuItems = new List<ContextMenuItem>()
+                    {
+                        new ContextMenuTextItem("Place above",
+                            () => hierarchyOrderSystem.PlaceAbove(entity), isNothingOrHoveredEntitySelected),
+                        new ContextMenuTextItem("Place below",
+                            () => hierarchyOrderSystem.PlaceBelow(entity), isNothingOrHoveredEntitySelected),
+                        new ContextMenuTextItem("Place as Child",
+                            () => hierarchyOrderSystem.PlaceAsChild(entity), isNothingOrHoveredEntitySelected)
+                    };
+
+                    var belowSibling = hierarchyOrderSystem.GetBelowSibling(entity);
+                    var newHierarchyOrderForDuplicatedEntity =
+                        belowSibling != null ?
+                            hierarchyOrderSystem.GetHierarchyOrderPlaceBetweenSiblings(entity, belowSibling) :
+                            hierarchyOrderSystem.GetHierarchyOrderPlaceBeneathSibling(entity);
+
+
+                    contextMenuSystem.OpenMenu(eventData.position, new List<ContextMenuItem>
+                    {
+                        new ContextSubmenuItem("Add entity...", addEntityMenuItems),
+                        new ContextMenuTextItem("Duplicate",
+                            () => commandSystem.ExecuteCommand(
+                                commandSystem.CommandFactory.CreateDuplicateEntity(entity.Id, newHierarchyOrderForDuplicatedEntity))),
+                        new ContextMenuTextItem("Delete",
+                            () => commandSystem.ExecuteCommand(
+                                commandSystem.CommandFactory.CreateRemoveEntity(entity))),
+                        new ContextSubmenuItem("Selected entity...", placeSelectedEntityMenuItems)
+                    });
+                });
 
                 var upperDropStrategy = new DropEntityStrategy
                 {
@@ -282,19 +275,17 @@ namespace Assets.Scripts.Visuals
                     style,
                     isPrimarySelection,
                     //rightClickStrategy: hierarchyItemRightClickStrategy,
-                    clickTextStrategy: new LeftClickStrategy
-                    {
-                        onLeftClick = _ =>
+                    clickTextStrategy: new LeftClickStrategy(_ =>
                         {
                             Debug.Log($"Clicked on: {entity.ShownName}");
                             hierarchyChangeSystem.ClickedOnEntityInHierarchy(entity);
                         }
-                    },
-                    clickArrowStrategy: new LeftClickStrategy {onLeftClick = _ => { hierarchyChangeSystem.ClickedOnEntityExpandArrow(entity); }},
+                    ),
+                    clickArrowStrategy: new LeftClickStrategy(_ => { hierarchyChangeSystem.ClickedOnEntityExpandArrow(entity); }),
                     dropStrategyUpper: upperDropStrategy,
                     dropStrategyMiddle: middleDropStrategy,
                     dropStrategyLower: lowerDropStrategy,
-                    dragStrategy: new DragEntityStrategy {entity = entity}
+                    dragStrategy: new DragEntityStrategy(entity)
                 );
                 //cunt
 
