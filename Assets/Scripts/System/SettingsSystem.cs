@@ -181,35 +181,50 @@ namespace Assets.Scripts.System
 
                 public override dynamic ReadValue<T>(string key)
                 {
-                    var stream = File.Open(settingsPath, FileMode.OpenOrCreate, FileAccess.Read);
-
-                    var jObject = JObjectFromStreamOrNull(stream) ?? new JObject();
-
-                    stream.Close();
-
-                    if (!jObject.ContainsKey(key))
+                    try
                     {
+                        var stream = File.Open(settingsPath, FileMode.OpenOrCreate, FileAccess.Read);
+
+                        var jObject = JObjectFromStreamOrNull(stream) ?? new JObject();
+
+                        stream.Close();
+
+                        if (!jObject.ContainsKey(key))
+                        {
+                            return null;
+                        }
+
+                        var valueObject = jObject[key];
+
+                        return valueObject!.ToObject<T>();
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogException(e);
                         return null;
                     }
-
-                    var valueObject = jObject[key];
-
-                    return valueObject!.ToObject<T>();
                 }
 
                 public override void WriteValue<T>(string key, dynamic value)
                 {
-                    var fileStream = File.Open(settingsPath, FileMode.OpenOrCreate, FileAccess.Read);
+                    try
+                    {
+                        var fileStream = File.Open(settingsPath, FileMode.OpenOrCreate, FileAccess.Read);
 
-                    var originalObject = JObjectFromStreamOrNull(fileStream) ?? new JObject();
+                        var originalObject = JObjectFromStreamOrNull(fileStream) ?? new JObject();
 
-                    fileStream.Close();
+                        fileStream.Close();
 
-                    originalObject[key] = JToken.FromObject(value, JsonSerializer.Create(new JsonSerializerSettings() {Converters = converters}));
+                        originalObject[key] = JToken.FromObject(value, JsonSerializer.Create(new JsonSerializerSettings() {Converters = converters}));
 
-                    var newJsonString = JsonConvert.SerializeObject(originalObject, Formatting.Indented, converters);
+                        var newJsonString = JsonConvert.SerializeObject(originalObject, Formatting.Indented, converters);
 
-                    File.WriteAllText(settingsPath, newJsonString);
+                        File.WriteAllText(settingsPath, newJsonString);
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogException(e);
+                    }
                 }
 
                 [CanBeNull]
