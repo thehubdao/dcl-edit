@@ -46,6 +46,8 @@ Material:
     - Boolean_4a8593dfe7bd48f0b8532a6b47607f23: 0
     - Vector1_3da90d8b307d44ea865ad4955da85b72: 22.58
     - Vector1_ca5f2e78fcc248459c37f790cd1e51f2: 18.4
+    - _QueueControl: 0
+    - _QueueOffset: 0
     m_Colors: []
   m_BuildTextureStacks: []
 --- !u!114 &4722942047740717186
