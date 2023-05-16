@@ -19,6 +19,7 @@ namespace Assets.Scripts.System
         private EditorEvents editorEvents;
         private CameraState cameraState;
         private AddEntitySystem addEntitySystem;
+        private InputHelper inputHelper;
 
         [Inject]
         public void Construct(
@@ -26,13 +27,15 @@ namespace Assets.Scripts.System
             AssetBrowserState assetBrowserState,
             EditorEvents editorEvents,
             CameraState cameraState,
-            AddEntitySystem addEntitySystem)
+            AddEntitySystem addEntitySystem,
+            InputHelper inputHelper)
         {
             this.assetManagerSystem = assetManagerSystem;
             this.assetBrowserState = assetBrowserState;
             this.editorEvents = editorEvents;
             this.cameraState = cameraState;
             this.addEntitySystem = addEntitySystem;
+            this.inputHelper = inputHelper;
         }
 
 
@@ -60,6 +63,13 @@ namespace Assets.Scripts.System
             var position = Physics.Raycast(ray, out RaycastHit hit, 50) ?
                 hit.point :
                 ray.GetPoint(10);
+
+            addEntitySystem.AddModelAssetEntityAsCommand(asset.assetDisplayName, asset.assetId, position);
+        }
+
+        public void AddAssetToSceneAtMousePositionInViewport(AssetMetadata asset)
+        {
+            var position = inputHelper.GetMousePositionInScene();
 
             addEntitySystem.AddModelAssetEntityAsCommand(asset.assetDisplayName, asset.assetId, position);
         }

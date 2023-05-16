@@ -162,10 +162,7 @@ namespace Assets.Scripts.Visuals
                             new ContextSubmenuItem("Add entity...", addEntityMenuItems),
                         });
                     }),
-                    new DropEntityStrategy
-                    {
-                        onEntityDropped = entity => { hierarchyOrderSystem.DropSpacer(entity); }
-                    });
+                    new DropEntityStrategy(entity => { hierarchyOrderSystem.DropSpacer(entity); }));
             }
 
             uiBuilder.Update(mainPanelData);
@@ -241,30 +238,21 @@ namespace Assets.Scripts.Visuals
                     });
                 });
 
-                var upperDropStrategy = new DropEntityStrategy
+                var upperDropStrategy = new DropEntityStrategy(draggedEntity =>
                 {
-                    onEntityDropped = draggedEntity =>
-                    {
-                        var aboveEntity = hierarchyOrderSystem.GetAboveSibling(entity);
-                        hierarchyOrderSystem.DropUpper(draggedEntity, entity, aboveEntity);
-                    }
-                };
+                    var aboveEntity = hierarchyOrderSystem.GetAboveSibling(entity);
+                    hierarchyOrderSystem.DropUpper(draggedEntity, entity, aboveEntity);
+                });
 
-                var middleDropStrategy = new DropEntityStrategy
+                var middleDropStrategy = new DropEntityStrategy(draggedEntity => { hierarchyOrderSystem.DropMiddle(draggedEntity, entity); });
+
+                var lowerDropStrategy = new DropEntityStrategy(draggedEntity =>
                 {
-                    onEntityDropped = draggedEntity => { hierarchyOrderSystem.DropMiddle(draggedEntity, entity); }
-                };
+                    var belowEntity = hierarchyOrderSystem.GetBelowSibling(entity);
+                    var firstChildOfHoveredEntity = entity.Children.OrderBy(e => e.hierarchyOrder).FirstOrDefault();
 
-                var lowerDropStrategy = new DropEntityStrategy
-                {
-                    onEntityDropped = draggedEntity =>
-                    {
-                        var belowEntity = hierarchyOrderSystem.GetBelowSibling(entity);
-                        var firstChildOfHoveredEntity = entity.Children.OrderBy(e => e.hierarchyOrder).FirstOrDefault();
-
-                        hierarchyOrderSystem.DropLower(draggedEntity, entity, belowEntity, firstChildOfHoveredEntity, isExpanded);
-                    }
-                };
+                    hierarchyOrderSystem.DropLower(draggedEntity, entity, belowEntity, firstChildOfHoveredEntity, isExpanded);
+                });
 
                 mainPanelData.AddHierarchyItem(
                     entity.ShownName,
@@ -287,7 +275,6 @@ namespace Assets.Scripts.Visuals
                     dropStrategyLower: lowerDropStrategy,
                     dragStrategy: new DragEntityStrategy(entity)
                 );
-                //cunt
 
                 if (isExpanded)
                 {
