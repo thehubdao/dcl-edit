@@ -31,7 +31,7 @@ namespace Visuals.UiHandler
             set
             {
                 var dropCategories = new List<DragAndDropState.DropZoneCategory>();
-                
+
                 if (value?.dropEntityStrategy != null)
                 {
                     dropCategories.Add(DragAndDropState.DropZoneCategory.Entity);
@@ -70,12 +70,36 @@ namespace Visuals.UiHandler
             }
         }
 
+        // on hover
+        [CanBeNull]
+        private PointerEventData isHovering = null;
+
         public void OnPointerEnter(PointerEventData eventData)
         {
+            if (!eventData.dragging) return;
+
+            isHovering = eventData;
         }
 
         public void OnPointerExit(PointerEventData eventData)
         {
+            if (!eventData.dragging) return;
+
+            isHovering = null;
+        }
+
+        void Update()
+        {
+            if (isHovering == null) return;
+            if (isHovering.pointerDrag == null) return;
+            if (dropStrategy == null) return;
+            if (!gameObject.activeSelf) return;
+
+            if (isHovering.pointerDrag.TryGetComponent(out DragHandler dragHandler))
+            {
+                Debug.Log($"Model hovered over {StaticUtilities.ListGameObjectStack(gameObject)}");
+                dropStrategy.OnHover(dragHandler.dragStrategy);
+            }
         }
 
         public void Enable()

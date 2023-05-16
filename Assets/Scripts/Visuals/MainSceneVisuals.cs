@@ -1,7 +1,6 @@
 using Assets.Scripts.Interaction;
 using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
-using Assets.Scripts.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +11,9 @@ namespace Assets.Scripts.Visuals
 {
     public class MainSceneVisuals : MonoBehaviour
     {
+        [SerializeField]
+        private Transform floatingVisualsParent;
+
         public Guid sceneId { get; private set; }
 
         // Dependencies
@@ -58,7 +60,7 @@ namespace Assets.Scripts.Visuals
         private List<EntityVisuals> GenerateEntityVisuals(DclScene scene, Guid? overrideSelectionId)
         {
             List<EntityVisuals> entityVisuals = new List<EntityVisuals>();
-            foreach (var entity in scene.AllEntities.Concat(scene.AllFloatingEntities).Select(e => e.Value))
+            foreach (var entity in scene.AllEntities.Select(e => e.Value))
             {
                 var newEntityInteraction = entitySelectInteractionFactory.Create();
                 newEntityInteraction.id = overrideSelectionId ?? entity.Id;
@@ -69,6 +71,19 @@ namespace Assets.Scripts.Visuals
 
                 entityVisuals.Add(newEntityVisuals);
             }
+
+            foreach (var entity in scene.AllFloatingEntities.Select(e => e.Value))
+            {
+                var newEntityInteraction = entitySelectInteractionFactory.Create();
+                newEntityInteraction.id = overrideSelectionId ?? entity.Id;
+                var newEntityVisuals = newEntityInteraction.GetComponent<EntityVisuals>();
+                newEntityVisuals.id = entity.Id;
+
+                newEntityInteraction.transform.parent = floatingVisualsParent;
+
+                entityVisuals.Add(newEntityVisuals);
+            }
+
             return entityVisuals;
         }
 
