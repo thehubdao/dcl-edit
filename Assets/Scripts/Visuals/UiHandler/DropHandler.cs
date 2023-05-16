@@ -31,6 +31,7 @@ namespace Visuals.UiHandler
             set
             {
                 var dropCategories = new List<DragAndDropState.DropZoneCategory>();
+                
                 if (value?.dropEntityStrategy != null)
                 {
                     dropCategories.Add(DragAndDropState.DropZoneCategory.Entity);
@@ -39,6 +40,16 @@ namespace Visuals.UiHandler
                 if (value?.dropModelAssetStrategy != null)
                 {
                     dropCategories.Add(DragAndDropState.DropZoneCategory.ModelAsset);
+                }
+
+                if (value?.dropSceneAssetStrategy != null)
+                {
+                    dropCategories.Add(DragAndDropState.DropZoneCategory.SceneAsset);
+                }
+
+                if (value?.dropImageAssetStrategy != null)
+                {
+                    dropCategories.Add(DragAndDropState.DropZoneCategory.ImageAsset);
                 }
 
                 dragAndDropState.RegisterHandler(this, dropCategories);

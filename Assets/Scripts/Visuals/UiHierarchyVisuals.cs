@@ -262,7 +262,7 @@ namespace Assets.Scripts.Visuals
                     isFirstChild,
                     style,
                     isPrimarySelection,
-                    //rightClickStrategy: hierarchyItemRightClickStrategy,
+                    rightClickStrategy: hierarchyItemRightClickStrategy,
                     clickTextStrategy: new LeftClickStrategy(_ =>
                         {
                             Debug.Log($"Clicked on: {entity.ShownName}");

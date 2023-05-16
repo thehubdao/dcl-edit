@@ -71,7 +71,21 @@ namespace Assets.Scripts.System
         {
             var position = inputHelper.GetMousePositionInScene();
 
-            addEntitySystem.AddModelAssetEntityAsCommand(asset.assetDisplayName, asset.assetId, position);
+            switch (asset.assetType)
+            {
+                case AssetMetadata.AssetType.Unknown:
+                    throw new ArgumentOutOfRangeException();
+                case AssetMetadata.AssetType.Model:
+                    addEntitySystem.AddModelAssetEntityAsCommand(asset.assetDisplayName, asset.assetId, position);
+                    break;
+                case AssetMetadata.AssetType.Scene:
+                    addEntitySystem.AddSceneAssetEntityAsCommand(asset.assetDisplayName, asset.assetId, position);
+                    break;
+                case AssetMetadata.AssetType.Image:
+                    throw new NotImplementedException();
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
 

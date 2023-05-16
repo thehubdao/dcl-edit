@@ -53,12 +53,16 @@ namespace Assets.Scripts.System
                 hierarchyOrder));
         }
 
-        public void AddSceneAssetEntityAsCommand(DclEntity newEntity, AssetMetadata assetMetadata, Vector3 position)
+        public void AddSceneAssetEntityAsCommand(string name, Guid assetId, Vector3 position)
         {
-            var hierarchyOrder = hierarchyOrderSystem.GetDefaultHierarchyOrder(newEntity.ParentId);
+            var hierarchyOrder = hierarchyOrderSystem.GetDefaultHierarchyOrder(default);
 
-            commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateAddSceneAssetToScene(newEntity.Id,
-                newEntity.CustomName, assetMetadata.assetId, position, hierarchyOrder));
+            commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateAddSceneAssetToScene(
+                Guid.NewGuid(),
+                name,
+                assetId,
+                position,
+                hierarchyOrder));
         }
 
         public void DuplicateEntityAsCommand(DclEntity selectedEntity)

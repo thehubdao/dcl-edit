@@ -1,3 +1,4 @@
+using System;
 using Assets.Scripts.System;
 using UnityEngine;
 using Visuals.UiHandler;
@@ -23,16 +24,18 @@ public class DropAssetOnSceneView : MonoBehaviour
 
     void Awake()
     {
+        void AddAssetToScene(Guid assetId)
+        {
+            var assetMetadata = assetManagerSystem.GetMetadataById(assetId);
+            assetBrowserSystem.AddAssetToSceneAtMousePositionInViewport(assetMetadata);
+        }
+
         dropHandler.dropStrategy = new DropStrategy
         {
             dropModelAssetStrategy =
-                new DropModelAssetStrategy(assetId =>
-                {
-                    Debug.Log("Dropped Model on scene"); // Not executing
-
-                    var assetMetadata = assetManagerSystem.GetMetadataById(assetId);
-                    assetBrowserSystem.AddAssetToSceneAtMousePositionInViewport(assetMetadata);
-                })
+                new DropModelAssetStrategy(AddAssetToScene),
+            dropSceneAssetStrategy =
+                new DropSceneAssetStrategy(AddAssetToScene)
         };
     }
 }
