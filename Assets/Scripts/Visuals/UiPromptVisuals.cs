@@ -100,7 +100,7 @@ public class UiPromptVisuals : MonoBehaviour, IPointerEnterHandler, IPointerExit
         CreateText(panel, data);
         AssignActions(data);
         uiBuilder.Update(panel);
-        tmpObject.transform.SetParent(content.transform);
+        tmpObject.transform.SetParent(content.transform, false);
         gameObject.SetActive(true);
         return colorPicker;
 
@@ -167,7 +167,7 @@ public class UiPromptVisuals : MonoBehaviour, IPointerEnterHandler, IPointerExit
         layoutElement.minHeight = 400;
         layoutElement.minWidth = 600;
         uiBuilder.Update(panel);
-        uiAssetBrowserVisuals.transform.SetParent(content.transform);
+        uiAssetBrowserVisuals.transform.SetParent(content.transform, false);
         gameObject.SetActive(true);
     }
 
