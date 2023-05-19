@@ -15,7 +15,7 @@ using UnityEngine.UI;
 using Assets.Scripts.EditorState;
 using HSVPicker;
 
-public class UiPromptVisuals : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class UiPromptVisuals : MonoBehaviour, IPointerEnterHandler
 {
     [SerializeField] private GameObject content;
     [SerializeField] private RectTransform contentRectTransform;
@@ -183,7 +183,7 @@ public class UiPromptVisuals : MonoBehaviour, IPointerEnterHandler, IPointerExit
         dialogState.mouseOverDialogWindow = true;
     }
 
-    public void OnPointerExit(PointerEventData eventData)
+    private void OnDisable()
     {
         dialogState.mouseOverDialogWindow = false;
     }
