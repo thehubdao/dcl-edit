@@ -27,6 +27,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 715.5636, y: 391.60977, z: -152.96555}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -49,6 +50,9 @@ MonoBehaviour:
   AsyncCoroutineHelper: {fileID: 0}
   dynamicPanelsCanvas: {fileID: 0}
   sceneViewButtons: {fileID: 0}
+  PromptDialog: {fileID: 0}
+  PromptColorPicker: {fileID: 0}
+  PromptAssetPicker: {fileID: 0}
   BoxMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
   SphereMesh: {fileID: 4711208715938537054, guid: 7c360f97f1032b64ca984a274cb4114e, type: 3}
   CylinderMesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
@@ -61,6 +65,8 @@ MonoBehaviour:
   ErrorModel: {fileID: 6504601161887710305, guid: 831ff32fe892a894ca0586aa133eb24d, type: 3}
   LoadingModel: {fileID: 5108317101022607464, guid: b3105ef88651e5f4b97a1d65f40d9972, type: 3}
   ContextMenuAtom: {fileID: 9033582606962256507, guid: 8db363346bbc09646b96fffac6224be5, type: 3}
+  ColorPicker: {fileID: 5198032121212292045, guid: 6fbac8ad5acc66744a4eadbb7d3ad0fd, type: 3}
+  AssetBrowser: {fileID: 8320216663454323933, guid: e169a43dc39c86a498ed554c217ef464, type: 3}
   ButtonAtom: {fileID: 747852077168732134, guid: d530f0d1ef157894cadc657abe174f42, type: 3}
   AssetBrowserButtonAtom: {fileID: 9199737783199215851, guid: 5fbffa0ef7a6dae40aee2be1808b6979, type: 3}
   AssetBrowserFolderAtom: {fileID: 569288621326271914, guid: bdf698fa20b9d9842917888e8bea6558, type: 3}

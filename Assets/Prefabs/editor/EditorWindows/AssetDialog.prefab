@@ -28,6 +28,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4004996120820887313}
   m_RootOrder: 0
@@ -165,6 +166,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4704940816228120864}
   - {fileID: 4859573685851002649}
@@ -289,6 +291,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5914184162991463923}
   m_Father: {fileID: 3510888265014933841}
@@ -379,6 +382,7 @@ RectTransform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2655386068566024139}
   m_Father: {fileID: 4704940816228120864}
@@ -511,6 +515,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7543999426174093329}
   - {fileID: 4004996120820887313}
@@ -801,11 +806,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e169a43dc39c86a498ed554c217ef464, type: 3}
---- !u!224 &5914184162991463923 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 8320216663454323932, guid: e169a43dc39c86a498ed554c217ef464, type: 3}
-  m_PrefabInstance: {fileID: 2406118264785848623}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &5914184162991463920 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8320216663454323935, guid: e169a43dc39c86a498ed554c217ef464, type: 3}
@@ -817,3 +817,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41ee57d2e008083439f269c45ea6f6c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!224 &5914184162991463923 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 8320216663454323932, guid: e169a43dc39c86a498ed554c217ef464, type: 3}
+  m_PrefabInstance: {fileID: 2406118264785848623}
+  m_PrefabAsset: {fileID: 0}
