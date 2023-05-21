@@ -82,8 +82,8 @@ namespace Assets.Scripts.Visuals.UiHandler
 
         public void UpdateHandlers(HierarchyItemAtom.Data newHierarchyItemData)
         {
-            gameObject.name = newHierarchyItemData.name;
-            text.text = newHierarchyItemData.name;
+            gameObject.name = newHierarchyItemData.name.currentValue;
+            text.SetTextValueStrategy(newHierarchyItemData.name);
             text.textStyle = newHierarchyItemData.style;
 
 

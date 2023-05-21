@@ -30,10 +30,9 @@ namespace Assets.Scripts.Visuals.UiHandler
         [SerializeField]
         public TextMeshProUGUI TextComponent;
 
-        public string text
+        public void SetTextValueStrategy(ValueStrategy<string> strategy)
         {
-            get => TextComponent.text;
-            set => TextComponent.text = value;
+            strategy.applyValue = s => TextComponent.text = s;
         }
 
         public TextStyle textStyle

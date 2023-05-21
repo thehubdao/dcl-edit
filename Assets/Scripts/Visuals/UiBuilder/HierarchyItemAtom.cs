@@ -10,7 +10,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
     {
         public new class Data : Atom.Data
         {
-            public string name;
+            public ValueStrategy<string> name;
             public int level;
             public bool hasChildren;
             public bool isExpanded;
@@ -106,7 +106,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
     {
         public static HierarchyItemAtom.Data AddHierarchyItem(
             this PanelAtom.Data panelAtomData,
-            string name,
+            ValueStrategy<string> name,
             int level,
             bool hasChildren,
             bool isExpanded,

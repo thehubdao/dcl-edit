@@ -49,7 +49,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
             {
                 // Update data
                 var btnHandler = gameObject.gameObject.GetComponent<ButtonHandler>();
-                btnHandler.text.text = newBtnData.text;
+                btnHandler.text.SetTextValueStrategy(newBtnData.text);
                 btnHandler.click.leftClickStrategy = newBtnData.leftClickStrategy;
                 data = newBtnData;
             }

@@ -3,6 +3,10 @@ using JetBrains.Annotations;
 
 public abstract class ValueStrategy<T>
 {
+    protected T value;
+
+    public T currentValue => value;
+
     [CanBeNull]
     private Action<T> applyValueInternal;
 
@@ -19,19 +23,39 @@ public abstract class ValueStrategy<T>
 
     protected abstract void TriggerApplyValue();
 
-
-    protected ValueStrategy()
+    public static implicit operator ValueStrategy<T>(T value)
     {
+        return new SetValueOnceStrategy<T>(value);
+    }
+
+    protected ValueStrategy(T initialValue)
+    {
+        value = initialValue;
     }
 }
 
 public class SetValueOnceStrategy<T> : ValueStrategy<T>
 {
-    private readonly T value;
-
-    protected SetValueOnceStrategy(T value) : base()
+    public SetValueOnceStrategy(T value) : base(value)
     {
-        this.value = value;
+    }
+
+    protected override void TriggerApplyValue()
+    {
+        applyValue?.Invoke(value);
+    }
+}
+
+public class SetValueByFunction<T> : ValueStrategy<T>
+{
+    public SetValueByFunction(T initialValue) : base(initialValue)
+    {
+    }
+
+    public void SetValue(T newValue)
+    {
+        value = newValue;
+        TriggerApplyValue();
     }
 
     protected override void TriggerApplyValue()

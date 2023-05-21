@@ -6,7 +6,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
     {
         public new class Data : Atom.Data
         {
-            public string text;
+            public ValueStrategy<string> text;
 
             public override bool Equals(Atom.Data other)
             {
@@ -39,7 +39,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
             {
                 // Update data
                 var textHandler = gameObject.gameObject.GetComponent<TextHandler>();
-                textHandler.text = newTextData.text;
+                textHandler.SetTextValueStrategy(newTextData.text);
                 data = newTextData;
             }
         }
@@ -58,7 +58,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
     public static class TextPanelHelper
     {
-        public static TextAtom.Data AddText(this PanelAtom.Data panelAtomData, string text)
+        public static TextAtom.Data AddText(this PanelAtom.Data panelAtomData, ValueStrategy<string> text)
         {
             var data = new TextAtom.Data
             {
