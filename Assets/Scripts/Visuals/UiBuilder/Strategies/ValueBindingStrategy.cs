@@ -10,6 +10,11 @@ public abstract class ValueStrategy<T>
     [CanBeNull]
     private Action<T> applyValueInternal;
 
+
+    /// <summary>
+    /// a callback that will be called when a new value is present
+    /// </summary>
+    /// <remarks>IMPORTANT: Make sure, that you remove your callback from the previous ValueStrategy</remarks>
     [CanBeNull]
     public Action<T> applyValue
     {

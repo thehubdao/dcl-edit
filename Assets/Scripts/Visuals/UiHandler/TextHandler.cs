@@ -1,4 +1,5 @@
 using System;
+using JetBrains.Annotations;
 using TMPro;
 using UnityEngine;
 
@@ -30,9 +31,19 @@ namespace Assets.Scripts.Visuals.UiHandler
         [SerializeField]
         public TextMeshProUGUI TextComponent;
 
+        [CanBeNull]
+        private ValueStrategy<string> valueStrategyInternal;
+
         public void SetTextValueStrategy(ValueStrategy<string> strategy)
         {
+            if (valueStrategyInternal != null)
+            {
+                valueStrategyInternal.applyValue = null;
+            }
+
             strategy.applyValue = s => TextComponent.text = s;
+
+            valueStrategyInternal = strategy;
         }
 
         public TextStyle textStyle
