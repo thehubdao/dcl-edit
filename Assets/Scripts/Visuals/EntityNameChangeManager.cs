@@ -10,39 +10,79 @@ public class EntityNameChangeManager
 {
     // Dependencies
     private ISceneManagerSystem sceneManagerSystem;
-    private EditorEvents editorEvents;
+    private ExposeEntitySystem exposeEntitySystem;
+    private CommandSystem commandSystem;
 
     [Inject]
-    private void Construct(ISceneManagerSystem sceneManagerSystem, EditorEvents editorEvents)
+    private void Construct(ISceneManagerSystem sceneManagerSystem, ExposeEntitySystem exposeEntitySystem, CommandSystem commandSystem, EditorEvents editorEvents)
     {
         this.sceneManagerSystem = sceneManagerSystem;
-        this.editorEvents = editorEvents;
+        this.exposeEntitySystem = exposeEntitySystem;
+        this.commandSystem = commandSystem;
 
         editorEvents.onEntityNameChangedEvent += OnEntityNameChanged;
     }
     
 
-    private readonly Dictionary<Guid, SetValueByFunction<string>> strategies = new();
+    private readonly Dictionary<Guid, SetValueByFunction<string>> hierarchyStrategies = new();
     
-    public ValueStrategy<string> GetNameForId(Guid entityId)
+    public SetValueStrategy<string> GetNameForHierarchy(Guid entityId)
     {
         var entity = sceneManagerSystem.GetCurrentScene().GetEntityById(entityId);
 
         // find strategy in dictionary or create new one
-        if (!strategies.TryGetValue(entityId, out var valueStrategy))
+        if (!hierarchyStrategies.TryGetValue(entityId, out var valueStrategy))
         {
             valueStrategy = new SetValueByFunction<string>(entity.ShownName);
-            strategies.Add(entityId, valueStrategy);
+            hierarchyStrategies.Add(entityId, valueStrategy);
         }
         
         return valueStrategy;
     }
-    
+
+    private readonly Dictionary<Guid, SetValueByFunction<string>> inspectorStrategies = new();
+
+    public SetValueStrategy<string> GetExposedNameForInspector(Guid entityId)
+    {
+        var entity = sceneManagerSystem.GetCurrentScene().GetEntityById(entityId);
+
+        // find strategy in dictionary or create new one
+        if (!inspectorStrategies.TryGetValue(entityId, out var valueStrategy))
+        {
+            valueStrategy = new SetValueByFunction<string>($"Exposed as: {exposeEntitySystem.ExposedName(entity)}");
+            inspectorStrategies.Add(entityId, valueStrategy);
+        }
+
+        return valueStrategy;
+    }
+
     private void OnEntityNameChanged(Guid entityId)
     {
-        if (strategies.TryGetValue(entityId, out var valueStrategy))
+        var entity = sceneManagerSystem.GetCurrentScene().GetEntityById(entityId);
+
+        if (hierarchyStrategies.TryGetValue(entityId, out var valueStrategy))
         {
-            valueStrategy.SetValue(sceneManagerSystem.GetCurrentScene().GetEntityById(entityId).ShownName);
+            valueStrategy.SetValue(entity.ShownName);
         }
+
+        if (inspectorStrategies.TryGetValue(entityId, out valueStrategy))
+        {
+            valueStrategy.SetValue($"Exposed as: {exposeEntitySystem.ExposedName(entity)}");
+        }
+    }
+
+    public BindNameStrategy GetNameFieldBinding(Guid id)
+    {
+        var entity = sceneManagerSystem.GetCurrentScene().GetEntityById(id);
+
+        var strategy = new BindNameStrategy(
+            value =>
+                commandSystem.ExecuteCommand(
+                    commandSystem.CommandFactory.CreateChangeEntityName(
+                        id,
+                        value,
+                        entity.CustomName)));
+
+        return strategy;
     }
 }

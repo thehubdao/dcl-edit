@@ -6,7 +6,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
     {
         public new class Data : Atom.Data
         {
-            public ValueStrategy<string> text;
+            public SetValueStrategy<string> text;
 
             public override bool Equals(Atom.Data other)
             {
@@ -58,7 +58,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
     public static class TextPanelHelper
     {
-        public static TextAtom.Data AddText(this PanelAtom.Data panelAtomData, ValueStrategy<string> text)
+        public static TextAtom.Data AddText(this PanelAtom.Data panelAtomData, SetValueStrategy<string> text)
         {
             var data = new TextAtom.Data
             {

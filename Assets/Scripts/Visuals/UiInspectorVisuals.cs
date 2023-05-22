@@ -29,7 +29,7 @@ namespace Assets.Scripts.Visuals
         private AvailableComponentsState availableComponentsState;
         private AssetManagerSystem assetManagerSystem;
         private DialogSystem dialogSystem;
-        private ExposeEntitySystem exposeEntitySystem;
+        private EntityNameChangeManager entityNameChangeManager;
 
         [Inject]
         private void Construct(
@@ -44,7 +44,7 @@ namespace Assets.Scripts.Visuals
             AvailableComponentsState availableComponentsState,
             AssetManagerSystem assetManagerSystem,
             DialogSystem dialogSystem,
-            ExposeEntitySystem exposeEntitySystem)
+            EntityNameChangeManager entityNameChangeManager)
         {
             this.inputState = inputState;
             this.updatePropertiesSystem = updatePropertiesSystem;
@@ -57,7 +57,7 @@ namespace Assets.Scripts.Visuals
             this.availableComponentsState = availableComponentsState;
             this.assetManagerSystem = assetManagerSystem;
             this.dialogSystem = dialogSystem;
-            this.exposeEntitySystem = exposeEntitySystem;
+            this.entityNameChangeManager = entityNameChangeManager;
 
             SetupEventListeners();
         }
@@ -129,12 +129,12 @@ namespace Assets.Scripts.Visuals
             };
 
             var entityHeadPanel = inspectorPanel.AddPanelWithBorder();
-            entityHeadPanel.AddStringProperty("Name", "Name", selectedEntity.CustomName ?? "", nameInputActions);
+            entityHeadPanel.AddStringProperty("Name", "Name", selectedEntity.CustomName ?? "", entityNameChangeManager.GetNameFieldBinding(selectedEntity.Id));
             entityHeadPanel.AddBooleanProperty("Is Exposed", selectedEntity.IsExposed, exposedInputActions);
             
             if (selectedEntity.IsExposed)
             {
-                entityHeadPanel.AddText($"Exposed Name: {exposeEntitySystem.ExposedName(selectedEntity)}");
+                entityHeadPanel.AddText(entityNameChangeManager.GetExposedNameForInspector(selectedEntity.Id));
             }
 
             foreach (var component in selectedEntity.Components ?? new List<DclComponent>())
@@ -167,7 +167,7 @@ namespace Assets.Scripts.Visuals
                                 property.PropertyName,
                                 property.PropertyName,
                                 property.GetConcrete<string>().Value,
-                                stringActions);
+                                null); // TODO
 
                             break;
                         }
@@ -176,7 +176,7 @@ namespace Assets.Scripts.Visuals
                             var intActions = new StringPropertyAtom.UiPropertyActions<float> // number property requires float actions
                             {
                                 OnChange = (value) => updatePropertiesSystem.UpdateFloatingProperty(propertyIdentifier, (int) value),
-                                OnInvalid = () => updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier),
+                                OnInvalid = (_) => updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier),
                                 OnSubmit = (value) => updatePropertiesSystem.UpdateFixedProperty(propertyIdentifier, (int) value),
                                 OnAbort = (value) => updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier)
                             };
@@ -194,9 +194,9 @@ namespace Assets.Scripts.Visuals
                             var floatActions = new StringPropertyAtom.UiPropertyActions<float>
                             {
                                 OnChange = (value) => updatePropertiesSystem.UpdateFloatingProperty(propertyIdentifier, value),
-                                OnInvalid = () => updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier),
+                                OnInvalid = (_) => updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier),
                                 OnSubmit = (value) => updatePropertiesSystem.UpdateFixedProperty(propertyIdentifier, value),
-                                OnAbort = (value) => updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier)
+                                OnAbort = (_) => updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier)
                             };
 
                             componentPanel.AddNumberProperty(
@@ -227,9 +227,9 @@ namespace Assets.Scripts.Visuals
                             var vec3Actions = new StringPropertyAtom.UiPropertyActions<Vector3>
                             {
                                 OnChange = (value) => updatePropertiesSystem.UpdateFloatingProperty(propertyIdentifier, value),
-                                OnInvalid = () => updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier),
+                                OnInvalid = _ => updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier),
                                 OnSubmit = (value) => updatePropertiesSystem.UpdateFixedProperty(propertyIdentifier, value),
-                                OnAbort = (value) => updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier)
+                                OnAbort = (_) => updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier)
                             };
 
                             componentPanel.AddVector3Property(
@@ -245,9 +245,9 @@ namespace Assets.Scripts.Visuals
                             var vec3Actions = new StringPropertyAtom.UiPropertyActions<Vector3>
                             {
                                 OnChange = (value) => updatePropertiesSystem.UpdateFloatingProperty(propertyIdentifier, Quaternion.Euler(value)),
-                                OnInvalid = () => updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier),
+                                OnInvalid = _ => updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier),
                                 OnSubmit = (value) => updatePropertiesSystem.UpdateFixedProperty(propertyIdentifier, Quaternion.Euler(value)),
-                                OnAbort = (value) => updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier)
+                                OnAbort = (_) => updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier)
                             };
 
                             componentPanel.AddVector3Property(

@@ -14,7 +14,7 @@ namespace Assets.Scripts.Visuals.PropertyHandler
 
         public void SetActions(StringPropertyAtom.UiPropertyActions<string> actions)
         {
-            stringInput.SetActions(actions.OnChange, actions.OnSubmit, actions.OnAbort);
+            stringInput.SetActions(actions.OnChange, actions.OnSubmit, s => actions.OnAbort?.Invoke(new[] {s}));
         }
 
         public void ResetActions()

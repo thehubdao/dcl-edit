@@ -52,23 +52,38 @@ namespace Assets.Scripts.Visuals.UiHandler
                     var currentValue = GetCurrentValue();
                     if (currentValue == null)
                     {
-                        actions.OnInvalid?.Invoke();
+                        actions.OnInvalid?.Invoke(new[]
+                        {
+                            numberInputX.TextInputHandler.GetCurrentText(),
+                            numberInputY.TextInputHandler.GetCurrentText(),
+                            numberInputZ.TextInputHandler.GetCurrentText()
+                        });
                     }
                     else
                     {
                         actions.OnChange?.Invoke(currentValue.Value);
                     }
                 },
-                () =>
+                _ =>
                 {
-                    actions.OnInvalid?.Invoke();
+                    actions.OnInvalid?.Invoke(new[]
+                    {
+                        numberInputX.TextInputHandler.GetCurrentText(),
+                        numberInputY.TextInputHandler.GetCurrentText(),
+                        numberInputZ.TextInputHandler.GetCurrentText()
+                    });
                 },
                 _ =>
                 {
                     var currentValue = GetCurrentValue();
                     if (currentValue == null)
                     {
-                        actions.OnAbort?.Invoke(Vector3.zero);
+                        actions.OnAbort?.Invoke(new[]
+                        {
+                            numberInputX.TextInputHandler.GetCurrentText(),
+                            numberInputY.TextInputHandler.GetCurrentText(),
+                            numberInputZ.TextInputHandler.GetCurrentText()
+                        });
                     }
                     else
                     {
@@ -79,7 +94,12 @@ namespace Assets.Scripts.Visuals.UiHandler
                 {
                     var currentValue = GetCurrentValue();
 
-                    actions.OnAbort?.Invoke(currentValue ?? Vector3.zero);
+                    actions.OnAbort?.Invoke(new[]
+                    {
+                        numberInputX.TextInputHandler.GetCurrentText(),
+                        numberInputY.TextInputHandler.GetCurrentText(),
+                        numberInputZ.TextInputHandler.GetCurrentText()
+                    });
                 });
         }
     }

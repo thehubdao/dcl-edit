@@ -202,7 +202,7 @@ namespace Assets.Scripts.Visuals
                 var (upperDropStrategy, middleDropStrategy, lowerDropStrategy) = CreateDropStrategies(entity);
 
                 mainPanelData.AddHierarchyItem(
-                    entityNameChangeManager.GetNameForId(entity.Id),
+                    entityNameChangeManager.GetNameForHierarchy(entity.Id),
                     level,
                     entity.Children.Any(),
                     isExpanded,

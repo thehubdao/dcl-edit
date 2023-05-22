@@ -23,7 +23,7 @@ namespace Assets.Scripts.Visuals.UiHandler
 
         [SerializeField]
         public TMP_ColorGradient SecondaryColorGradient;
-        
+
         [SerializeField]
         public TMP_ColorGradient DisabledColorGradient;
 
@@ -32,9 +32,9 @@ namespace Assets.Scripts.Visuals.UiHandler
         public TextMeshProUGUI TextComponent;
 
         [CanBeNull]
-        private ValueStrategy<string> valueStrategyInternal;
+        private SetValueStrategy<string> valueStrategyInternal;
 
-        public void SetTextValueStrategy(ValueStrategy<string> strategy)
+        public void SetTextValueStrategy(SetValueStrategy<string> strategy)
         {
             if (valueStrategyInternal != null)
             {
@@ -54,7 +54,7 @@ namespace Assets.Scripts.Visuals.UiHandler
                 {
                     return TextStyle.Normal;
                 }
-                
+
                 if (TextComponent.colorGradientPreset == PrimaryColorGradient)
                 {
                     return TextStyle.PrimarySelection;

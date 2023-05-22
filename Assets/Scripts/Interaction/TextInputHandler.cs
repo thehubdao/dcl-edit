@@ -1,4 +1,5 @@
 using System;
+using JetBrains.Annotations;
 using TMPro;
 using UnityEngine;
 using Zenject;
@@ -51,24 +52,24 @@ public class TextInputHandler : MonoBehaviour
         inputField.onEndEdit.RemoveAllListeners();
     }
 
-    public void SetActions(Action<string> onChange, Action<string> onSubmit, Action<string> onAbort)
+    public void SetActions([CanBeNull] Action<string> onChange, [CanBeNull] Action<string> onSubmit, [CanBeNull] Action<string> onAbort)
     {
         ResetActions();
 
         inputField.onSelect.AddListener(_ => _inputState.InState = InputState.InStateType.UiInput);
-        inputField.onValueChanged.AddListener(value => onChange(value));
+        inputField.onValueChanged.AddListener(value => onChange?.Invoke(value));
         inputField.onEndEdit.AddListener(value =>
         {
             _inputState.InState = InputState.InStateType.NoInput;
-            if(inputField.wasCanceled)
+            if (inputField.wasCanceled)
             {
                 //Debug.Log("Aborting input");
-                onAbort(value);
+                onAbort?.Invoke(value);
             }
             else
             {
                 //Debug.Log("Submitting input");
-                onSubmit(value);
+                onSubmit?.Invoke(value);
             }
         });
     }

@@ -12,13 +12,13 @@ namespace Assets.Scripts.Visuals.UiBuilder
             public Action<T> OnChange;
 
             [CanBeNull]
-            public Action OnInvalid;
+            public Action<string[]> OnInvalid;
 
             [CanBeNull]
             public Action<T> OnSubmit;
 
             [CanBeNull]
-            public Action<T> OnAbort;
+            public Action<string[]> OnAbort;
 
             public bool Equals(UiPropertyActions<T> other)
             {
@@ -35,7 +35,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
             public string name;
             public string placeholder;
             public string currentContents;
-            public UiPropertyActions<string> actions;
+            public ValueBindStrategy<string> bindStrategy;
 
 
             public override bool Equals(Atom.Data other)
@@ -49,7 +49,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
                     name.Equals(otherStringProperty.name) &&
                     placeholder.Equals(otherStringProperty.placeholder) &&
                     currentContents.Equals(otherStringProperty.currentContents) &&
-                    actions.Equals(otherStringProperty.actions);
+                    bindStrategy.Equals(otherStringProperty.bindStrategy);
             }
         }
 
@@ -81,7 +81,12 @@ namespace Assets.Scripts.Visuals.UiBuilder
                 stringPropertyHandler.stringInput.SetPlaceHolder(newStringPropertyData.placeholder);
 
                 // setup actions
-                stringPropertyHandler.SetActions(newStringPropertyData.actions);
+                var actions = new UiPropertyActions<string>
+                {
+                    OnSubmit = newStringPropertyData.bindStrategy.SetValueToInput
+                };
+
+                stringPropertyHandler.SetActions(actions);
             }
         }
 
@@ -99,14 +104,14 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
     public static class StringPropertyPanelHelper
     {
-        public static StringPropertyAtom.Data AddStringProperty(this PanelAtom.Data panelAtomData, string name, string placeholder, string currentContents, StringPropertyAtom.UiPropertyActions<string> actions)
+        public static StringPropertyAtom.Data AddStringProperty(this PanelAtom.Data panelAtomData, string name, string placeholder, string currentContents, ValueBindStrategy<string> bindStrategy)
         {
             var data = new StringPropertyAtom.Data
             {
                 name = name,
                 placeholder = placeholder,
                 currentContents = currentContents,
-                actions = actions
+                bindStrategy = bindStrategy
             };
 
             panelAtomData.childDates.Add(data);

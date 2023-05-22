@@ -1,7 +1,7 @@
 using System;
 using JetBrains.Annotations;
 
-public abstract class ValueStrategy<T>
+public abstract class SetValueStrategy<T>
 {
     protected T value;
 
@@ -14,7 +14,7 @@ public abstract class ValueStrategy<T>
     /// <summary>
     /// a callback that will be called when a new value is present
     /// </summary>
-    /// <remarks>IMPORTANT: Make sure, that you remove your callback from the previous ValueStrategy</remarks>
+    /// <remarks>IMPORTANT: Make sure, that you remove your callback from the previous SetValueStrategy</remarks>
     [CanBeNull]
     public Action<T> applyValue
     {
@@ -28,18 +28,18 @@ public abstract class ValueStrategy<T>
 
     protected abstract void TriggerApplyValue();
 
-    public static implicit operator ValueStrategy<T>(T value)
+    public static implicit operator SetValueStrategy<T>(T value)
     {
         return new SetValueOnceStrategy<T>(value);
     }
 
-    protected ValueStrategy(T initialValue)
+    protected SetValueStrategy(T initialValue)
     {
         value = initialValue;
     }
 }
 
-public class SetValueOnceStrategy<T> : ValueStrategy<T>
+public class SetValueOnceStrategy<T> : SetValueStrategy<T>
 {
     public SetValueOnceStrategy(T value) : base(value)
     {
@@ -51,7 +51,7 @@ public class SetValueOnceStrategy<T> : ValueStrategy<T>
     }
 }
 
-public class SetValueByFunction<T> : ValueStrategy<T>
+public class SetValueByFunction<T> : SetValueStrategy<T>
 {
     public SetValueByFunction(T initialValue) : base(initialValue)
     {

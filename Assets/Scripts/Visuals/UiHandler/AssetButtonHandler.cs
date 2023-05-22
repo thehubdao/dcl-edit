@@ -135,7 +135,7 @@ public class AssetButtonHandler : MonoBehaviour
         }
     }
 
-    private void SetText(ValueStrategy<string> assetName)
+    private void SetText(SetValueStrategy<string> assetName)
     {
         textHandler.SetTextValueStrategy(assetName);
     }

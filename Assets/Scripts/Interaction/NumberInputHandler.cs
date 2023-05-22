@@ -31,7 +31,7 @@ public class NumberInputHandler : MonoBehaviour
         TextInputHandler.ResetActions();
     }
 
-    public void SetActions(Action<float> onChange,  Action onInvalid, Action<float> onSubmit, Action<float> onAbort)
+    public void SetActions(Action<float> onChange, Action<string[]> onInvalid, Action<float> onSubmit, Action<string[]> onAbort)
     {
         TextInputHandler.SetActions(
                 (value) =>
@@ -39,7 +39,7 @@ public class NumberInputHandler : MonoBehaviour
                     var numberValue = _numberInputSystem.ValidateNumberInput(value);
                     if (numberValue == null)
                     {
-                        onInvalid?.Invoke();
+                        onInvalid?.Invoke(new[] {value});
 
                         TextInputHandler.SetBorderColorValid(false);
                     }
@@ -54,7 +54,7 @@ public class NumberInputHandler : MonoBehaviour
                     var numberValue = _numberInputSystem.ValidateNumberInput(value);
                     if (numberValue == null)
                     {
-                        onAbort?.Invoke(0);
+                        onAbort?.Invoke(new[] {value});
                         TextInputHandler.ReturnPreviousSubmitValue();
                     }
                     else
@@ -64,15 +64,15 @@ public class NumberInputHandler : MonoBehaviour
                 },
                 (value) =>
                 {
-                    var numberValue = _numberInputSystem.ValidateNumberInput(value);
-                    if (numberValue == null)
-                    {
-                        onAbort?.Invoke(0);
-                    }
-                    else
-                    {
-                        onAbort?.Invoke(numberValue.Value);
-                    }
+                    //var numberValue = _numberInputSystem.ValidateNumberInput(value); // TODO
+                    //if (numberValue == null)
+                    //{
+                    onAbort?.Invoke(new[] {value});
+                    //}
+                    //else
+                    //{
+                    //    onAbort?.Invoke(numberValue.Value);
+                    //}
                 });
     }
 
