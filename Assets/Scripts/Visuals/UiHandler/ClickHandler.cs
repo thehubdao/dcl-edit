@@ -21,11 +21,11 @@ namespace Assets.Scripts.Visuals.UiHandler
             switch (eventData.button)
             {
                 case PointerEventData.InputButton.Right:
-                    rightClickStrategy?.onRightClick.Invoke(new ClickStrategy.EventData() {position = eventData.position});
+                    rightClickStrategy?.onRightClick.Invoke(new ClickStrategy.EventData() {position = eventData.position, gameObject = eventData.pointerPress});
                     break;
 
                 case PointerEventData.InputButton.Left:
-                    leftClickStrategy?.onLeftClick.Invoke(new ClickStrategy.EventData() {position = eventData.position});
+                    leftClickStrategy?.onLeftClick.Invoke(new ClickStrategy.EventData() {position = eventData.position, gameObject = eventData.pointerPress});
                     break;
             }
         }

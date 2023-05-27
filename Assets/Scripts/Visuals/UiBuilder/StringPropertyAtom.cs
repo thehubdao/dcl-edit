@@ -34,7 +34,6 @@ namespace Assets.Scripts.Visuals.UiBuilder
         {
             public string name;
             public string placeholder;
-            public string currentContents;
             public ValueBindStrategy<string> bindStrategy;
 
 
@@ -48,7 +47,6 @@ namespace Assets.Scripts.Visuals.UiBuilder
                 return
                     name.Equals(otherStringProperty.name) &&
                     placeholder.Equals(otherStringProperty.placeholder) &&
-                    currentContents.Equals(otherStringProperty.currentContents) &&
                     bindStrategy.Equals(otherStringProperty.bindStrategy);
             }
         }
@@ -74,19 +72,10 @@ namespace Assets.Scripts.Visuals.UiBuilder
                 // Update data
                 var stringPropertyHandler = gameObject.gameObject.GetComponent<StringPropertyHandler>();
 
-                stringPropertyHandler.ResetActions();
-
                 stringPropertyHandler.propertyNameText.text = newStringPropertyData.name;
-                stringPropertyHandler.stringInput.SetCurrentText(newStringPropertyData.currentContents);
                 stringPropertyHandler.stringInput.SetPlaceHolder(newStringPropertyData.placeholder);
 
-                // setup actions
-                var actions = new UiPropertyActions<string>
-                {
-                    OnSubmit = newStringPropertyData.bindStrategy.SetValueToInput
-                };
-
-                stringPropertyHandler.SetActions(actions);
+                stringPropertyHandler.Setup(newStringPropertyData.bindStrategy);
             }
         }
 
@@ -104,13 +93,12 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
     public static class StringPropertyPanelHelper
     {
-        public static StringPropertyAtom.Data AddStringProperty(this PanelAtom.Data panelAtomData, string name, string placeholder, string currentContents, ValueBindStrategy<string> bindStrategy)
+        public static StringPropertyAtom.Data AddStringProperty(this PanelAtom.Data panelAtomData, string name, string placeholder, ValueBindStrategy<string> bindStrategy)
         {
             var data = new StringPropertyAtom.Data
             {
                 name = name,
                 placeholder = placeholder,
-                currentContents = currentContents,
                 bindStrategy = bindStrategy
             };
 

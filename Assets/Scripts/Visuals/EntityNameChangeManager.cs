@@ -71,12 +71,13 @@ public class EntityNameChangeManager
         }
     }
 
-    public BindNameStrategy GetNameFieldBinding(Guid id)
+    public ValueBindStrategy<string> GetNameFieldBinding(Guid id)
     {
         var entity = sceneManagerSystem.GetCurrentScene().GetEntityById(id);
 
-        var strategy = new BindNameStrategy(
-            value =>
+        var strategy = new ValueBindStrategy<string>(
+            () => entity.CustomName,
+            onValueSubmitted: value =>
                 commandSystem.ExecuteCommand(
                     commandSystem.CommandFactory.CreateChangeEntityName(
                         id,

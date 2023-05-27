@@ -62,10 +62,16 @@ namespace Assets.Scripts.Events
         public event Action onDialogChangedEvent;
         public void InvokeDialogChangedEvent() => onDialogChangedEvent?.Invoke();
 
+
         public event Action onUpdateSceneViewButtons;
         public void InvokeUpdateSceneViewButtons() => onUpdateSceneViewButtons?.Invoke();
 
+
         public event Action OnCurrentSceneChangedEvent;
         public void InvokeCurrentSceneChangedEvent() => OnCurrentSceneChangedEvent?.Invoke();
+
+
+        public event Action onValueChangedEvent;
+        public void InvokeOnValueChangedEvent() => onValueChangedEvent?.Invoke();
     }
 }

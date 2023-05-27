@@ -30,6 +30,7 @@ namespace Assets.Scripts.Visuals
         private AssetManagerSystem assetManagerSystem;
         private DialogSystem dialogSystem;
         private EntityNameChangeManager entityNameChangeManager;
+        private PropertyBindingManager propertyBindingManager;
 
         [Inject]
         private void Construct(
@@ -44,7 +45,8 @@ namespace Assets.Scripts.Visuals
             AvailableComponentsState availableComponentsState,
             AssetManagerSystem assetManagerSystem,
             DialogSystem dialogSystem,
-            EntityNameChangeManager entityNameChangeManager)
+            EntityNameChangeManager entityNameChangeManager,
+            PropertyBindingManager propertyBindingManager)
         {
             this.inputState = inputState;
             this.updatePropertiesSystem = updatePropertiesSystem;
@@ -58,6 +60,7 @@ namespace Assets.Scripts.Visuals
             this.assetManagerSystem = assetManagerSystem;
             this.dialogSystem = dialogSystem;
             this.entityNameChangeManager = entityNameChangeManager;
+            this.propertyBindingManager = propertyBindingManager;
 
             SetupEventListeners();
         }
@@ -129,7 +132,7 @@ namespace Assets.Scripts.Visuals
             };
 
             var entityHeadPanel = inspectorPanel.AddPanelWithBorder();
-            entityHeadPanel.AddStringProperty("Name", "Name", selectedEntity.CustomName ?? "", entityNameChangeManager.GetNameFieldBinding(selectedEntity.Id));
+            entityHeadPanel.AddStringProperty("Name", "Name", entityNameChangeManager.GetNameFieldBinding(selectedEntity.Id));
             entityHeadPanel.AddBooleanProperty("Is Exposed", selectedEntity.IsExposed, exposedInputActions);
             
             if (selectedEntity.IsExposed)
@@ -154,20 +157,13 @@ namespace Assets.Scripts.Visuals
                         case DclComponent.DclComponentProperty.PropertyType.None: // not supported
                             componentPanel.AddText("None property not supported");
                             break;
+
                         case DclComponent.DclComponentProperty.PropertyType.String:
                         {
-                            var stringActions = new StringPropertyAtom.UiPropertyActions<string>
-                            {
-                                OnChange = (value) => updatePropertiesSystem.UpdateFloatingProperty(propertyIdentifier, value),
-                                OnSubmit = (value) => updatePropertiesSystem.UpdateFixedProperty(propertyIdentifier, value),
-                                OnAbort = (_) => updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier)
-                            };
-
                             componentPanel.AddStringProperty(
                                 property.PropertyName,
                                 property.PropertyName,
-                                property.GetConcrete<string>().Value,
-                                null); // TODO
+                                propertyBindingManager.GetPropertyBinding<string>(propertyIdentifier));
 
                             break;
                         }
@@ -219,7 +215,7 @@ namespace Assets.Scripts.Visuals
                             componentPanel.AddBooleanProperty(
                                 property.PropertyName,
                                 property.GetConcrete<bool>().Value,
-                                boolActions);                                    
+                                boolActions);
                             break;
                         }
                         case DclComponent.DclComponentProperty.PropertyType.Vector3:
@@ -259,12 +255,12 @@ namespace Assets.Scripts.Visuals
                             break;
                         }
                         case DclComponent.DclComponentProperty.PropertyType.Asset: // not supported yet
-                            {
-                                var assetMetadata = assetManagerSystem.GetMetadataById(property.GetConcrete<Guid>().Value);
-                                componentPanel.AddAssetProperty(
-                                    property.PropertyName,
-                                    assetMetadata,
-                                    (_) => dialogSystem.OpenAssetDialog(component));
+                        {
+                            var assetMetadata = assetManagerSystem.GetMetadataById(property.GetConcrete<Guid>().Value);
+                            componentPanel.AddAssetProperty(
+                                property.PropertyName,
+                                assetMetadata,
+                                (_) => dialogSystem.OpenAssetDialog(component));
 
                             break;
                         }

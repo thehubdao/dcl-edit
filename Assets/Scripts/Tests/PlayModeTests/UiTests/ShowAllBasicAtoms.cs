@@ -63,12 +63,12 @@ namespace Assets.Scripts.Tests.PlayModeTests.UiTests
 
             var secondPanel = horPanel.AddPanelWithBorder();
             secondPanel.AddPanelHeader("Second panel", () => { });
-            secondPanel.AddStringProperty("String property", "write a string here", "", new JustSetStrategy<string>());
+            secondPanel.AddStringProperty("String property", "write a string here", new ValueBindStrategy<string>(() => ""));
             secondPanel.AddBooleanProperty("Bool property", true, new StringPropertyAtom.UiPropertyActions<bool>());
 
             var thirdPanel = horPanel.AddPanelWithBorder();
             thirdPanel.AddPanelHeader("Second panel", () => { });
-            thirdPanel.AddStringProperty("String property", "write a string here", "", new JustSetStrategy<string>());
+            thirdPanel.AddStringProperty("String property", "write a string here", new ValueBindStrategy<string>(() => ""));
             thirdPanel.AddBooleanProperty("Bool property", true, new StringPropertyAtom.UiPropertyActions<bool>());
 
             mainPanel.AddSpacer(100);
@@ -142,9 +142,9 @@ namespace Assets.Scripts.Tests.PlayModeTests.UiTests
             var testerPrompt = UiTester.instance.uiTesterPrompt;
             var mainPanel = UiBuilder.NewPanelData();
 
-            mainPanel.AddStringProperty("This is some property", "text", "text", new JustSetStrategy<string>());
-            mainPanel.AddStringProperty("This is some more property", "text", "text", new JustSetStrategy<string>());
-            mainPanel.AddStringProperty("This is even more property", "text", "text", new JustSetStrategy<string>());
+            mainPanel.AddStringProperty("This is some property", "text", new ValueBindStrategy<string>(() => "text"));
+            mainPanel.AddStringProperty("This is some more property", "text", new ValueBindStrategy<string>(() => "text"));
+            mainPanel.AddStringProperty("This is even more property", "text", new ValueBindStrategy<string>(() => "text"));
 
             uiBuilder.Update(mainPanel);
 

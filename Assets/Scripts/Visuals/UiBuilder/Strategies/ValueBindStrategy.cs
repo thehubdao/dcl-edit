@@ -1,30 +1,34 @@
 using System;
-using Assets.Scripts.SceneState;
 using JetBrains.Annotations;
 
-public abstract class ValueBindStrategy<T>
+public class ValueBindStrategy<T>
 {
-    public abstract void SetValueToInput(T inputValue);
-}
-
-public class BindNameStrategy : ValueBindStrategy<string>
-{
-    private readonly Action<string> setValue;
-
-    public BindNameStrategy(Action<string> setValue)
+    public ValueBindStrategy(
+        [NotNull] Func<T> value,
+        [CanBeNull] Action<T> onValueSubmitted = null,
+        [CanBeNull] Action<string[]> onErrorSubmitted = null,
+        [CanBeNull] Action<T> onValueChanged = null,
+        [CanBeNull] Action<string[]> onErrorChanged = null)
     {
-        this.setValue = setValue;
+        this.value = value;
+        this.onValueSubmitted = onValueSubmitted;
+        this.onErrorSubmitted = onErrorSubmitted;
+        this.onValueChanged = onValueChanged;
+        this.onErrorChanged = onErrorChanged;
     }
 
-    public override void SetValueToInput(string inputValue)
-    {
-        setValue(inputValue);
-    }
-}
+    [NotNull]
+    public Func<T> value;
 
-public class JustSetStrategy<T> : ValueBindStrategy<T>
-{
-    public override void SetValueToInput(T inputValue)
-    {
-    }
+    [CanBeNull]
+    public Action<T> onValueSubmitted;
+
+    [CanBeNull]
+    public Action<string[]> onErrorSubmitted;
+
+    [CanBeNull]
+    public Action<T> onValueChanged;
+
+    [CanBeNull]
+    public Action<string[]> onErrorChanged;
 }
