@@ -174,9 +174,9 @@ public class DclEditorInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<GizmoSizeSystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<PanelSystem>().AsSingle();
-        
+
         Container.BindInterfacesAndSelfTo<FileUpgraderSystem>().AsSingle();
 
-        Container.BindInterfacesAndSelfTo<SceneChangeDetectSystem>().AsSingle();
+        Container.Bind<ISceneChangeDetectSystem>().To<SceneChangeDetectSystem>().AsSingle();
     }
 }
