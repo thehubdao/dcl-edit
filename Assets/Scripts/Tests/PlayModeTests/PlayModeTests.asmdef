@@ -8,10 +8,10 @@
         "EditorState",
         "Utility",
         "SceneState",
-        "Systems",
         "Events",
         "Visuals",
-        "Unity.TextMeshPro"
+        "Unity.TextMeshPro",
+        "DclSystems"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
