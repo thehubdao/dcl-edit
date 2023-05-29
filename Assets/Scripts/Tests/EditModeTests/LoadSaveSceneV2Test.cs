@@ -72,7 +72,7 @@ namespace Assets.Scripts.Tests.EditModeTests
             CheckVersionSystem checkVersionSystem = new CheckVersionSystem();
             WorkspaceSaveSystem workspaceSaveSystem = new WorkspaceSaveSystem();
             TypeScriptGenerationSystem typeScriptGenerationSystem = new TypeScriptGenerationSystem();
-            ISceneViewSystem sceneViewSystem = new SceneViewSystem();
+            ISceneViewSystem sceneViewSystem = new MockSceneViewSystem();
             MenuBarSystem menuBarSystem = new MenuBarSystem();
             SceneManagerSystem sceneManagerSystem = new SceneManagerSystem();
             EditorEvents editorEvents = new EditorEvents();
@@ -94,6 +94,7 @@ namespace Assets.Scripts.Tests.EditModeTests
                 sceneViewSystem,
                 menuBarSystem,
                 settingsSystem);
+            loadSaveSystem.Construct(null, new FileUpgraderSystem(), sceneViewSystem, new MockSceneChangeDetectSystem());
 
             var scenePath = pathState.ProjectPath + "/dcl-edit/saves/v2/New Scene.dclscene";
 
