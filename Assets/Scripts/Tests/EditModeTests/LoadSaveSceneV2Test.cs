@@ -17,6 +17,7 @@ namespace Assets.Scripts.Tests.EditModeTests
         {
             var pathState = new MockPathState("simple-load-test");
             var loadSaveSystem = new SceneLoadSaveSystem();
+            loadSaveSystem.Construct(null, new FileUpgraderSystem(), new MockSceneViewSystem(), new MockSceneChangeDetectSystem());
             var sceneDirectoryState = new SceneDirectoryState();
             var scenePath = pathState.ProjectPath + "/dcl-edit/saves/v2/New Scene.dclscene";
 
