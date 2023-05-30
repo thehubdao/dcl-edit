@@ -96,6 +96,7 @@ namespace Assets.Scripts.Visuals
         {
             events.onHierarchyChangedEvent += MarkForUpdate;
             events.onSelectionChangedEvent += MarkForUpdate;
+            events.onValueChangedEvent += UpdateValues;
             MarkForUpdate();
         }
 
@@ -169,6 +170,11 @@ namespace Assets.Scripts.Visuals
             }
 
             uiBuilder.Update(mainPanelData);
+        }
+
+        private void UpdateValues()
+        {
+            uiBuilder.UpdateValues();
         }
 
         private void MakeHierarchyItemsRecursive([NotNull] DclScene scene, int level, IEnumerable<DclEntity> entities,

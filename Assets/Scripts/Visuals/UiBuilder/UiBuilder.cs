@@ -166,6 +166,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
         // ----------------------------
 
+        [CanBeNull]
         private PanelAtom currentRootAtom = null;
         public GameObject parentObject;
 
@@ -190,6 +191,16 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
             currentRootAtom.Update(newData);
             currentRootAtom.gameObject.gameObject.transform.SetParent(parentObject.transform, false);
+        }
+
+        public void UpdateValues()
+        {
+            if (currentRootAtom == null) return;
+
+            foreach (var valueHandler in currentRootAtom.gameObject.gameObject.GetComponentsInChildren<IUpdateValue>())
+            {
+                valueHandler.UpdateValue();
+            }
         }
 
         public class Factory : PlaceholderFactory<GameObject, UiBuilder>

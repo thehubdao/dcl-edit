@@ -180,8 +180,7 @@ namespace Assets.Scripts.Visuals
                             componentPanel.AddNumberProperty(
                                 property.PropertyName,
                                 property.PropertyName,
-                                property.GetConcrete<int>().Value,
-                                intActions);
+                                propertyBindingManager.GetPropertyBinding<int>(propertyIdentifier));
 
                             break;
                         }
@@ -198,8 +197,7 @@ namespace Assets.Scripts.Visuals
                             componentPanel.AddNumberProperty(
                                 property.PropertyName,
                                 property.PropertyName,
-                                property.GetConcrete<float>().Value,
-                                floatActions);
+                                propertyBindingManager.GetPropertyBinding<float>(propertyIdentifier));
 
                             break;
                         }

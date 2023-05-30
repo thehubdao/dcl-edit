@@ -8,8 +8,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
         {
             public string name;
             public string placeholder;
-            public float currentContents;
-            public StringPropertyAtom.UiPropertyActions<float> actions;
+            public ValueBindStrategy<float> valueBindStrategy;
 
 
             public override bool Equals(Atom.Data other)
@@ -19,11 +18,11 @@ namespace Assets.Scripts.Visuals.UiBuilder
                     return false;
                 }
 
+
                 return
                     name.Equals(otherNumberProperty.name) &&
                     placeholder.Equals(otherNumberProperty.placeholder) &&
-                    currentContents.Equals(otherNumberProperty.currentContents) &&
-                    actions.Equals(otherNumberProperty.actions);
+                    valueBindStrategy.Equals(otherNumberProperty.valueBindStrategy);
             }
         }
 
@@ -51,11 +50,10 @@ namespace Assets.Scripts.Visuals.UiBuilder
                 numberPropertyHandler.ResetActions();
 
                 numberPropertyHandler.propertyNameText.text = newNumberPropertyData.name;
-                numberPropertyHandler.numberInput.SetCurrentNumber(newNumberPropertyData.currentContents);
                 numberPropertyHandler.numberInput.TextInputHandler.SetPlaceHolder(newNumberPropertyData.placeholder);
 
                 // setup actions
-                numberPropertyHandler.SetActions(newNumberPropertyData.actions);
+                numberPropertyHandler.Setup(newNumberPropertyData.valueBindStrategy);
             }
         }
 
@@ -73,14 +71,31 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
     public static class NumberPropertyPanelHelper
     {
-        public static NumberPropertyAtom.Data AddNumberProperty(this PanelAtom.Data panelAtomData, string name, string placeholder, float currentContents, StringPropertyAtom.UiPropertyActions<float> actions)
+        public static NumberPropertyAtom.Data AddNumberProperty(this PanelAtom.Data panelAtomData, string name, string placeholder, ValueBindStrategy<float> valueBindStrategy)
         {
             var data = new NumberPropertyAtom.Data
             {
                 name = name,
                 placeholder = placeholder,
-                currentContents = currentContents,
-                actions = actions
+                valueBindStrategy = valueBindStrategy
+            };
+
+            panelAtomData.childDates.Add(data);
+            return data;
+        }
+
+        public static NumberPropertyAtom.Data AddNumberProperty(this PanelAtom.Data panelAtomData, string name, string placeholder, ValueBindStrategy<int> valueBindStrategy)
+        {
+            var data = new NumberPropertyAtom.Data
+            {
+                name = name,
+                placeholder = placeholder,
+                valueBindStrategy = new ValueBindStrategy<float>(
+                    () => valueBindStrategy.value(),
+                    onValueSubmitted: value => valueBindStrategy.onValueSubmitted?.Invoke((int) value),
+                    onValueChanged: value => valueBindStrategy.onValueChanged?.Invoke((int) value),
+                    onErrorSubmitted: valueBindStrategy.onErrorSubmitted,
+                    onErrorChanged: valueBindStrategy.onErrorChanged)
             };
 
             panelAtomData.childDates.Add(data);

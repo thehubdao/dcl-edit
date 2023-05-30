@@ -8,7 +8,7 @@ using Zenject;
 
 namespace Assets.Scripts.Visuals.PropertyHandler
 {
-    public class StringPropertyHandler : MonoBehaviour
+    public class StringPropertyHandler : MonoBehaviour, IUpdateValue
     {
         [SerializeField]
         public TextMeshProUGUI propertyNameText;
@@ -16,11 +16,6 @@ namespace Assets.Scripts.Visuals.PropertyHandler
         [SerializeField]
         public TextInputHandler stringInput;
 
-        [Inject]
-        private void Construct(EditorEvents editorEvents)
-        {
-            editorEvents.onValueChangedEvent += UpdateValue;
-        }
 
         [CanBeNull]
         private ValueBindStrategy<string> bindStrategy;
@@ -28,7 +23,7 @@ namespace Assets.Scripts.Visuals.PropertyHandler
         [CanBeNull]
         private string lastValue = null;
 
-        private void UpdateValue()
+        public void UpdateValue()
         {
             var currentValue = bindStrategy?.value();
 
@@ -43,15 +38,15 @@ namespace Assets.Scripts.Visuals.PropertyHandler
         {
             ResetActions();
 
+            this.bindStrategy = bindStrategy;
+
+            UpdateValue();
+
             Action<string> onChange = bindStrategy.onValueChanged;
             Action<string> onSubmit = bindStrategy.onValueSubmitted;
             Action<string> onAbort = s => bindStrategy.onErrorSubmitted?.Invoke(new[] {s});
 
             stringInput.SetActions(onChange, onSubmit, onAbort);
-
-            this.bindStrategy = bindStrategy;
-
-            UpdateValue();
         }
 
         public void ResetActions()

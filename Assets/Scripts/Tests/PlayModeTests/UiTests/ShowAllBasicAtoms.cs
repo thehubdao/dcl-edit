@@ -57,7 +57,7 @@ namespace Assets.Scripts.Tests.PlayModeTests.UiTests
             var firstPanel = mainPanel.AddPanelWithBorder();
             firstPanel.AddPanelHeader("First panel");
             firstPanel.AddVector3Property("Vector property", new List<string> {"x", "y", "z"}, Vector3.zero, new StringPropertyAtom.UiPropertyActions<Vector3>());
-            firstPanel.AddNumberProperty("Number property", "only takes numbers", 100, new StringPropertyAtom.UiPropertyActions<float>());
+            firstPanel.AddNumberProperty("Number property", "only takes numbers", new ValueBindStrategy<float>(() => 100));
 
             var horPanel = mainPanel.AddPanel(PanelHandler.LayoutDirection.Horizontal);
 
@@ -157,9 +157,9 @@ namespace Assets.Scripts.Tests.PlayModeTests.UiTests
             var testerPrompt = UiTester.instance.uiTesterPrompt;
             var mainPanel = UiBuilder.NewPanelData();
 
-            mainPanel.AddNumberProperty("This is some property", "text", 0f, new StringPropertyAtom.UiPropertyActions<float>());
-            mainPanel.AddNumberProperty("This is some more property", "text", 0f, new StringPropertyAtom.UiPropertyActions<float>());
-            mainPanel.AddNumberProperty("This is even more property", "text", 0f, new StringPropertyAtom.UiPropertyActions<float>());
+            mainPanel.AddNumberProperty("This is some property", "text", new ValueBindStrategy<float>(() => 0f));
+            mainPanel.AddNumberProperty("This is some more property", "text", new ValueBindStrategy<float>(() => 0f));
+            mainPanel.AddNumberProperty("This is even more property", "text", new ValueBindStrategy<float>(() => 0f));
 
             uiBuilder.Update(mainPanel);
 

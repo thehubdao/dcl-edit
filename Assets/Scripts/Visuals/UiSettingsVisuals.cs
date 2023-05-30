@@ -86,42 +86,27 @@ namespace Assets.Scripts.Visuals
             userSettingsPanel.AddNumberProperty(
                 "Ui Scale",
                 "Ui Scale (default: 1)",
-                settingsSystem.uiScalingFactor.Get(),
-                new StringPropertyAtom.UiPropertyActions<float>
-                {
-                    OnSubmit = settingsSystem.uiScalingFactor.Set
-                });
+                new ValueBindStrategy<float>(settingsSystem.uiScalingFactor.Get, onValueSubmitted: settingsSystem.uiScalingFactor.Set));
 
             // mouse sensitivity
             userSettingsPanel.AddNumberProperty(
                 "Mouse Sensitivity",
                 "Mouse Sensitivity (default: 1)",
-                settingsSystem.mouseSensitivity.Get(),
-                new StringPropertyAtom.UiPropertyActions<float>
-                {
-                    OnSubmit = settingsSystem.mouseSensitivity.Set
-                });
+                new ValueBindStrategy<float>(settingsSystem.mouseSensitivity.Get, onValueSubmitted: settingsSystem.mouseSensitivity.Set));
+
 
             // Gizmo Size
             userSettingsPanel.AddNumberProperty(
                 "Gizmo Size",
                 "Gizmo Size (default: 1)",
-                settingsSystem.gizmoSize.Get(),
-                new StringPropertyAtom.UiPropertyActions<float>
-                {
-                    OnSubmit = settingsSystem.gizmoSize.Set
-                });
+                new ValueBindStrategy<float>(settingsSystem.gizmoSize.Get, onValueSubmitted: settingsSystem.gizmoSize.Set));
 
             // Maximal frame rate
             userSettingsPanel.AddNumberProperty(
                 "Maximal Frame Rate",
                 "Maximal Frame Rate (default: 120)",
-                settingsSystem.applicationTargetFramerate.Get(),
-                new StringPropertyAtom.UiPropertyActions<float>
-                {
-                    OnSubmit = f => settingsSystem.applicationTargetFramerate.Set((int) f)
-                });
-
+                new ValueBindStrategy<float>(()=>settingsSystem.applicationTargetFramerate.Get(), onValueSubmitted: value => settingsSystem.applicationTargetFramerate.Set((int)value)));
+                
 
             // Gizmo Tool Snapping
 
@@ -133,31 +118,19 @@ namespace Assets.Scripts.Visuals
             gizmoToolSnappingPanel.AddNumberProperty(
                 "Translate Step",
                 "Translate (default: 0.25)",
-                settingsSystem.gizmoToolTranslateSnapping.Get(),
-                new StringPropertyAtom.UiPropertyActions<float>
-                {
-                    OnSubmit = settingsSystem.gizmoToolTranslateSnapping.Set
-                });
+                new ValueBindStrategy<float>(settingsSystem.gizmoToolTranslateSnapping.Get, onValueSubmitted: settingsSystem.gizmoToolTranslateSnapping.Set));
 
             // rotate
             gizmoToolSnappingPanel.AddNumberProperty(
                 "Rotate Step",
                 "Rotate (default: 15)",
-                settingsSystem.gizmoToolRotateSnapping.Get(),
-                new StringPropertyAtom.UiPropertyActions<float>
-                {
-                    OnSubmit = settingsSystem.gizmoToolRotateSnapping.Set
-                });
+                new ValueBindStrategy<float>(settingsSystem.gizmoToolRotateSnapping.Get, onValueChanged: settingsSystem.gizmoToolRotateSnapping.Set));
 
             // scale
             gizmoToolSnappingPanel.AddNumberProperty(
                 "Scale Step",
                 "Scale (default: 0.25)",
-                settingsSystem.gizmoToolScaleSnapping.Get(),
-                new StringPropertyAtom.UiPropertyActions<float>
-                {
-                    OnSubmit = settingsSystem.gizmoToolScaleSnapping.Set
-                });
+                new ValueBindStrategy<float>(settingsSystem.gizmoToolScaleSnapping.Get, onValueChanged: settingsSystem.gizmoToolScaleSnapping.Set));
 
             // Version number
             settingsPanel.AddSpacer(100);

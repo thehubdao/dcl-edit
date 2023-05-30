@@ -9,13 +9,15 @@ public class NumberInputHandler : MonoBehaviour
     // Dependencies
     [SerializeField]
     public TextInputHandler TextInputHandler;
-    private NumberInputSystem _numberInputSystem;
+
+    private NumberInputSystem numberInputSystem;
 
     [Inject]
     private void Construct(NumberInputSystem numberInputSystem)
     {
-        _numberInputSystem = numberInputSystem;
+        this.numberInputSystem = numberInputSystem;
     }
+
     public void SetCurrentNumber(float currentContents)
     {
         TextInputHandler.SetCurrentText(NumberToString(currentContents));
@@ -23,7 +25,7 @@ public class NumberInputHandler : MonoBehaviour
 
     public float? GetCurrentNumber()
     {
-        return _numberInputSystem.ValidateNumberInput(TextInputHandler.GetCurrentText());
+        return numberInputSystem.ValidateNumberInput(TextInputHandler.GetCurrentText());
     }
 
     public void ResetActions()
@@ -34,45 +36,34 @@ public class NumberInputHandler : MonoBehaviour
     public void SetActions(Action<float> onChange, Action<string[]> onInvalid, Action<float> onSubmit, Action<string[]> onAbort)
     {
         TextInputHandler.SetActions(
-                (value) =>
+            (value) =>
+            {
+                var numberValue = numberInputSystem.ValidateNumberInput(value);
+                if (numberValue == null)
                 {
-                    var numberValue = _numberInputSystem.ValidateNumberInput(value);
-                    if (numberValue == null)
-                    {
-                        onInvalid?.Invoke(new[] {value});
+                    onInvalid?.Invoke(new[] {value});
 
-                        TextInputHandler.SetBorderColorValid(false);
-                    }
-                    else
-                    {
-                        onChange?.Invoke(numberValue.Value);
-                        TextInputHandler.SetBorderColorValid(true);
-                    }
-                },
-                (value) =>
+                    TextInputHandler.SetBorderColorValid(false);
+                }
+                else
                 {
-                    var numberValue = _numberInputSystem.ValidateNumberInput(value);
-                    if (numberValue == null)
-                    {
-                        onAbort?.Invoke(new[] {value});
-                    }
-                    else
-                    {
-                        onSubmit?.Invoke(numberValue.Value);
-                    }
-                },
-                (value) =>
+                    onChange?.Invoke(numberValue.Value);
+                    TextInputHandler.SetBorderColorValid(true);
+                }
+            },
+            (value) =>
+            {
+                var numberValue = numberInputSystem.ValidateNumberInput(value);
+                if (numberValue == null)
                 {
-                    //var numberValue = _numberInputSystem.ValidateNumberInput(value); // TODO
-                    //if (numberValue == null)
-                    //{
                     onAbort?.Invoke(new[] {value});
-                    //}
-                    //else
-                    //{
-                    //    onAbort?.Invoke(numberValue.Value);
-                    //}
-                });
+                }
+                else
+                {
+                    onSubmit?.Invoke(numberValue.Value);
+                }
+            },
+            (value) => { onAbort?.Invoke(new[] {value}); });
     }
 
     private string NumberToString(float value)
