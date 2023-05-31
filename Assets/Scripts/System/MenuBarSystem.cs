@@ -1,15 +1,17 @@
 using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using UnityEngine.Events;
 using Zenject;
 
 namespace Assets.Scripts.System
 {
-    public class MenuBarSystem
+    public interface IMenuBarSystem
+    {
+        void AddMenuItem(string path, UnityAction onClick);
+    }
+
+    public class MenuBarSystem : IMenuBarSystem
     {
         // Dependencies
         private EditorEvents _editorEvents;

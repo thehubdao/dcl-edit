@@ -41,13 +41,17 @@ namespace Assets.Scripts.System
         // Dependencies
         private LoadFromVersion1System loadFromVersion1System;
         private FileUpgraderSystem fileUpgraderSystem;
+        private ISceneViewSystem sceneViewSystem;
+        private SceneChangeDetectSystem sceneChangeDetectSystem;
 
         [Inject]
         public void Construct(
-            LoadFromVersion1System loadFromVersion1System, FileUpgraderSystem fileUpgraderSystem)
+            LoadFromVersion1System loadFromVersion1System, FileUpgraderSystem fileUpgraderSystem, ISceneViewSystem sceneViewSystem, SceneChangeDetectSystem sceneChangeDetectSystem)
         {
             this.loadFromVersion1System = loadFromVersion1System;
             this.fileUpgraderSystem = fileUpgraderSystem;
+            this.sceneViewSystem = sceneViewSystem;
+            this.sceneChangeDetectSystem = sceneChangeDetectSystem;
         }
 
 
@@ -93,6 +97,9 @@ namespace Assets.Scripts.System
 
                     sceneDirectoryState.loadedFilePathsInScene.Add(NormalizePath(newPath));
                 }
+
+                sceneChangeDetectSystem.RememberCurrentState();
+                sceneViewSystem.UpdateSceneTabTitle();
             }
             catch (Exception e)
             {
