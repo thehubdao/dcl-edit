@@ -18,7 +18,7 @@ public class PropertyBindingManager
     {
         var concreteProperty = sceneManagerSystem.GetCurrentScene().GetPropertyFromIdentifier(propertyIdentifier).GetConcrete<T>();
         return new ValueBindStrategy<T>(
-            value: () => concreteProperty.GetConcrete<T>().Value,
+            value: () => concreteProperty.Value,
             onValueSubmitted: value =>
             {
                 concreteProperty.ResetFloating();

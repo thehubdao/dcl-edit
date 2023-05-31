@@ -1,10 +1,9 @@
-using Assets.Scripts.Visuals.UiBuilder;
 using TMPro;
 using UnityEngine;
 
 namespace Assets.Scripts.Visuals.UiHandler
 {
-    public class Vector3PropertyHandler : MonoBehaviour
+    public class Vector3PropertyHandler : MonoBehaviour, IUpdateValue
     {
         [SerializeField]
         public TextMeshProUGUI propertyNameText;
@@ -18,6 +17,10 @@ namespace Assets.Scripts.Visuals.UiHandler
         [SerializeField]
         public NumberInputHandler numberInputZ;
 
+
+        private ValueBindStrategy<Vector3> bindStrategy;
+        private Vector3? lastValue;
+
         public void ResetActions()
         {
             numberInputX.ResetActions();
@@ -25,82 +28,56 @@ namespace Assets.Scripts.Visuals.UiHandler
             numberInputZ.ResetActions();
         }
 
-        public void SetActions(StringPropertyAtom.UiPropertyActions<Vector3> actions)
-        {
-            SetActionsHelper(numberInputX, actions);
-            SetActionsHelper(numberInputY, actions);
-            SetActionsHelper(numberInputZ, actions);
-        }
 
-        private Vector3? GetCurrentValue()
+        public void UpdateValue()
         {
-            var xInput = numberInputX.GetCurrentNumber();
-            var yInput = numberInputY.GetCurrentNumber();
-            var zInput = numberInputZ.GetCurrentNumber();
-            if (xInput == null  || yInput == null || zInput == null)
+            var currentValue = bindStrategy?.value();
+
+            if (lastValue != currentValue)
             {
-                return null;
+                numberInputX.SetCurrentNumber(currentValue?.x ?? 0);
+                numberInputY.SetCurrentNumber(currentValue?.y ?? 0);
+                numberInputZ.SetCurrentNumber(currentValue?.z ?? 0);
+
+                lastValue = currentValue;
             }
-            return new Vector3(xInput.Value, yInput.Value, zInput.Value);
         }
 
-        private void SetActionsHelper(NumberInputHandler numberInput, StringPropertyAtom.UiPropertyActions<Vector3> actions)
+        public void Setup(ValueBindStrategy<Vector3> valueBindStrategy)
         {
-            numberInput.SetActions(
-                _ =>
-                {
-                    var currentValue = GetCurrentValue();
-                    if (currentValue == null)
-                    {
-                        actions.OnInvalid?.Invoke(new[]
-                        {
-                            numberInputX.TextInputHandler.GetCurrentText(),
-                            numberInputY.TextInputHandler.GetCurrentText(),
-                            numberInputZ.TextInputHandler.GetCurrentText()
-                        });
-                    }
-                    else
-                    {
-                        actions.OnChange?.Invoke(currentValue.Value);
-                    }
-                },
-                _ =>
-                {
-                    actions.OnInvalid?.Invoke(new[]
-                    {
-                        numberInputX.TextInputHandler.GetCurrentText(),
-                        numberInputY.TextInputHandler.GetCurrentText(),
-                        numberInputZ.TextInputHandler.GetCurrentText()
-                    });
-                },
-                _ =>
-                {
-                    var currentValue = GetCurrentValue();
-                    if (currentValue == null)
-                    {
-                        actions.OnAbort?.Invoke(new[]
-                        {
-                            numberInputX.TextInputHandler.GetCurrentText(),
-                            numberInputY.TextInputHandler.GetCurrentText(),
-                            numberInputZ.TextInputHandler.GetCurrentText()
-                        });
-                    }
-                    else
-                    {
-                        actions.OnSubmit?.Invoke(currentValue.Value);
-                    }
-                },
-                _ =>
-                {
-                    var currentValue = GetCurrentValue();
+            ResetActions();
 
-                    actions.OnAbort?.Invoke(new[]
-                    {
-                        numberInputX.TextInputHandler.GetCurrentText(),
-                        numberInputY.TextInputHandler.GetCurrentText(),
-                        numberInputZ.TextInputHandler.GetCurrentText()
-                    });
+            bindStrategy = valueBindStrategy;
+
+            UpdateValue();
+
+            ActionSetupHelper(numberInputX, valueBindStrategy);
+            ActionSetupHelper(numberInputY, valueBindStrategy);
+            ActionSetupHelper(numberInputZ, valueBindStrategy);
+        }
+
+        public void ActionSetupHelper(NumberInputHandler numberInputHandler, ValueBindStrategy<Vector3> valueBindStrategy)
+        {
+            numberInputHandler.SetActions(
+                onChange: _ => { valueBindStrategy.onValueChanged?.Invoke(GetInputValue()); },
+                onInvalid: _ => { valueBindStrategy.onErrorChanged?.Invoke(GetInputStrings()); },
+                onSubmit: _ => { valueBindStrategy.onValueSubmitted?.Invoke(GetInputValue()); },
+                onAbort: _ =>
+                {
+                    lastValue = null;
+                    valueBindStrategy.onErrorSubmitted?.Invoke(GetInputStrings());
+                    UpdateValue();
                 });
+        }
+
+        public Vector3 GetInputValue()
+        {
+            return new Vector3(numberInputX.GetCurrentNumber() ?? 0, numberInputY.GetCurrentNumber() ?? 0, numberInputZ.GetCurrentNumber() ?? 0);
+        }
+
+        public string[] GetInputStrings()
+        {
+            return new[] {numberInputX.TextInputHandler.GetCurrentText(), numberInputY.TextInputHandler.GetCurrentText(), numberInputZ.TextInputHandler.GetCurrentText()};
         }
     }
 }

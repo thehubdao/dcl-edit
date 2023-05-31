@@ -13,6 +13,23 @@ namespace Assets.Scripts.Visuals
         private SceneManagerSystem sceneManagerSystem;
         private MainSceneVisuals.Factory mainSceneVisualsFactory;
 
+        private bool dirty = true;
+
+        private void SetDirty()
+        {
+            dirty = true;
+        }
+
+        void LateUpdate()
+        {
+            if (dirty)
+            {
+                dirty = false;
+                UpdateVisuals();
+            }
+        }
+
+
         [Inject]
         private void Construct(EditorEvents editorEvents, SceneManagerSystem sceneManagerSystem, MainSceneVisuals.Factory mainSceneVisualsFactory)
         {
@@ -25,13 +42,15 @@ namespace Assets.Scripts.Visuals
 
         private void SetupEventListeners()
         {
-            editorEvents.onHierarchyChangedEvent += UpdateVisuals;
-            editorEvents.onSelectionChangedEvent += UpdateVisuals;
-            editorEvents.onAssetDataUpdatedEvent += _ => UpdateVisuals();
-            editorEvents.onAssetMetadataCacheUpdatedEvent += UpdateVisuals;
+            editorEvents.onHierarchyChangedEvent += SetDirty;
+            editorEvents.onSelectionChangedEvent += SetDirty;
+            editorEvents.onAssetDataUpdatedEvent += _ => SetDirty();
+            editorEvents.onAssetMetadataCacheUpdatedEvent += SetDirty;
+            editorEvents.onValueChangedEvent += SetDirty;
 
-            UpdateVisuals();
+            SetDirty();
         }
+
 
         private MainSceneVisuals currentMainSceneVisuals = null;
 

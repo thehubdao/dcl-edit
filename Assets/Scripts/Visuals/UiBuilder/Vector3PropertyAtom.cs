@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Assets.Scripts.Visuals.PropertyHandler;
 using Assets.Scripts.Visuals.UiHandler;
 using UnityEngine;
 
@@ -11,8 +10,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
         {
             public string name;
             public List<string> placeholders;
-            public Vector3 currentContents;
-            public StringPropertyAtom.UiPropertyActions<Vector3> actions;
+            public ValueBindStrategy<Vector3> valueBindStrategy;
 
 
             public override bool Equals(Atom.Data other)
@@ -25,8 +23,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
                 return
                     name.Equals(otherVector3Property.name) &&
                     placeholders.Equals(otherVector3Property.placeholders) &&
-                    currentContents.Equals(otherVector3Property.currentContents) &&
-                    actions.Equals(otherVector3Property.actions);
+                    valueBindStrategy.Equals(otherVector3Property.valueBindStrategy);
             }
         }
 
@@ -55,20 +52,12 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
                 vector3PropertyHandler.propertyNameText.text = newVector3PropertyData.name;
 
-                vector3PropertyHandler.numberInputX.SetDefaultColors();
-                vector3PropertyHandler.numberInputX.SetCurrentNumber(newVector3PropertyData.currentContents.x);
                 vector3PropertyHandler.numberInputX.TextInputHandler.SetPlaceHolder(newVector3PropertyData.placeholders[0]);
-
-                vector3PropertyHandler.numberInputY.SetDefaultColors();
-                vector3PropertyHandler.numberInputY.SetCurrentNumber(newVector3PropertyData.currentContents.y);
                 vector3PropertyHandler.numberInputY.TextInputHandler.SetPlaceHolder(newVector3PropertyData.placeholders[1]);
-
-                vector3PropertyHandler.numberInputZ.SetDefaultColors();
-                vector3PropertyHandler.numberInputZ.SetCurrentNumber(newVector3PropertyData.currentContents.z);
                 vector3PropertyHandler.numberInputZ.TextInputHandler.SetPlaceHolder(newVector3PropertyData.placeholders[2]);
 
                 // setup actions
-                vector3PropertyHandler.SetActions(newVector3PropertyData.actions);
+                vector3PropertyHandler.Setup(newVector3PropertyData.valueBindStrategy);
             }
         }
 
@@ -86,14 +75,13 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
     public static class Vector3PropertyPanelHelper
     {
-        public static Vector3PropertyAtom.Data AddVector3Property(this PanelAtom.Data panelAtomData, string name, List<string> placeholders, Vector3 currentContents, StringPropertyAtom.UiPropertyActions<Vector3> actions)
+        public static Vector3PropertyAtom.Data AddVector3Property(this PanelAtom.Data panelAtomData, string name, (string, string, string) placeholders, ValueBindStrategy<Vector3> valueBindStrategy)
         {
             var data = new Vector3PropertyAtom.Data
             {
                 name = name,
-                placeholders = placeholders,
-                currentContents = currentContents,
-                actions = actions
+                placeholders = new List<string> {placeholders.Item1, placeholders.Item2, placeholders.Item3},
+                valueBindStrategy = valueBindStrategy
             };
 
             panelAtomData.childDates.Add(data);

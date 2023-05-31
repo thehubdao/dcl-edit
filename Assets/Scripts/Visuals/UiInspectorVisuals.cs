@@ -5,7 +5,6 @@ using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
 using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
-using Assets.Scripts.Utility;
 using Assets.Scripts.Visuals.UiBuilder;
 using UnityEngine;
 using Zenject;
@@ -68,6 +67,7 @@ namespace Assets.Scripts.Visuals
         public void SetupEventListeners()
         {
             editorEvents.onSelectionChangedEvent += SetDirty;
+            editorEvents.onValueChangedEvent += UpdateValues;
             SetDirty();
         }
 
@@ -86,6 +86,11 @@ namespace Assets.Scripts.Visuals
                 _dirty = false;
                 UpdateVisuals();
             }
+        }
+
+        private void UpdateValues()
+        {
+            uiBuilder.UpdateValues();
         }
 
         private void UpdateVisuals()
@@ -169,14 +174,6 @@ namespace Assets.Scripts.Visuals
                         }
                         case DclComponent.DclComponentProperty.PropertyType.Int:
                         {
-                            var intActions = new StringPropertyAtom.UiPropertyActions<float> // number property requires float actions
-                            {
-                                OnChange = (value) => updatePropertiesSystem.UpdateFloatingProperty(propertyIdentifier, (int) value),
-                                OnInvalid = (_) => updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier),
-                                OnSubmit = (value) => updatePropertiesSystem.UpdateFixedProperty(propertyIdentifier, (int) value),
-                                OnAbort = (value) => updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier)
-                            };
-
                             componentPanel.AddNumberProperty(
                                 property.PropertyName,
                                 property.PropertyName,
@@ -186,14 +183,6 @@ namespace Assets.Scripts.Visuals
                         }
                         case DclComponent.DclComponentProperty.PropertyType.Float:
                         {
-                            var floatActions = new StringPropertyAtom.UiPropertyActions<float>
-                            {
-                                OnChange = (value) => updatePropertiesSystem.UpdateFloatingProperty(propertyIdentifier, value),
-                                OnInvalid = (_) => updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier),
-                                OnSubmit = (value) => updatePropertiesSystem.UpdateFixedProperty(propertyIdentifier, value),
-                                OnAbort = (_) => updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier)
-                            };
-
                             componentPanel.AddNumberProperty(
                                 property.PropertyName,
                                 property.PropertyName,
@@ -218,37 +207,34 @@ namespace Assets.Scripts.Visuals
                         }
                         case DclComponent.DclComponentProperty.PropertyType.Vector3:
                         {
-                            var vec3Actions = new StringPropertyAtom.UiPropertyActions<Vector3>
-                            {
-                                OnChange = (value) => updatePropertiesSystem.UpdateFloatingProperty(propertyIdentifier, value),
-                                OnInvalid = _ => updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier),
-                                OnSubmit = (value) => updatePropertiesSystem.UpdateFixedProperty(propertyIdentifier, value),
-                                OnAbort = (_) => updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier)
-                            };
-
                             componentPanel.AddVector3Property(
                                 property.PropertyName,
-                                new List<string> {"x", "y", "z"},
-                                property.GetConcrete<Vector3>().Value,
-                                vec3Actions);
-
+                                ("x", "y", "z"),
+                                propertyBindingManager.GetPropertyBinding<Vector3>(propertyIdentifier));
                             break;
                         }
                         case DclComponent.DclComponentProperty.PropertyType.Quaternion: // Shows quaternions in euler angles
                         {
-                            var vec3Actions = new StringPropertyAtom.UiPropertyActions<Vector3>
-                            {
-                                OnChange = (value) => updatePropertiesSystem.UpdateFloatingProperty(propertyIdentifier, Quaternion.Euler(value)),
-                                OnInvalid = _ => updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier),
-                                OnSubmit = (value) => updatePropertiesSystem.UpdateFixedProperty(propertyIdentifier, Quaternion.Euler(value)),
-                                OnAbort = (_) => updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier)
-                            };
+                            // TODO Make a rotation property based on a Quaternion
+                            var concreteProperty = sceneManagerSystem.GetCurrentScene().GetPropertyFromIdentifier(propertyIdentifier).GetConcrete<Quaternion>();
+                            var valueBindStrategy = new ValueBindStrategy<Vector3>(
+                                value: () => concreteProperty.Value.eulerAngles,
+                                onValueSubmitted: value =>
+                                {
+                                    concreteProperty.ResetFloating();
+                                    var oldValue = concreteProperty.Value;
+                                    var command = commandSystem.CommandFactory.CreateChangePropertyCommand(propertyIdentifier, oldValue, Quaternion.Euler(value));
+
+                                    commandSystem.ExecuteCommand(command);
+                                },
+                                onErrorSubmitted: _ => concreteProperty.ResetFloating(),
+                                onValueChanged: value => concreteProperty.SetFloatingValue(Quaternion.Euler(value)),
+                                onErrorChanged: _ => concreteProperty.ResetFloating());
 
                             componentPanel.AddVector3Property(
                                 property.PropertyName,
-                                new List<string> {"pitch", "yaw", "roll"},
-                                property.GetConcrete<Quaternion>().Value.eulerAngles,
-                                vec3Actions);
+                                ("pitch", "yaw", "roll"),
+                                valueBindStrategy);
 
                             break;
                         }

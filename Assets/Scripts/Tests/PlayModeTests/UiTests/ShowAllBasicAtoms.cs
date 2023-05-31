@@ -56,7 +56,7 @@ namespace Assets.Scripts.Tests.PlayModeTests.UiTests
 
             var firstPanel = mainPanel.AddPanelWithBorder();
             firstPanel.AddPanelHeader("First panel");
-            firstPanel.AddVector3Property("Vector property", new List<string> {"x", "y", "z"}, Vector3.zero, new StringPropertyAtom.UiPropertyActions<Vector3>());
+            firstPanel.AddVector3Property("Vector property", ("x", "y", "z"), new ValueBindStrategy<Vector3>(() => Vector3.zero));
             firstPanel.AddNumberProperty("Number property", "only takes numbers", new ValueBindStrategy<float>(() => 100));
 
             var horPanel = mainPanel.AddPanel(PanelHandler.LayoutDirection.Horizontal);
@@ -187,9 +187,9 @@ namespace Assets.Scripts.Tests.PlayModeTests.UiTests
             var testerPrompt = UiTester.instance.uiTesterPrompt;
             var mainPanel = UiBuilder.NewPanelData();
 
-            mainPanel.AddVector3Property("This is some property", new List<string> {"x", "y", "z"}, Vector3.zero, new StringPropertyAtom.UiPropertyActions<Vector3>());
-            mainPanel.AddVector3Property("This is some more property", new List<string> {"x", "y", "z"}, Vector3.zero, new StringPropertyAtom.UiPropertyActions<Vector3>());
-            mainPanel.AddVector3Property("This is even more property", new List<string> {"x", "y", "z"}, Vector3.zero, new StringPropertyAtom.UiPropertyActions<Vector3>());
+            mainPanel.AddVector3Property("This is some property", ("x", "y", "z"), new ValueBindStrategy<Vector3>(() => Vector3.zero));
+            mainPanel.AddVector3Property("This is some more property", ("x", "y", "z"), new ValueBindStrategy<Vector3>(() => Vector3.zero));
+            mainPanel.AddVector3Property("This is even more property", ("x", "y", "z"), new ValueBindStrategy<Vector3>(() => Vector3.zero));
 
             uiBuilder.Update(mainPanel);
 
