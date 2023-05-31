@@ -182,5 +182,9 @@ public class DclEditorInstaller : MonoInstaller
         Container.BindInterfacesTo<GeneralInputInteraction>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<SceneChangeDetectSystem>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<SnackbarSystem>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<SnackbarState>().AsSingle();
     }
 }
