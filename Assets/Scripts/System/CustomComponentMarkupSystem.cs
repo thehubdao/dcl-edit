@@ -135,7 +135,7 @@ namespace Assets.Scripts.System
 
                 var markUpDates =
                     fileManagerSystem
-                        .GetAllFilesWithExtension(fileExtensionTs, fileExtensionCompFile)
+                        .GetAllFilePathsWithExtension(fileExtensionTs, fileExtensionCompFile)
                         .SelectMany(path => FindCustomComponentMarkupsInFile(path, customComponentProblems));
 
                 foreach (var componentObject in markUpDates)

@@ -1,9 +1,16 @@
 using Assets.Scripts.Events;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using JetBrains.Annotations;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 using Zenject;
+using StreamReader = System.IO.StreamReader;
+using System.IO.Pipes;
+using Newtonsoft.Json.UnityConverters.Math;
 
 namespace Assets.Scripts.System
 {
@@ -160,6 +167,79 @@ namespace Assets.Scripts.System
                     throw new Exception($"The type {typeof(T)} can not be handled by the UserSettingsSaver");
                 }
             }
+
+            public class JsonSettingsSaver : SettingSaver
+            {
+                private readonly string settingsPath;
+
+                private static JsonConverter[] converters = new[] {new Vector3Converter()};
+
+                public JsonSettingsSaver(string path)
+                {
+                    settingsPath = path;
+                }
+
+                public override dynamic ReadValue<T>(string key)
+                {
+                    try
+                    {
+                        var stream = File.Open(settingsPath, FileMode.OpenOrCreate, FileAccess.Read);
+
+                        var jObject = JObjectFromStreamOrNull(stream) ?? new JObject();
+
+                        stream.Close();
+
+                        if (!jObject.ContainsKey(key))
+                        {
+                            return null;
+                        }
+
+                        var valueObject = jObject[key];
+
+                        return valueObject!.ToObject<T>();
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogException(e);
+                        return null;
+                    }
+                }
+
+                public override void WriteValue<T>(string key, dynamic value)
+                {
+                    try
+                    {
+                        var fileStream = File.Open(settingsPath, FileMode.OpenOrCreate, FileAccess.Read);
+
+                        var originalObject = JObjectFromStreamOrNull(fileStream) ?? new JObject();
+
+                        fileStream.Close();
+
+                        originalObject[key] = JToken.FromObject(value, JsonSerializer.Create(new JsonSerializerSettings() {Converters = converters}));
+
+                        var newJsonString = JsonConvert.SerializeObject(originalObject, Formatting.Indented, converters);
+
+                        File.WriteAllText(settingsPath, newJsonString);
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogException(e);
+                    }
+                }
+
+                [CanBeNull]
+                private JObject JObjectFromStreamOrNull(Stream stream)
+                {
+                    try
+                    {
+                        return JObject.Load(new JsonTextReader(new StreamReader(stream)));
+                    }
+                    catch (Exception)
+                    {
+                        return null;
+                    }
+                }
+            }
         }
 
         public static class SettingOptions
@@ -255,10 +335,11 @@ namespace Assets.Scripts.System
 
 
         [Inject]
-        public SettingsSystem(EditorEvents editorEvents)
+        public void Construct(EditorEvents editorEvents, FileManagerSystem fileManagerSystem)
         {
             // setup saver
             var userSettingSaverInstance = new SettingSavers.UserSettingsSaver();
+            var projectSettingsSaverInstance = new SettingSavers.JsonSettingsSaver(fileManagerSystem.GetFilePath("dcl-edit/settings.json"));
 
             uiScalingFactor = new Setting<float>(
                 editorEvents,
@@ -305,7 +386,7 @@ namespace Assets.Scripts.System
             openLastOpenedScene = new Setting<string>(
                 editorEvents,
                 "Open last opened scene on start up",
-                userSettingSaverInstance);
+                projectSettingsSaverInstance);
 
 
             // Gizmo Settings

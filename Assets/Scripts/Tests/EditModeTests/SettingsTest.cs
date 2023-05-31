@@ -2,8 +2,11 @@ using Assets.Scripts.Events;
 using Assets.Scripts.Tests.EditModeTests.TestUtility;
 using NUnit.Framework;
 using System;
+using System.IO;
+using System.Linq;
 using UnityEngine;
 using static Assets.Scripts.System.SettingsSystem;
+using Random = UnityEngine.Random;
 
 namespace Assets.Scripts.Tests.EditModeTests
 {
@@ -287,6 +290,49 @@ namespace Assets.Scripts.Tests.EditModeTests
             Assert.IsTrue(stringWithNullSetting.Validate(null));
             Assert.IsTrue(stringWithNullSetting.Validate("one"));
             Assert.IsFalse(stringWithNullSetting.Validate("null"));
+        }
+
+
+        [Test]
+        public void TestJsonSaver()
+        {
+            var tmpPath = Path.Combine(Path.GetTempPath(), RandomString(10));
+
+            var jsonSettingsSaver = new SettingSavers.JsonSettingsSaver(tmpPath);
+            var editorEvents = new EditorEvents();
+
+            // int
+            var setting1 = new Setting<int>(editorEvents, "s1", jsonSettingsSaver);
+
+            setting1.Set(5);
+            Assert.AreEqual(5, setting1.Get());
+
+            // string
+            var setting2 = new Setting<string>(editorEvents, "s2", jsonSettingsSaver);
+
+            setting2.Set("Hello World!");
+            Assert.AreEqual("Hello World!", setting2.Get());
+
+            // float
+            var setting3 = new Setting<float>(editorEvents, "s3", jsonSettingsSaver);
+
+            setting3.Set(5.5f);
+            Assert.AreEqual(5.5f, setting3.Get());
+
+            // Vector3
+            var setting4 = new Setting<Vector3>(editorEvents, "s4", jsonSettingsSaver);
+
+            setting4.Set(new Vector3(1, 2, 3));
+            Assert.AreEqual(new Vector3(1, 2, 3), setting4.Get());
+        }
+
+
+        // Utils
+        public static string RandomString(int length)
+        {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            return new string(Enumerable.Repeat(chars, length)
+                .Select(s => s[Random.Range(0, s.Length)]).ToArray());
         }
     }
 }
