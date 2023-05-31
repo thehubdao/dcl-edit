@@ -27,6 +27,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 715.5636, y: 391.60977, z: -152.96555}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -82,4 +83,5 @@ MonoBehaviour:
   ContextSubmenuItemAtom: {fileID: 7092327081975487917, guid: 64a24d68977842740b7c550a18b8b6c9, type: 3}
   ContextMenuSpacerItemAtom: {fileID: 1012576247357608871, guid: 395030571d765984c8e17050dab03b59, type: 3}
   SpacerAtom: {fileID: 889315105189934788, guid: ef30d5a0efda96d4b88473330665ddc2, type: 3}
+  SnackbarItem: {fileID: 1732777830125223451, guid: 53f3f80489041d549b380d38d282d1f9, type: 3}
   assetDialog: {fileID: 1966078028789573130, guid: 908965e29fb2dfb409a04134220a6262, type: 3}

@@ -65,5 +65,8 @@ namespace Assets.Scripts.Events
 
         public event Action OnCurrentSceneTitleChangedEvent;
         public void InvokeCurrentSceneTitleChangedEvent() => OnCurrentSceneTitleChangedEvent?.Invoke();
+
+        public event Action OnSnackbarChangedEvent;
+        public void InvokeSnackbarChangedEvent() => OnSnackbarChangedEvent?.Invoke();
     }
 }

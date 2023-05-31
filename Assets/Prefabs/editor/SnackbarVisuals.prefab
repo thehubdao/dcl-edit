@@ -1,0 +1,88 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &36471455393496934
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1456877751540572712}
+  - component: {fileID: 380408534885455474}
+  - component: {fileID: 3974730814622511145}
+  m_Layer: 5
+  m_Name: SnackbarVisuals
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1456877751540572712
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 36471455393496934}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 0, y: -35}
+  m_SizeDelta: {x: 500, y: 100}
+  m_Pivot: {x: 0.5, y: 1}
+--- !u!114 &380408534885455474
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 36471455393496934}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Padding:
+    m_Left: 0
+    m_Right: 0
+    m_Top: 0
+    m_Bottom: 0
+  m_ChildAlignment: 1
+  m_Spacing: 10
+  m_ChildForceExpandWidth: 1
+  m_ChildForceExpandHeight: 1
+  m_ChildControlWidth: 1
+  m_ChildControlHeight: 0
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
+  m_ReverseArrangement: 0
+--- !u!114 &3974730814622511145
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 36471455393496934}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8644474a0196dd40b147202bbd08c8b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  debugIcon: {fileID: 21300000, guid: cfe600753ee8756499349f875a94c263, type: 3}
+  infoIcon: {fileID: 21300000, guid: 4559ea68fc6b06a46a6019a94121de57, type: 3}
+  successIcon: {fileID: 21300000, guid: 17d3e7c90621a514bac36d0c21396f1d, type: 3}
+  warningIcon: {fileID: 21300000, guid: b32f270b183d99643a9ff905da89c9bb, type: 3}
+  errorIcon: {fileID: 21300000, guid: 66578fcfdae0b3444a5331127831d95d, type: 3}
+  debugColor: {r: 0.19215687, g: 0.19215687, b: 0.19215687, a: 1}
+  infoColor: {r: 0.07450981, g: 0.4862745, b: 0.7411765, a: 1}
+  successColor: {r: 0.05882353, g: 0.6, b: 0.3764706, a: 1}
+  warningColor: {r: 0.7264151, g: 0.47473943, b: 0.18209325, a: 1}
+  errorColor: {r: 0.7647059, g: 0.24705882, b: 0.21960784, a: 1}

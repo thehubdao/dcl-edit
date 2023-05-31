@@ -389,6 +389,42 @@ public partial class @InputSystemAsset: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""HierarchyDown"",
+                    ""type"": ""Button"",
+                    ""id"": ""386fe3d6-63c1-4a6a-aa9c-a664d7d606d5"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""HierarchyUp"",
+                    ""type"": ""Button"",
+                    ""id"": ""2ba9aeae-5516-42f6-86a1-ea4c0637f852"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""HierarchyExpand"",
+                    ""type"": ""Button"",
+                    ""id"": ""d7411137-dad7-47be-afd1-843cf5edda92"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""HierarchyCollapse"",
+                    ""type"": ""Button"",
+                    ""id"": ""8fc29f71-a1a6-4486-b7c5-76df3e3d92e3"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -589,6 +625,50 @@ public partial class @InputSystemAsset: IInputActionCollection2, IDisposable
                     ""action"": ""InvertGizmoToolSnapping"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""25e66a5d-72a8-46d0-a8da-bbe751edd0a4"",
+                    ""path"": ""<Keyboard>/downArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""HierarchyDown"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6a63a8e7-4a2c-44da-8060-60b7e4c4566d"",
+                    ""path"": ""<Keyboard>/upArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""HierarchyUp"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""82aea7ba-6298-4186-8b7d-be1c6adc828e"",
+                    ""path"": ""<Keyboard>/rightArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""HierarchyExpand"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d7ac444a-94c2-4d99-8bf4-d429e7e449e9"",
+                    ""path"": ""<Keyboard>/leftArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""HierarchyCollapse"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -682,6 +762,10 @@ public partial class @InputSystemAsset: IInputActionCollection2, IDisposable
         m_Hotkeys_Delete = m_Hotkeys.FindAction("Delete", throwIfNotFound: true);
         m_Hotkeys_Cancel = m_Hotkeys.FindAction("Cancel", throwIfNotFound: true);
         m_Hotkeys_InvertGizmoToolSnapping = m_Hotkeys.FindAction("InvertGizmoToolSnapping", throwIfNotFound: true);
+        m_Hotkeys_HierarchyDown = m_Hotkeys.FindAction("HierarchyDown", throwIfNotFound: true);
+        m_Hotkeys_HierarchyUp = m_Hotkeys.FindAction("HierarchyUp", throwIfNotFound: true);
+        m_Hotkeys_HierarchyExpand = m_Hotkeys.FindAction("HierarchyExpand", throwIfNotFound: true);
+        m_Hotkeys_HierarchyCollapse = m_Hotkeys.FindAction("HierarchyCollapse", throwIfNotFound: true);
         // Modifier
         m_Modifier = asset.FindActionMap("Modifier", throwIfNotFound: true);
         m_Modifier_Shift = m_Modifier.FindAction("Shift", throwIfNotFound: true);
@@ -836,6 +920,10 @@ public partial class @InputSystemAsset: IInputActionCollection2, IDisposable
     private readonly InputAction m_Hotkeys_Delete;
     private readonly InputAction m_Hotkeys_Cancel;
     private readonly InputAction m_Hotkeys_InvertGizmoToolSnapping;
+    private readonly InputAction m_Hotkeys_HierarchyDown;
+    private readonly InputAction m_Hotkeys_HierarchyUp;
+    private readonly InputAction m_Hotkeys_HierarchyExpand;
+    private readonly InputAction m_Hotkeys_HierarchyCollapse;
     public struct HotkeysActions
     {
         private @InputSystemAsset m_Wrapper;
@@ -850,6 +938,10 @@ public partial class @InputSystemAsset: IInputActionCollection2, IDisposable
         public InputAction @Delete => m_Wrapper.m_Hotkeys_Delete;
         public InputAction @Cancel => m_Wrapper.m_Hotkeys_Cancel;
         public InputAction @InvertGizmoToolSnapping => m_Wrapper.m_Hotkeys_InvertGizmoToolSnapping;
+        public InputAction @HierarchyDown => m_Wrapper.m_Hotkeys_HierarchyDown;
+        public InputAction @HierarchyUp => m_Wrapper.m_Hotkeys_HierarchyUp;
+        public InputAction @HierarchyExpand => m_Wrapper.m_Hotkeys_HierarchyExpand;
+        public InputAction @HierarchyCollapse => m_Wrapper.m_Hotkeys_HierarchyCollapse;
         public InputActionMap Get() { return m_Wrapper.m_Hotkeys; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -889,6 +981,18 @@ public partial class @InputSystemAsset: IInputActionCollection2, IDisposable
             @InvertGizmoToolSnapping.started += instance.OnInvertGizmoToolSnapping;
             @InvertGizmoToolSnapping.performed += instance.OnInvertGizmoToolSnapping;
             @InvertGizmoToolSnapping.canceled += instance.OnInvertGizmoToolSnapping;
+            @HierarchyDown.started += instance.OnHierarchyDown;
+            @HierarchyDown.performed += instance.OnHierarchyDown;
+            @HierarchyDown.canceled += instance.OnHierarchyDown;
+            @HierarchyUp.started += instance.OnHierarchyUp;
+            @HierarchyUp.performed += instance.OnHierarchyUp;
+            @HierarchyUp.canceled += instance.OnHierarchyUp;
+            @HierarchyExpand.started += instance.OnHierarchyExpand;
+            @HierarchyExpand.performed += instance.OnHierarchyExpand;
+            @HierarchyExpand.canceled += instance.OnHierarchyExpand;
+            @HierarchyCollapse.started += instance.OnHierarchyCollapse;
+            @HierarchyCollapse.performed += instance.OnHierarchyCollapse;
+            @HierarchyCollapse.canceled += instance.OnHierarchyCollapse;
         }
 
         private void UnregisterCallbacks(IHotkeysActions instance)
@@ -923,6 +1027,18 @@ public partial class @InputSystemAsset: IInputActionCollection2, IDisposable
             @InvertGizmoToolSnapping.started -= instance.OnInvertGizmoToolSnapping;
             @InvertGizmoToolSnapping.performed -= instance.OnInvertGizmoToolSnapping;
             @InvertGizmoToolSnapping.canceled -= instance.OnInvertGizmoToolSnapping;
+            @HierarchyDown.started -= instance.OnHierarchyDown;
+            @HierarchyDown.performed -= instance.OnHierarchyDown;
+            @HierarchyDown.canceled -= instance.OnHierarchyDown;
+            @HierarchyUp.started -= instance.OnHierarchyUp;
+            @HierarchyUp.performed -= instance.OnHierarchyUp;
+            @HierarchyUp.canceled -= instance.OnHierarchyUp;
+            @HierarchyExpand.started -= instance.OnHierarchyExpand;
+            @HierarchyExpand.performed -= instance.OnHierarchyExpand;
+            @HierarchyExpand.canceled -= instance.OnHierarchyExpand;
+            @HierarchyCollapse.started -= instance.OnHierarchyCollapse;
+            @HierarchyCollapse.performed -= instance.OnHierarchyCollapse;
+            @HierarchyCollapse.canceled -= instance.OnHierarchyCollapse;
         }
 
         public void RemoveCallbacks(IHotkeysActions instance)
@@ -1022,6 +1138,10 @@ public partial class @InputSystemAsset: IInputActionCollection2, IDisposable
         void OnDelete(InputAction.CallbackContext context);
         void OnCancel(InputAction.CallbackContext context);
         void OnInvertGizmoToolSnapping(InputAction.CallbackContext context);
+        void OnHierarchyDown(InputAction.CallbackContext context);
+        void OnHierarchyUp(InputAction.CallbackContext context);
+        void OnHierarchyExpand(InputAction.CallbackContext context);
+        void OnHierarchyCollapse(InputAction.CallbackContext context);
     }
     public interface IModifierActions
     {
