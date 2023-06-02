@@ -65,7 +65,8 @@ public class UiPromptVisuals : MonoBehaviour, IPointerEnterHandler
     {
         foreach (var action in data.actions)
             action.data = data;
-        data.notInWindowAction.data = data;
+        if(data.notInWindowAction != null)
+            data.notInWindowAction.data = data;
     }
 
     public static void AddButtons(PanelAtom.Data panel, Data data)
