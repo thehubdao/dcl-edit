@@ -12,7 +12,7 @@ public class PromptSystem
     private UnityState unityState;
 
     [Inject]
-    void Construct(UnityState unityState)
+    private void Construct(UnityState unityState)
     {
         this.unityState = unityState;
     }
@@ -54,6 +54,7 @@ public class PromptSystem
 
     public class Yes : Action
     {
+        public Yes() => name = "Yes";
         public Yes(System.Action action) 
         { 
             this.action = action; 
@@ -63,6 +64,7 @@ public class PromptSystem
 
     public class No : Action
     {
+        public No() => name = "No";
         public No(System.Action action) 
         { 
             this.action = action;
@@ -72,6 +74,7 @@ public class PromptSystem
 
     public class Cancel : Action
     {
+        public Cancel() => name = "Cancel";
         public Cancel(System.Action action) 
         {
             this.action = action; 
@@ -81,6 +84,7 @@ public class PromptSystem
 
     public class OK : Action
     {
+        public OK() => name = "OK";
         public OK(System.Action action) 
         { 
             this.action = action;
@@ -91,6 +95,7 @@ public class PromptSystem
     public class Value<T> : Action
     {
         public T value;
+        public Value() => name = "Value";
         public Value(System.Action action) 
         {
             this.action = action;
@@ -100,6 +105,7 @@ public class PromptSystem
 
     public class NotInWindow: Action
     {
+        public NotInWindow() => name = "NotInWindow";
         public NotInWindow(System.Action action) 
         { 
             this.action = action;
