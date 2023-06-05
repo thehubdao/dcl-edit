@@ -17,6 +17,7 @@ namespace Assets.Scripts.Tests.EditModeTests
         {
             var pathState = new MockPathState("simple-load-test");
             var loadSaveSystem = new SceneLoadSaveSystem();
+            loadSaveSystem.Construct(null, new FileUpgraderSystem(), new MockSceneViewSystem(), new MockSceneChangeDetectSystem());
             var sceneDirectoryState = new SceneDirectoryState();
             var scenePath = pathState.ProjectPath + "/dcl-edit/saves/v2/New Scene.dclscene";
 
@@ -71,7 +72,7 @@ namespace Assets.Scripts.Tests.EditModeTests
             CheckVersionSystem checkVersionSystem = new CheckVersionSystem();
             WorkspaceSaveSystem workspaceSaveSystem = new WorkspaceSaveSystem();
             TypeScriptGenerationSystem typeScriptGenerationSystem = new TypeScriptGenerationSystem();
-            ISceneViewSystem sceneViewSystem = new SceneViewSystem();
+            ISceneViewSystem sceneViewSystem = new MockSceneViewSystem();
             MenuBarSystem menuBarSystem = new MenuBarSystem();
             SceneManagerSystem sceneManagerSystem = new SceneManagerSystem();
             EditorEvents editorEvents = new EditorEvents();
@@ -96,6 +97,7 @@ namespace Assets.Scripts.Tests.EditModeTests
                 sceneViewSystem,
                 menuBarSystem,
                 settingsSystem);
+            loadSaveSystem.Construct(null, new FileUpgraderSystem(), sceneViewSystem, new MockSceneChangeDetectSystem());
 
             var scenePath = pathState.ProjectPath + "/dcl-edit/saves/v2/New Scene.dclscene";
 
@@ -160,7 +162,8 @@ namespace Assets.Scripts.Tests.EditModeTests
         {
             // Setup dependencies
             var pathState = new MockPathState("simple-load-test", true);
-            var loadSaveSystem = new SceneLoadSaveSystem();
+            SceneLoadSaveSystem loadSaveSystem = new SceneLoadSaveSystem();
+            loadSaveSystem.Construct(null, new FileUpgraderSystem(), new MockSceneViewSystem(), new MockSceneChangeDetectSystem());
 
             // Create scene directory state
             string scenePath = pathState.ProjectPath + "/dcl-edit/saves/v2/New Scene.dclscene";
