@@ -45,6 +45,7 @@ namespace Assets.Scripts.Tests.EditModeTests
             Assert.AreEqual(1.01f, numberInputSystem.ValidateNumberInput("1..01"));
             Assert.AreEqual(1.01f, numberInputSystem.ValidateNumberInput("1.,01"));
             Assert.AreEqual(1.01f, numberInputSystem.ValidateNumberInput("1,.01"));
+            Assert.AreEqual(1.2345f, numberInputSystem.ValidateNumberInput("1.2.3.4.5"));
             Assert.AreEqual(null, numberInputSystem.ValidateNumberInput("1-"));
         }
     }
