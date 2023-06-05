@@ -62,6 +62,7 @@ GameObject:
   - component: {fileID: 1000951020031484376}
   - component: {fileID: 8824911474924409394}
   - component: {fileID: 4437784193613432032}
+  - component: {fileID: 4187424868609583920}
   m_Layer: 5
   m_Name: DialogVisuals
   m_TagString: Untagged
@@ -144,6 +145,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_HorizontalFit: 2
   m_VerticalFit: 2
+--- !u!225 &4187424868609583920
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3359213104611913552}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 1
 --- !u!1 &5677096274617207360
 GameObject:
   m_ObjectHideFlags: 0
@@ -157,6 +170,7 @@ GameObject:
   - component: {fileID: 5677096274617207363}
   - component: {fileID: 5677096274617207362}
   - component: {fileID: 5677096274617207361}
+  - component: {fileID: 5514821738432177802}
   m_Layer: 5
   m_Name: MainCanvas
   m_TagString: Untagged
@@ -261,6 +275,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74e513815f8250b4e9ef9f4019075d6f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!225 &5514821738432177802
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5677096274617207360}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &5677096275781094987
 GameObject:
   m_ObjectHideFlags: 0
@@ -405,6 +431,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5243344137887612066}
     m_Modifications:
+    - target: {fileID: -9127253398693530039, guid: 2ca61a9eee40ef440b602182acc7c674, type: 3}
+      propertyPath: mainCanvasGroup
+      value: 
+      objectReference: {fileID: 5514821738432177802}
+    - target: {fileID: -9127253398693530039, guid: 2ca61a9eee40ef440b602182acc7c674, type: 3}
+      propertyPath: backGroundBlockImg
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 2101250193934855914, guid: 2ca61a9eee40ef440b602182acc7c674, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
@@ -575,6 +609,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5243344137887612066}
     m_Modifications:
+    - target: {fileID: -9127253398693530039, guid: 2ca61a9eee40ef440b602182acc7c674, type: 3}
+      propertyPath: mainCanvasGroup
+      value: 
+      objectReference: {fileID: 5514821738432177802}
+    - target: {fileID: -9127253398693530039, guid: 2ca61a9eee40ef440b602182acc7c674, type: 3}
+      propertyPath: backGroundBlockImg
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 2101250193934855914, guid: 2ca61a9eee40ef440b602182acc7c674, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
@@ -769,6 +811,10 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 575984093596174203, guid: f1cdd73c254b4f843bdd03140feb3c98, type: 3}
+      propertyPath: m_Value
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 575984093796005530, guid: f1cdd73c254b4f843bdd03140feb3c98, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -942,6 +988,10 @@ PrefabInstance:
     - target: {fileID: 102442324860562271, guid: 0f0e08e72d5d0cd41ae0547efb7b499a, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 102442325085223280, guid: 0f0e08e72d5d0cd41ae0547efb7b499a, type: 3}
+      propertyPath: m_Value
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 102442325085223283, guid: 0f0e08e72d5d0cd41ae0547efb7b499a, type: 3}
       propertyPath: m_AnchorMax.y
@@ -1507,6 +1557,10 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5263901842178501351, guid: c91209c4bc367c442b125bcf030172af, type: 3}
+      propertyPath: m_Value
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5263901842395297992, guid: c91209c4bc367c442b125bcf030172af, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -1561,6 +1615,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5243344137887612066}
     m_Modifications:
+    - target: {fileID: -9127253398693530039, guid: 2ca61a9eee40ef440b602182acc7c674, type: 3}
+      propertyPath: mainCanvasGroup
+      value: 
+      objectReference: {fileID: 5514821738432177802}
+    - target: {fileID: -9127253398693530039, guid: 2ca61a9eee40ef440b602182acc7c674, type: 3}
+      propertyPath: backGroundBlockImg
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 2101250193934855914, guid: 2ca61a9eee40ef440b602182acc7c674, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1

@@ -35,6 +35,8 @@ namespace Assets.Scripts.EditorState
         [SerializeField]
         public GameObject PromptAssetPicker;
 
+        [SerializeField]
+        public GameObject BackgroundCanvas;
 
         [Header("Assets")]
         [SerializeField]

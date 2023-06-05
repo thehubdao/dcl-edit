@@ -1303,6 +1303,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 5677096275816853219}
     - target: {fileID: 6554674216587907478, guid: 20ed7006bd4d7d84dab9ab96b9f5129a, type: 3}
+      propertyPath: BackgroundCanvas
+      value: 
+      objectReference: {fileID: 8599653125977829149}
+    - target: {fileID: 6554674216587907478, guid: 20ed7006bd4d7d84dab9ab96b9f5129a, type: 3}
       propertyPath: sceneViewButtons
       value: 
       objectReference: {fileID: 710671776}
@@ -1465,6 +1469,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6b43f73c1284bb14a8b4fc63fa68c771, type: 3}
+--- !u!1 &8599653125977829149 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8599653126147434190, guid: 6b43f73c1284bb14a8b4fc63fa68c771, type: 3}
+  m_PrefabInstance: {fileID: 8599653125977829148}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &9146473881354413128
 PrefabInstance:
   m_ObjectHideFlags: 0

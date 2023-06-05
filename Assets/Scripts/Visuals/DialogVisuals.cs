@@ -93,11 +93,13 @@ public class DialogVisuals : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
     public void OnPointerEnter(PointerEventData eventData)
     {
+        if (dialogState.currentDialog == DialogState.DialogType.DialogSystem) return;
         if (dialogState.currentDialog != DialogState.DialogType.None) dialogState.mouseOverDialogWindow = true;
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
+        if (dialogState.currentDialog == DialogState.DialogType.DialogSystem) return;
         dialogState.mouseOverDialogWindow = false;
     }
 }

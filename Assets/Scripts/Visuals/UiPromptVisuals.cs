@@ -15,11 +15,12 @@ using UnityEngine.UI;
 using Assets.Scripts.EditorState;
 using HSVPicker;
 
-public class UiPromptVisuals : MonoBehaviour, IPointerEnterHandler
+public class UiPromptVisuals : MonoBehaviour
 {
     [SerializeField] private GameObject content;
     [SerializeField] private RectTransform contentRectTransform;
-    
+    [SerializeField] private CanvasGroup mainCanvasGroup;
+
     private UiBuilder uiBuilder;
     private UiAssetBrowserVisuals.Factory uiAssetBrowserViusalsFactory;
     private EditorEvents editorEvents;
@@ -28,6 +29,7 @@ public class UiPromptVisuals : MonoBehaviour, IPointerEnterHandler
     private CommandSystem commandSystem;
     private DialogSystem dialogSystem;
     private AssetBrowserState assetBrowserState;
+    private UnityState unityState;
 
     private PanelAtom.Data panel;
     public Data data;
@@ -43,7 +45,8 @@ public class UiPromptVisuals : MonoBehaviour, IPointerEnterHandler
     SceneManagerSystem sceneManagerSystem,
     CommandSystem commandSystem,
     AssetBrowserState assetBrowserState,
-    DialogSystem dialogSystem)
+    DialogSystem dialogSystem,
+    UnityState unityState)
     {
         uiBuilder = uiBuilderFactory.Create(content);
         this.uiAssetBrowserViusalsFactory = uiAssetBrowserViusalsFactory;
@@ -53,6 +56,7 @@ public class UiPromptVisuals : MonoBehaviour, IPointerEnterHandler
         this.commandSystem = commandSystem;
         this.dialogSystem = dialogSystem;
         this.assetBrowserState = assetBrowserState;
+        this.unityState = unityState;
     }
 
     public static void CreateText(PanelAtom.Data panel, Data data)
@@ -179,13 +183,21 @@ public class UiPromptVisuals : MonoBehaviour, IPointerEnterHandler
         data.notInWindowAction?.Submit(null);
     }
 
-    public void OnPointerEnter(PointerEventData eventData)
+    private void OnEnable()
     {
+        mainCanvasGroup.blocksRaycasts = false;
+        mainCanvasGroup.alpha = 0.25f;
+        unityState.BackgroundCanvas.SetActive(false);
+        dialogState.currentDialog = DialogState.DialogType.DialogSystem;
         dialogState.mouseOverDialogWindow = true;
     }
 
     private void OnDisable()
     {
+        mainCanvasGroup.blocksRaycasts = true;
+        mainCanvasGroup.alpha = 1f;
+        unityState.BackgroundCanvas.SetActive(true);
+        dialogState.currentDialog = DialogState.DialogType.None;
         dialogState.mouseOverDialogWindow = false;
     }
 
