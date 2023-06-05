@@ -48,8 +48,7 @@ namespace Assets.Scripts.Visuals
 
         private void SetupEventListeners()
         {
-            events.OnCurrentSceneChangedEvent += MarkForUpdate;
-            
+            events.OnCurrentSceneTitleChangedEvent += MarkForUpdate;
             MarkForUpdate();
         }
 

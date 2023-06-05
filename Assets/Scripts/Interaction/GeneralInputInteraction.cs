@@ -1,21 +1,17 @@
 using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
-using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
-using ModestTree;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Zenject;
 
 namespace Assets.Scripts.Interaction
 {
-    public class GeneralInputInteraction : MonoBehaviour
+    public class GeneralInputInteraction : IInitializable, ITickable
     {
         private InputSystemAsset inputSystemAsset;
 
         // Dependencies
-        private ISceneSaveSystem sceneSaveSystem;
         private ICommandSystem commandSystem;
         private InputState inputState;
         private Interface3DState interface3DState;
@@ -29,6 +25,7 @@ namespace Assets.Scripts.Interaction
         private SceneManagerSystem sceneManagerSystem;
         private DialogSystem dialogSystem;
         private AddEntitySystem addEntitySystem;
+        private HierarchyNavigationInteraction hierarchyNavigationInteraction;
 
         [Inject]
         private void Construct(
@@ -45,9 +42,9 @@ namespace Assets.Scripts.Interaction
             ContextMenuSystem contextMenuSystem,
             SceneManagerSystem sceneManagerSystem,
             DialogSystem dialogSystem,
-            AddEntitySystem addEntitySystem)
+            AddEntitySystem addEntitySystem,
+            HierarchyNavigationInteraction hierarchyNavigationInteraction)
         {
-            this.sceneSaveSystem = sceneSaveSystem;
             this.commandSystem = commandSystem;
             this.inputState = inputState;
             this.interface3DState = interface3DState;
@@ -61,10 +58,10 @@ namespace Assets.Scripts.Interaction
             this.sceneManagerSystem = sceneManagerSystem;
             this.dialogSystem = dialogSystem;
             this.addEntitySystem = addEntitySystem;
+            this.hierarchyNavigationInteraction = hierarchyNavigationInteraction;
         }
-
-
-        void Awake()
+        
+        public void Initialize()
         {
             inputSystemAsset = new InputSystemAsset();
             inputSystemAsset.CameraMovement.Enable();
@@ -72,8 +69,7 @@ namespace Assets.Scripts.Interaction
             inputSystemAsset.Hotkeys.Enable();
         }
 
-        // Update is called once per frame
-        void Update()
+        public void Tick()
         {
             ProcessHotKeys();
 
@@ -118,6 +114,7 @@ namespace Assets.Scripts.Interaction
             {
                 editorEvents.InvokeOnMouseButtonDownEvent(0);
             }
+
             if (Input.GetMouseButtonDown(1))
             {
                 editorEvents.InvokeOnMouseButtonDownEvent(1);
@@ -150,12 +147,14 @@ namespace Assets.Scripts.Interaction
                                         mousePosViewport.y < 1 - bound.H;
                 isMouseOverContextMenu = contextMenuSystem.IsMouseOverMenu();
                 isMouseOverDialog = dialogSystem.IsMouseOverDialog();
-                isMouseOverSceneButtons = unityState.sceneViewButtons.GetComponent<GizmoToolButtonInteraction>().IsMouseOverButtons();
+                isMouseOverSceneButtons = unityState.sceneViewButtons.GetComponent<GizmoToolButtonInteraction>()
+                    .IsMouseOverButtons();
             }
 
 
             // Figure out, if the mouse is over the 3D viewport (not hovering over any UI)
-            var isMouseIn3DView = /*!EventSystem.current.IsPointerOverGameObject() &&*/ isMouseOverGameWindow && !isMouseOverContextMenu && !isMouseOverDialog && !isMouseOverSceneButtons;
+            var isMouseIn3DView = /*!EventSystem.current.IsPointerOverGameObject() &&*/ isMouseOverGameWindow &&
+                !isMouseOverContextMenu && !isMouseOverDialog && !isMouseOverSceneButtons;
 
             // The position the mouse currently points to in the 3D viewport
             Vector3? mousePositionIn3DView = null;
@@ -172,7 +171,8 @@ namespace Assets.Scripts.Interaction
                         Interface3DState.HoveredObjectType.Gizmo;
                 }
                 // Secondly check, if mouse is hovering over a Entity
-                else if (Physics.Raycast(mouseRay, out RaycastHit hitInfoEntity, 10000, LayerMask.GetMask("Entity Click"))) // mouse click layer
+                else if (Physics.Raycast(mouseRay, out RaycastHit hitInfoEntity, 10000,
+                             LayerMask.GetMask("Entity Click"))) // mouse click layer
                 {
                     mousePositionIn3DView = hitInfoEntity.point;
                     interface3DState.CurrentlyHoveredObject = hitInfoEntity.transform.gameObject;
@@ -318,7 +318,8 @@ namespace Assets.Scripts.Interaction
             }
 
             // When pressing the focus hotkey and having a selected primary entity, switch to Focus Transition state
-            if (inputSystemAsset.CameraMovement.Focus.triggered && sceneManagerSystem.GetCurrentSceneOrNull()?.SelectionState.PrimarySelectedEntity != null)
+            if (inputSystemAsset.CameraMovement.Focus.triggered &&
+                sceneManagerSystem.GetCurrentSceneOrNull()?.SelectionState.PrimarySelectedEntity != null)
             {
                 // Fetch position of selected object
                 var selectedEntity = sceneManagerSystem.GetCurrentSceneOrNull()?.SelectionState.PrimarySelectedEntity;
@@ -354,6 +355,30 @@ namespace Assets.Scripts.Interaction
             if (inputSystemAsset.Hotkeys.Scale.triggered)
             {
                 gizmoToolSystem.gizmoToolMode = GizmoToolSystem.ToolMode.Scale;
+            }
+
+            //When pressing up arrow, select entity above selected entity in hierarchy
+            if (inputSystemAsset.Hotkeys.HierarchyUp.triggered)
+            {
+                hierarchyNavigationInteraction.HandleHierarchyUp();
+            }
+            
+            //When pressing down arrow, select entity below selected entity in hierarchy
+            if (inputSystemAsset.Hotkeys.HierarchyDown.triggered)
+            {
+                hierarchyNavigationInteraction.HandleHierarchyDown();
+            }
+            
+            //When pressing right arrow, expand selected entity in hierarchy
+            if (inputSystemAsset.Hotkeys.HierarchyExpand.triggered)
+            {
+                hierarchyNavigationInteraction.HandleHierarchyExpand();
+            }
+            
+            //When pressing left arrow, collapse selected entity in hierarchy
+            if (inputSystemAsset.Hotkeys.HierarchyCollapse.triggered)
+            {
+                hierarchyNavigationInteraction.HandleHierarchyCollapse();
             }
         }
 
@@ -441,7 +466,7 @@ namespace Assets.Scripts.Interaction
             }
 
 
-            if (cameraState.MoveTowards((Vector3)inputState.FocusTransitionDestination, true))
+            if (cameraState.MoveTowards((Vector3) inputState.FocusTransitionDestination, true))
             {
                 inputState.InState = InputState.InStateType.NoInput;
             }
@@ -455,7 +480,7 @@ namespace Assets.Scripts.Interaction
         private void UpdateHoldingGizmoTool()
         {
             // Cancel the current gizmo operation
-            if (inputSystemAsset.Hotkeys.Cancel.triggered) 
+            if (inputSystemAsset.Hotkeys.Cancel.triggered)
             {
                 inputState.InState = InputState.InStateType.NoInput;
                 gizmoToolSystem.CancelHolding();

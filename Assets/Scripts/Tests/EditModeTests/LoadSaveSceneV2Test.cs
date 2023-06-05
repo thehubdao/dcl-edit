@@ -77,11 +77,14 @@ namespace Assets.Scripts.Tests.EditModeTests
             SceneManagerSystem sceneManagerSystem = new SceneManagerSystem();
             EditorEvents editorEvents = new EditorEvents();
             MenuBarState menuBarState = new MenuBarState();
-            SettingsSystem settingsSystem = new SettingsSystem(editorEvents);
+            FileManagerSystem fileManagerSystem = new FileManagerSystem();
+            SettingsSystem settingsSystem = new SettingsSystem();
 
 
             menuBarSystem.Construct(editorEvents, menuBarState);
             sceneSettingState.Construct(pathState, sceneManagerState);
+            fileManagerSystem.Construct(pathState);
+            settingsSystem.Construct(editorEvents, fileManagerSystem);
             sceneManagerSystem.Construct(
                 sceneManagerState,
                 pathState,
