@@ -47,7 +47,7 @@ namespace Assets.Scripts.Visuals
             InitializeEntityVisuals(scene, visuals, overrideSelectionId);
         }
 
-        private void RemoveChildGameObjects()
+        public void RemoveChildGameObjects()
         {
             foreach (var interaction in GetComponentsInChildren<EntitySelectInteraction>())
             {
@@ -55,7 +55,7 @@ namespace Assets.Scripts.Visuals
             }
         }
 
-        private List<EntityVisuals> GenerateEntityVisuals(DclScene scene, Guid? overrideSelectionId)
+        public List<EntityVisuals> GenerateEntityVisuals(DclScene scene, Guid? overrideSelectionId)
         {
             List<EntityVisuals> entityVisuals = new List<EntityVisuals>();
             foreach (var entity in scene.AllEntities.Concat(scene.AllFloatingEntities).Select(e => e.Value))
