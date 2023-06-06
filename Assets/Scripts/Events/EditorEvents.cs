@@ -68,5 +68,8 @@ namespace Assets.Scripts.Events
 
         public event Action OnSnackbarChangedEvent;
         public void InvokeSnackbarChangedEvent() => OnSnackbarChangedEvent?.Invoke();
+
+        public event Action OnStartThumbnailGeneration;
+        public void InvokeStartThumbnailGeneration() => OnStartThumbnailGeneration?.Invoke();
     }
 }
