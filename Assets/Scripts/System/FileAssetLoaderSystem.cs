@@ -359,6 +359,8 @@ namespace Assets.Scripts.System
                             return LoadAndCacheImage(id);
                         case AssetMetadata.AssetType.Model:
                             return LoadAndCacheModel(id);
+                        case AssetMetadata.AssetType.Scene:
+                            return LoadAndCacheScene(id);
                         default:
                             break;
                     }
@@ -456,6 +458,19 @@ namespace Assets.Scripts.System
                 Debug.LogError($"Error while loading model: {e}");
             }
             return null;
+        }
+        
+        /// <summary>
+        /// Creates a copy of a cached scene. If the cache doesn't contain the scene yet, it gets cached.
+        /// </summary>
+        /// <param name="id"></param>
+        private AssetData LoadAndCacheScene(Guid id)
+        {
+            var assetData = new SceneAssetData(id, true);
+            // Add to cache
+            assetDataCache[id] = assetData;
+            
+            return assetData;
         }
         #endregion
     }

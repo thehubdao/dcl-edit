@@ -82,6 +82,16 @@ namespace Assets.Scripts.EditorState
         }
     }
 
+    public class SceneAssetData: AssetData
+    {
+        public bool isScene;
+
+        public SceneAssetData(Guid id, bool isScene) : base(id, State.IsAvailable)
+        {
+            this.isScene = isScene;
+        }
+    }
+
     public class AssetHierarchyItem
     {
         public string name = "<Asset Hierarchy Item>";
