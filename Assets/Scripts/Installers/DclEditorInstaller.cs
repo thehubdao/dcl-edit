@@ -24,9 +24,6 @@ public class DclEditorInstaller : MonoInstaller
     private GameObject _scaleGizmoPrefab;
 
     [SerializeField]
-    private GameObject _assetThumbnailGeneratorPrefab;
-
-    [SerializeField]
     private GameObject mainSceneVisualsPrefab;
 
     [Header("Unity State")]
@@ -131,7 +128,7 @@ public class DclEditorInstaller : MonoInstaller
 
         Container.BindInterfacesAndSelfTo<AssetThumbnailManagerSystem>().AsSingle();
 
-        Container.BindInterfacesAndSelfTo<AssetThumbnailGeneratorSystem>().FromComponentInNewPrefab(_assetThumbnailGeneratorPrefab).AsSingle();
+        Container.BindInterfacesAndSelfTo<AssetThumbnailGeneratorSystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<AssetThumbnailGeneratorState>().AsSingle();
 
