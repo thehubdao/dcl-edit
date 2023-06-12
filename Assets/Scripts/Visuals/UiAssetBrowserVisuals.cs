@@ -199,8 +199,7 @@ namespace Assets.Scripts.Visuals
                 };
 
                 grid.AddAssetBrowserButton(
-                    assetMetadata.assetDisplayName,
-                    assetType: assetMetadata.assetType,
+                    assetMetadata.assetId,
                     dragStrategy: dragStrategy,
                     leftClick: new LeftClickStrategy(
                         _ => assetBrowserSystem.AddAssetToSceneInViewportCenter(assetMetadata))
@@ -208,7 +207,7 @@ namespace Assets.Scripts.Visuals
             }
         }
 
-        int GetIndentationLevel(AssetHierarchyItem hierarchyItem)
+        private int GetIndentationLevel(AssetHierarchyItem hierarchyItem)
         {
             string[] directories = hierarchyItem.path.Split(Path.AltDirectorySeparatorChar);
             return directories.Length - 1;

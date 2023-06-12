@@ -15,13 +15,6 @@ namespace Assets.Scripts.Visuals.UiHandler
 
         private ValueBindStrategy<bool> bindStrategy;
 
-        public void SetActions(StringPropertyAtom.UiPropertyActions<bool> actions)
-        {
-            ResetActions();
-
-            CheckBoxInput.onValueChanged.AddListener(value => actions.OnSubmit(value));
-        }
-
         public void ResetActions()
         {
             CheckBoxInput.onValueChanged.RemoveAllListeners();

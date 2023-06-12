@@ -1,4 +1,4 @@
-using Assets.Scripts.EditorState;
+using JetBrains.Annotations;
 using System;
 
 namespace Assets.Scripts.Visuals.UiBuilder
@@ -8,8 +8,18 @@ namespace Assets.Scripts.Visuals.UiBuilder
         public new class Data : Atom.Data
         {
             public string propertyName;
-            public AssetMetadata assetMetadata;
-            public Action<Guid> onClick;
+
+            [NotNull]
+            public SetValueStrategy<Guid> valueBindStrategy;
+
+            [CanBeNull]
+            public LeftClickStrategy leftClick = null;
+
+            [CanBeNull]
+            public RightClickStrategy rightClick = null;
+
+            [CanBeNull]
+            public DragStrategy dragStrategy = null;
 
             public override bool Equals(Atom.Data other)
             {
@@ -18,16 +28,11 @@ namespace Assets.Scripts.Visuals.UiBuilder
                     return false;
                 }
 
-                if (propertyName != otherAssetProperty.propertyName)
-                {
-                    return false;
-                }
-
-                if (assetMetadata != otherAssetProperty.assetMetadata)
-                {
-                    return false;
-                }
-
+                if (propertyName != otherAssetProperty.propertyName) return false;
+                if (valueBindStrategy != otherAssetProperty.valueBindStrategy) return false;
+                if (leftClick != otherAssetProperty.leftClick) return false;
+                if (rightClick != otherAssetProperty.rightClick) return false;
+                if (dragStrategy != otherAssetProperty.dragStrategy) return false;
                 return true;
             }
         }
@@ -52,7 +57,11 @@ namespace Assets.Scripts.Visuals.UiBuilder
             {
                 var assetPropertyHandler = gameObject.gameObject.GetComponent<AssetPropertyHandler>();
                 assetPropertyHandler.propertyNameText.text = newAssetPropertyData.propertyName;
-                //assetPropertyHandler.assetButtonHandler.Init(newAssetPropertyData.assetMetadata, false, newAssetPropertyData.onClick);
+                assetPropertyHandler.assetButtonHandler.Setup(
+                    newAssetPropertyData.valueBindStrategy,
+                    newAssetPropertyData.dragStrategy,
+                    newAssetPropertyData.leftClick,
+                    newAssetPropertyData.rightClick);
             }
         }
 
@@ -73,14 +82,18 @@ namespace Assets.Scripts.Visuals.UiBuilder
         public static AssetPropertyAtom.Data AddAssetProperty(
             this PanelAtom.Data panelAtomData,
             string propertyName,
-            AssetMetadata assetMetadata,
-            Action<Guid> onClick)
+            SetValueStrategy<Guid> valueBindStrategy,
+            LeftClickStrategy leftClick = null,
+            RightClickStrategy rightClick = null,
+            DragStrategy dragStrategy = null)
         {
             var data = new AssetPropertyAtom.Data
             {
                 propertyName = propertyName,
-                assetMetadata = assetMetadata,
-                onClick = onClick
+                valueBindStrategy = valueBindStrategy,
+                leftClick = leftClick,
+                rightClick = rightClick,
+                dragStrategy = dragStrategy
             };
 
             panelAtomData.childDates.Add(data);

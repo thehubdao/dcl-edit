@@ -97,7 +97,6 @@ namespace Visuals.UiHandler
 
             if (isHovering.pointerDrag.TryGetComponent(out DragHandler dragHandler))
             {
-                Debug.Log($"Model hovered over {StaticUtilities.ListGameObjectStack(gameObject)}");
                 dropStrategy.OnHover(dragHandler.dragStrategy);
             }
         }

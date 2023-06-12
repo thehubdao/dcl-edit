@@ -1,16 +1,15 @@
-using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
-using Assets.Scripts.SceneState;
-using Assets.Scripts.System;
 using System;
-using System.Collections.Generic;
+using Assets.Scripts.EditorState;
+using Assets.Scripts.System;
 using Assets.Scripts.Visuals.UiBuilder;
 using Assets.Scripts.Visuals.UiHandler;
+using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
 
-public class AssetButtonHandler : MonoBehaviour
+public class AssetButtonHandler : MonoBehaviour, IUpdateValue
 {
     public Image maskedImage; // Uses a child object with an image component. This allows setting an image that is influenced by the buttons mask.
     public Image assetTypeIndicatorImage;
@@ -36,13 +35,15 @@ public class AssetButtonHandler : MonoBehaviour
     EditorEvents editorEvents;
     AssetThumbnailManagerSystem assetThumbnailManagerSystem;
     SceneManagerSystem sceneManagerSystem;
+    AssetManagerSystem assetManagerSystem;
 
     [Inject]
-    void Construct(EditorEvents editorEvents, AssetThumbnailManagerSystem assetThumbnailManagerSystem, SceneManagerSystem sceneManagerSystem)
+    void Construct(EditorEvents editorEvents, AssetThumbnailManagerSystem assetThumbnailManagerSystem, SceneManagerSystem sceneManagerSystem, AssetManagerSystem assetManagerSystem)
     {
         this.editorEvents = editorEvents;
         this.assetThumbnailManagerSystem = assetThumbnailManagerSystem;
         this.sceneManagerSystem = sceneManagerSystem;
+        this.assetManagerSystem = assetManagerSystem;
     }
 
     #region Initialization
@@ -57,27 +58,47 @@ public class AssetButtonHandler : MonoBehaviour
         SetText(assetName);
 
         SetTypeIndicator(typeIndicator);
-
-        SetOnClick(leftClick, rightClick);
-
-        SetDrag(dragStrategy);
     }
 
-    private void SetDrag(DragStrategy dragStrategy)
+    private SetValueStrategy<Guid> valueBindStrategy;
+
+    public void UpdateValue()
     {
+        var assetId = valueBindStrategy.value();
+        var assetData = assetManagerSystem.GetMetadataById(assetId);
+
+        SetText(assetData.assetDisplayName);
+
+        var typeIndicator = assetData.assetType switch
+        {
+            AssetMetadata.AssetType.Unknown => AssetButtonAtom.Data.TypeIndicator.None,
+            AssetMetadata.AssetType.Model => AssetButtonAtom.Data.TypeIndicator.Model,
+            AssetMetadata.AssetType.Image => AssetButtonAtom.Data.TypeIndicator.Image,
+            AssetMetadata.AssetType.Scene => AssetButtonAtom.Data.TypeIndicator.Scene,
+            _ => throw new Exception($"Unknown asset type: {assetData.assetType}")
+        };
+
+        SetTypeIndicator(typeIndicator);
+
+        SetThumbnail(assetThumbnailManagerSystem.GetThumbnailById(assetId));
+    }
+
+
+    public void Setup(
+        SetValueStrategy<Guid> valueBindStrategy,
+        [CanBeNull] DragStrategy dragStrategy,
+        [CanBeNull] LeftClickStrategy leftClickStrategy,
+        [CanBeNull] RightClickStrategy rightClickStrategy)
+    {
+        this.valueBindStrategy = valueBindStrategy;
+
+        UpdateValue();
+
         dragHandler.dragStrategy = dragStrategy;
+        clickHandler.leftClickStrategy = leftClickStrategy;
+        clickHandler.rightClickStrategy = rightClickStrategy;
     }
 
-    private void SetOnClick(LeftClickStrategy leftClick, RightClickStrategy rightClick)
-    {
-        clickHandler.leftClickStrategy = leftClick;
-        clickHandler.rightClickStrategy = rightClick;
-    }
-
-    /*private void OnDestroy()
-    {
-        editorEvents.onAssetThumbnailUpdatedEvent -= OnAssetThumbnailUpdatedCallback;
-    }*/
 
     /*private bool IsCyclicScene()
     {
@@ -135,78 +156,26 @@ public class AssetButtonHandler : MonoBehaviour
         }
     }
 
-    private void SetText(SetValueStrategy<string> assetName)
+    private void SetText(string assetName)
     {
         textHandler.SetTextValueStrategy(assetName);
+    }
+
+    private void SetThumbnail(AssetThumbnail thumbnail)
+    {
+        SetImage(thumbnail.texture);
     }
 
     #endregion
 
 
-    /*
-    private bool IsVisibleInScrollView()
-    {
-        // If not placed inside a scroll view, the content is always displayed.
-        if (scrollViewRect == null)
-        {
-            return true;
-        }
-
-        var myRect = GetComponent<RectTransform>();
-
-        var viewportTop = scrollViewRect.viewport.position.y;
-        var viewportBottom = viewportTop - scrollViewRect.viewport.rect.height;
-
-        return myRect.position.y <= viewportTop + 100 && myRect.position.y >= viewportBottom - 100;
-    }
-
-
-    private void ShowThumbnailWhenVisible(Vector2 _)
-    {
-        if (metadata == null) return;
-
-        loadingSymbol.SetActive(false);
-
-        if (!IsVisibleInScrollView())
-        {
-            maskedImage.enabled = false;
-            return;
-        }
-
-        var result = assetThumbnailManagerSystem.GetThumbnailById(metadata.assetId);
-        switch (result.state)
-        {
-            case AssetData.State.IsAvailable:
-                SetImage(result.texture);
-                break;
-            case AssetData.State.IsLoading:
-                loadingSymbol.SetActive(true);
-                break;
-            case AssetData.State.IsError:
-                SetImage(errorAssetThumbnail);
-                break;
-            default:
-                break;
-        }
-    }
-
-    public void OnAssetThumbnailUpdatedCallback(List<Guid> ids)
-    {
-        if (metadata == null) return;
-
-        if (ids.Contains(metadata.assetId))
-        {
-            if (loadingSymbol != null) loadingSymbol.SetActive(false);
-
-            var thumbnail = assetThumbnailManagerSystem.GetThumbnailById(metadata.assetId);
-            if (thumbnail.texture != null) SetImage(thumbnail.texture);
-            else SetImage(errorAssetThumbnail);
-        }
-    }
-
     public void SetImage(Texture2D tex)
     {
-        if (tex == null) return;
+        if (tex == null)
+        {
+            tex = new Texture2D(2, 2);
+        }
+
         SetImage(Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f), 100));
     }
 
@@ -222,7 +191,7 @@ public class AssetButtonHandler : MonoBehaviour
 
         maskedImage.sprite = sprite;
         maskedImage.enabled = true;
-    }*/
+    }
 
     public class Factory : PlaceholderFactory<AssetButtonHandler>
     {

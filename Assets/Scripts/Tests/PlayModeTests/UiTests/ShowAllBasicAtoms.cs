@@ -90,8 +90,11 @@ namespace Assets.Scripts.Tests.PlayModeTests.UiTests
             var testerPrompt = UiTester.instance.uiTesterPrompt;
             var mainPanel = UiBuilder.NewPanelData();
 
+            var centerTextValue = "This is some more text";
+            var centerTextValueStrategy = new SetValueStrategy<string>(() => centerTextValue);
+
+
             mainPanel.AddText("This is some text");
-            var centerTextValueStrategy = new SetValueByFunction<string>("This is some more text");
             mainPanel.AddText(centerTextValueStrategy);
             mainPanel.AddText("This is even more text");
 
@@ -99,7 +102,8 @@ namespace Assets.Scripts.Tests.PlayModeTests.UiTests
 
             yield return testerPrompt.WaitForQuestionPrompt("Do you see three texts under each other?", Yes);
 
-            centerTextValueStrategy.SetValue("Some other text");
+            centerTextValue = "Some other text";
+            uiBuilder.UpdateValues();
 
             yield return testerPrompt.WaitForQuestionPrompt("Did you see the center text change to \"Some other text\"?", Yes);
         }

@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Assets.Scripts.Visuals.UiHandler
 {
-    public class TextHandler : MonoBehaviour
+    public class TextHandler : MonoBehaviour, IUpdateValue
     {
         public enum TextStyle
         {
@@ -36,14 +36,19 @@ namespace Assets.Scripts.Visuals.UiHandler
 
         public void SetTextValueStrategy(SetValueStrategy<string> strategy)
         {
-            if (valueStrategyInternal != null)
+            valueStrategyInternal = strategy;
+
+            UpdateValue();
+        }
+
+        public void UpdateValue()
+        {
+            if (valueStrategyInternal == null)
             {
-                valueStrategyInternal.applyValue = null;
+                return;
             }
 
-            strategy.applyValue = s => TextComponent.text = s;
-
-            valueStrategyInternal = strategy;
+            TextComponent.text = valueStrategyInternal.value();
         }
 
         public TextStyle textStyle

@@ -1,18 +1,17 @@
-using Assets.Scripts.Utility;
-using System;
-using System.Collections;
-using System.Collections.Generic;
+using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using Zenject;
 
 public class DragHandler : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler
 {
+    [CanBeNull]
     private DragStrategy dragStrategyInternal;
 
     // Dependencies
     private DragAndDropState dragAndDropState;
 
+    [CanBeNull]
     public DragStrategy dragStrategy
     {
         get => dragStrategyInternal;

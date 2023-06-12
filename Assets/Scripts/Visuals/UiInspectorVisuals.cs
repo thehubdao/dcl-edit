@@ -122,7 +122,7 @@ namespace Assets.Scripts.Visuals
 
             if (selectedEntity.IsExposed)
             {
-                entityHeadPanel.AddText(entityChangeManager.GetExposedNameForInspector(selectedEntity.Id));
+                entityHeadPanel.AddText(entityChangeManager.GetExposedNameStrategy(selectedEntity.Id));
             }
 
             foreach (var component in selectedEntity.Components ?? new List<DclComponent>())
@@ -149,7 +149,6 @@ namespace Assets.Scripts.Visuals
                                 property.PropertyName,
                                 property.PropertyName,
                                 entityChangeManager.GetPropertyBinding<string>(propertyIdentifier));
-
                             break;
                         }
                         case DclComponent.DclComponentProperty.PropertyType.Int:
@@ -158,7 +157,6 @@ namespace Assets.Scripts.Visuals
                                 property.PropertyName,
                                 property.PropertyName,
                                 entityChangeManager.GetPropertyBinding<int>(propertyIdentifier));
-
                             break;
                         }
                         case DclComponent.DclComponentProperty.PropertyType.Float:
@@ -167,7 +165,6 @@ namespace Assets.Scripts.Visuals
                                 property.PropertyName,
                                 property.PropertyName,
                                 entityChangeManager.GetPropertyBinding<float>(propertyIdentifier));
-
                             break;
                         }
                         case DclComponent.DclComponentProperty.PropertyType.Boolean:
@@ -210,14 +207,13 @@ namespace Assets.Scripts.Visuals
 
                             break;
                         }
-                        case DclComponent.DclComponentProperty.PropertyType.Asset: // not supported yet
+                        case DclComponent.DclComponentProperty.PropertyType.Asset:
                         {
-                            var assetMetadata = assetManagerSystem.GetMetadataById(property.GetConcrete<Guid>().Value);
                             componentPanel.AddAssetProperty(
                                 property.PropertyName,
-                                assetMetadata,
-                                (_) => dialogSystem.OpenAssetDialog(component));
-
+                                new SetValueStrategy<Guid>(() => property.GetConcrete<Guid>().Value));
+                            // TODO: Add click strategy
+                            // TODO: Add drop strategy
                             break;
                         }
                         default:

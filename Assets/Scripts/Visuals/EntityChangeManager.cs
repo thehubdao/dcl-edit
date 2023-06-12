@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.Remoting.Messaging;
 using Assets.Scripts.Events;
 using Assets.Scripts.System;
 using Zenject;
@@ -19,56 +20,25 @@ public class EntityChangeManager
         this.exposeEntitySystem = exposeEntitySystem;
         this.commandSystem = commandSystem;
         this.editorEvents = editorEvents;
-
-        editorEvents.onEntityNameChangedEvent += OnEntityNameChanged;
-    }
-    
-
-    private readonly Dictionary<Guid, SetValueByFunction<string>> hierarchyStrategies = new();
-    
-    public SetValueStrategy<string> GetNameForHierarchy(Guid entityId)
-    {
-        var entity = sceneManagerSystem.GetCurrentScene().GetEntityById(entityId);
-
-        // find strategy in dictionary or create new one
-        if (!hierarchyStrategies.TryGetValue(entityId, out var valueStrategy))
-        {
-            valueStrategy = new SetValueByFunction<string>(entity.ShownName);
-            hierarchyStrategies.Add(entityId, valueStrategy);
-        }
-        
-        return valueStrategy;
     }
 
-    private readonly Dictionary<Guid, SetValueByFunction<string>> inspectorStrategies = new();
 
-    public SetValueStrategy<string> GetExposedNameForInspector(Guid entityId)
+    public SetValueStrategy<string> GetNameStrategy(Guid entityId)
     {
-        var entity = sceneManagerSystem.GetCurrentScene().GetEntityById(entityId);
-
-        // find strategy in dictionary or create new one
-        if (!inspectorStrategies.TryGetValue(entityId, out var valueStrategy))
+        return new SetValueStrategy<string>(() =>
         {
-            valueStrategy = new SetValueByFunction<string>($"Exposed as: {exposeEntitySystem.ExposedName(entity)}");
-            inspectorStrategies.Add(entityId, valueStrategy);
-        }
-
-        return valueStrategy;
+            var entity = sceneManagerSystem.GetCurrentScene().GetEntityById(entityId);
+            return entity.CustomName;
+        });
     }
 
-    private void OnEntityNameChanged(Guid entityId)
+    public SetValueStrategy<string> GetExposedNameStrategy(Guid entityId)
     {
-        var entity = sceneManagerSystem.GetCurrentScene().GetEntityById(entityId);
-
-        if (hierarchyStrategies.TryGetValue(entityId, out var valueStrategy))
+        return new SetValueStrategy<string>(() =>
         {
-            valueStrategy.SetValue(entity.ShownName);
-        }
-
-        if (inspectorStrategies.TryGetValue(entityId, out valueStrategy))
-        {
-            valueStrategy.SetValue($"Exposed as: {exposeEntitySystem.ExposedName(entity)}");
-        }
+            var entity = sceneManagerSystem.GetCurrentScene().GetEntityById(entityId);
+            return exposeEntitySystem.ExposedName(entity);
+        });
     }
 
     public ValueBindStrategy<string> GetNameFieldBinding(Guid id)

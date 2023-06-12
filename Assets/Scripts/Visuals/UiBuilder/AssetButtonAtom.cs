@@ -1,7 +1,5 @@
-using Assets.Scripts.EditorState;
 using System;
-using System.Diagnostics;
-using UnityEngine.UI;
+using JetBrains.Annotations;
 
 namespace Assets.Scripts.Visuals.UiBuilder
 {
@@ -17,12 +15,17 @@ namespace Assets.Scripts.Visuals.UiBuilder
                 Scene
             }
 
-            public string assetName;
-            public TypeIndicator typeIndicator = TypeIndicator.None;
+            [NotNull]
+            public SetValueStrategy<Guid> valueBindStrategy;
+
+            [CanBeNull]
             public LeftClickStrategy leftClick = null;
+
+            [CanBeNull]
             public RightClickStrategy rightClick = null;
+
+            [CanBeNull]
             public DragStrategy dragStrategy = null;
-            // Placeholder Thumbnail Handler
 
             public override bool Equals(Atom.Data other)
             {
@@ -31,11 +34,10 @@ namespace Assets.Scripts.Visuals.UiBuilder
                     return false;
                 }
 
-                if (assetName != otherBtn.assetName) return false;
-                if (typeIndicator != otherBtn.typeIndicator) return false;
                 if (dragStrategy != otherBtn.dragStrategy) return false;
                 if (leftClick != otherBtn.leftClick) return false;
                 if (rightClick != otherBtn.rightClick) return false;
+                if (dragStrategy != otherBtn.dragStrategy) return false;
                 return true;
             }
         }
@@ -60,7 +62,8 @@ namespace Assets.Scripts.Visuals.UiBuilder
             {
                 // Update data
                 var btnHandler = gameObject.gameObject.GetComponent<AssetButtonHandler>();
-                btnHandler.Init(newBtnData.assetName, newBtnData.typeIndicator, newBtnData.leftClick, newBtnData.rightClick, newBtnData.dragStrategy);
+                btnHandler.Setup(newBtnData.valueBindStrategy, newBtnData.dragStrategy, newBtnData.leftClick, newBtnData.rightClick);
+
                 data = newBtnData;
             }
         }
@@ -81,27 +84,16 @@ namespace Assets.Scripts.Visuals.UiBuilder
     {
         public static AssetButtonAtom.Data AddAssetBrowserButton(
             this PanelAtom.Data panelAtomData,
-            string assetName,
-            AssetMetadata.AssetType assetType = AssetMetadata.AssetType.Unknown,
             // Placeholder Thumbnail Handler
-            LeftClickStrategy leftClick = null,
-            RightClickStrategy rightClick = null,
-            DragStrategy dragStrategy = null
+            [NotNull] SetValueStrategy<Guid> valueBindStrategy,
+            [CanBeNull] LeftClickStrategy leftClick = null,
+            [CanBeNull] RightClickStrategy rightClick = null,
+            [CanBeNull] DragStrategy dragStrategy = null
         )
         {
-            var typeIndicator = assetType switch
-            {
-                AssetMetadata.AssetType.Unknown => AssetButtonAtom.Data.TypeIndicator.None,
-                AssetMetadata.AssetType.Model => AssetButtonAtom.Data.TypeIndicator.Model,
-                AssetMetadata.AssetType.Image => AssetButtonAtom.Data.TypeIndicator.Image,
-                AssetMetadata.AssetType.Scene => AssetButtonAtom.Data.TypeIndicator.Scene,
-                _ => throw new Exception($"Unknown asset type: {assetType}")
-            };
-
             var data = new AssetButtonAtom.Data
             {
-                assetName = assetName,
-                typeIndicator = typeIndicator,
+                valueBindStrategy = valueBindStrategy,
                 leftClick = leftClick,
                 rightClick = rightClick,
                 dragStrategy = dragStrategy
