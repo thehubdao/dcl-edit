@@ -64,12 +64,12 @@ namespace Assets.Scripts.Tests.PlayModeTests.UiTests
             var secondPanel = horPanel.AddPanelWithBorder();
             secondPanel.AddPanelHeader("Second panel", () => { });
             secondPanel.AddStringProperty("String property", "write a string here", new ValueBindStrategy<string>(() => ""));
-            secondPanel.AddBooleanProperty("Bool property", true, new StringPropertyAtom.UiPropertyActions<bool>());
+            secondPanel.AddBooleanProperty("Bool property", new ValueBindStrategy<bool>(() => true));
 
             var thirdPanel = horPanel.AddPanelWithBorder();
             thirdPanel.AddPanelHeader("Second panel", () => { });
             thirdPanel.AddStringProperty("String property", "write a string here", new ValueBindStrategy<string>(() => ""));
-            thirdPanel.AddBooleanProperty("Bool property", true, new StringPropertyAtom.UiPropertyActions<bool>());
+            thirdPanel.AddBooleanProperty("Bool property", new ValueBindStrategy<bool>(() => true));
 
             mainPanel.AddSpacer(100);
             mainPanel.AddHierarchyItem("Hierarchy Item", 0, false, false, false, TextHandler.TextStyle.Normal, false);
@@ -172,9 +172,9 @@ namespace Assets.Scripts.Tests.PlayModeTests.UiTests
             var testerPrompt = UiTester.instance.uiTesterPrompt;
             var mainPanel = UiBuilder.NewPanelData();
 
-            mainPanel.AddBooleanProperty("This is some property", false, new StringPropertyAtom.UiPropertyActions<bool>());
-            mainPanel.AddBooleanProperty("This is some more property", false, new StringPropertyAtom.UiPropertyActions<bool>());
-            mainPanel.AddBooleanProperty("This is even more property", false, new StringPropertyAtom.UiPropertyActions<bool>());
+            mainPanel.AddBooleanProperty("This is some property", new ValueBindStrategy<bool>(() => false));
+            mainPanel.AddBooleanProperty("This is some more property", new ValueBindStrategy<bool>(() => false));
+            mainPanel.AddBooleanProperty("This is even more property", new ValueBindStrategy<bool>(() => false));
 
             uiBuilder.Update(mainPanel);
 

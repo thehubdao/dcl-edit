@@ -46,8 +46,6 @@ public class DclEditorInstaller : MonoInstaller
 
         Container.BindInterfacesAndSelfTo<CommandFactorySystem>().AsSingle();
 
-        Container.BindInterfacesAndSelfTo<UpdatePropertiesFromUiSystem>().AsSingle();
-
         Container.BindInterfacesAndSelfTo<InputState>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<Interface3DState>().AsSingle();
@@ -122,7 +120,6 @@ public class DclEditorInstaller : MonoInstaller
 
         Container.BindInterfacesAndSelfTo<WebRequestSystem>().AsSingle();
 
-
         Container.BindInterfacesAndSelfTo<SceneJsonReaderSystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<NumberInputSystem>().AsSingle();
@@ -155,8 +152,6 @@ public class DclEditorInstaller : MonoInstaller
 
         Container.BindInterfacesAndSelfTo<MenuBarSystem>().AsSingle();
 
-        Container.BindInterfacesAndSelfTo<PropertyBindingManager>().AsSingle();
-
         Container.BindInterfacesAndSelfTo<AddComponentSystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<FileManagerSystem>().AsSingle();
@@ -173,7 +168,7 @@ public class DclEditorInstaller : MonoInstaller
 
         Container.BindInterfacesAndSelfTo<DialogSystem>().AsSingle();
 
-        Container.BindInterfacesAndSelfTo<EntityNameChangeManager>().AsSingle();
+        Container.BindInterfacesAndSelfTo<EntityChangeManager>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<DialogState>().AsSingle();
 

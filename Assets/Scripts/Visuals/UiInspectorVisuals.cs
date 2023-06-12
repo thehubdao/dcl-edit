@@ -18,7 +18,6 @@ namespace Assets.Scripts.Visuals
 
         // Dependencies
         private InputState inputState;
-        private UpdatePropertiesFromUiSystem updatePropertiesSystem;
         private UiBuilder.UiBuilder uiBuilder;
         private EditorEvents editorEvents;
         private CommandSystem commandSystem;
@@ -28,13 +27,11 @@ namespace Assets.Scripts.Visuals
         private AvailableComponentsState availableComponentsState;
         private AssetManagerSystem assetManagerSystem;
         private DialogSystem dialogSystem;
-        private EntityNameChangeManager entityNameChangeManager;
-        private PropertyBindingManager propertyBindingManager;
+        private EntityChangeManager entityChangeManager;
 
         [Inject]
         private void Construct(
             InputState inputState,
-            UpdatePropertiesFromUiSystem updatePropertiesSystem,
             UiBuilder.UiBuilder.Factory uiBuilderFactory,
             EditorEvents editorEvents,
             CommandSystem commandSystem,
@@ -44,11 +41,9 @@ namespace Assets.Scripts.Visuals
             AvailableComponentsState availableComponentsState,
             AssetManagerSystem assetManagerSystem,
             DialogSystem dialogSystem,
-            EntityNameChangeManager entityNameChangeManager,
-            PropertyBindingManager propertyBindingManager)
+            EntityChangeManager entityChangeManager)
         {
             this.inputState = inputState;
-            this.updatePropertiesSystem = updatePropertiesSystem;
             this.uiBuilder = uiBuilderFactory.Create(content);
             this.editorEvents = editorEvents;
             this.commandSystem = commandSystem;
@@ -58,8 +53,7 @@ namespace Assets.Scripts.Visuals
             this.availableComponentsState = availableComponentsState;
             this.assetManagerSystem = assetManagerSystem;
             this.dialogSystem = dialogSystem;
-            this.entityNameChangeManager = entityNameChangeManager;
-            this.propertyBindingManager = propertyBindingManager;
+            this.entityChangeManager = entityChangeManager;
 
             SetupEventListeners();
         }
@@ -122,27 +116,13 @@ namespace Assets.Scripts.Visuals
                 return;
             }
 
-            var nameInputActions = new StringPropertyAtom.UiPropertyActions<string>
-            {
-                OnChange = _ => { },
-                OnSubmit = value => updatePropertiesSystem.SetNewName(selectedEntity, value),
-                OnAbort = _ => { }
-            };
-
-            var exposedInputActions = new StringPropertyAtom.UiPropertyActions<bool>
-            {
-                OnChange = _ => { },
-                OnSubmit = value => updatePropertiesSystem.SetIsExposed(selectedEntity, value),
-                OnAbort = _ => { }
-            };
-
             var entityHeadPanel = inspectorPanel.AddPanelWithBorder();
-            entityHeadPanel.AddStringProperty("Name", "Name", entityNameChangeManager.GetNameFieldBinding(selectedEntity.Id));
-            entityHeadPanel.AddBooleanProperty("Is Exposed", selectedEntity.IsExposed, exposedInputActions);
-            
+            entityHeadPanel.AddStringProperty("Name", "Name", entityChangeManager.GetNameFieldBinding(selectedEntity.Id));
+            entityHeadPanel.AddBooleanProperty("Is Exposed", entityChangeManager.GetIsExposedBinding(selectedEntity.Id));
+
             if (selectedEntity.IsExposed)
             {
-                entityHeadPanel.AddText(entityNameChangeManager.GetExposedNameForInspector(selectedEntity.Id));
+                entityHeadPanel.AddText(entityChangeManager.GetExposedNameForInspector(selectedEntity.Id));
             }
 
             foreach (var component in selectedEntity.Components ?? new List<DclComponent>())
@@ -168,7 +148,7 @@ namespace Assets.Scripts.Visuals
                             componentPanel.AddStringProperty(
                                 property.PropertyName,
                                 property.PropertyName,
-                                propertyBindingManager.GetPropertyBinding<string>(propertyIdentifier));
+                                entityChangeManager.GetPropertyBinding<string>(propertyIdentifier));
 
                             break;
                         }
@@ -177,7 +157,7 @@ namespace Assets.Scripts.Visuals
                             componentPanel.AddNumberProperty(
                                 property.PropertyName,
                                 property.PropertyName,
-                                propertyBindingManager.GetPropertyBinding<int>(propertyIdentifier));
+                                entityChangeManager.GetPropertyBinding<int>(propertyIdentifier));
 
                             break;
                         }
@@ -186,23 +166,15 @@ namespace Assets.Scripts.Visuals
                             componentPanel.AddNumberProperty(
                                 property.PropertyName,
                                 property.PropertyName,
-                                propertyBindingManager.GetPropertyBinding<float>(propertyIdentifier));
+                                entityChangeManager.GetPropertyBinding<float>(propertyIdentifier));
 
                             break;
                         }
                         case DclComponent.DclComponentProperty.PropertyType.Boolean:
                         {
-                            var boolActions = new StringPropertyAtom.UiPropertyActions<bool>
-                            {
-                                OnChange = (value) => updatePropertiesSystem.UpdateFixedProperty(propertyIdentifier, value),
-                                OnSubmit = (value) => updatePropertiesSystem.UpdateFixedProperty(propertyIdentifier, value)
-                                // OnInvalid, OnAbort not required for a checkbox
-                            };
-
                             componentPanel.AddBooleanProperty(
                                 property.PropertyName,
-                                property.GetConcrete<bool>().Value,
-                                boolActions);
+                                entityChangeManager.GetPropertyBinding<bool>(propertyIdentifier));
                             break;
                         }
                         case DclComponent.DclComponentProperty.PropertyType.Vector3:
@@ -210,7 +182,7 @@ namespace Assets.Scripts.Visuals
                             componentPanel.AddVector3Property(
                                 property.PropertyName,
                                 ("x", "y", "z"),
-                                propertyBindingManager.GetPropertyBinding<Vector3>(propertyIdentifier));
+                                entityChangeManager.GetPropertyBinding<Vector3>(propertyIdentifier));
                             break;
                         }
                         case DclComponent.DclComponentProperty.PropertyType.Quaternion: // Shows quaternions in euler angles

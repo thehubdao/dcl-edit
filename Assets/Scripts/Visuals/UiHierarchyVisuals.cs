@@ -64,7 +64,7 @@ namespace Assets.Scripts.Visuals
         private SceneManagerSystem sceneManagerSystem;
         private CommandSystem commandSystem;
         private HierarchyOrderSystem hierarchyOrderSystem;
-        private EntityNameChangeManager entityNameChangeManager;
+        private EntityChangeManager entityChangeManager;
 
         [Inject]
         private void Construct(
@@ -76,7 +76,7 @@ namespace Assets.Scripts.Visuals
             CommandSystem commandSystem,
             HierarchyContextMenuSystem hierarchyContextMenuSystem,
             HierarchyOrderSystem hierarchyOrderSystem,
-            EntityNameChangeManager entityNameChangeManager)
+            EntityChangeManager entityChangeManager)
         {
             this.events = events;
             this.uiBuilder = uiBuilderFactory.Create(content);
@@ -86,7 +86,7 @@ namespace Assets.Scripts.Visuals
             this.commandSystem = commandSystem;
             this.hierarchyContextMenuSystem = hierarchyContextMenuSystem;
             this.hierarchyOrderSystem = hierarchyOrderSystem;
-            this.entityNameChangeManager = entityNameChangeManager;
+            this.entityChangeManager = entityChangeManager;
 
             SetupRightClickHandler();
             SetupEventListeners();
@@ -208,7 +208,7 @@ namespace Assets.Scripts.Visuals
                 var (upperDropStrategy, middleDropStrategy, lowerDropStrategy) = CreateDropStrategies(entity);
 
                 mainPanelData.AddHierarchyItem(
-                    entityNameChangeManager.GetNameForHierarchy(entity.Id),
+                    entityChangeManager.GetNameForHierarchy(entity.Id),
                     level,
                     entity.Children.Any(),
                     isExpanded,
