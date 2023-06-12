@@ -48,18 +48,6 @@ public class AssetButtonHandler : MonoBehaviour, IUpdateValue
 
     #region Initialization
 
-    public void Init(string assetName,
-        AssetButtonAtom.Data.TypeIndicator typeIndicator,
-        // Placeholder Thumbnail Handler
-        LeftClickStrategy leftClick,
-        RightClickStrategy rightClick,
-        DragStrategy dragStrategy)
-    {
-        SetText(assetName);
-
-        SetTypeIndicator(typeIndicator);
-    }
-
     private SetValueStrategy<Guid> valueBindStrategy;
 
     public void UpdateValue()
