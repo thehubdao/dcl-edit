@@ -3,7 +3,6 @@ using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor;
 using Zenject;
 using UnityEngine;
 
@@ -64,13 +63,18 @@ namespace Assets.Scripts.System
                 hit.point :
                 ray.GetPoint(10);
 
-            addEntitySystem.AddModelAssetEntityAsCommand(asset.assetDisplayName, asset.assetId, position);
+            AddAssetToSceneAtPosition(asset, position);
         }
 
         public void AddAssetToSceneAtMousePositionInViewport(AssetMetadata asset)
         {
             var position = inputHelper.GetMousePositionInScene();
 
+            AddAssetToSceneAtPosition(asset, position);
+        }
+
+        private void AddAssetToSceneAtPosition(AssetMetadata asset, Vector3 position)
+        {
             switch (asset.assetType)
             {
                 case AssetMetadata.AssetType.Unknown:
