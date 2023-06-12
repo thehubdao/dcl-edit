@@ -185,7 +185,7 @@ namespace Assets.Scripts.System
             sceneViewSystem.SetUpCurrentScene();
             var newSceneIndex = sceneManagerState.currentSceneIndex;
             settingsSystem.openLastOpenedScene.Set(newSceneIndex.ToString());
-            sceneViewSystem.UpdateSceneTabTitle();
+            sceneViewSystem.UpdateScene();
         }
 
         /// <summary>

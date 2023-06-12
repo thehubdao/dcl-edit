@@ -8,6 +8,10 @@ namespace Assets.Scripts.Tests.EditModeTests.TestUtility
         {
         }
 
+        public void UpdateScene()
+        {
+        }
+
         public void UpdateSceneTabTitle()
         {
         }

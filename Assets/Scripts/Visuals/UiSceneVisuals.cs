@@ -34,10 +34,10 @@ namespace Assets.Scripts.Visuals
         private PanelSystem panelSystem;
         private EditorEvents events;
         private SceneManagerState sceneManagerState;
-        private SceneChangeDetectSystem sceneChangeDetectSystem;
+        private ISceneChangeDetectSystem sceneChangeDetectSystem;
 
         [Inject]
-        private void Construct(PanelSystem panelSystem, EditorEvents events, SceneManagerState sceneManagerState, SceneChangeDetectSystem sceneChangeDetectSystem)
+        private void Construct(PanelSystem panelSystem, EditorEvents events, SceneManagerState sceneManagerState, ISceneChangeDetectSystem sceneChangeDetectSystem)
         {
             this.panelSystem = panelSystem;
             this.events = events;
@@ -48,8 +48,7 @@ namespace Assets.Scripts.Visuals
 
         private void SetupEventListeners()
         {
-            events.OnCurrentSceneChangedEvent += MarkForUpdate;
-            
+            events.OnCurrentSceneTitleChangedEvent += MarkForUpdate;
             MarkForUpdate();
         }
 

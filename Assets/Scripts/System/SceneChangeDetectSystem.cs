@@ -7,7 +7,7 @@ namespace Assets.Scripts.System
     /// <summary>
     /// Responsible for detecting if the current state the scene matches the state when the scene was last saved.
     /// </summary>
-    public class SceneChangeDetectSystem
+    public class SceneChangeDetectSystem : ISceneChangeDetectSystem
     {
         // Dependencies
         private ISceneViewSystem sceneViewSystem;

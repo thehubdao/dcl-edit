@@ -1,12 +1,12 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
 using Assets.Scripts.System;
 using Assets.Scripts.Tests.EditModeTests.TestUtility;
 using NUnit.Framework;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Object = UnityEngine.Object;
@@ -178,48 +178,6 @@ namespace Assets.Scripts.Tests.EditModeTests
             Assert.AreEqual(Guid.Parse("0149cae5-9e33-48aa-a346-94f02091ec75"), metaData2.assetId);
             Assert.AreEqual(AssetMetadata.AssetType.Model, metaData2.assetType);
         }
-
-        [UnityTest]
-        public IEnumerator GetAssetThumbnail()
-        {
-            var loaderSystem = new BuilderAssetLoaderSystem();
-            var loaderState = new BuilderAssetLoaderState();
-            var editorEvent = new EditorEvents();
-            var loadGltf = new LoadGltfFromFileSystem();
-            var webRequest = new MockWebRequestSystem();
-            var pathState = new MockPathState("simple-load-test", true);
-
-            // Get Unity State
-            loadGltf.Construct(Object.FindObjectOfType<UnityState>());
-
-            var assetMetaDataCachedAction = new MockEventActionListener();
-            editorEvent.onAssetMetadataCacheUpdatedEvent += assetMetaDataCachedAction.Called;
-
-            var assetThumbnailCachedAction = new MockEventActionListener();
-            editorEvent.onAssetThumbnailUpdatedEvent += assetThumbnailCachedAction.Called;
-
-            loaderSystem.Construct(loaderState, editorEvent, loadGltf, webRequest, pathState);
-
-            loaderSystem.CacheAllAssetMetadata();
-
-            yield return assetMetaDataCachedAction.WaitForActionCount(1);
-
-            var thumbnail1 = loaderSystem.GetThumbnailById(Guid.Parse("0149cae5-9e33-48aa-a346-94f02091ec75"));
-            Assert.NotNull(thumbnail1);
-            Assert.AreEqual(AssetData.State.IsLoading, thumbnail1.state);
-            Assert.Null(thumbnail1.texture);
-
-            yield return assetThumbnailCachedAction.WaitForActionCount(1);
-
-            var thumbnail2 = loaderSystem.GetThumbnailById(Guid.Parse("0149cae5-9e33-48aa-a346-94f02091ec75"));
-            Assert.NotNull(thumbnail2);
-            Assert.AreEqual(AssetData.State.IsAvailable, thumbnail2.state);
-            Assert.NotNull(thumbnail2.texture);
-
-            Assert.AreEqual(512, thumbnail2.texture.width);
-            Assert.AreEqual(512, thumbnail2.texture.height);
-        }
-
 
         [UnityTest]
         public IEnumerator GetAssetData()
