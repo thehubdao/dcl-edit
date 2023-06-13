@@ -1,4 +1,5 @@
 using Assets.Scripts.Events;
+using System.Diagnostics;
 using Zenject;
 
 namespace Assets.Scripts.System
@@ -7,6 +8,7 @@ namespace Assets.Scripts.System
     {
         void SetUpCurrentScene();
         void UpdateSceneTabTitle();
+        void UpdateScene();
     }
 
     public class SceneViewSystem : ISceneViewSystem
@@ -24,7 +26,6 @@ namespace Assets.Scripts.System
             this.editorEvents = editorEvents;
         }
 
-
         public void SetUpCurrentScene()
         {
             cameraSystem.CameraStartup();
@@ -33,6 +34,11 @@ namespace Assets.Scripts.System
         }
 
         public void UpdateSceneTabTitle()
+        {
+            editorEvents.InvokeCurrentSceneTitleChangedEvent();
+        }
+
+        public void UpdateScene()
         {
             editorEvents.InvokeCurrentSceneChangedEvent();
         }

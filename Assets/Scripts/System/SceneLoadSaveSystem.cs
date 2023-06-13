@@ -42,11 +42,11 @@ namespace Assets.Scripts.System
         private LoadFromVersion1System loadFromVersion1System;
         private FileUpgraderSystem fileUpgraderSystem;
         private ISceneViewSystem sceneViewSystem;
-        private SceneChangeDetectSystem sceneChangeDetectSystem;
+        private ISceneChangeDetectSystem sceneChangeDetectSystem;
 
         [Inject]
         public void Construct(
-            LoadFromVersion1System loadFromVersion1System, FileUpgraderSystem fileUpgraderSystem, ISceneViewSystem sceneViewSystem, SceneChangeDetectSystem sceneChangeDetectSystem)
+            LoadFromVersion1System loadFromVersion1System, FileUpgraderSystem fileUpgraderSystem, ISceneViewSystem sceneViewSystem, ISceneChangeDetectSystem sceneChangeDetectSystem)
         {
             this.loadFromVersion1System = loadFromVersion1System;
             this.fileUpgraderSystem = fileUpgraderSystem;
@@ -99,7 +99,7 @@ namespace Assets.Scripts.System
                 }
 
                 sceneChangeDetectSystem.RememberCurrentState();
-                sceneViewSystem.UpdateSceneTabTitle();
+                sceneViewSystem.UpdateScene();
             }
             catch (Exception e)
             {

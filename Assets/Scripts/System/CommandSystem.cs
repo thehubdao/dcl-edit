@@ -11,7 +11,7 @@ namespace Assets.Scripts.System
         private EditorEvents editorEvents;
         private ISceneManagerSystem sceneManagerSystem;
         private IMenuBarSystem menuBarSystem;
-        private SceneChangeDetectSystem sceneChangeDetectSystem;
+        private ISceneChangeDetectSystem sceneChangeDetectSystem;
 
         [Inject]
         public void Construct(
@@ -19,7 +19,7 @@ namespace Assets.Scripts.System
             EditorEvents editorEvents,
             ISceneManagerSystem sceneManagerSystem,
             IMenuBarSystem menuBarSystem,
-            SceneChangeDetectSystem sceneChangeDetectSystem)
+            ISceneChangeDetectSystem sceneChangeDetectSystem)
         {
             CommandFactory = commandFactory;
             this.editorEvents = editorEvents;

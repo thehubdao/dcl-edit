@@ -150,6 +150,10 @@ namespace Assets.Scripts.EditorState
         [SerializeField]
         public GameObject SpacerAtom;
 
+        [SerializeField]
+        public GameObject SnackbarItem;
+
+
         [Header("Dialog Windows")]
         [SerializeField]
         public GameObject assetDialog;
