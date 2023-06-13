@@ -1,21 +1,23 @@
+using Assets.Scripts.Events;
+using Assets.Scripts.System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
+using Zenject;
 
 namespace Assets.Scripts.Visuals
 {
-    public class GroundGrid : MonoBehaviour
+    public class GroundGridVisuals : MonoBehaviour
     {
+        private EditorEvents editorEvents;
+        private SettingsSystem settingsSystem;
+        
         private readonly int shaderDistanceRadius = Shader.PropertyToID("_Radius");
 
         [SerializeField] private Material gridMaterial;
 
-        [SerializeField] private Transform smallGrid;
-        [SerializeField] private Transform largeGrid;
-
-        [SerializeField] private int gridSize = 10;
-
+        [SerializeField][Range(2, 100)] private int gridSize = 16;
         [SerializeField] private int smallLineCount = 50;
         [SerializeField] private int largeLineCount = 10;
         [SerializeField] private float length = 10000;
@@ -33,7 +35,18 @@ namespace Assets.Scripts.Visuals
         private Vector3 cameraPos;
         private int gridIndex;
 
-        public void SetGridSize(int value) => gridSize = value > 2 ? value : 2;
+        [Inject]
+        private void Construct(EditorEvents editorEvents, SettingsSystem settingsSystem)
+        {
+            this.editorEvents = editorEvents;
+            this.settingsSystem = settingsSystem;
+        }
+
+        public void UpdateGridSize()
+        {
+            gridSize = settingsSystem.groundGridSizeSetting.Get();
+            UpdateGridHeight();
+        }
 
         private void Awake()
         {
@@ -55,22 +68,28 @@ namespace Assets.Scripts.Visuals
             ZaxisMaterial.color = new(0.2f, 0.2f, 1, 1);
         }
 
-        private void OnEnable() => RenderPipelineManager.beginCameraRendering += WriteLogMessage;
-        private void OnDisable() => RenderPipelineManager.beginCameraRendering -= WriteLogMessage;
+        private void OnEnable()
+        {
+            RenderPipelineManager.beginCameraRendering += WriteLogMessage;
+            editorEvents.onSettingsChangedEvent += UpdateGridSize;
+            UpdateGridSize();
+        }
+
+        private void OnDisable()
+        {
+            RenderPipelineManager.beginCameraRendering -= WriteLogMessage;
+            editorEvents.onSettingsChangedEvent -= UpdateGridSize;
+        }
+
         private void WriteLogMessage(ScriptableRenderContext context, Camera camera) => mainCamRender = camera == mainCam;
 
         public void OnRenderObject()
         {
             if (!mainCamRender) return;
 
-            if(cameraPos.y != mainCamTransform.position.y)
-            {
-                float cameraHeight = Mathf.Abs(mainCamTransform.position.y) - 10;
-                gridIndex = cameraHeight > 1 ? Mathf.FloorToInt(Mathf.Log(cameraHeight, gridSize)) : 0;
-                gridHeightScale = (int)Mathf.Pow(gridSize, gridIndex);
-                smallGridMaterial.SetFloat(shaderDistanceRadius, gridHeightScale);
-                largeGridMaterial.SetFloat(shaderDistanceRadius, gridHeightScale);
-            }
+            if (cameraPos.y != mainCamTransform.position.y)
+                UpdateGridHeight();
+
             cameraPos = mainCamTransform.position;
             
             DrawAxis(ZaxisMaterial, 0f, length);
@@ -78,6 +97,15 @@ namespace Assets.Scripts.Visuals
 
             DrawGrid(largeGridMaterial, gridHeightScale * gridSize, largeLineCount);
             DrawGrid(smallGridMaterial, gridHeightScale, smallLineCount);
+        }
+
+        private void UpdateGridHeight()
+        {
+            float cameraHeight = Mathf.Abs(mainCamTransform.position.y) - 10;
+            gridIndex = cameraHeight > 1 ? Mathf.FloorToInt(Mathf.Log(cameraHeight, gridSize)) : 0;
+            gridHeightScale = (int)Mathf.Pow(gridSize, gridIndex);
+            smallGridMaterial.SetFloat(shaderDistanceRadius, gridHeightScale);
+            largeGridMaterial.SetFloat(shaderDistanceRadius, gridHeightScale);
         }
 
         private Vector3 GetGridPos(float gridHeightScale)
