@@ -30,6 +30,7 @@ namespace Assets.Scripts.Visuals
         private AssetManagerSystem assetManagerSystem;
         private DialogSystem dialogSystem;
         private ExposeEntitySystem exposeEntitySystem;
+        private PromptSystem promptSystem;
 
         [Inject]
         private void Construct(
@@ -44,7 +45,8 @@ namespace Assets.Scripts.Visuals
             AvailableComponentsState availableComponentsState,
             AssetManagerSystem assetManagerSystem,
             DialogSystem dialogSystem,
-            ExposeEntitySystem exposeEntitySystem)
+            ExposeEntitySystem exposeEntitySystem,
+            PromptSystem promptSystem)
         {
             this.inputState = inputState;
             this.updatePropertiesSystem = updatePropertiesSystem;
@@ -58,7 +60,7 @@ namespace Assets.Scripts.Visuals
             this.assetManagerSystem = assetManagerSystem;
             this.dialogSystem = dialogSystem;
             this.exposeEntitySystem = exposeEntitySystem;
-
+            this.promptSystem = promptSystem;
             SetupEventListeners();
         }
 
@@ -140,8 +142,8 @@ namespace Assets.Scripts.Visuals
             foreach (var component in selectedEntity.Components ?? new List<DclComponent>())
             {
                 var componentPanel = inspectorPanel.AddPanelWithBorder();
-                
-                if (component.NameInCode == "Transform")
+
+                if(!availableComponentsState.GetComponentDefinitionByName(component.NameInCode).IsRemovable)
                     componentPanel.AddPanelHeader(component.NameInCode, null);
                 else
                     componentPanel.AddPanelHeader(component.NameInCode, () => commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateRemoveComponent(selectedEntity.Id, component)));
@@ -264,7 +266,7 @@ namespace Assets.Scripts.Visuals
                                 componentPanel.AddAssetProperty(
                                     property.PropertyName,
                                     assetMetadata,
-                                    (_) => dialogSystem.OpenAssetDialog(component));
+                                    async (_) => await promptSystem.CreateAssetMenu());
 
                             break;
                         }

@@ -25,7 +25,8 @@ public class DialogVisuals : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         UnityState unityState,
         EditorEvents editorEvents,
         SceneManagerSystem sceneManagerSystem,
-        CommandSystem commandSystem)
+        CommandSystem commandSystem
+        )
     {
         this.dialogSystem = dialogSystem;
         this.dialogState = dialogState;
@@ -33,7 +34,6 @@ public class DialogVisuals : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         this.editorEvents = editorEvents;
         this.sceneManagerSystem = sceneManagerSystem;
         this.commandSystem = commandSystem;
-
         editorEvents.onDialogChangedEvent += UpdateDialog;
     }
 
@@ -42,7 +42,7 @@ public class DialogVisuals : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         switch (dialogState.currentDialog)
         {
             case DialogState.DialogType.None:
-                RemoveChildObjects();
+            //    RemoveChildObjects();
                 break;
             case DialogState.DialogType.Asset:
                 ShowAssetDialog();
@@ -69,6 +69,7 @@ public class DialogVisuals : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
             DclScene scene = sceneManagerSystem.GetCurrentScene();
 
             // Update the target component with the new asset
+
             var sceneProperty = dialogState.targetComponent.GetPropertyByName("scene");
             var assetProperty = dialogState.targetComponent.GetPropertyByName("asset");
             if (sceneProperty != null)
@@ -92,11 +93,13 @@ public class DialogVisuals : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
     public void OnPointerEnter(PointerEventData eventData)
     {
+        if (dialogState.currentDialog == DialogState.DialogType.DialogSystem) return;
         if (dialogState.currentDialog != DialogState.DialogType.None) dialogState.mouseOverDialogWindow = true;
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
+        if (dialogState.currentDialog == DialogState.DialogType.DialogSystem) return;
         dialogState.mouseOverDialogWindow = false;
     }
 }

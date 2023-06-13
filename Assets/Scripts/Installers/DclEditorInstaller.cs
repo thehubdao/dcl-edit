@@ -84,6 +84,8 @@ public class DclEditorInstaller : MonoInstaller
 
         Container.BindFactory<MainSceneVisuals, MainSceneVisuals.Factory>().FromComponentInNewPrefab(mainSceneVisualsPrefab);
 
+        Container.BindFactory<UiAssetBrowserVisuals, UiAssetBrowserVisuals.Factory>().FromComponentInNewPrefab(unityState.AssetBrowser);
+
         Container.BindInterfacesAndSelfTo<EditorEvents>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<HierarchyChangeSystem>().AsSingle();
@@ -175,13 +177,15 @@ public class DclEditorInstaller : MonoInstaller
 
         Container.BindInterfacesAndSelfTo<PanelSystem>().AsSingle();
 
+        Container.BindInterfacesAndSelfTo<SceneChangeDetectSystem>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<PromptSystem>().AsSingle();
+        
         Container.BindInterfacesAndSelfTo<FileUpgraderSystem>().AsSingle();
         
         Container.BindInterfacesAndSelfTo<HierarchyNavigationInteraction>().AsSingle();
 
         Container.BindInterfacesTo<GeneralInputInteraction>().AsSingle();
-
-        Container.Bind<ISceneChangeDetectSystem>().To<SceneChangeDetectSystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<SnackbarSystem>().AsSingle();
 

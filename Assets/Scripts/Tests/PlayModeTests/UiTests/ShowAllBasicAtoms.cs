@@ -202,5 +202,28 @@ namespace Assets.Scripts.Tests.PlayModeTests.UiTests
 
             yield return testerPrompt.WaitForQuestionPrompt("Do you see three hierarchy items under each other?", Yes);
         }
+
+        [UnityTest]
+        public IEnumerator ShowPromptSystemDialog()
+        {
+            var testerPrompt = UiTester.instance.uiTesterPrompt;
+            var mainPanel = UiBuilder.NewPanelData();
+            var buttonCommands = new PromptSystem.Action[] { new PromptSystem.Yes(() => Debug.Log("Yes")), new PromptSystem.No(() => Debug.Log("No")) };
+            var notInWindowCommand = new PromptSystem.Cancel(() => Debug.Log("Cancel"));
+            UiPromptVisuals.Data data = new(null, "Test the Prompt System", buttonCommands, notInWindowCommand);
+            var promptPanel = mainPanel.AddPanel();
+            UiPromptVisuals.AssignActions(data);
+            UiPromptVisuals.CreateText(promptPanel, data);
+            UiPromptVisuals.AddButtons(promptPanel, data);
+            uiBuilder.Update(mainPanel);
+
+            string promptText = "Click the same anser in the prompt system and here to success?";
+            testerPrompt.SetPromptText(promptText);
+
+            yield return new WaitUntil(() => data.taskCompleted.Task.IsCompleted);
+            UiTesterPrompt.Answer correctAnswer = data.taskCompleted.Task.Result.name == "Yes" ? Yes : No;
+
+            yield return testerPrompt.WaitForQuestionPrompt(promptText, correctAnswer);
+        }
     }
 }
