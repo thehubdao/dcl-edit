@@ -30,13 +30,15 @@ public class AssetBrowserButtonHandler : ButtonHandler
     EditorEvents editorEvents;
     AssetThumbnailManagerSystem assetThumbnailManagerSystem;
     SceneManagerSystem sceneManagerSystem;
+    PromptSystem promptSystem;
 
     [Inject]
-    void Construct(EditorEvents editorEvents, AssetThumbnailManagerSystem assetThumbnailManagerSystem, SceneManagerSystem sceneManagerSystem)
+    void Construct(EditorEvents editorEvents, AssetThumbnailManagerSystem assetThumbnailManagerSystem, SceneManagerSystem sceneManagerSystem, PromptSystem promptSystem)
     {
         this.editorEvents = editorEvents;
         this.assetThumbnailManagerSystem = assetThumbnailManagerSystem;
         this.sceneManagerSystem = sceneManagerSystem;
+        this.promptSystem = promptSystem;
     }
 
     public void Init(AssetMetadata metadata, bool enableDragAndDrop, Action<Guid> onClick, ScrollRect scrollViewRect = null)
@@ -167,9 +169,6 @@ public class AssetBrowserButtonHandler : ButtonHandler
         button.onClick.AddListener(() => onClick(metadata.assetId));
     }
     #endregion
-
-
-
 
     private bool IsVisibleInScrollView()
     {

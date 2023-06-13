@@ -26,6 +26,18 @@ namespace Assets.Scripts.EditorState
         [SerializeField]
         public GameObject sceneViewButtons;
 
+        [SerializeField]
+        public GameObject PromptDialog;
+
+        [SerializeField]
+        public GameObject PromptColorPicker;
+
+        [SerializeField]
+        public GameObject PromptAssetPicker;
+
+        [SerializeField]
+        public GameObject BackgroundCanvas;
+
         [Header("Assets")]
         [SerializeField]
         public Mesh BoxMesh;
@@ -66,6 +78,12 @@ namespace Assets.Scripts.EditorState
         [Header("Context Menu Prefab")]
         [SerializeField]
         public GameObject ContextMenuAtom;
+
+        [SerializeField]
+        public GameObject ColorPicker;
+
+        [SerializeField]
+        public GameObject AssetBrowser;
 
 
         [Header("Ui Atoms")]
@@ -128,7 +146,7 @@ namespace Assets.Scripts.EditorState
 
         [SerializeField]
         public GameObject ContextMenuSpacerItemAtom;
-        
+
         [SerializeField]
         public GameObject SpacerAtom;
 

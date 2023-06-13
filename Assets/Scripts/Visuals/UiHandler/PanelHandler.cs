@@ -14,7 +14,7 @@ namespace Assets.Scripts.Visuals.UiHandler
             Vertical
         }
 
-        public void SetLayoutDirection(LayoutDirection value)
+        public void SetLayoutDirection(LayoutDirection value, TextAnchor anchor)
         {
             if (IsLayoutGroupCorrect(value)) return;
 
@@ -37,8 +37,7 @@ namespace Assets.Scripts.Visuals.UiHandler
                 default:
                     throw new ArgumentOutOfRangeException(nameof(value), value, null);
             }
-
-            
+            layoutGroup.childAlignment = anchor;
         }
 
         private bool IsLayoutGroupCorrect(LayoutDirection value)
