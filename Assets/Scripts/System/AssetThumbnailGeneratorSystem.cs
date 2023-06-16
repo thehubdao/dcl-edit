@@ -2,6 +2,8 @@ using Assets.Scripts.Events;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Assets.Scripts.EditorState;
+using Assets.Scripts.System;
 using UnityEngine;
 using Zenject;
 using static AssetThumbnailGeneratorState;
@@ -9,16 +11,19 @@ using static AssetThumbnailGeneratorState;
 public class AssetThumbnailGeneratorSystem
 {
     // Dependencies
+    AssetManagerSystem assetManagerSystem;
     AssetThumbnailGeneratorState state;
     EditorEvents editorEvents;
 
     [Inject]
-    private void Construct(AssetThumbnailGeneratorState assetThumbnailGeneratorState, EditorEvents editorEvents)
+    private void Construct(AssetThumbnailGeneratorState assetThumbnailGeneratorState, AssetManagerSystem assetManagerSystem, EditorEvents editorEvents)
     {
         state = assetThumbnailGeneratorState;
+        this.assetManagerSystem = assetManagerSystem;
         this.editorEvents = editorEvents;
 
         this.editorEvents.onAssetDataUpdatedEvent += OnAssetDataUpdatedCallback;
+        this.editorEvents.onAssetDataUpdatedEvent += OnSceneDataUpdatedCallback;
     }
 
     public void Generate(Guid id, Action<Texture2D> then)
@@ -45,6 +50,25 @@ public class AssetThumbnailGeneratorSystem
 
                 state.queuedAssets.Enqueue(qa);
 
+                editorEvents.InvokeStartThumbnailGeneration();
+            }
+        }
+    }
+
+    void OnSceneDataUpdatedCallback(List<Guid> ids)
+    {
+        foreach (var id in ids)
+        {
+            foreach (var queuedAsset in state.waitingForAssetData)
+            {
+                var assetData = assetManagerSystem.GetDataById(queuedAsset.id);
+                if (assetData is not SceneAssetData sceneAssetData) continue;
+                if (sceneAssetData.itemList.All(i => i.Key != id)) continue;
+                    
+                state.waitingForAssetData.Remove(queuedAsset);
+                        
+                state.queuedAssets.Enqueue(queuedAsset);
+                        
                 editorEvents.InvokeStartThumbnailGeneration();
             }
         }
