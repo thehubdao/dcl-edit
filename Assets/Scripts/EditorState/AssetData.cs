@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Assets.Scripts.EditorState
@@ -84,11 +85,26 @@ namespace Assets.Scripts.EditorState
 
     public class SceneAssetData: AssetData
     {
-        public bool isScene;
+        public bool needUpdate;
+        public Dictionary<Guid, bool> itemList;
 
-        public SceneAssetData(Guid id, bool isScene) : base(id, State.IsAvailable)
+        public SceneAssetData(Guid id, bool needUpdate, Dictionary<Guid, bool> itemList) : base(id, State.IsLoading)
         {
-            this.isScene = isScene;
+            this.needUpdate = needUpdate;
+            this.itemList = itemList;
+        }
+
+        public void SetState(State newState)
+        {
+            state = newState;
+        }
+
+        public bool IsReady()
+        {
+            var ready = itemList.All(i => i.Value);
+            if (ready) state = State.IsAvailable;
+
+            return ready;
         }
     }
 
