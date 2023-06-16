@@ -16,7 +16,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
             }
 
             [NotNull]
-            public SetValueStrategy<Guid> valueBindStrategy;
+            public SetValueStrategy<Guid> setValueStrategy;
 
             [CanBeNull]
             public LeftClickStrategy leftClick = null;
@@ -62,7 +62,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
             {
                 // Update data
                 var btnHandler = gameObject.gameObject.GetComponent<AssetButtonHandler>();
-                btnHandler.Setup(newBtnData.valueBindStrategy, newBtnData.dragStrategy, newBtnData.leftClick, newBtnData.rightClick);
+                btnHandler.Setup(newBtnData.setValueStrategy, newBtnData.dragStrategy, newBtnData.leftClick, newBtnData.rightClick);
 
                 data = newBtnData;
             }
@@ -85,7 +85,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
         public static AssetButtonAtom.Data AddAssetBrowserButton(
             this PanelAtom.Data panelAtomData,
             // Placeholder Thumbnail Handler
-            [NotNull] SetValueStrategy<Guid> valueBindStrategy,
+            [NotNull] SetValueStrategy<Guid> setValueStrategy,
             [CanBeNull] LeftClickStrategy leftClick = null,
             [CanBeNull] RightClickStrategy rightClick = null,
             [CanBeNull] DragStrategy dragStrategy = null
@@ -93,7 +93,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
         {
             var data = new AssetButtonAtom.Data
             {
-                valueBindStrategy = valueBindStrategy,
+                setValueStrategy = setValueStrategy,
                 leftClick = leftClick,
                 rightClick = rightClick,
                 dragStrategy = dragStrategy
