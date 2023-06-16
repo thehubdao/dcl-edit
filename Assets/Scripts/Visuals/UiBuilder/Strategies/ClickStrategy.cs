@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using JetBrains.Annotations;
 using UnityEngine;
 
-public abstract class ClickStrategy
+public class ClickStrategy
 {
     public struct EventData
     {
@@ -14,26 +14,50 @@ public abstract class ClickStrategy
         [NotNull]
         public Vector2 position;
     }
+
+    public ClickStrategy([CanBeNull] LeftClickStrategy leftClickStrategy = null, [CanBeNull] RightClickStrategy rightClickStrategy = null)
+    {
+        this.leftClickStrategy = leftClickStrategy;
+        this.rightClickStrategy = rightClickStrategy;
+    }
+
+    [CanBeNull]
+    public LeftClickStrategy leftClickStrategy;
+
+    [CanBeNull]
+    public RightClickStrategy rightClickStrategy;
 }
 
-public class LeftClickStrategy : ClickStrategy
+public class LeftClickStrategy
 {
     [NotNull]
-    public Action<EventData> onLeftClick;
+    public Action<ClickStrategy.EventData> onLeftClick;
 
-    public LeftClickStrategy([NotNull] Action<EventData> onLeftClick)
+    public LeftClickStrategy([NotNull] Action<ClickStrategy.EventData> onLeftClick)
     {
         this.onLeftClick = onLeftClick;
     }
+
+    // implicit conversion to ClickStrategy
+    public static implicit operator ClickStrategy(LeftClickStrategy leftClickStrategy)
+    {
+        return new ClickStrategy(leftClickStrategy: leftClickStrategy);
+    }
 }
 
-public class RightClickStrategy : ClickStrategy
+public class RightClickStrategy
 {
     [NotNull]
-    public Action<EventData> onRightClick;
+    public Action<ClickStrategy.EventData> onRightClick;
 
-    public RightClickStrategy([NotNull] Action<EventData> onRightClick)
+    public RightClickStrategy([NotNull] Action<ClickStrategy.EventData> onRightClick)
     {
         this.onRightClick = onRightClick;
+    }
+
+    // implicit conversion to ClickStrategy
+    public static implicit operator ClickStrategy(RightClickStrategy rightClickStrategy)
+    {
+        return new ClickStrategy(rightClickStrategy: rightClickStrategy);
     }
 }

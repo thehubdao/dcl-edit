@@ -8,11 +8,8 @@ namespace Assets.Scripts.Visuals.UiHandler
 {
     public class ClickHandler : MonoBehaviour, IPointerClickHandler
     {
-        [CanBeNull]
-        public RightClickStrategy rightClickStrategy;
-
-        [CanBeNull]
-        public LeftClickStrategy leftClickStrategy;
+        [NotNull]
+        public ClickStrategy clickStrategy;
 
         public void OnPointerClick(PointerEventData eventData)
         {
@@ -21,11 +18,11 @@ namespace Assets.Scripts.Visuals.UiHandler
             switch (eventData.button)
             {
                 case PointerEventData.InputButton.Right:
-                    rightClickStrategy?.onRightClick.Invoke(new ClickStrategy.EventData() {position = eventData.position, gameObject = eventData.pointerPress});
+                    clickStrategy.rightClickStrategy?.onRightClick.Invoke(new ClickStrategy.EventData() {position = eventData.position, gameObject = eventData.pointerPress});
                     break;
 
                 case PointerEventData.InputButton.Left:
-                    leftClickStrategy?.onLeftClick.Invoke(new ClickStrategy.EventData() {position = eventData.position, gameObject = eventData.pointerPress});
+                    clickStrategy.leftClickStrategy?.onLeftClick.Invoke(new ClickStrategy.EventData() {position = eventData.position, gameObject = eventData.pointerPress});
                     break;
             }
         }

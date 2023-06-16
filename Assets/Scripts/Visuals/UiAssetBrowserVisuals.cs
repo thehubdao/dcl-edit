@@ -201,7 +201,7 @@ namespace Assets.Scripts.Visuals
                 grid.AddAssetBrowserButton(
                     assetMetadata.assetId,
                     dragStrategy: dragStrategy,
-                    leftClick: new LeftClickStrategy(
+                    clickStrategy: new LeftClickStrategy(
                         _ => assetBrowserSystem.AddAssetToSceneInViewportCenter(assetMetadata))
                 );
             }

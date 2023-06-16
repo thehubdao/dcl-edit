@@ -23,9 +23,6 @@ namespace Assets.Scripts.Visuals.UiHandler
         public RectTransform indent;
 
         [SerializeField]
-        public ClickHandler rightClickHandler;
-
-        [SerializeField]
         private ClickHandler textClickHandler;
 
         [SerializeField]
@@ -87,9 +84,8 @@ namespace Assets.Scripts.Visuals.UiHandler
             text.textStyle = newHierarchyItemData.style;
 
 
-            rightClickHandler.rightClickStrategy = newHierarchyItemData.rightClickStrategy;
-            textClickHandler.leftClickStrategy = newHierarchyItemData.clickTextStrategy;
-            arrowClickHandler.leftClickStrategy = newHierarchyItemData.clickArrowStrategy;
+            textClickHandler.clickStrategy = newHierarchyItemData.clickTextStrategy;
+            arrowClickHandler.clickStrategy = newHierarchyItemData.clickArrowStrategy;
 
 
             primarySelection = newHierarchyItemData.isPrimarySelected;

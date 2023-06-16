@@ -18,11 +18,11 @@ namespace Assets.Scripts.Visuals.UiBuilder
             public TextHandler.TextStyle style;
             public bool isPrimarySelected;
 
-            [CanBeNull]
-            public LeftClickStrategy clickArrowStrategy;
+            [NotNull]
+            public ClickStrategy clickArrowStrategy;
 
-            [CanBeNull]
-            public LeftClickStrategy clickTextStrategy;
+            [NotNull]
+            public ClickStrategy clickTextStrategy;
 
             [CanBeNull]
             public DropStrategy dropStrategyUpper;
@@ -32,9 +32,6 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
             [CanBeNull]
             public DropStrategy dropStrategyLower;
-
-            [CanBeNull]
-            public RightClickStrategy rightClickStrategy;
 
             [CanBeNull]
             public DragStrategy dragStrategy;
@@ -55,7 +52,6 @@ namespace Assets.Scripts.Visuals.UiBuilder
                     isPrimarySelected.Equals(otherHierarchyItem.isPrimarySelected) &&
                     isFirstChild.Equals(otherHierarchyItem.isFirstChild) &&
                     style.Equals(otherHierarchyItem.style) &&
-                    (rightClickStrategy?.Equals(otherHierarchyItem.rightClickStrategy) ?? otherHierarchyItem.rightClickStrategy == null) &&
                     (dropStrategyUpper?.Equals(otherHierarchyItem.dropStrategyUpper) ?? otherHierarchyItem.dropStrategyUpper == null) &&
                     (dropStrategyMiddle?.Equals(otherHierarchyItem.dropStrategyMiddle) ?? otherHierarchyItem.dropStrategyMiddle == null) &&
                     (dropStrategyLower?.Equals(otherHierarchyItem.dropStrategyLower) ?? otherHierarchyItem.dropStrategyLower == null) &&
@@ -113,14 +109,16 @@ namespace Assets.Scripts.Visuals.UiBuilder
             bool isFirstChild,
             TextHandler.TextStyle textStyle,
             bool isPrimarySelected,
-            LeftClickStrategy clickArrowStrategy = null,
-            LeftClickStrategy clickTextStrategy = null,
+            ClickStrategy clickArrowStrategy = null,
+            ClickStrategy clickTextStrategy = null,
             DropStrategy dropStrategyUpper = null,
             DropStrategy dropStrategyMiddle = null,
             DropStrategy dropStrategyLower = null,
-            DragStrategy dragStrategy = null,
-            RightClickStrategy rightClickStrategy = null)
+            DragStrategy dragStrategy = null)
         {
+            clickTextStrategy ??= new ClickStrategy();
+            clickArrowStrategy ??= new ClickStrategy();
+
             var data = new HierarchyItemAtom.Data
             {
                 name = name,
@@ -132,7 +130,6 @@ namespace Assets.Scripts.Visuals.UiBuilder
                 isPrimarySelected = isPrimarySelected,
                 clickArrowStrategy = clickArrowStrategy,
                 clickTextStrategy = clickTextStrategy,
-                rightClickStrategy = rightClickStrategy,
                 dragStrategy = dragStrategy,
                 dropStrategyUpper = dropStrategyUpper,
                 dropStrategyMiddle = dropStrategyMiddle,

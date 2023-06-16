@@ -75,16 +75,14 @@ public class AssetButtonHandler : MonoBehaviour, IUpdateValue
     public void Setup(
         SetValueStrategy<Guid> valueBindStrategy,
         [CanBeNull] DragStrategy dragStrategy,
-        [CanBeNull] LeftClickStrategy leftClickStrategy,
-        [CanBeNull] RightClickStrategy rightClickStrategy)
+        [NotNull] ClickStrategy clickStrategy)
     {
         this.valueBindStrategy = valueBindStrategy;
 
         UpdateValue();
 
         dragHandler.dragStrategy = dragStrategy;
-        clickHandler.leftClickStrategy = leftClickStrategy;
-        clickHandler.rightClickStrategy = rightClickStrategy;
+        clickHandler.clickStrategy = clickStrategy;
     }
 
 

@@ -55,7 +55,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
                 var le = gameObject.gameObject.GetComponent<LayoutElement>();
                 
                 le.minHeight = newSpacerData.height;
-                spacerHandler.clickHandler.rightClickStrategy = newSpacerData.rightClickStrategy;
+                spacerHandler.clickHandler.clickStrategy = newSpacerData.rightClickStrategy;
                 spacerHandler.dropHandler.dropStrategy = newSpacerData.dropStrategy;
 
                 data = newSpacerData;

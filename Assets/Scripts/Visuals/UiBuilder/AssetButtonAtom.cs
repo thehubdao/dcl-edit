@@ -18,11 +18,8 @@ namespace Assets.Scripts.Visuals.UiBuilder
             [NotNull]
             public SetValueStrategy<Guid> setValueStrategy;
 
-            [CanBeNull]
-            public LeftClickStrategy leftClick = null;
-
-            [CanBeNull]
-            public RightClickStrategy rightClick = null;
+            [NotNull]
+            public ClickStrategy clickStrategy;
 
             [CanBeNull]
             public DragStrategy dragStrategy = null;
@@ -35,8 +32,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
                 }
 
                 if (dragStrategy != otherBtn.dragStrategy) return false;
-                if (leftClick != otherBtn.leftClick) return false;
-                if (rightClick != otherBtn.rightClick) return false;
+                if (clickStrategy != otherBtn.clickStrategy) return false;
                 if (dragStrategy != otherBtn.dragStrategy) return false;
                 return true;
             }
@@ -62,7 +58,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
             {
                 // Update data
                 var btnHandler = gameObject.gameObject.GetComponent<AssetButtonHandler>();
-                btnHandler.Setup(newBtnData.setValueStrategy, newBtnData.dragStrategy, newBtnData.leftClick, newBtnData.rightClick);
+                btnHandler.Setup(newBtnData.setValueStrategy, newBtnData.dragStrategy, newBtnData.clickStrategy);
 
                 data = newBtnData;
             }
@@ -86,16 +82,15 @@ namespace Assets.Scripts.Visuals.UiBuilder
             this PanelAtom.Data panelAtomData,
             // Placeholder Thumbnail Handler
             [NotNull] SetValueStrategy<Guid> setValueStrategy,
-            [CanBeNull] LeftClickStrategy leftClick = null,
-            [CanBeNull] RightClickStrategy rightClick = null,
-            [CanBeNull] DragStrategy dragStrategy = null
-        )
+            [CanBeNull] ClickStrategy clickStrategy = null,
+            [CanBeNull] DragStrategy dragStrategy = null)
         {
+            clickStrategy ??= new ClickStrategy();
+
             var data = new AssetButtonAtom.Data
             {
                 setValueStrategy = setValueStrategy,
-                leftClick = leftClick,
-                rightClick = rightClick,
+                clickStrategy = clickStrategy,
                 dragStrategy = dragStrategy
             };
 

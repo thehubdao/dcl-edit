@@ -102,7 +102,7 @@ namespace Assets.Scripts.Visuals
 
         private void SetupRightClickHandler()
         {
-            hierarchyViewportHandler.clickHandler.rightClickStrategy = new RightClickStrategy
+            hierarchyViewportHandler.clickHandler.clickStrategy = new RightClickStrategy
             (eventData =>
             {
                 var addEntityMenuItems = new List<ContextMenuItem>();
@@ -215,13 +215,13 @@ namespace Assets.Scripts.Visuals
                     isFirstChild,
                     style,
                     isPrimarySelection,
-                    rightClickStrategy: CreateRightClickMenu(entity, scene),
-                    clickTextStrategy: new LeftClickStrategy(_ =>
+                    clickTextStrategy: new ClickStrategy(
+                        leftClickStrategy: new LeftClickStrategy(_ =>
                         {
                             Debug.Log($"Clicked on: {entity.ShownName}");
                             hierarchyChangeSystem.ClickedOnEntityInHierarchy(entity);
-                        }
-                    ),
+                        }),
+                        rightClickStrategy: CreateRightClickMenu(entity, scene)),
                     clickArrowStrategy: new LeftClickStrategy(_ => { hierarchyChangeSystem.ClickedOnEntityExpandArrow(entity); }),
                     dropStrategyUpper: upperDropStrategy,
                     dropStrategyMiddle: middleDropStrategy,

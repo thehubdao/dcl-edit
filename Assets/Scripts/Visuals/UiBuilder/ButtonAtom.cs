@@ -10,8 +10,8 @@ namespace Assets.Scripts.Visuals.UiBuilder
         {
             public string text;
 
-            [CanBeNull]
-            public LeftClickStrategy leftClickStrategy;
+            [NotNull]
+            public ClickStrategy clickStrategy;
 
             public override bool Equals(Atom.Data other)
             {
@@ -20,7 +20,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
                     return false;
                 }
 
-                if (leftClickStrategy != otherBtn.leftClickStrategy)
+                if (clickStrategy != otherBtn.clickStrategy)
                 {
                     return false;
                 }
@@ -50,7 +50,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
                 // Update data
                 var btnHandler = gameObject.gameObject.GetComponent<ButtonHandler>();
                 btnHandler.text.SetTextValueStrategy(newBtnData.text);
-                btnHandler.click.leftClickStrategy = newBtnData.leftClickStrategy;
+                btnHandler.click.clickStrategy = newBtnData.clickStrategy;
                 data = newBtnData;
             }
         }
@@ -70,12 +70,14 @@ namespace Assets.Scripts.Visuals.UiBuilder
     public static class ButtonPanelHelper
     {
         // The GameObject parameter of the onClick action gives access to the button UI game object.
-        public static ButtonAtom.Data AddButton(this PanelAtom.Data panelAtomData, string text, [CanBeNull] LeftClickStrategy leftClickStrategy = null)
+        public static ButtonAtom.Data AddButton(this PanelAtom.Data panelAtomData, string text, [CanBeNull] ClickStrategy clickStrategy)
         {
+            clickStrategy ??= new ClickStrategy();
+
             var data = new ButtonAtom.Data
             {
                 text = text,
-                leftClickStrategy = leftClickStrategy
+                clickStrategy = clickStrategy
             };
 
             panelAtomData.childDates.Add(data);
