@@ -66,7 +66,10 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
     public static class BooleanPropertyPanelHelper
     {
-        public static BooleanPropertyAtom.Data AddBooleanProperty(this PanelAtom.Data panelAtomData, string name, ValueBindStrategy<bool> valueBindStrategy)
+        public static BooleanPropertyAtom.Data AddBooleanProperty(
+            this PanelAtom.Data panelAtomData,
+            string name,
+            ValueBindStrategy<bool> valueBindStrategy)
         {
             var data = new BooleanPropertyAtom.Data
             {

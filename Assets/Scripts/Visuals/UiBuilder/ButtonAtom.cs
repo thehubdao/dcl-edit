@@ -70,7 +70,10 @@ namespace Assets.Scripts.Visuals.UiBuilder
     public static class ButtonPanelHelper
     {
         // The GameObject parameter of the onClick action gives access to the button UI game object.
-        public static ButtonAtom.Data AddButton(this PanelAtom.Data panelAtomData, string text, [CanBeNull] ClickStrategy clickStrategy)
+        public static ButtonAtom.Data AddButton(
+            this PanelAtom.Data panelAtomData,
+            string text,
+            [CanBeNull] ClickStrategy clickStrategy)
         {
             clickStrategy ??= new ClickStrategy();
 

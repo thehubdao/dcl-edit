@@ -58,7 +58,9 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
     public static class TextPanelHelper
     {
-        public static TextAtom.Data AddText(this PanelAtom.Data panelAtomData, SetValueStrategy<string> text)
+        public static TextAtom.Data AddText(
+            this PanelAtom.Data panelAtomData,
+            SetValueStrategy<string> text)
         {
             var data = new TextAtom.Data
             {

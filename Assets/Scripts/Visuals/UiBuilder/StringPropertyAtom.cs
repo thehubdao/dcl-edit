@@ -93,7 +93,11 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
     public static class StringPropertyPanelHelper
     {
-        public static StringPropertyAtom.Data AddStringProperty(this PanelAtom.Data panelAtomData, string name, string placeholder, ValueBindStrategy<string> bindStrategy)
+        public static StringPropertyAtom.Data AddStringProperty(
+            this PanelAtom.Data panelAtomData,
+            string name,
+            string placeholder,
+            ValueBindStrategy<string> bindStrategy)
         {
             var data = new StringPropertyAtom.Data
             {

@@ -75,7 +75,11 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
     public static class Vector3PropertyPanelHelper
     {
-        public static Vector3PropertyAtom.Data AddVector3Property(this PanelAtom.Data panelAtomData, string name, (string, string, string) placeholders, ValueBindStrategy<Vector3> valueBindStrategy)
+        public static Vector3PropertyAtom.Data AddVector3Property(
+            this PanelAtom.Data panelAtomData,
+            string name,
+            (string, string, string) placeholders,
+            ValueBindStrategy<Vector3> valueBindStrategy)
         {
             var data = new Vector3PropertyAtom.Data
             {

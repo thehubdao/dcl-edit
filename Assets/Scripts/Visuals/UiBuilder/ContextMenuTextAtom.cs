@@ -81,7 +81,13 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
     public static class ContextMenuTextPanelHelper
     {
-        public static ContextMenuTextAtom.Data AddContextMenuText(this PanelAtom.Data panelAtomData, Guid menuId, string title, UnityAction onClick, bool isDisabled, ContextMenuSystem contextMenuSystem)
+        public static ContextMenuTextAtom.Data AddContextMenuText(
+            this PanelAtom.Data panelAtomData,
+            Guid menuId,
+            string title,
+            UnityAction onClick,
+            bool isDisabled,
+            ContextMenuSystem contextMenuSystem)
         {
             var data = new ContextMenuTextAtom.Data
             {

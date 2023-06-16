@@ -19,7 +19,9 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
     public static class TitlePanelHelper
     {
-        public static TitleAtom.Data AddTitle(this PanelAtom.Data panelAtomData, string title)
+        public static TitleAtom.Data AddTitle(
+            this PanelAtom.Data panelAtomData,
+            string title)
         {
             var data = new TitleAtom.Data
             {

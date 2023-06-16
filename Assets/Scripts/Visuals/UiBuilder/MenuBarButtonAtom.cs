@@ -62,7 +62,10 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
     public static class MenuBarButtonPanelHelper
     {
-        public static MenuBarButtonAtom.Data AddMenuBarButton(this PanelAtom.Data panelAtomData, string title, UnityAction<GameObject> onClick)
+        public static MenuBarButtonAtom.Data AddMenuBarButton(
+            this PanelAtom.Data panelAtomData,
+            string title,
+            UnityAction<GameObject> onClick)
         {
             var data = new MenuBarButtonAtom.Data
             {

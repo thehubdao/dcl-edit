@@ -84,7 +84,11 @@ namespace Assets.Scripts.Visuals.UiBuilder
             return data;
         }
 
-        public static NumberPropertyAtom.Data AddNumberProperty(this PanelAtom.Data panelAtomData, string name, string placeholder, ValueBindStrategy<int> valueBindStrategy)
+        public static NumberPropertyAtom.Data AddNumberProperty(
+            this PanelAtom.Data panelAtomData,
+            string name,
+            string placeholder,
+            ValueBindStrategy<int> valueBindStrategy)
         {
             var data = new NumberPropertyAtom.Data
             {

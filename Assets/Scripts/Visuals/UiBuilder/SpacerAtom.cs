@@ -76,7 +76,11 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
     public static class SpacerPanelHelper
     {
-        public static SpacerAtom.Data AddSpacer(this PanelAtom.Data panelAtomData, int height, RightClickStrategy rightClickStrategy = null, DropStrategy dropStrategy = null)
+        public static SpacerAtom.Data AddSpacer(
+            this PanelAtom.Data panelAtomData,
+            int height,
+            RightClickStrategy rightClickStrategy = null,
+            DropStrategy dropStrategy = null)
         {
             var data = new SpacerAtom.Data
             {

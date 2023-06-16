@@ -76,7 +76,10 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
     public static class PanelHeaderPanelHelper
     {
-        public static PanelHeaderAtom.Data AddPanelHeader(this PanelAtom.Data panelAtomData, string title, [CanBeNull] UnityAction onClose = null)
+        public static PanelHeaderAtom.Data AddPanelHeader(
+            this PanelAtom.Data panelAtomData,
+            string title,
+            [CanBeNull] UnityAction onClose = null)
         {
             var data = new PanelHeaderAtom.Data
             {
