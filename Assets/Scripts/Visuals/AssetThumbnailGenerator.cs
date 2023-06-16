@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.EditorState;
+﻿using System;
+using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
 using Assets.Scripts.System;
 using System.Collections;
@@ -67,6 +68,11 @@ namespace Assets.Scripts.Visuals
                 QueuedAsset qa = state.queuedAssets.Dequeue();
 
                 AssetData data = assetManagerSystem.GetDataById(qa.id);
+                if (data is SceneAssetData sceneAssetData)
+                {
+                    LoadSceneAsset(sceneAssetData);
+                }
+                
                 switch (data.state)
                 {
                     case AssetData.State.IsAvailable:
@@ -122,22 +128,41 @@ namespace Assets.Scripts.Visuals
             // Add scene asset and take thumb pic
             if (data is SceneAssetData sceneData)
             {
-                if (currentMainSceneVisuals is null)
-                {
-                    currentMainSceneVisuals = mainSceneVisuals.Create();
-                    currentMainSceneVisuals.transform.SetParent(assetHolder.transform, false);
-                }
+                // enable scene visuals
+                currentMainSceneVisuals.gameObject.SetActive(true);
                 
-                currentMainSceneVisuals.ShowScene(sceneData.id);
-
                 var texture = TakeGameObjectThumbnail();
 
                 currentMainSceneVisuals.RemoveChildGameObjects();
+                // disable main scene visuals
+                currentMainSceneVisuals.gameObject.SetActive(false);
 
                 return texture;
             }
 
             return new Texture2D(2, 2);
+        }
+
+        private void LoadSceneAsset(SceneAssetData sceneData)
+        {
+            if (currentMainSceneVisuals is null)
+            {
+                currentMainSceneVisuals = mainSceneVisuals.Create();
+                currentMainSceneVisuals.transform.SetParent(assetHolder.transform, false);
+            }
+            
+            currentMainSceneVisuals.ShowScene(sceneData.id);
+            var assetList = new Dictionary<Guid, bool>(sceneData.itemList);
+            
+            foreach (var assetId in assetList.Select(i => i.Key))
+            {
+                var assetData = assetManagerSystem.GetDataById(assetId);
+                if (assetData.state == AssetData.State.IsAvailable)
+                    sceneData.itemList[assetId] = true;
+            }
+
+            if (!sceneData.IsReady())
+                currentMainSceneVisuals.gameObject.SetActive(false);
         }
 
         private Texture2D TakeGameObjectThumbnail()
