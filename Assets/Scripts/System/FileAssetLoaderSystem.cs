@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 using Zenject;
@@ -22,6 +23,7 @@ namespace Assets.Scripts.System
         private LoadGltfFromFileSystem loadGltfFromFileSystem;
         private AssetThumbnailGeneratorSystem assetThumbnailGeneratorSystem;
         private FileUpgraderSystem fileUpgraderSystem;
+        private SceneManagerSystem sceneManagerSystem;
         private string relativePathInProject = "assets";
         private bool readOnly = false;
 
@@ -35,7 +37,8 @@ namespace Assets.Scripts.System
             EditorEvents editorEvents,
             LoadGltfFromFileSystem loadGltfFromFileSystem,
             AssetThumbnailGeneratorSystem assetThumbnailGeneratorSystem,
-            FileUpgraderSystem fileUpgraderSystem)
+            FileUpgraderSystem fileUpgraderSystem,
+            SceneManagerSystem sceneManagerSystem)
         {
             this.loaderState = loaderState;
             this.pathState = pathState;
@@ -43,6 +46,7 @@ namespace Assets.Scripts.System
             this.loadGltfFromFileSystem = loadGltfFromFileSystem;
             this.assetThumbnailGeneratorSystem = assetThumbnailGeneratorSystem;
             this.fileUpgraderSystem = fileUpgraderSystem;
+            this.sceneManagerSystem = sceneManagerSystem;
         }
 
         /// <summary>
@@ -466,7 +470,21 @@ namespace Assets.Scripts.System
         /// <param name="id"></param>
         private AssetData LoadAndCacheScene(Guid id)
         {
-            var assetData = new SceneAssetData(id, true);
+            var assetsOnScene = new Dictionary<Guid, bool>();
+            var scene = sceneManagerSystem.GetScene(id);
+            
+            foreach (var entity in scene.AllEntities.Concat(scene.AllFloatingEntities).Select(e => e.Value))
+            {
+                var assetGuid = entity
+                                        .GetComponentByName("GLTFShape")?
+                                        .GetPropertyByName("asset")?
+                                        .GetConcrete<Guid>().Value;
+                if (assetGuid is null) continue;
+                
+                assetsOnScene.Add(assetGuid.Value, false);
+            }
+
+            var assetData = new SceneAssetData(id, true, assetsOnScene);
             // Add to cache
             assetDataCache[id] = assetData;
             
