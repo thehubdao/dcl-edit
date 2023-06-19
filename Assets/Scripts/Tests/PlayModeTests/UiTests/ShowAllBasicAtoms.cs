@@ -62,12 +62,12 @@ namespace Assets.Scripts.Tests.PlayModeTests.UiTests
             var horPanel = mainPanel.AddPanel(PanelHandler.LayoutDirection.Horizontal);
 
             var secondPanel = horPanel.AddPanelWithBorder();
-            secondPanel.AddPanelHeader("Second panel", () => { });
+            secondPanel.AddPanelHeader("Second panel", new ClickStrategy());
             secondPanel.AddStringProperty("String property", "write a string here", new ValueBindStrategy<string>(() => ""));
             secondPanel.AddBooleanProperty("Bool property", new ValueBindStrategy<bool>(() => true));
 
             var thirdPanel = horPanel.AddPanelWithBorder();
-            thirdPanel.AddPanelHeader("Second panel", () => { });
+            thirdPanel.AddPanelHeader("Second panel", new ClickStrategy());
             thirdPanel.AddStringProperty("String property", "write a string here", new ValueBindStrategy<string>(() => ""));
             thirdPanel.AddBooleanProperty("Bool property", new ValueBindStrategy<bool>(() => true));
 

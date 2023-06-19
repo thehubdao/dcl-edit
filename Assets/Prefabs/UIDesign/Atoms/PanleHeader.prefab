@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 3956428306799002188}
   - component: {fileID: 1840145222510794210}
   - component: {fileID: 5493276147293279944}
+  - component: {fileID: 6965297504595026841}
   m_Layer: 5
   m_Name: CloseButton
   m_TagString: Untagged
@@ -31,6 +32,7 @@ RectTransform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7793238594812498238}
   m_Father: {fileID: 3767986536170359026}
@@ -156,6 +158,18 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &6965297504595026841
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2350628537256428685}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f9d52485e2b8484d897d75bacc0cba9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4942444080743460815
 GameObject:
   m_ObjectHideFlags: 0
@@ -185,6 +199,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 268888466213802749}
   - {fileID: 3767986536170359026}
@@ -209,7 +224,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Title: {fileID: 268888466213802750}
-  CloseButton: {fileID: 3956428306799002188}
+  CloseButton: {fileID: 6965297504595026841}
   CloseButtonContainer: {fileID: 7236548096472652842}
 --- !u!114 &8817641998982989652
 MonoBehaviour:
@@ -284,6 +299,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3562896667722882530}
   m_Father: {fileID: 4942444080743460812}

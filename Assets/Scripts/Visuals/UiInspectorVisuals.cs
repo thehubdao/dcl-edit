@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
@@ -128,11 +129,12 @@ namespace Assets.Scripts.Visuals
             foreach (var component in selectedEntity.Components ?? new List<DclComponent>())
             {
                 var componentPanel = inspectorPanel.AddPanelWithBorder();
-                
+
                 if (component.NameInCode == "Transform")
                     componentPanel.AddPanelHeader(component.NameInCode, null);
                 else
-                    componentPanel.AddPanelHeader(component.NameInCode, () => commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateRemoveComponent(selectedEntity.Id, component)));
+                    componentPanel.AddPanelHeader(component.NameInCode, clickCloseStrategy:
+                        new LeftClickStrategy(_ => commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateRemoveComponent(selectedEntity.Id, component))));
 
                 foreach (var property in component.Properties)
                 {

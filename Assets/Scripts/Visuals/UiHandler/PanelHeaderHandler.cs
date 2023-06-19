@@ -7,7 +7,7 @@ namespace Assets.Scripts.Visuals.UiHandler
     public class PanelHeaderHandler : MonoBehaviour
     {
         public TextMeshProUGUI Title;
-        public Button CloseButton;
+        public ClickHandler CloseButton;
         public GameObject CloseButtonContainer;
     }
 }
