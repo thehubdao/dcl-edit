@@ -12,8 +12,8 @@ namespace Assets.Scripts.Visuals.UiBuilder
         {
             public int height;
 
-            [CanBeNull]
-            public RightClickStrategy rightClickStrategy;
+            [NotNull]
+            public ClickStrategy clickStrategy;
 
             [CanBeNull]
             public DropStrategy dropStrategy;
@@ -27,7 +27,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
                 return
                     height.Equals(otherSpacer.height) &&
-                    rightClickStrategy == otherSpacer.rightClickStrategy &&
+                    clickStrategy == otherSpacer.clickStrategy &&
                     dropStrategy == otherSpacer.dropStrategy;
             }
         }
@@ -55,7 +55,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
                 var le = gameObject.gameObject.GetComponent<LayoutElement>();
                 
                 le.minHeight = newSpacerData.height;
-                spacerHandler.clickHandler.clickStrategy = newSpacerData.rightClickStrategy;
+                spacerHandler.clickHandler.clickStrategy = newSpacerData.clickStrategy;
                 spacerHandler.dropHandler.dropStrategy = newSpacerData.dropStrategy;
 
                 data = newSpacerData;
@@ -79,13 +79,15 @@ namespace Assets.Scripts.Visuals.UiBuilder
         public static SpacerAtom.Data AddSpacer(
             this PanelAtom.Data panelAtomData,
             int height,
-            RightClickStrategy rightClickStrategy = null,
-            DropStrategy dropStrategy = null)
+            [CanBeNull] ClickStrategy clickStrategy = null,
+            [CanBeNull] DropStrategy dropStrategy = null)
         {
+            clickStrategy ??= new ClickStrategy();
+
             var data = new SpacerAtom.Data
             {
                 height = height,
-                rightClickStrategy = rightClickStrategy,
+                clickStrategy = clickStrategy,
                 dropStrategy = dropStrategy
             };
 
