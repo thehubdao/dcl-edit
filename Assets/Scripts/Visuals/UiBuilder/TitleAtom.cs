@@ -21,7 +21,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
     {
         public static TitleAtom.Data AddTitle(
             this PanelAtom.Data panelAtomData,
-            string title)
+            SetValueStrategy<string> title)
         {
             var data = new TitleAtom.Data
             {
