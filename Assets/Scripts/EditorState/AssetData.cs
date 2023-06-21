@@ -85,23 +85,18 @@ namespace Assets.Scripts.EditorState
 
     public class SceneAssetData: AssetData
     {
-        public bool needUpdate;
-        public Dictionary<Guid, bool> itemList;
+        public bool preLoaded;
+        public Dictionary<Guid, bool> assetList;
 
-        public SceneAssetData(Guid id, bool needUpdate, Dictionary<Guid, bool> itemList) : base(id, State.IsLoading)
+        public SceneAssetData(Guid id, bool preLoaded, Dictionary<Guid, bool> assetList) : base(id, State.IsLoading)
         {
-            this.needUpdate = needUpdate;
-            this.itemList = itemList;
-        }
-
-        public void SetState(State newState)
-        {
-            state = newState;
+            this.preLoaded = preLoaded;
+            this.assetList = assetList;
         }
 
         public bool IsReady()
         {
-            var ready = itemList.All(i => i.Value);
+            var ready = assetList.All(i => i.Value);
             if (ready) state = State.IsAvailable;
 
             return ready;

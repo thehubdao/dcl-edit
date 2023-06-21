@@ -63,7 +63,7 @@ public class AssetThumbnailGeneratorSystem
             {
                 var assetData = assetManagerSystem.GetDataById(queuedAsset.id);
                 if (assetData is not SceneAssetData sceneAssetData) continue;
-                if (sceneAssetData.itemList.All(i => i.Key != id)) continue;
+                if (sceneAssetData.assetList.All(i => i.Key != id)) continue;
                     
                 state.waitingForAssetData.Remove(queuedAsset);
                         
