@@ -470,26 +470,52 @@ namespace Assets.Scripts.System
         /// <param name="id"></param>
         private AssetData LoadAndCacheScene(Guid id)
         {
-            var assetsOnScene = new Dictionary<Guid, bool>();
-            var scene = sceneManagerSystem.GetScene(id);
-            
-            foreach (var entity in scene.AllEntities.Concat(scene.AllFloatingEntities).Select(e => e.Value))
+            if (assetDataCache.TryGetValue(id, out AssetData cachedAssetData))
             {
-                var assetGuid = entity
-                                        .GetComponentByName("GLTFShape")?
-                                        .GetPropertyByName("asset")?
-                                        .GetConcrete<Guid>().Value;
-                if (assetGuid is null) continue;
-                
-                assetsOnScene.Add(assetGuid.Value, false);
+                return cachedAssetData;
             }
-
-            var assetData = new SceneAssetData(id, true, assetsOnScene);
+            
+            var assetsOnScene = GetGltfAssetsRecursive(id);
+            var assetData = new SceneAssetData(id, false, assetsOnScene);
+            
             // Add to cache
             assetDataCache[id] = assetData;
             
             return assetData;
         }
+
+        private Dictionary<Guid, bool> GetGltfAssetsRecursive(Guid sceneId)
+        {
+            var assetsOnScene = new Dictionary<Guid, bool>();
+            var scene = sceneManagerSystem.GetScene(sceneId);
+            
+            foreach (var entity in scene.AllEntities.Concat(scene.AllFloatingEntities).Select(e => e.Value))
+            {
+                var isScene = entity
+                                        .GetFirstComponentByName("Scene", "Scene")?
+                                        .GetPropertyByName("scene")?
+                                        .GetConcrete<Guid>().Value;
+
+                if (isScene.HasValue)
+                {
+                    var assetsOnSubScene = GetGltfAssetsRecursive(isScene.Value);
+                    assetsOnScene.AddRange(assetsOnSubScene);
+                    continue;
+                }
+                
+                var assetGuid = entity
+                                        .GetComponentByName("GLTFShape")?
+                                        .GetPropertyByName("asset")?
+                                        .GetConcrete<Guid>().Value;
+                
+                if (assetGuid is null) continue;
+                
+                assetsOnScene[assetGuid.Value] = false;
+            }
+            
+            return assetsOnScene;
+        }
+        
         #endregion
     }
 }
