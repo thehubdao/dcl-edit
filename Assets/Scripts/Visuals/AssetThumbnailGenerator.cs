@@ -70,7 +70,7 @@ namespace Assets.Scripts.Visuals
                 AssetData data = assetManagerSystem.GetDataById(qa.id);
                 if (data is SceneAssetData sceneAssetData)
                 {
-                    LoadSceneAsset(sceneAssetData);
+                    PreLoadSceneAsset(sceneAssetData);
                 }
                 
                 switch (data.state)
@@ -143,26 +143,41 @@ namespace Assets.Scripts.Visuals
             return new Texture2D(2, 2);
         }
 
-        private void LoadSceneAsset(SceneAssetData sceneData)
+        private void PreLoadSceneAsset(SceneAssetData sceneData)
+        {
+            if (!sceneData.preLoaded)
+                LoadScene(sceneData.id);
+
+            var assetList = new Dictionary<Guid, bool>(sceneData.assetList);
+
+            foreach (var assetId in assetList.Where(a => !a.Value).Select(a => a.Key))
+            {   
+                var assetData = assetManagerSystem.GetDataById(assetId);
+                if (assetData.state == AssetData.State.IsAvailable)
+                    sceneData.assetList[assetId] = true;
+            }
+
+            if (!sceneData.IsReady())
+            {
+                currentMainSceneVisuals.gameObject.SetActive(false);
+                sceneData.preLoaded = true;
+                return;
+            }
+
+            if (!sceneData.preLoaded) return;
+            
+            LoadScene(sceneData.id);
+        }
+
+        private void LoadScene(Guid sceneId)
         {
             if (currentMainSceneVisuals is null)
             {
                 currentMainSceneVisuals = mainSceneVisuals.Create();
                 currentMainSceneVisuals.transform.SetParent(assetHolder.transform, false);
             }
-            
-            currentMainSceneVisuals.ShowScene(sceneData.id);
-            var assetList = new Dictionary<Guid, bool>(sceneData.itemList);
-            
-            foreach (var assetId in assetList.Select(i => i.Key))
-            {
-                var assetData = assetManagerSystem.GetDataById(assetId);
-                if (assetData.state == AssetData.State.IsAvailable)
-                    sceneData.itemList[assetId] = true;
-            }
 
-            if (!sceneData.IsReady())
-                currentMainSceneVisuals.gameObject.SetActive(false);
+            currentMainSceneVisuals.ShowScene(sceneId);
         }
 
         private Texture2D TakeGameObjectThumbnail()
