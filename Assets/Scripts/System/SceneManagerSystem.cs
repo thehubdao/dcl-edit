@@ -44,6 +44,7 @@ namespace Assets.Scripts.System
         private ISceneViewSystem sceneViewSystem;
         private MenuBarSystem menuBarSystem;
         private SettingsSystem settingsSystem;
+        private SnackbarSystem snackbarSystem;
 
         [Inject]
         public void Construct(
@@ -57,7 +58,8 @@ namespace Assets.Scripts.System
             TypeScriptGenerationSystem typeScriptGenerationSystem,
             ISceneViewSystem sceneViewSystem,
             MenuBarSystem menuBarSystem,
-            SettingsSystem settingsSystem)
+            SettingsSystem settingsSystem,
+            SnackbarSystem snackbarSystem)
         {
             this.sceneManagerState = sceneManagerState;
             this.pathState = pathState;
@@ -70,6 +72,7 @@ namespace Assets.Scripts.System
             this.sceneViewSystem = sceneViewSystem;
             this.menuBarSystem = menuBarSystem;
             this.settingsSystem = settingsSystem;
+            this.snackbarSystem = snackbarSystem;
             CreateMenuBarItems();
         }
 
@@ -195,7 +198,10 @@ namespace Assets.Scripts.System
         /// </summary>
         public void SaveCurrentScene()
         {
-            SaveScene(GetCurrentDirectoryState());
+            if (GetCurrentSceneOrNull() == null)
+                snackbarSystem.AddMessage("No current scene to save!", SnackbarState.MessageType.Error);
+            else
+                SaveScene(GetCurrentDirectoryState());
         }
 
         /// <summary>
@@ -229,7 +235,11 @@ namespace Assets.Scripts.System
                 workspaceSaveSystem.Save(); // TODO: Save the workspace under proper conditions.
                 sceneSettingState.SaveSettings();
 #pragma warning disable CS4014 // This should run as coroutine
-                typeScriptGenerationSystem.GenerateTypeScript();
+                var result = typeScriptGenerationSystem.GenerateTypeScript();
+                if (result.Result)
+                    snackbarSystem.AddMessage("Scene saved!", SnackbarState.MessageType.Success);
+                else
+                    snackbarSystem.AddMessage("Scene save failed!", SnackbarState.MessageType.Error);
 #pragma warning restore CS4014
             }
         }
@@ -240,7 +250,10 @@ namespace Assets.Scripts.System
         /// </summary>
         public void SaveCurrentSceneAs()
         {
-            SaveSceneAs(GetCurrentDirectoryState());
+            if (GetCurrentSceneOrNull() == null)
+                snackbarSystem.AddMessage("No current scene to save!", SnackbarState.MessageType.Error);
+            else
+                SaveSceneAs(GetCurrentDirectoryState());
         }
 
         /// <summary>
