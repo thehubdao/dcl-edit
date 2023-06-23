@@ -159,6 +159,24 @@ namespace Assets.Scripts.Visuals
                     OnSubmit = settingsSystem.gizmoToolScaleSnapping.Set
                 });
 
+            gizmoToolSnappingPanel.AddNumberProperty(
+                "Grid Selection",
+                "Grid (default: 1)",
+                settingsSystem.groundGridSetting.Get(),
+                new StringPropertyAtom.UiPropertyActions<float>
+                {
+                    OnSubmit = (value) => settingsSystem.groundGridSetting.Set((int)value)
+                });
+
+            gizmoToolSnappingPanel.AddNumberProperty(
+                "Gridsize Selection",
+                "Gridsize (default: 16)",
+                settingsSystem.groundGridSizeSetting.Get(),
+                new StringPropertyAtom.UiPropertyActions<float>
+                {
+                    OnSubmit = (value) => settingsSystem.groundGridSizeSetting.Set((int)value)
+                });
+
             // Version number
             settingsPanel.AddSpacer(100);
             settingsPanel.AddText($"dcl-edit version: {Application.version}");
