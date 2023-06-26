@@ -55,7 +55,7 @@ namespace Assets.Scripts.Visuals
             }
         }
 
-        public List<EntityVisuals> GenerateEntityVisuals(DclScene scene, Guid? overrideSelectionId)
+        private List<EntityVisuals> GenerateEntityVisuals(DclScene scene, Guid? overrideSelectionId)
         {
             List<EntityVisuals> entityVisuals = new List<EntityVisuals>();
             foreach (var entity in scene.AllEntities.Concat(scene.AllFloatingEntities).Select(e => e.Value))
