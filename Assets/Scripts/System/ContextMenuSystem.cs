@@ -14,7 +14,7 @@ namespace Assets.Scripts.System
         ContextMenuState _state;
 
         [Inject]
-        private void Construct(EditorEvents editorEvents, ContextMenuState contextMenuState)
+        public void Construct(EditorEvents editorEvents, ContextMenuState contextMenuState)
         {
             _editorEvents = editorEvents;
             _state = contextMenuState;

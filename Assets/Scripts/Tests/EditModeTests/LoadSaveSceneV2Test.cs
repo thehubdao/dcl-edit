@@ -79,7 +79,7 @@ namespace Assets.Scripts.Tests.EditModeTests
             MenuBarState menuBarState = new MenuBarState();
             FileManagerSystem fileManagerSystem = new FileManagerSystem();
             SettingsSystem settingsSystem = new SettingsSystem();
-
+            SnackbarSystem snackbarSystem = new SnackbarSystem();
 
             menuBarSystem.Construct(editorEvents, menuBarState);
             sceneSettingState.Construct(pathState, sceneManagerState);
@@ -96,7 +96,8 @@ namespace Assets.Scripts.Tests.EditModeTests
                 typeScriptGenerationSystem,
                 sceneViewSystem,
                 menuBarSystem,
-                settingsSystem);
+                settingsSystem,
+                snackbarSystem);
             loadSaveSystem.Construct(null, new FileUpgraderSystem(), sceneViewSystem, new MockSceneChangeDetectSystem());
 
             var scenePath = pathState.ProjectPath + "/dcl-edit/saves/v2/New Scene.dclscene";

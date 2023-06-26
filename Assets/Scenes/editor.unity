@@ -212,6 +212,16 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &88615907 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3368264643952665322, guid: 44790cf12ccd011459f749712f90a90b, type: 3}
+  m_PrefabInstance: {fileID: 5677096275816853216}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &273117054 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3121387164621886137, guid: 44790cf12ccd011459f749712f90a90b, type: 3}
+  m_PrefabInstance: {fileID: 5677096275816853216}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &520491715 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6554674216587907473, guid: 20ed7006bd4d7d84dab9ab96b9f5129a, type: 3}
@@ -286,18 +296,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1344c3c82d62a2a41a3576d8abb8e3ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &909254231 stripped
+--- !u!1 &970284074 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3860120150557311849, guid: 77f7e25531a13164999d8d9ae976278a, type: 3}
   m_PrefabInstance: {fileID: 3860120150684201991}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &909254233
+--- !u!114 &970284076
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 909254231}
+  m_GameObject: {fileID: 970284074}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
@@ -335,6 +345,11 @@ GameObject:
 --- !u!1 &1375574674 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1341765932627918017, guid: 44790cf12ccd011459f749712f90a90b, type: 3}
+  m_PrefabInstance: {fileID: 5677096275816853216}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1981234237 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5075609751421357645, guid: 44790cf12ccd011459f749712f90a90b, type: 3}
   m_PrefabInstance: {fileID: 5677096275816853216}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &2209880424613424354
@@ -1240,6 +1255,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 569288621326271914, guid: bdf698fa20b9d9842917888e8bea6558, type: 3}
     - target: {fileID: 6554674216587907478, guid: 20ed7006bd4d7d84dab9ab96b9f5129a, type: 3}
+      propertyPath: PromptDialog
+      value: 
+      objectReference: {fileID: 1981234237}
+    - target: {fileID: 6554674216587907478, guid: 20ed7006bd4d7d84dab9ab96b9f5129a, type: 3}
       propertyPath: SceneVisuals
       value: 
       objectReference: {fileID: 0}
@@ -1252,9 +1271,21 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 5677096275816853219}
     - target: {fileID: 6554674216587907478, guid: 20ed7006bd4d7d84dab9ab96b9f5129a, type: 3}
+      propertyPath: BackgroundCanvas
+      value: 
+      objectReference: {fileID: 8599653125977829149}
+    - target: {fileID: 6554674216587907478, guid: 20ed7006bd4d7d84dab9ab96b9f5129a, type: 3}
       propertyPath: sceneViewButtons
       value: 
       objectReference: {fileID: 710671776}
+    - target: {fileID: 6554674216587907478, guid: 20ed7006bd4d7d84dab9ab96b9f5129a, type: 3}
+      propertyPath: PromptAssetPicker
+      value: 
+      objectReference: {fileID: 273117054}
+    - target: {fileID: 6554674216587907478, guid: 20ed7006bd4d7d84dab9ab96b9f5129a, type: 3}
+      propertyPath: PromptColorPicker
+      value: 
+      objectReference: {fileID: 88615907}
     - target: {fileID: 6554674216587907478, guid: 20ed7006bd4d7d84dab9ab96b9f5129a, type: 3}
       propertyPath: dynamicPanelsCanvas
       value: 
@@ -1406,6 +1437,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6b43f73c1284bb14a8b4fc63fa68c771, type: 3}
+--- !u!1 &8599653125977829149 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8599653126147434190, guid: 6b43f73c1284bb14a8b4fc63fa68c771, type: 3}
+  m_PrefabInstance: {fileID: 8599653125977829148}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &9146473881354413128
 PrefabInstance:
   m_ObjectHideFlags: 0

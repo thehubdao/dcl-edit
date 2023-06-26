@@ -49,7 +49,7 @@ namespace Assets.Scripts.Visuals
 
                         newModel = modelData.data;
                     }
-
+                    
                     break;
 
                 case AssetData.State.IsLoading:
@@ -71,6 +71,9 @@ namespace Assets.Scripts.Visuals
                 newModel.transform.localPosition = Vector3.zero;
 
                 _currentModelObject = newModel;
+
+                if (newModel.TryGetComponent(out Animation animation))
+                    animation.enabled = false;
 
                 UpdateSelection(entity);
             }

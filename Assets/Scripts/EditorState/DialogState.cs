@@ -5,7 +5,8 @@ public class DialogState
     public enum DialogType
     {
         None,
-        Asset
+        Asset,
+        DialogSystem
     }
     public DialogType currentDialog = DialogType.None;
     public DclComponent targetComponent;

@@ -119,7 +119,7 @@ namespace Assets.Scripts.System
         }
 
 
-        public async Task GenerateTypeScript()
+        public async Task<bool> GenerateTypeScript()
         {
             try
             {
@@ -127,7 +127,7 @@ namespace Assets.Scripts.System
                 if (!generationInfo.HasValue)
                 {
                     Debug.LogError("Script generation: gathering info failed");
-                    return;
+                    return false;
                 }
 
                 var script = GenerateActualScript(generationInfo.Value);
@@ -139,10 +139,12 @@ namespace Assets.Scripts.System
                 File.WriteAllText(scriptsFolderPath + "scenes.ts", script);
 
                 Debug.Log("Script generation done");
+                return true;
             }
             catch (Exception e)
             {
                 Debug.LogException(e);
+                return false;
             }
         }
 

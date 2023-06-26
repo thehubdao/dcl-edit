@@ -29,6 +29,8 @@ namespace Assets.Scripts.Visuals
         private AssetManagerSystem assetManagerSystem;
         private DialogSystem dialogSystem;
         private EntityChangeManager entityChangeManager;
+        private ExposeEntitySystem exposeEntitySystem;
+        private PromptSystem promptSystem;
 
         [Inject]
         private void Construct(
@@ -42,7 +44,9 @@ namespace Assets.Scripts.Visuals
             AvailableComponentsState availableComponentsState,
             AssetManagerSystem assetManagerSystem,
             DialogSystem dialogSystem,
-            EntityChangeManager entityChangeManager)
+            EntityChangeManager entityChangeManager,
+            ExposeEntitySystem exposeEntitySystem,
+            PromptSystem promptSystem)
         {
             this.inputState = inputState;
             this.uiBuilder = uiBuilderFactory.Create(content);
@@ -55,6 +59,8 @@ namespace Assets.Scripts.Visuals
             this.assetManagerSystem = assetManagerSystem;
             this.dialogSystem = dialogSystem;
             this.entityChangeManager = entityChangeManager;
+            this.exposeEntitySystem = exposeEntitySystem;
+            this.promptSystem = promptSystem;
 
             SetupEventListeners();
         }
