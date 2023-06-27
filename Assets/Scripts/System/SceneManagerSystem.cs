@@ -44,6 +44,7 @@ namespace Assets.Scripts.System
         private ISceneViewSystem sceneViewSystem;
         private MenuBarSystem menuBarSystem;
         private SettingsSystem settingsSystem;
+        private PromptSystem promptSystem;
 
         [Inject]
         public void Construct(
@@ -57,7 +58,8 @@ namespace Assets.Scripts.System
             TypeScriptGenerationSystem typeScriptGenerationSystem,
             ISceneViewSystem sceneViewSystem,
             MenuBarSystem menuBarSystem,
-            SettingsSystem settingsSystem)
+            SettingsSystem settingsSystem,
+            PromptSystem promptSystem)
         {
             this.sceneManagerState = sceneManagerState;
             this.pathState = pathState;
@@ -70,6 +72,7 @@ namespace Assets.Scripts.System
             this.sceneViewSystem = sceneViewSystem;
             this.menuBarSystem = menuBarSystem;
             this.settingsSystem = settingsSystem;
+            this.promptSystem = promptSystem;
             CreateMenuBarItems();
         }
 
@@ -83,6 +86,10 @@ namespace Assets.Scripts.System
             if (!checkVersionSystem.CheckDclSceneExists())
             {
                 //TODO Display a message, that there is no project and exit after user input
+                promptSystem.CreateDialog(
+                    "There is no Dcl-Edit project in this folder. Please use the command terminal to navigate to the right folder.\n\n For example:\ncd C:\\Users\\Username\\ProjectName",
+                    new PromptSystem.PromptAction[] { new PromptSystem.OK(Application.Quit) },
+                    null);
                 Debug.LogError("No Decentraland Folder found");
                 return;
             }
