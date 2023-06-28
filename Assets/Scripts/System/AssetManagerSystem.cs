@@ -56,6 +56,18 @@ namespace Assets.Scripts.System
             return new AssetData(id, AssetData.State.IsError);
         }
 
+        public AssetData GetOnlyAssetDataById(Guid id)
+        {
+            foreach (var loaderSystem in _assetLoaderSystems)
+            {
+                var result = loaderSystem.GetOnlyAssetDataById(id);
+                if (result != null)
+                    return result;
+            }
+
+            return new AssetData(id, AssetData.State.IsError);
+        }
+
         public IEnumerable<Guid> GetAllAssetIds()
         {
             IEnumerable<Guid> result = new List<Guid>();
