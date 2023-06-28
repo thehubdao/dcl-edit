@@ -167,6 +167,18 @@ namespace Assets.Scripts.System
             return Task.FromResult<string>(null);
         }
 
+        public AssetData GetOnlyAssetDataById(Guid id)
+        {
+            if (!assetMetadataCache.ContainsKey(id))
+                return null;
+
+            // Try get cached data
+            if (assetDataCache.TryGetValue(id, out var cachedAssetData))
+                return cachedAssetData;
+
+            return GetDataById(id);
+        }
+
         public bool SetThumbnailById(Guid id, Texture2D newThumbnail)
         {
             if (newThumbnail == null) return false;
