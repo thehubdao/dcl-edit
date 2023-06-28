@@ -2,10 +2,12 @@ using Assets.Scripts.Events;
 using System;
 using Assets.Scripts.EditorState;
 using Assets.Scripts.System;
+using Assets.Scripts.Utility;
 using Assets.Scripts.Visuals.UiBuilder;
 using Assets.Scripts.Visuals.UiHandler;
 using JetBrains.Annotations;
 using UnityEngine;
+using UnityEngine.Profiling;
 using UnityEngine.UI;
 using Zenject;
 
@@ -20,8 +22,6 @@ public class AssetButtonHandler : MonoBehaviour, IUpdateValue
     public TextHandler textHandler;
     public DragHandler dragHandler;
 
-    private ScrollRect scrollViewRect;
-
     [Header("Asset Type Indicator Textures")]
     public Sprite modelTypeIndicator;
 
@@ -32,17 +32,13 @@ public class AssetButtonHandler : MonoBehaviour, IUpdateValue
     public Sprite errorAssetThumbnail;
 
     // Dependencies
-    EditorEvents editorEvents;
     AssetThumbnailManagerSystem assetThumbnailManagerSystem;
-    SceneManagerSystem sceneManagerSystem;
     AssetManagerSystem assetManagerSystem;
 
     [Inject]
-    void Construct(EditorEvents editorEvents, AssetThumbnailManagerSystem assetThumbnailManagerSystem, SceneManagerSystem sceneManagerSystem, AssetManagerSystem assetManagerSystem)
+    void Construct(AssetThumbnailManagerSystem assetThumbnailManagerSystem, AssetManagerSystem assetManagerSystem)
     {
-        this.editorEvents = editorEvents;
         this.assetThumbnailManagerSystem = assetThumbnailManagerSystem;
-        this.sceneManagerSystem = sceneManagerSystem;
         this.assetManagerSystem = assetManagerSystem;
     }
 
@@ -67,8 +63,6 @@ public class AssetButtonHandler : MonoBehaviour, IUpdateValue
         };
 
         SetTypeIndicator(typeIndicator);
-
-        SetThumbnail(assetThumbnailManagerSystem.GetThumbnailById(assetId));
     }
 
 
@@ -147,9 +141,74 @@ public class AssetButtonHandler : MonoBehaviour, IUpdateValue
         textHandler.SetTextValueStrategy(assetName);
     }
 
-    private void SetThumbnail(AssetThumbnail thumbnail)
+    private Guid? currentThumbnailGuid = null;
+
+    void Update()
     {
-        SetImage(thumbnail.texture);
+        SetThumbnail(valueBindStrategy.value());
+    }
+
+
+    private void SetThumbnail(Guid assetId)
+    {
+        Profiler.BeginSample("Set Thumbnail");
+
+        // return if nothing changes
+        if (assetId == currentThumbnailGuid)
+            return;
+
+        Profiler.BeginSample("Collision");
+
+        var maskTransform = GetComponent<RectTransform>().parent?.GetComponentInParent<Mask>()?.rectTransform;
+        if (maskTransform != null)
+        {
+            var parentRect = maskTransform.GetWorldRect();
+            var thisRect = GetComponent<RectTransform>().GetWorldRect();
+
+            if (parentRect.NotCollides(thisRect))
+                return;
+        }
+
+
+        //if (maskTransform.Collide(GetComponent<RectTransform>()))
+        //{
+        //    Profiler.EndSample();
+        //    return;
+        //}
+
+        Profiler.EndSample();
+
+
+        var thumbnail = assetThumbnailManagerSystem.GetThumbnailById(assetId);
+
+        switch (thumbnail.state)
+        {
+            case AssetData.State.IsAvailable:
+                SetImage(thumbnail.texture);
+                loadingSymbol.SetActive(false);
+                currentThumbnailGuid = assetId;
+                break;
+
+            case AssetData.State.IsError when currentThumbnailGuid == Guid.Empty:
+                break;
+
+            case AssetData.State.IsError:
+                SetImage(errorAssetThumbnail);
+                loadingSymbol.SetActive(false);
+                currentThumbnailGuid = Guid.Empty;
+                break;
+
+            case AssetData.State.IsLoading:
+                SetImage((Sprite) null);
+                loadingSymbol.SetActive(true);
+                currentThumbnailGuid = null;
+                break;
+
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+
+        Profiler.EndSample();
     }
 
     #endregion
