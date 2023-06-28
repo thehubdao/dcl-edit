@@ -219,8 +219,8 @@ namespace Assets.Scripts.Visuals
                         {
                             componentPanel.AddAssetProperty(
                                 property.PropertyName,
-                                new SetValueStrategy<Guid>(() => property.GetConcrete<Guid>().Value));
-                            // TODO: Add click strategy
+                                new SetValueStrategy<Guid>(() => property.GetConcrete<Guid>().Value),
+                                entityChangeManager.GetClickAssetStrategy(propertyIdentifier));
                             // TODO: Add drop strategy
                             break;
                         }

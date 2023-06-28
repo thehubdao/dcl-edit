@@ -7,6 +7,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
@@ -15,6 +16,7 @@ namespace Assets.Scripts.Visuals
 {
     public class UiAssetBrowserVisuals : MonoBehaviour
     {
+        [CanBeNull]
         public Action<Guid> assetButtonOnClickOverride = null;
 
         [SerializeField]
@@ -194,11 +196,14 @@ namespace Assets.Scripts.Visuals
                     _ => throw new ArgumentOutOfRangeException(nameof(assetMetadata.assetType))
                 };
 
+                var clickStrategy = assetButtonOnClickOverride != null ?
+                    new LeftClickStrategy(_ => assetButtonOnClickOverride(assetMetadata.assetId)) :
+                    new LeftClickStrategy(_ => assetBrowserSystem.AddAssetToSceneInViewportCenter(assetMetadata));
+
                 grid.AddAssetBrowserButton(
                     assetMetadata.assetId,
                     dragStrategy: dragStrategy,
-                    clickStrategy: new LeftClickStrategy(
-                        _ => assetBrowserSystem.AddAssetToSceneInViewportCenter(assetMetadata))
+                    clickStrategy: clickStrategy
                 );
             }
         }

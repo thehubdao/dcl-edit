@@ -1,8 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Remoting.Messaging;
+using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
+using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
+using ModestTree;
+using UnityEngine;
 using Zenject;
 
 public class EntityChangeManager
@@ -12,14 +17,24 @@ public class EntityChangeManager
     private ExposeEntitySystem exposeEntitySystem;
     private CommandSystem commandSystem;
     private EditorEvents editorEvents;
+    private AvailableComponentsState availableComponentsState;
+    private PromptSystem promptSystem;
 
     [Inject]
-    private void Construct(ISceneManagerSystem sceneManagerSystem, ExposeEntitySystem exposeEntitySystem, CommandSystem commandSystem, EditorEvents editorEvents)
+    private void Construct(
+        ISceneManagerSystem sceneManagerSystem,
+        ExposeEntitySystem exposeEntitySystem,
+        CommandSystem commandSystem,
+        EditorEvents editorEvents,
+        AvailableComponentsState availableComponentsState,
+        PromptSystem promptSystem)
     {
         this.sceneManagerSystem = sceneManagerSystem;
         this.exposeEntitySystem = exposeEntitySystem;
         this.commandSystem = commandSystem;
         this.editorEvents = editorEvents;
+        this.availableComponentsState = availableComponentsState;
+        this.promptSystem = promptSystem;
     }
 
 
@@ -105,5 +120,14 @@ public class EntityChangeManager
             onErrorSubmitted: _ => concreteProperty.ResetFloating(),
             onValueChanged: value => concreteProperty.SetFloatingValue(value),
             onErrorChanged: _ => concreteProperty.ResetFloating());
+    }
+
+    public LeftClickStrategy GetClickAssetStrategy(DclPropertyIdentifier propertyIdentifier)
+    {
+        return new LeftClickStrategy(async e =>
+            {
+                var selectedAsset = await promptSystem.CreateAssetMenu(propertyIdentifier);
+            }
+        );
     }
 }
