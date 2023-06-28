@@ -152,7 +152,7 @@ namespace Assets.Scripts.Visuals
 
             foreach (var assetId in assetList.Where(a => !a.Value).Select(a => a.Key))
             {   
-                var assetData = assetManagerSystem.GetDataById(assetId);
+                var assetData = assetManagerSystem.GetOnlyAssetDataById(assetId);
                 if (assetData.state == AssetData.State.IsAvailable)
                     sceneData.assetList[assetId] = true;
             }
