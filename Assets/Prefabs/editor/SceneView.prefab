@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 3860120149657701420}
   - component: {fileID: 3860120149657701421}
   - component: {fileID: 3860120149657701417}
+  - component: {fileID: 1669837813485268676}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -147,6 +148,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27e354f12ea9a194ab5c6f9e30a9e86b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1669837813485268676
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3860120149657701423}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c404c10e3eeec314c9a8c01e40cef74c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  config: {fileID: 11400000, guid: 151d89fb203e0954ebc10791e15a5c14, type: 2}
+  mat: {fileID: 2100000, guid: 8e2ebb980b3bfab4d9f13e3bc7081c0f, type: 2}
+  light: {fileID: 3860120150557311863}
 --- !u!1 &3860120150557311849
 GameObject:
   m_ObjectHideFlags: 0
@@ -157,7 +173,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3860120150557311848}
   - component: {fileID: 3860120150557311863}
-  - component: {fileID: 3940566156195867508}
+  - component: {fileID: 6403641101882091792}
   m_Layer: 0
   m_Name: Directional Light
   m_TagString: Untagged
@@ -242,7 +258,7 @@ Light:
   m_UseViewFrustumForShadowCasterCull: 1
   m_ShadowRadius: 0
   m_ShadowAngle: 0
---- !u!114 &3940566156195867508
+--- !u!114 &6403641101882091792
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
