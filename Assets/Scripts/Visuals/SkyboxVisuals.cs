@@ -31,7 +31,7 @@ public class SkyboxVisuals: MonoBehaviour
 
     private void UpdateVisuals()
     {
-        //ConfigSkyBox(settingsSystem.skyboxTime.Get());
+        ConfigSkyBox(settingsSystem.skyboxTime.Get());
     }
     
     private void ConfigSkyBox(float daytime)

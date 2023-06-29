@@ -442,7 +442,6 @@ namespace Assets.Scripts.System
                 new SettingOptions.ClampMin<float>(0f),
                 new SettingOptions.ClampMax<float>(24f)
                 );
-        }
 
             groundGridSetting = new Setting<int>(
                 editorEvents,
