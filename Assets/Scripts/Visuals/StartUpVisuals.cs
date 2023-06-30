@@ -85,7 +85,7 @@ namespace Visuals
                 quitActions
                 );
             
-            return true;
+            return false;
         }
     }
 }
