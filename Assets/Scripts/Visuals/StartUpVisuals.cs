@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Assets.Scripts.System;
 using UnityEditor;
 using UnityEngine;
@@ -82,8 +83,9 @@ namespace Visuals
             
             promptSystem.CreateDialog(
                 "Do you want to save before quitting?",
-                quitActions
-                );
+                quitActions,
+                new PromptSystem.NotInWindow()
+            );
             
             return false;
         }
