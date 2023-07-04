@@ -11,7 +11,7 @@
   "dependencies": {
     "com.svermeulen.extenject": "https://github.com/Mathijs-Bakker/Extenject.git?path=/UnityProject/Assets/Plugins/Zenject/#9.2.1",
     "com.unity.2d.sprite": "1.0.0",
-    "com.unity.ide.rider": "3.0.18",
+    "com.unity.ide.rider": "3.0.24",
     "com.unity.ide.visualstudio": "2.0.17",
     "com.unity.ide.vscode": "1.2.5",
     "com.unity.inputsystem": "1.5.0",
