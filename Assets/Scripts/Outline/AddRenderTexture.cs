@@ -6,21 +6,21 @@ using Zenject;
 public class AddRenderTexture : MonoBehaviour
 {
     private Camera cam;
+    [SerializeField] private bool isCameraForSceneImage;
 
     // Dependencies
-    private UnityState _unityState;
+    private UnityState unityState;
 
     [Inject]
     private void Construct(UnityState unityState)
     {
-        _unityState = unityState;
+        this.unityState = unityState;
     }
 
     // Start is called before the first frame update
     void Awake()
     {
         cam = GetComponent<Camera>();
-
     }
 
 
@@ -43,16 +43,16 @@ public class AddRenderTexture : MonoBehaviour
         
         lastSize = viewPortSize;
 
-        if (gameObject.name == "Main Camera") // TODO: Make a more robust solution for that
-            _unityState.SceneImage.texture = cam.targetTexture;
+        if (isCameraForSceneImage) {
+            unityState.SceneImage.texture = cam.targetTexture;
+        }
     }
 
     private Vector2Int GetViewPortSize()
     {
         Vector3[] fourCorners = new Vector3[4];
-        _unityState.SceneImage.rectTransform.GetWorldCorners(fourCorners);
+        unityState.SceneImage.rectTransform.GetWorldCorners(fourCorners);
         Vector2Int viewPortSize = new Vector2Int((int)(fourCorners[2].x - fourCorners[0].x), (int)(fourCorners[2].y - fourCorners[0].y));
         return viewPortSize;
-
     }
 }
