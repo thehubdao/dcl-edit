@@ -19,16 +19,19 @@ namespace Assets.Scripts.System
         private SettingsSystem settingsSystem;
         private EditorEvents editorEvents;
         private MenuBarSystem menuBarSystem;
+        private PromptSystem promptSystem;
 
         [Inject]
         private void Construct(
             SettingsSystem settingsSystem,
             EditorEvents editorEvents,
-            MenuBarSystem menuBarSystem)
+            MenuBarSystem menuBarSystem,
+            PromptSystem promptSystem)
         {
             this.settingsSystem = settingsSystem;
             this.editorEvents = editorEvents;
             this.menuBarSystem = menuBarSystem;
+            this.promptSystem = promptSystem;
 
             CreateMenuBarItems();
             CreateHelpMenuBarItems();
@@ -54,6 +57,12 @@ namespace Assets.Scripts.System
                 {
                     Application.OpenURL(
                         "https://twitter.com/intent/tweet?text=Using%20%23DCLEdit%20by%20%40MGH_DAO%20right%20now");
+                });
+            
+            menuBarSystem.AddMenuItem("Help#30/Show Log",
+                () =>
+                {
+                    promptSystem.CreateChangeLog();
                 });
         }
 
