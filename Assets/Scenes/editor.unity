@@ -317,11 +317,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 5677096274617207360, guid: 44790cf12ccd011459f749712f90a90b, type: 3}
   m_PrefabInstance: {fileID: 5677096275816853216}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1375574674 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1341765932627918017, guid: 44790cf12ccd011459f749712f90a90b, type: 3}
-  m_PrefabInstance: {fileID: 5677096275816853216}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1981234237 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5075609751421357645, guid: 44790cf12ccd011459f749712f90a90b, type: 3}
@@ -1193,9 +1188,9 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 44790cf12ccd011459f749712f90a90b, type: 3}
---- !u!224 &5677096275816853219 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 5677096275094490003, guid: 44790cf12ccd011459f749712f90a90b, type: 3}
+--- !u!1 &5677096275816853217 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4356357306232272713, guid: 44790cf12ccd011459f749712f90a90b, type: 3}
   m_PrefabInstance: {fileID: 5677096275816853216}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &6554674216772584274
@@ -1222,29 +1217,13 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 728950132}
     - target: {fileID: 6554674216587907478, guid: 20ed7006bd4d7d84dab9ab96b9f5129a, type: 3}
-      propertyPath: AssetButton
-      value: 
-      objectReference: {fileID: 9199737783199215851, guid: 5fbffa0ef7a6dae40aee2be1808b6979, type: 3}
-    - target: {fileID: 6554674216587907478, guid: 20ed7006bd4d7d84dab9ab96b9f5129a, type: 3}
-      propertyPath: AssetFolder
-      value: 
-      objectReference: {fileID: 569288621326271914, guid: bdf698fa20b9d9842917888e8bea6558, type: 3}
-    - target: {fileID: 6554674216587907478, guid: 20ed7006bd4d7d84dab9ab96b9f5129a, type: 3}
       propertyPath: PromptDialog
       value: 
       objectReference: {fileID: 1981234237}
     - target: {fileID: 6554674216587907478, guid: 20ed7006bd4d7d84dab9ab96b9f5129a, type: 3}
-      propertyPath: SceneVisuals
+      propertyPath: PromptChangeLog
       value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 6554674216587907478, guid: 20ed7006bd4d7d84dab9ab96b9f5129a, type: 3}
-      propertyPath: GizmoModeMenu
-      value: 
-      objectReference: {fileID: 1375574674}
-    - target: {fileID: 6554674216587907478, guid: 20ed7006bd4d7d84dab9ab96b9f5129a, type: 3}
-      propertyPath: scenePanelTab
-      value: 
-      objectReference: {fileID: 5677096275816853219}
+      objectReference: {fileID: 5677096275816853217}
     - target: {fileID: 6554674216587907478, guid: 20ed7006bd4d7d84dab9ab96b9f5129a, type: 3}
       propertyPath: BackgroundCanvas
       value: 

@@ -53,6 +53,8 @@ MonoBehaviour:
   PromptDialog: {fileID: 0}
   PromptColorPicker: {fileID: 0}
   PromptAssetPicker: {fileID: 0}
+  PromptChangeLog: {fileID: 0}
+  BackgroundCanvas: {fileID: 0}
   BoxMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
   SphereMesh: {fileID: 4711208715938537054, guid: 7c360f97f1032b64ca984a274cb4114e, type: 3}
   CylinderMesh: {fileID: 2534964839176971238, guid: a5b744d66d2a35e46a843a62ee17a1a3, type: 3}
