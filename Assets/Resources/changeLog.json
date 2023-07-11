@@ -1,0 +1,8 @@
+﻿{
+  "changeLog": [
+    {
+      "version": "1.0.4",
+      "details": "Version 1.0.4 of dcl-edit is now available. To update, just run npm i dcl-edit -g\n\nThis release of dcl-edit features support for the Custom Component Markup. You can write your own components for dcl-edit now. Take a look at the documentation: https://dcl-edit.com/custom-component-markup/\n\nWhat's Changed\n\nNew features:\n\nAdd Custom Component Markup\n\tWhen parenting entities, the transform of the child entity stays the same in world space.\n\tTranslate on plane handles are now always on the camera facing side of the gizmo.\n\nBug fixes:\n\nContext Menu now scales with UI Scaling setting. For example, when right-clicking in the hierarchy, the menu that pops up will scale properly with the UI Scaling setting in the Settings menu.\nWhen the edge of the scene view was clicked to resize the panel, the currently selected entity might have been deselected."
+    }
+  ]
+}
