@@ -54,6 +54,13 @@ namespace Assets.Scripts.System
             return (Value<Guid>)await promptData.taskCompleted.Task;
         }
 
+        public async Task<PromptAction> CreateChangeLog()
+        {
+            CreatePromptData(unityState.PromptChangeLog, "Change Log", null, null, PromptData.PromptType.ChangeLog);
+            unityState.PromptChangeLog.SetActive(true);
+            return await promptData.taskCompleted.Task;
+        }
+
         public abstract class PromptAction
         {
             public Action action;
@@ -123,7 +130,8 @@ namespace Assets.Scripts.System
             {
                 Dialog,
                 ColorPicker,
-                AssetPicker
+                AssetPicker,
+                ChangeLog
             }
         }
     }

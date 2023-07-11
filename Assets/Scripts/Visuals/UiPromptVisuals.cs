@@ -30,6 +30,7 @@ namespace Assets.Scripts.Visuals
         private AssetBrowserState assetBrowserState;
         private UnityState unityState;
         private PromptSystem promptSystem;
+        private ChangeLogState changeLogState;
 
         private PanelAtom.Data panel;
         public PromptSystem.PromptData data;
@@ -47,7 +48,8 @@ namespace Assets.Scripts.Visuals
         AssetBrowserState assetBrowserState,
         DialogSystem dialogSystem,
         UnityState unityState,
-        PromptSystem promptSystem)
+        PromptSystem promptSystem,
+        ChangeLogState changeLogState)
         {
             uiBuilder = uiBuilderFactory.Create(content);
             this.uiAssetBrowserViusalsFactory = uiAssetBrowserViusalsFactory;
@@ -59,6 +61,7 @@ namespace Assets.Scripts.Visuals
             this.assetBrowserState = assetBrowserState;
             this.unityState = unityState;
             this.promptSystem = promptSystem;
+            this.changeLogState = changeLogState;
         }
 
         private void Update()
@@ -107,6 +110,9 @@ namespace Assets.Scripts.Visuals
                     break;
                 case PromptSystem.PromptData.PromptType.AssetPicker:
                     AddAssetBrowser();
+                    break;
+                case PromptSystem.PromptData.PromptType.ChangeLog:
+                    AddChangeLog();
                     break;
             }
 
@@ -184,6 +190,17 @@ namespace Assets.Scripts.Visuals
             layoutElement.minHeight = 400;
             layoutElement.minWidth = 600;
             uiAssetBrowserVisuals.transform.SetParent(content.transform, false);
+        }
+        
+        private void AddChangeLog()
+        {
+            var headerData = new PanelAtom.Data
+            {
+                layoutDirection = PanelHandler.LayoutDirection.Horizontal,
+                useFullWidth = false
+            };
+            
+            
         }
     }
 }
