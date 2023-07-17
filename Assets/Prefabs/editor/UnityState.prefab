@@ -53,6 +53,7 @@ MonoBehaviour:
   PromptDialog: {fileID: 0}
   PromptColorPicker: {fileID: 0}
   PromptAssetPicker: {fileID: 0}
+  BackgroundCanvas: {fileID: 0}
   BoxMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
   SphereMesh: {fileID: 4711208715938537054, guid: 7c360f97f1032b64ca984a274cb4114e, type: 3}
   CylinderMesh: {fileID: 2534964839176971238, guid: a5b744d66d2a35e46a843a62ee17a1a3, type: 3}
@@ -89,4 +90,5 @@ MonoBehaviour:
   ContextMenuSpacerItemAtom: {fileID: 1012576247357608871, guid: 395030571d765984c8e17050dab03b59, type: 3}
   SpacerAtom: {fileID: 889315105189934788, guid: ef30d5a0efda96d4b88473330665ddc2, type: 3}
   SnackbarItem: {fileID: 1732777830125223451, guid: 53f3f80489041d549b380d38d282d1f9, type: 3}
+  HoverLabel: {fileID: 7858078055908231294, guid: 1cc96834ebe62034d87d786fa5f0f001, type: 3}
   assetDialog: {fileID: 1966078028789573130, guid: 908965e29fb2dfb409a04134220a6262, type: 3}
