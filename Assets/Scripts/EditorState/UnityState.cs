@@ -153,6 +153,8 @@ namespace Assets.Scripts.EditorState
         [SerializeField]
         public GameObject SnackbarItem;
 
+        [SerializeField]
+        public GameObject HoverLabel;
 
         [Header("Dialog Windows")]
         [SerializeField]
