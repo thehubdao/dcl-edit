@@ -85,6 +85,21 @@ public class AssetCacheSystem
         }
         return null;
     }
+
+    public async Task<Texture2D> GetThumbnail(Guid id)
+    {
+        if (entries.TryGetValue(id, out var entry))
+        {
+            await entry.conversionSemaphore.WaitAsync();
+
+            Texture2D thumbnail = GetThumbnail(entry) ?? await ConvertToThumbnail(id, entry);
+
+            entry.conversionSemaphore.Release();
+
+            return thumbnail;
+        }
+        return null;
+    }
     public static GameObject CreateCopy(GameObject obj)
     {
         if (obj == null) return null;
@@ -123,4 +138,35 @@ public class AssetCacheSystem
         }
         return null;
     }
+
+    private Texture2D GetThumbnail(AssetCacheEntry entry)
+    {
+        foreach (var format in entry.formats)
+        {
+            if (format is ThumbnailFormat tf)
+            {
+                return tf.thumbnail;
+            }
+        }
+        return null;
+    }
+
+    private async Task<Texture2D> ConvertToThumbnail(Guid id, AssetCacheEntry entry)
+    {
+        foreach (var format in entry.formats)
+        {
+            if (format is IThumbnailConvertible convertible)
+            {
+                var thumbnailFormat = await convertible.ConvertToThumbnailFormat();
+
+                if (thumbnailFormat != null)
+                {
+                    Add(id, thumbnailFormat);
+                    return thumbnailFormat.thumbnail;
+                }
+            }
+        }
+        return null;
+    }
+
 }
