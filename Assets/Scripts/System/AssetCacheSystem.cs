@@ -116,6 +116,22 @@ public class AssetCacheSystem
 
         return null;
     }
+
+    public MetadataFileFormat GetMetadata(Guid id)
+    {
+        if (entries.TryGetValue(id, out var entry))
+        {
+            foreach (var format in entry.formats)
+            {
+                if (format is MetadataFileFormat mff)
+                {
+                    return mff;
+                }
+            }
+        }
+        return null;
+    }
+
     public static GameObject CreateCopy(GameObject obj)
     {
         if (obj == null) return null;
