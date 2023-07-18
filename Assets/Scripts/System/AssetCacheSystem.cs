@@ -100,6 +100,22 @@ public class AssetCacheSystem
         }
         return null;
     }
+
+    public async Task<Sprite> GetThumbnailSprite(Guid id)
+    {
+        if (entries.TryGetValue(id, out AssetCacheEntry entry))
+        {
+            await entry.conversionSemaphore.WaitAsync();
+
+            Sprite sprite = GetSprite(entry) ?? await ConvertToSprite(id, entry);
+
+            entry.conversionSemaphore.Release();
+
+            return sprite;
+        }
+
+        return null;
+    }
     public static GameObject CreateCopy(GameObject obj)
     {
         if (obj == null) return null;
@@ -169,4 +185,33 @@ public class AssetCacheSystem
         return null;
     }
 
+    private Sprite GetSprite(AssetCacheEntry entry)
+    {
+        foreach (var format in entry.formats)
+        {
+            if (format is SpriteFormat sf)
+            {
+                return sf.sprite;
+            }
+        }
+        return null;
+    }
+
+    private async Task<Sprite> ConvertToSprite(Guid id, AssetCacheEntry entry)
+    {
+        foreach (var format in entry.formats)
+        {
+            if (format is ISpriteConvertible convertible)
+            {
+                var sf = await convertible.ConvertToSpriteFormat();
+
+                if (sf != null)
+                {
+                    Add(id, sf);
+                    return sf.sprite;
+                }
+            }
+        }
+        return null;
+    }
 }
