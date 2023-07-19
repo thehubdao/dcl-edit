@@ -28,16 +28,13 @@ namespace Assets.Scripts.EditorState
 
     public class AssetThumbnail
     {
-        public AssetThumbnail(Guid id, AssetData.State state, Texture2D texture)
+        public AssetThumbnail(Guid id, Texture2D texture)
         {
             this.id = id;
-            this.state = state;
             this.texture = texture;
         }
 
         public Guid id;
-
-        public AssetData.State state;
 
         public Texture2D texture;
     }
@@ -46,19 +43,9 @@ namespace Assets.Scripts.EditorState
     {
         public Guid id;
 
-        public enum State
-        {
-            IsAvailable,
-            IsLoading,
-            IsError
-        }
-
-        public State state;
-
-        public AssetData(Guid id, State state)
+        public AssetData(Guid id)
         {
             this.id = id;
-            this.state = state;
         }
     }
 
@@ -66,7 +53,7 @@ namespace Assets.Scripts.EditorState
     {
         public GameObject data;
 
-        public ModelAssetData(Guid id, GameObject data) : base(id, State.IsAvailable)
+        public ModelAssetData(Guid id, GameObject data) : base(id)
         {
             this.data = data;
         }
@@ -76,7 +63,7 @@ namespace Assets.Scripts.EditorState
     {
         public Texture2D data;
 
-        public ImageAssetData(Guid id, Texture2D data) : base(id, State.IsAvailable)
+        public ImageAssetData(Guid id, Texture2D data) : base(id)
         {
             this.data = data;
         }
