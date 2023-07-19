@@ -98,7 +98,6 @@ namespace Assets.Scripts.System
         public void Construct(
             BuilderAssetLoaderState loaderState,
             EditorEvents editorEvents,
-            LoadGltfFromFileSystem loadGltfFromFileSystem,
             IWebRequestSystem webRequestSystem,
             IPathState pathState,
             AssetCacheSystem assetCacheSystem,
