@@ -28,15 +28,15 @@ public class AssetBrowserButtonHandler : ButtonHandler
 
     // Dependencies
     EditorEvents editorEvents;
-    AssetThumbnailManagerSystem assetThumbnailManagerSystem;
     SceneManagerSystem sceneManagerSystem;
+    AssetManagerSystem assetManagerSystem;
 
     [Inject]
-    void Construct(EditorEvents editorEvents, AssetThumbnailManagerSystem assetThumbnailManagerSystem, SceneManagerSystem sceneManagerSystem)
+    void Construct(EditorEvents editorEvents, SceneManagerSystem sceneManagerSystem, AssetManagerSystem assetManagerSystem)
     {
         this.editorEvents = editorEvents;
-        this.assetThumbnailManagerSystem = assetThumbnailManagerSystem;
         this.sceneManagerSystem = sceneManagerSystem;
+        this.assetManagerSystem = assetManagerSystem;
     }
 
     public void Init(AssetMetadata metadata, bool enableDragAndDrop, Action<Guid> onClick, ScrollRect scrollViewRect = null)
@@ -188,7 +188,7 @@ public class AssetBrowserButtonHandler : ButtonHandler
     }
 
 
-    private void ShowThumbnailWhenVisible(Vector2 _)
+    private async void ShowThumbnailWhenVisible(Vector2 _)
     {
         if (metadata == null) return;
 
@@ -200,24 +200,23 @@ public class AssetBrowserButtonHandler : ButtonHandler
             return;
         }
 
-        var result = assetThumbnailManagerSystem.GetThumbnailById(metadata.assetId);
-        switch (result.state)
+        loadingSymbol.SetActive(true);
+
+        var thumbnail = await assetManagerSystem.GetThumbnailSpriteById(metadata.assetId);
+
+        loadingSymbol.SetActive(false);
+
+        if (thumbnail != null)
         {
-            case AssetData.State.IsAvailable:
-                SetImage(result.texture);
-                break;
-            case AssetData.State.IsLoading:
-                loadingSymbol.SetActive(true);
-                break;
-            case AssetData.State.IsError:
-                SetImage(errorAssetThumbnail);
-                break;
-            default:
-                break;
+            SetImage(thumbnail);
+        }
+        else
+        {
+            SetImage(errorAssetThumbnail);
         }
     }
 
-    public void OnAssetThumbnailUpdatedCallback(List<Guid> ids)
+    public async void OnAssetThumbnailUpdatedCallback(List<Guid> ids)
     {
         if (metadata == null) return;
 
@@ -225,8 +224,8 @@ public class AssetBrowserButtonHandler : ButtonHandler
         {
             if (loadingSymbol != null) loadingSymbol.SetActive(false);
 
-            var thumbnail = assetThumbnailManagerSystem.GetThumbnailById(metadata.assetId);
-            if (thumbnail.texture != null) SetImage(thumbnail.texture);
+            var thumbnail = await assetManagerSystem.GetThumbnailById(metadata.assetId);
+            if (thumbnail != null) SetImage(thumbnail);
             else SetImage(errorAssetThumbnail);
         }
     }
