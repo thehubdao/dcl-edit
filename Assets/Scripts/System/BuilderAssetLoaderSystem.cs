@@ -193,16 +193,6 @@ namespace Assets.Scripts.System
             return loaderState.Data.Keys;
         }
 
-        public AssetMetadata GetMetadataById(Guid id)
-        {
-            if (loaderState.Data.TryGetValue(id, out var data))
-            {
-                return new AssetMetadata(data.Name, id, AssetMetadata.AssetType.Model);
-            }
-
-            return null;
-        }
-
         public string modelBuildPath => Path.Combine(pathState.ProjectPath, "dcl-edit/build/builder_assets/");
 
         public async Task<string> CopyAssetTo(Guid id)
