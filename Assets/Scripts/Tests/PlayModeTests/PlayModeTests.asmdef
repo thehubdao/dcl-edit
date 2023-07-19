@@ -11,7 +11,9 @@
         "Events",
         "Visuals",
         "Unity.TextMeshPro",
-        "DclSystems"
+        "DclSystems",
+        "Zenject",
+        "TestUtility"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
