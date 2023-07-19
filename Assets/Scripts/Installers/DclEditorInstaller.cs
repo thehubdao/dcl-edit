@@ -189,5 +189,7 @@ public class DclEditorInstaller : MonoInstaller
 
         Container.BindInterfacesAndSelfTo<AssetCacheSystem>().AsSingle();
 
+        Container.BindFactory<Guid, GameObject, LoadedModelFormat, LoadedModelFormat.Factory>().AsSingle();
+
     }
 }
