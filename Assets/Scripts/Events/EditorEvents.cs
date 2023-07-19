@@ -38,8 +38,8 @@ namespace Assets.Scripts.Events
 
 
         // Asset management
-        public event Action<List<Guid>> onAssetDataUpdatedEvent;
-        public void InvokeAssetDataUpdatedEvent(List<Guid> assetIds) => onAssetDataUpdatedEvent?.Invoke(assetIds);
+        public event Action<Guid> onAssetDataUpdatedEvent;
+        public void InvokeAssetDataUpdatedEvent(Guid assetId) => onAssetDataUpdatedEvent?.Invoke(assetId);
 
 
         public event Action<List<Guid>> onAssetThumbnailUpdatedEvent;
