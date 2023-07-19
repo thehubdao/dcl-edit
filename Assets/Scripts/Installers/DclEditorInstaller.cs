@@ -194,5 +194,10 @@ public class DclEditorInstaller : MonoInstaller
         Container.BindFactory<Guid, string, GltfFileFormat, GltfFileFormat.Factory>().AsSingle();
     }
 
+#if UNITY_EDITOR
+    public void InjectEditorWindow(EditorWindow window)
+    {
+        Container.Inject(window);
     }
+#endif
 }
