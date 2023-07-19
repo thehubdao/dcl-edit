@@ -191,5 +191,8 @@ public class DclEditorInstaller : MonoInstaller
 
         Container.BindFactory<Guid, GameObject, LoadedModelFormat, LoadedModelFormat.Factory>().AsSingle();
 
+        Container.BindFactory<Guid, string, GltfFileFormat, GltfFileFormat.Factory>().AsSingle();
+    }
+
     }
 }
