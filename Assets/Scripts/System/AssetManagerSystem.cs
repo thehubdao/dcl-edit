@@ -12,10 +12,12 @@ namespace Assets.Scripts.System
     {
         // Dependencies
         private IAssetLoaderSystem[] _assetLoaderSystems;
+        private AssetCacheSystem assetCacheSystem;
 
         [Inject]
-        public void Construct(params IAssetLoaderSystem[] assetLoaderSystems)
+        public void Construct(AssetCacheSystem assetCacheSystem, params IAssetLoaderSystem[] assetLoaderSystems)
         {
+            this.assetCacheSystem = assetCacheSystem;
             _assetLoaderSystems = assetLoaderSystems;
         }
 
@@ -31,29 +33,22 @@ namespace Assets.Scripts.System
 
         public AssetMetadata GetMetadataById(Guid id)
         {
-            foreach (var loaderSystem in _assetLoaderSystems)
-            {
-                var result = loaderSystem.GetMetadataById(id);
-                if (result != null)
-                {
-                    return result;
-                }
-            }
-            return null;
+            MetadataFileFormat mff = assetCacheSystem.GetMetadata(id);
+            return new AssetMetadata(mff.contents.metadata.assetDisplayName, mff.id, mff.contents.metadata.assetType);
         }
 
-        public AssetData GetDataById(Guid id)
+        /// <summary>
+        /// Returns the data of the asset with the given ID. If needed, a CancellationTokenSource can be used 
+        /// to abort the request.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="cts"></param>
+        /// <returns></returns>
+        public async Task<AssetData> GetDataById(Guid id)
         {
-            foreach (var loaderSystem in _assetLoaderSystems)
-            {
-                var result = loaderSystem.GetDataById(id);
-                if (result != null)
-                {
-                    return result;
-                }
-            }
-
-            return new AssetData(id, AssetData.State.IsError);
+            GameObject model = await assetCacheSystem.GetLoadedModel(id);
+            if (model == null) return null;
+            return new ModelAssetData(id, model);
         }
 
         public IEnumerable<Guid> GetAllAssetIds()
@@ -77,6 +72,10 @@ namespace Assets.Scripts.System
 
             return hierarchy;
         }
+
+        public async Task<Texture2D> GetThumbnailById(Guid id) => await assetCacheSystem.GetThumbnail(id);
+
+        public async Task<Sprite> GetThumbnailSpriteById(Guid id) => await assetCacheSystem.GetThumbnailSprite(id);
 
         private void ClearModelCache()
         {
