@@ -11,9 +11,6 @@ namespace Assets.Scripts.System
         void CacheAllAssetMetadata();
         IEnumerable<Guid> GetAllAssetIds();
         AssetHierarchyItem GetHierarchy();
-        AssetMetadata GetMetadataById(Guid id);
-        AssetThumbnail GetThumbnailById(Guid id);
-        AssetData GetDataById(Guid id);
         Task<string> CopyAssetTo(Guid id);
     }
 }

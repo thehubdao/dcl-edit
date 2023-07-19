@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Assets.Scripts.EditorState
@@ -8,14 +9,6 @@ namespace Assets.Scripts.EditorState
     {
         public class DataStorage
         {
-            public enum CacheState
-            {
-                Loaded, // Loaded to ram
-                Cached, // available as file
-                Loading, // while downloading and opening file
-                NotCached // not downloaded
-            }
-
             public Guid Id;
             public string Name;
 
@@ -24,22 +17,25 @@ namespace Assets.Scripts.EditorState
 
             public string ThumbnailHash;
 
-            // Data
-            public CacheState DataCacheState = CacheState.NotCached;
-            public CacheState ThumbnailCacheState = CacheState.NotCached;
             public GameObject Model;
+            public Texture2D Thumbnail;
+
+            /// <summary>
+            /// If the asset data is currently being loaded, this is the task that runs the loading operation. 
+            /// This task will be completed once the asset data is loaded.
+            /// </summary>
+            public Task<int> loadingTask;
+            public bool IsLoading
+            {
+                get
+                {
+                    if (loadingTask == null) return false;
+                    return !loadingTask.IsCompleted;
+                }
+            }
         }
 
-
         public Dictionary<Guid, DataStorage> Data = new Dictionary<Guid, DataStorage>();
-
-        // loaded models with the id as key
-        public Dictionary<Guid, GameObject> loadedModels = new Dictionary<Guid, GameObject>();
-
-        // loaded thumbnails with the Hash as key
-        public Dictionary<string, Texture2D> LoadedThumbnails = new Dictionary<string, Texture2D>();
-
-        public Queue<Guid> thumbnailRequestQueue = new Queue<Guid>();
 
         public AssetHierarchyItem assetHierarchy = new AssetHierarchyItem
         {
