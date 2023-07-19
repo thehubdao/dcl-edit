@@ -24,6 +24,9 @@ namespace Assets.Scripts.Visuals.UiBuilder
             [CanBeNull]
             public DragStrategy dragStrategy = null;
 
+            [CanBeNull]
+            public DropStrategy dropStrategy = null;
+
             public override bool Equals(Atom.Data other)
             {
                 if (!(other is Data otherBtn))
@@ -34,6 +37,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
                 if (dragStrategy != otherBtn.dragStrategy) return false;
                 if (clickStrategy != otherBtn.clickStrategy) return false;
                 if (dragStrategy != otherBtn.dragStrategy) return false;
+                if (dropStrategy != otherBtn.dropStrategy) return false;
                 return true;
             }
         }
@@ -58,7 +62,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
             {
                 // Update data
                 var btnHandler = gameObject.gameObject.GetComponent<AssetButtonHandler>();
-                btnHandler.Setup(newBtnData.setValueStrategy, newBtnData.dragStrategy, newBtnData.clickStrategy);
+                btnHandler.Setup(newBtnData.setValueStrategy, newBtnData.dragStrategy, newBtnData.dropStrategy, newBtnData.clickStrategy);
 
                 data = newBtnData;
             }
@@ -83,7 +87,8 @@ namespace Assets.Scripts.Visuals.UiBuilder
             // Placeholder Thumbnail Handler
             [NotNull] SetValueStrategy<Guid> setValueStrategy,
             [CanBeNull] ClickStrategy clickStrategy = null,
-            [CanBeNull] DragStrategy dragStrategy = null)
+            [CanBeNull] DragStrategy dragStrategy = null,
+            [CanBeNull] DropStrategy dropStrategy = null)
         {
             clickStrategy ??= new ClickStrategy();
 
@@ -91,7 +96,8 @@ namespace Assets.Scripts.Visuals.UiBuilder
             {
                 setValueStrategy = setValueStrategy,
                 clickStrategy = clickStrategy,
-                dragStrategy = dragStrategy
+                dragStrategy = dragStrategy,
+                dropStrategy = dropStrategy
             };
 
             panelAtomData.childDates.Add(data);

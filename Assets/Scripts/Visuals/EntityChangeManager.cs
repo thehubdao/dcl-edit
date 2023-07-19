@@ -130,4 +130,48 @@ public class EntityChangeManager
             }
         );
     }
+
+    public DropStrategy GetAssetDropStrategy(DclPropertyIdentifier propertyIdentifier)
+    {
+        var property = sceneManagerSystem.GetCurrentScene().GetPropertyFromIdentifier(propertyIdentifier);
+
+        if (property.Type != DclComponent.DclComponentProperty.PropertyType.Asset)
+        {
+            throw new InvalidOperationException("Cannot create asset drop strategy for non-asset property");
+        }
+
+        var propertyDefinition = availableComponentsState
+            .GetComponentDefinitionByName(propertyIdentifier.Component)
+            .GetPropertyDefinitionByName(propertyIdentifier.Property);
+
+        var dropStrategy = new DropStrategy();
+
+        if ((propertyDefinition.flags & DclComponent.DclComponentProperty.PropertyDefinition.Flags.ModelAssets) != 0)
+        {
+            dropStrategy.dropModelAssetStrategy = new DropModelAssetStrategy(
+                guid =>
+                {
+                    commandSystem.ExecuteCommand(
+                        commandSystem.CommandFactory.CreateChangePropertyCommand(
+                            propertyIdentifier,
+                            property.GetConcrete<Guid>().FixedValue,
+                            guid));
+                });
+        }
+
+        if ((propertyDefinition.flags & DclComponent.DclComponentProperty.PropertyDefinition.Flags.SceneAssets) != 0)
+        {
+            dropStrategy.dropSceneAssetStrategy = new DropSceneAssetStrategy(
+                guid =>
+                {
+                    commandSystem.ExecuteCommand(
+                        commandSystem.CommandFactory.CreateChangePropertyCommand(
+                            propertyIdentifier,
+                            property.GetConcrete<Guid>().FixedValue,
+                            guid));
+                });
+        }
+        
+        return dropStrategy;
+    }
 }

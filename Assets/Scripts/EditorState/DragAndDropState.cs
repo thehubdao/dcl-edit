@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Assets.Scripts.Utility;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -54,11 +55,31 @@ public class DragAndDropState
 
             dropZones[dropZoneCategory].Add(dropHandler);
         }
+
+        // DebugPrintDropZones();
+    }
+
+    private void DebugPrintDropZones()
+    {
+        var sb = new StringBuilder();
+
+        foreach (var dropZoneInCategory in dropZones)
+        {
+            sb.AppendLine($"Category: {dropZoneInCategory.Key}");
+            foreach (var dropZone in dropZoneInCategory.Value)
+            {
+                sb.AppendLine($"  DropZone: {dropZone.name}");
+            }
+        }
+
+        Debug.Log(sb.ToString());
     }
 }
 
 public interface IDropZoneHandler
 {
+    string name { get; }
+
     void Enable();
     void Disable();
 }

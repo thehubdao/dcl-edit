@@ -10,6 +10,7 @@ using UnityEngine;
 using UnityEngine.Profiling;
 using UnityEngine.UI;
 using Zenject;
+using Visuals.UiHandler;
 
 public class AssetButtonHandler : MonoBehaviour, IUpdateValue
 {
@@ -21,6 +22,7 @@ public class AssetButtonHandler : MonoBehaviour, IUpdateValue
     public ClickHandler clickHandler;
     public TextHandler textHandler;
     public DragHandler dragHandler;
+    public DropHandler dropHandler;
 
     [Header("Asset Type Indicator Textures")]
     public Sprite modelTypeIndicator;
@@ -69,6 +71,7 @@ public class AssetButtonHandler : MonoBehaviour, IUpdateValue
     public void Setup(
         SetValueStrategy<Guid> valueBindStrategy,
         [CanBeNull] DragStrategy dragStrategy,
+        [CanBeNull] DropStrategy dropStrategy,
         [NotNull] ClickStrategy clickStrategy)
     {
         this.valueBindStrategy = valueBindStrategy;
@@ -76,6 +79,7 @@ public class AssetButtonHandler : MonoBehaviour, IUpdateValue
         UpdateValue();
 
         dragHandler.dragStrategy = dragStrategy;
+        dropHandler.dropStrategy = dropStrategy;
         clickHandler.clickStrategy = clickStrategy;
     }
 
