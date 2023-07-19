@@ -5,6 +5,8 @@ using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
 using Assets.Scripts.Visuals;
 using Assets.Scripts.Visuals.UiBuilder;
+using System;
+using UnityEditor;
 using UnityEngine;
 using Zenject;
 
@@ -127,11 +129,7 @@ public class DclEditorInstaller : MonoInstaller
 
         Container.BindInterfacesAndSelfTo<HierarchyContextMenuSystem>().AsSingle();
 
-        Container.BindInterfacesAndSelfTo<AssetThumbnailManagerSystem>().AsSingle();
-
         Container.BindInterfacesAndSelfTo<AssetThumbnailGeneratorSystem>().FromComponentInNewPrefab(_assetThumbnailGeneratorPrefab).AsSingle();
-
-        Container.BindInterfacesAndSelfTo<AssetThumbnailGeneratorState>().AsSingle();
 
         Container.BindFactory<AssetBrowserButtonHandler, AssetBrowserButtonHandler.Factory>().FromComponentInNewPrefab(unityState.AssetBrowserButtonAtom);
 
