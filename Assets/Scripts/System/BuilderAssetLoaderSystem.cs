@@ -88,24 +88,30 @@ namespace Assets.Scripts.System
         // Dependencies
         private BuilderAssetLoaderState loaderState;
         private EditorEvents editorEvents;
-        private LoadGltfFromFileSystem loadGltfFromFileSystem;
         private IWebRequestSystem webRequestSystem;
         private IPathState pathState;
         private AssetCacheSystem assetCacheSystem;
-
-        private BuilderAssetDownLoader assetDownLoader;
+        private BuilderAssetFormat.Factory builderAssetFormatFactory;
+        private BuilderAssetDownLoader assetDownloader;
 
         [Inject]
-        public void Construct(BuilderAssetLoaderState loaderState, EditorEvents editorEvents, LoadGltfFromFileSystem loadGltfFromFileSystem, IWebRequestSystem webRequestSystem, IPathState pathState, AssetCacheSystem assetCacheSystem)
+        public void Construct(
+            BuilderAssetLoaderState loaderState,
+            EditorEvents editorEvents,
+            LoadGltfFromFileSystem loadGltfFromFileSystem,
+            IWebRequestSystem webRequestSystem,
+            IPathState pathState,
+            AssetCacheSystem assetCacheSystem,
+            BuilderAssetFormat.Factory builderAssetFormatFactory,
+            BuilderAssetDownLoader assetDownloader)
         {
             this.loaderState = loaderState;
             this.editorEvents = editorEvents;
-            this.loadGltfFromFileSystem = loadGltfFromFileSystem;
             this.webRequestSystem = webRequestSystem;
             this.pathState = pathState;
             this.assetCacheSystem = assetCacheSystem;
-
-            this.assetDownLoader = new BuilderAssetDownLoader(AssetCacheSystem.modelCachePath, webRequestSystem);
+            this.builderAssetFormatFactory = builderAssetFormatFactory;
+            this.assetDownloader = assetDownloader;
         }
 
         public void ClearAllData()
@@ -158,7 +164,7 @@ namespace Assets.Scripts.System
                         });
                         assetCacheSystem.Add(
                             id,
-                            new BuilderAssetFormat(
+                            builderAssetFormatFactory.Create(
                                 id,
                                 asset.name,
                                 asset.model,
@@ -212,7 +218,7 @@ namespace Assets.Scripts.System
             {
                 try
                 {
-                    var filePath = await assetDownLoader.GetFileFromHash(hash);
+                    var filePath = await assetDownloader.GetFileFromHash(hash);
 
                     var destFileName = Path.Combine(modelBuildPath, path);
                     Directory.CreateDirectory(Path.GetDirectoryName(destFileName) ?? throw new InvalidOperationException());
@@ -225,7 +231,7 @@ namespace Assets.Scripts.System
                 }
             }
 
-            var modelFilePathTask = assetDownLoader.GetFileFromHash(data.contentsPathToHash[data.modelPath]);
+            var modelFilePathTask = assetDownloader.GetFileFromHash(data.contentsPathToHash[data.modelPath]);
             if (!modelFilePathTask.IsCompleted)
             {
                 modelFilePathTask.Wait();
@@ -279,13 +285,20 @@ namespace Assets.Scripts.System
 
     public class BuilderAssetDownLoader
     {
-        private readonly string cachePath;
-        private readonly IWebRequestSystem webRequestSystem;
+        // Dependencies
+        private IWebRequestSystem webRequestSystem;
 
-        public BuilderAssetDownLoader(string cachePath, IWebRequestSystem webRequestSystem)
+        private readonly string cachePath;
+
+        [Inject]
+        public void Construct(IWebRequestSystem webRequestSystem)
+        {
+            this.webRequestSystem = webRequestSystem;
+        }
+
+        public BuilderAssetDownLoader(string cachePath)
         {
             this.cachePath = cachePath;
-            this.webRequestSystem = webRequestSystem;
         }
 
         public async Task<string> GetFileFromHash(string hash)

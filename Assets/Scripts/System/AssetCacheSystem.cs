@@ -1,5 +1,4 @@
 using Assets.Scripts.Events;
-using Assets.Scripts.System;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,18 +14,14 @@ public class AssetCacheSystem
     public static string modelCachePath => Path.Combine(Application.persistentDataPath, "dcl-edit/builder_assets/");
 
     // Dependencies
-    private LoadGltfFromFileSystem gltfLoader;
     private EditorEvents editorEvents;
-    private BuilderAssetDownLoader assetDownloader;
     private LoadedModelFormat.Factory loadedModelFormatFactory;
 
 
     [Inject]
-    public void Construct(LoadGltfFromFileSystem gltfLoader, EditorEvents editorEvents, IWebRequestSystem webRequestSystem, LoadedModelFormat.Factory loadedModelFormatFactory)
+    public void Construct(EditorEvents editorEvents, LoadedModelFormat.Factory loadedModelFormatFactory)
     {
-        this.gltfLoader = gltfLoader;
         this.editorEvents = editorEvents;
-        this.assetDownloader = new BuilderAssetDownLoader(modelCachePath, webRequestSystem);
         this.loadedModelFormatFactory = loadedModelFormatFactory;
     }
 
@@ -160,7 +155,7 @@ public class AssetCacheSystem
         {
             if (format is ILoadedModelConvertible conv)
             {
-                var loadedFormat = await conv.ConvertToLoadedModelFormat(gltfLoader, assetDownloader, loadedModelFormatFactory);
+                var loadedFormat = await conv.ConvertToLoadedModelFormat(loadedModelFormatFactory);
                 if (loadedFormat != null)
                 {
                     this.Add(id, loadedFormat);

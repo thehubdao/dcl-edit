@@ -4,16 +4,29 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using UnityEngine;
+using Zenject;
 
 /// <summary>
 /// This format represents a Builder asset that has not yet been downloaded.
 /// </summary>
 public class BuilderAssetFormat : AssetFormat, ILoadedModelConvertible, IThumbnailConvertible, ISpriteConvertible
 {
+    // Dependencies
+    LoadGltfFromFileSystem gltfLoader;
+    BuilderAssetDownLoader downloader;
+
     public string Name;
     public string modelPath;
     public Dictionary<string, string> contentsPathToHash;
     public string ThumbnailHash;
+
+
+    [Inject]
+    public void Construct(LoadGltfFromFileSystem gltfLoader, BuilderAssetDownLoader downloader)
+    {
+        this.gltfLoader = gltfLoader;
+        this.downloader = downloader;
+    }
 
     public BuilderAssetFormat(Guid id, string name, string modelPath, Dictionary<string, string> contentsPathToHash, string thumbnailHash) : base(id)
     {
@@ -23,7 +36,7 @@ public class BuilderAssetFormat : AssetFormat, ILoadedModelConvertible, IThumbna
         this.ThumbnailHash = thumbnailHash;
     }
 
-    public async Task<LoadedModelFormat> ConvertToLoadedModelFormat(LoadGltfFromFileSystem gltfLoader, BuilderAssetDownLoader downloader, LoadedModelFormat.Factory loadedModelFactory)
+    public async Task<LoadedModelFormat> ConvertToLoadedModelFormat(LoadedModelFormat.Factory loadedModelFactory)
     {
         var tcs = new TaskCompletionSource<LoadedModelFormat>();
         gltfLoader.LoadGltfFromPath(Path.GetFileName(modelPath), go =>
@@ -36,8 +49,6 @@ public class BuilderAssetFormat : AssetFormat, ILoadedModelConvertible, IThumbna
 
     public async Task<ThumbnailFormat> ConvertToThumbnailFormat()
     {
-        var downloader = new BuilderAssetDownLoader(AssetCacheSystem.modelCachePath, new WebRequestSystem());
-
         var path = await downloader.GetFileFromHash(ThumbnailHash);
 
         var preCreatedTexture = new Texture2D(2, 2); // pre create Texture, because Textures might not be creatable in non Main-Threads
@@ -67,5 +78,9 @@ public class BuilderAssetFormat : AssetFormat, ILoadedModelConvertible, IThumbna
         ThumbnailFormat tf = await ConvertToThumbnailFormat();
         SpriteFormat sf = await tf.ConvertToSpriteFormat();
         return sf;
+    }
+
+    public class Factory : PlaceholderFactory<Guid, string, string, Dictionary<string, string>, string, BuilderAssetFormat>
+    {
     }
 }

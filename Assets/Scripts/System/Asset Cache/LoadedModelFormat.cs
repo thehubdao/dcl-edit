@@ -1,4 +1,3 @@
-using Assets.Scripts.System;
 using System;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -40,5 +39,5 @@ public class LoadedModelFormat : AssetFormat, IThumbnailConvertible
 
 public interface ILoadedModelConvertible
 {
-    Task<LoadedModelFormat> ConvertToLoadedModelFormat(LoadGltfFromFileSystem gltfLoader, BuilderAssetDownLoader downloader, LoadedModelFormat.Factory loadedModelFactory);
+    Task<LoadedModelFormat> ConvertToLoadedModelFormat(LoadedModelFormat.Factory loadedModelFactory);
 }

@@ -6,6 +6,8 @@ using Assets.Scripts.System;
 using Assets.Scripts.Visuals;
 using Assets.Scripts.Visuals.UiBuilder;
 using System;
+using System.Collections.Generic;
+using System.IO;
 using UnityEditor;
 using UnityEngine;
 using Zenject;
@@ -174,7 +176,7 @@ public class DclEditorInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<PanelSystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<FileUpgraderSystem>().AsSingle();
-        
+
         Container.BindInterfacesAndSelfTo<HierarchyNavigationInteraction>().AsSingle();
 
         Container.BindInterfacesTo<GeneralInputInteraction>().AsSingle();
@@ -190,6 +192,10 @@ public class DclEditorInstaller : MonoInstaller
         Container.BindFactory<Guid, GameObject, LoadedModelFormat, LoadedModelFormat.Factory>().AsSingle();
 
         Container.BindFactory<Guid, string, GltfFileFormat, GltfFileFormat.Factory>().AsSingle();
+
+        Container.BindFactory<Guid, string, string, Dictionary<string, string>, string, BuilderAssetFormat, BuilderAssetFormat.Factory>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<BuilderAssetDownLoader>().AsSingle().WithArguments(Path.Combine(Application.persistentDataPath, "dcl-edit/builder_assets/"));
     }
 
 #if UNITY_EDITOR

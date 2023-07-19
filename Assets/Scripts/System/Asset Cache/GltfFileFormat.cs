@@ -26,7 +26,7 @@ public class GltfFileFormat : AssetFormat, ILoadedModelConvertible, IThumbnailCo
         this.pathToFile = pathToFile;
     }
 
-    public async Task<LoadedModelFormat> ConvertToLoadedModelFormat(LoadGltfFromFileSystem gltfLoader, BuilderAssetDownLoader downloader, LoadedModelFormat.Factory loadedModelFactory)
+    public async Task<LoadedModelFormat> ConvertToLoadedModelFormat(LoadedModelFormat.Factory loadedModelFactory)
     {
         var tcs = new TaskCompletionSource<LoadedModelFormat>();
 
@@ -41,7 +41,7 @@ public class GltfFileFormat : AssetFormat, ILoadedModelConvertible, IThumbnailCo
 
     public async Task<ThumbnailFormat> ConvertToThumbnailFormat()
     {
-        var loadedFormat = await ConvertToLoadedModelFormat(gltfLoader, null, loadedModelFormatFactory);
+        var loadedFormat = await ConvertToLoadedModelFormat(loadedModelFormatFactory);
         var model = loadedFormat.model;
         var thumbnail = await assetThumbnailGeneratorSystem.Generate(model);
         return new ThumbnailFormat(id, thumbnail);
