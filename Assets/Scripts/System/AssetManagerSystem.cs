@@ -31,11 +31,7 @@ namespace Assets.Scripts.System
             }
         }
 
-        public AssetMetadata GetMetadataById(Guid id)
-        {
-            MetadataFileFormat mff = assetCacheSystem.GetMetadata(id);
-            return new AssetMetadata(mff.contents.metadata.assetDisplayName, mff.id, mff.contents.metadata.assetType);
-        }
+        public AssetMetadata GetMetadataById(Guid id) => assetCacheSystem.GetMetadata(id);
 
         /// <summary>
         /// Returns the data of the asset with the given ID. If needed, a CancellationTokenSource can be used 

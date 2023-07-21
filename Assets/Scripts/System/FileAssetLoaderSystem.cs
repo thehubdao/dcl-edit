@@ -109,7 +109,7 @@ namespace Assets.Scripts.System
 
         public Task<string> CopyAssetTo(Guid id)
         {
-            MetadataFileFormat mff = assetCacheSystem.GetMetadata(id);
+            MetadataFileFormat mff = assetCacheSystem.GetMetadataFileFormat(id);
             if (mff != null)
             {
                 return Task.FromResult(StaticUtilities.MakeRelativePath(pathState.ProjectPath, mff.assetFilePath));
@@ -294,7 +294,7 @@ namespace Assets.Scripts.System
         /// <param name="id"></param>
         public async void OnAssetDataUpdatedCallback(Guid id)
         {
-            MetadataFileFormat mff = assetCacheSystem.GetMetadata(id);
+            MetadataFileFormat mff = assetCacheSystem.GetMetadataFileFormat(id);
             if (mff == null) return;
 
             Texture2D thumbnail = await assetCacheSystem.GetThumbnail(id);

@@ -1,3 +1,4 @@
+using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
 using System;
 using System.Collections.Generic;
@@ -112,7 +113,26 @@ public class AssetCacheSystem
         return null;
     }
 
-    public MetadataFileFormat GetMetadata(Guid id)
+    public AssetMetadata GetMetadata(Guid id)
+    {
+        if (entries.TryGetValue(id, out var entry))
+        {
+            foreach (var format in entry.formats)
+            {
+                if (format is MetadataFileFormat mff)
+                {
+                    return new AssetMetadata(mff.contents.metadata.assetDisplayName, mff.id, mff.contents.metadata.assetType);
+                }
+                else if (format is BuilderAssetFormat baf)
+                {
+                    return new AssetMetadata(baf.Name, baf.id, AssetMetadata.AssetType.Model);
+                }
+            }
+        }
+        return null;
+    }
+
+    public MetadataFileFormat GetMetadataFileFormat(Guid id)
     {
         if (entries.TryGetValue(id, out var entry))
         {
