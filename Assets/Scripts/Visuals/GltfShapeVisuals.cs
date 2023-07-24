@@ -11,77 +11,77 @@ namespace Assets.Scripts.Visuals
     public class GltfShapeVisuals : ShapeVisuals
     {
         private GameObject _currentModelObject = null;
+        int currentRequest = 0;
 
         // Dependencies
         private AssetManagerSystem _assetManagerSystem;
         private UnityState _unityState;
-        private SceneManagerSystem _sceneManagerSystem;
 
         [Inject]
         private void Construct(
             AssetManagerSystem assetManagerSystem,
-            UnityState unityState,
-            SceneManagerSystem sceneManagerSystem)
+            UnityState unityState)
         {
             _assetManagerSystem = assetManagerSystem;
             _unityState = unityState;
-            _sceneManagerSystem = sceneManagerSystem;
         }
 
-        public override void UpdateVisuals(DclScene scene, DclEntity entity)
+        public override async void UpdateVisuals(DclScene scene, DclEntity entity)
         {
+            // Save the counter of the function call. If a newer call was started, the old one becomes invalid.
+            currentRequest++;
+            int updateRequest = currentRequest;
+
             var assetGuid = entity.GetComponentByName("GLTFShape")?.GetPropertyByName("asset")?.GetConcrete<Guid>().Value;
 
             if (!assetGuid.HasValue)
                 return;
 
-            var data = _assetManagerSystem.GetDataById((Guid)assetGuid);
+            // Show loading icon
+            UpdateModel(Instantiate(_unityState.LoadingModel));
 
-            GameObject newModel = null;
-            switch (data.state)
+            AssetData data = await _assetManagerSystem.GetDataById(assetGuid.Value);
+
+            if (data == null) return;
+
+            if (data is ModelAssetData mad)
             {
-                case AssetData.State.IsAvailable:
-                    if (data is ModelAssetData)
-                    {
-                        ModelAssetData modelData = (ModelAssetData) data;
-                        if (modelData.data == null)
-                            return;
+                // If this function call has expired, then delete the requested model and abort.
+                if (updateRequest != currentRequest)
+                {
+                    Destroy(mad.data);
+                    return;
+                }
 
-                        newModel = modelData.data;
-                    }
-                    
-                    break;
+                if (mad.data == null) return;
 
-                case AssetData.State.IsLoading:
-                    newModel = Instantiate(_unityState.LoadingModel);
-                    break;
-
-                case AssetData.State.IsError:
-                    newModel = Instantiate(_unityState.ErrorModel);
-                    break;
-            }
-
-            if (newModel != null)
-            {
-                Destroy(_currentModelObject);
-
-                newModel.transform.SetParent(transform);
-                newModel.transform.localScale = Vector3.one;
-                newModel.transform.localRotation = Quaternion.identity;
-                newModel.transform.localPosition = Vector3.zero;
-
-                _currentModelObject = newModel;
-
-                if (newModel.TryGetComponent(out Animation animation))
+                // Display the model
+                if (mad.data.TryGetComponent(out Animation animation))
+                {
                     animation.enabled = false;
+                }
 
-                UpdateSelection(entity);
+                UpdateModel(mad.data);
             }
+
+            UpdateSelection(entity);
 
             if (scene.IsFloatingEntity(entity.Id)! == true)
             {
                 StaticUtilities.SetLayerRecursive(gameObject, LayerMask.NameToLayer("Ignore Raycast"));
             }
+        }
+
+        void UpdateModel(GameObject newModel)
+        {
+            Destroy(_currentModelObject);
+
+            newModel.transform.SetParent(transform);
+            newModel.transform.localScale = Vector3.one;
+            newModel.transform.localRotation = Quaternion.identity;
+            newModel.transform.localPosition = Vector3.zero;
+
+            _currentModelObject = newModel;
         }
 
         public override void Deactivate()

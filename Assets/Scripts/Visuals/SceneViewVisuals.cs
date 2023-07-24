@@ -27,7 +27,6 @@ namespace Assets.Scripts.Visuals
         {
             editorEvents.onHierarchyChangedEvent += UpdateVisuals;
             editorEvents.onSelectionChangedEvent += UpdateVisuals;
-            editorEvents.onAssetDataUpdatedEvent += _ => UpdateVisuals();
             editorEvents.onAssetMetadataCacheUpdatedEvent += UpdateVisuals;
 
             UpdateVisuals();

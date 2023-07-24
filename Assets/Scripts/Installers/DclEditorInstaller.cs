@@ -5,6 +5,10 @@ using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
 using Assets.Scripts.Visuals;
 using Assets.Scripts.Visuals.UiBuilder;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using UnityEditor;
 using UnityEngine;
 using Zenject;
 
@@ -129,11 +133,7 @@ public class DclEditorInstaller : MonoInstaller
 
         Container.BindInterfacesAndSelfTo<HierarchyContextMenuSystem>().AsSingle();
 
-        Container.BindInterfacesAndSelfTo<AssetThumbnailManagerSystem>().AsSingle();
-
         Container.BindInterfacesAndSelfTo<AssetThumbnailGeneratorSystem>().FromComponentInNewPrefab(_assetThumbnailGeneratorPrefab).AsSingle();
-
-        Container.BindInterfacesAndSelfTo<AssetThumbnailGeneratorState>().AsSingle();
 
         Container.BindFactory<AssetBrowserButtonHandler, AssetBrowserButtonHandler.Factory>().FromComponentInNewPrefab(unityState.AssetBrowserButtonAtom);
 
@@ -182,7 +182,7 @@ public class DclEditorInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<PromptSystem>().AsSingle();
         
         Container.BindInterfacesAndSelfTo<FileUpgraderSystem>().AsSingle();
-        
+
         Container.BindInterfacesAndSelfTo<HierarchyNavigationInteraction>().AsSingle();
 
         Container.BindInterfacesTo<GeneralInputInteraction>().AsSingle();
@@ -190,5 +190,22 @@ public class DclEditorInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<SnackbarSystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<SnackbarState>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<AssetCacheSystem>().AsSingle();
+
+        Container.BindFactory<Guid, GameObject, LoadedModelFormat, LoadedModelFormat.Factory>().AsSingle();
+
+        Container.BindFactory<Guid, string, GltfFileFormat, GltfFileFormat.Factory>().AsSingle();
+
+        Container.BindFactory<Guid, string, string, Dictionary<string, string>, string, BuilderAssetFormat, BuilderAssetFormat.Factory>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<BuilderAssetDownLoader>().AsSingle().WithArguments(Path.Combine(Application.persistentDataPath, "dcl-edit/builder_assets/"));
     }
+
+#if UNITY_EDITOR
+    public void InjectEditorWindow(EditorWindow window)
+    {
+        Container.Inject(window);
+    }
+#endif
 }

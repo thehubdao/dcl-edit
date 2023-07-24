@@ -1,13 +1,10 @@
-using Assets.Scripts.EditorState;
-using Assets.Scripts.Events;
-using Assets.Scripts.System;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine;
 using Zenject;
-using static AssetThumbnailGeneratorState;
 
 public class AssetThumbnailGeneratorSystem : MonoBehaviour
 {
@@ -27,145 +24,74 @@ public class AssetThumbnailGeneratorSystem : MonoBehaviour
     [SerializeField]
     private Vector3 cameraAngle;
 
-    // Dependencies
-    AssetThumbnailGeneratorState state;
-    AssetManagerSystem assetManagerSystem;
-    AssetThumbnailManagerSystem assetThumbnailManagerSystem;
-    EditorEvents editorEvents;
-
-    private bool generatorRunning = false;
+    // Allow only one simultaneous generation of thumbnails to avoid models showing up in other models thumbnails.
+    private SemaphoreSlim isGenerating = new SemaphoreSlim(1);
 
     [Inject]
-    private void Construct(AssetThumbnailGeneratorState assetThumbnailGeneratorState, AssetManagerSystem assetManagerSystem, AssetThumbnailManagerSystem assetThumbnailManagerSystem, EditorEvents editorEvents)
+    private void Construct()
     {
-        state = assetThumbnailGeneratorState;
-        this.assetManagerSystem = assetManagerSystem;
-        this.assetThumbnailManagerSystem = assetThumbnailManagerSystem;
-        this.editorEvents = editorEvents;
-
-        this.editorEvents.onAssetDataUpdatedEvent += OnAssetDataUpdatedCallback;
-
         DisableComponents();
     }
 
-    public void Generate(Guid id, Action<Texture2D> then)
+    /// <summary>
+    /// Generates a preview for the given model.
+    /// </summary>
+    /// <param name="model"></param>
+    /// <returns></returns>
+    public async Task<Texture2D> Generate(GameObject model)
     {
-        if (state.queuedAssets.Any(qa => qa.id == id) ||
-            state.waitingForAssetData.Any(qa => qa.id == id))
-        {
-            return;
-        }
+        await isGenerating.WaitAsync();
 
-        state.queuedAssets.Enqueue(new QueuedAsset(id, then));
+        GameObject copy = AssetCacheSystem.CreateCopy(model);
 
-        if (!generatorRunning)
-        {
-            StartCoroutine(ThumbnailGeneratorCoroutine());
-        }
+        Texture2D thumbnail = await CreateThumbnailOfModel(copy);
+
+        isGenerating.Release();
+
+        return thumbnail;
     }
 
-    IEnumerator ThumbnailGeneratorCoroutine()
+    private async Task<Texture2D> CreateThumbnailOfModel(GameObject model)
     {
-        generatorRunning = true;
-        while (state.queuedAssets.Count > 0)
+        if (model == null) return null;
+
+        model.transform.SetParent(assetHolder.transform);
+        model.transform.localPosition = Vector3.zero;
+        model.transform.localRotation = Quaternion.identity;
+
+        RenderTexture rt = new RenderTexture(thumbnailSize.x, thumbnailSize.y, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.sRGB);
+        camera.targetTexture = rt;
+        RenderTexture.active = rt;
+
+        // Renderers must be active in hierarchy for the bounds to work
+        EnableComponents();
+        model.SetActive(true);
+
+        var totalBounds = GetTotalBoundsOfChildren();
+        if (totalBounds.HasValue)
         {
-            QueuedAsset qa = state.queuedAssets.Dequeue();
-
-            AssetData data = assetManagerSystem.GetDataById(qa.id);
-            switch (data.state)
-            {
-                case AssetData.State.IsAvailable:
-                    var thumbnail = GenerateThumbnail(data);
-                    qa.then(thumbnail);
-                    break;
-                case AssetData.State.IsLoading:
-                    state.waitingForAssetData.Add(qa);
-                    break;
-                case AssetData.State.IsError:
-                    qa.then(null);
-                    break;
-                default:
-                    break;
-            }
-
-            yield return null;
-        }
-        generatorRunning = false;
-    }
-
-    void OnAssetDataUpdatedCallback(List<Guid> ids)
-    {
-        foreach (Guid id in ids)
-        {
-            if (state.waitingForAssetData.Any(qa => qa.id == id))
-            {
-                var qa = state.waitingForAssetData.Find(qa => qa.id == id);
-                state.waitingForAssetData.Remove(qa);
-
-                state.queuedAssets.Enqueue(qa);
-
-                if (!generatorRunning)
-                {
-                    StartCoroutine(ThumbnailGeneratorCoroutine());
-                }
-            }
-        }
-    }
-
-    private Texture2D GenerateThumbnail(AssetData data)
-    {
-        Debug.Log($"Generating Thumbnail: {data.id}");
-        if (data is ModelAssetData modelData)
-        {
-            var go = modelData.data.gameObject;
-
-            go.transform.SetParent(assetHolder.transform);
-            go.transform.localPosition = Vector3.zero;
-            go.transform.localRotation = Quaternion.identity;
-
-            RenderTexture rt = new RenderTexture(thumbnailSize.x, thumbnailSize.y, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.sRGB);
-            camera.targetTexture = rt;
-            RenderTexture.active = rt;
-
-            // Renderers must be active in hierarchy for the bounds to work
-            EnableComponents();
-            go.SetActive(true);
-
-            var totalBounds = GetTotalBoundsOfChildren();
-            if (totalBounds.HasValue)
-            {
-                var maxBoundingBoxDistance = (totalBounds.Value.max - totalBounds.Value.min).magnitude;
-                camera.transform.position = totalBounds.Value.center;
-                camera.nearClipPlane = -maxBoundingBoxDistance;
-                camera.transform.rotation = Quaternion.Euler(cameraAngle);
-                SetOrthographicCameraSize(totalBounds.Value);
-            }
-
-            // Render image from camera
-            camera.Render();
-            Texture2D texture = new Texture2D(rt.width, rt.height, TextureFormat.ARGB32, false);
-            texture.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
-            texture.Apply();
-            RenderTexture.active = null;
-            DisableComponents();
-
-            Destroy(go);
-
-            return texture;
-            //assetThumbnailManagerSystem.SetThumbnailById(data.id, texture);
-        }
-        else if (data is ImageAssetData imageData)
-        {
-            // Just return the texture
-            Texture2D thumbnail = imageData.data;
-
-            // TODO: make texture fixed size and square
-
-            return thumbnail;
-            //assetThumbnailManagerSystem.SetThumbnailById(data.id, thumbnail);
+            var maxBoundingBoxDistance = (totalBounds.Value.max - totalBounds.Value.min).magnitude;
+            camera.transform.position = totalBounds.Value.center;
+            camera.nearClipPlane = -maxBoundingBoxDistance;
+            camera.transform.rotation = Quaternion.Euler(cameraAngle);
+            SetOrthographicCameraSize(totalBounds.Value);
         }
 
-        return new Texture2D(2, 2);
+        // Render image from camera
+        camera.Render();
+        Texture2D texture = new Texture2D(rt.width, rt.height, TextureFormat.ARGB32, false);
+        texture.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
+        texture.Apply();
+        RenderTexture.active = null;
+        DisableComponents();
+
+        Destroy(model);
+
+        // Wait for the next frame. Generate only one texture per frame to prevent two objects
+        // from appearing on one thumbnail.
+        await Task.Yield();
+
+        return texture;
     }
 
     Bounds? GetTotalBoundsOfChildren()
