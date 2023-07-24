@@ -60,9 +60,9 @@ namespace Assets.Scripts.System
                 });
             
             menuBarSystem.AddMenuItem("Help#30/Show Log",
-                () =>
+                async() =>
                 {
-                    promptSystem.CreateChangeLog();
+                    await promptSystem.CreateChangeLog();
                 });
         }
 
