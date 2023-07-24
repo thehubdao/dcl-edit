@@ -53,16 +53,18 @@ namespace Assets.Scripts.Visuals
                     return;
                 }
 
-                // Display the model
                 if (mad.data == null) return;
+
+                // Display the model
+                if (mad.data.TryGetComponent(out Animation animation))
+                {
+                    animation.enabled = false;
+                }
+
                 UpdateModel(mad.data);
             }
 
-                if (newModel.TryGetComponent(out Animation animation))
-                    animation.enabled = false;
-
-                UpdateSelection(entity);
-            }
+            UpdateSelection(entity);
 
             if (scene.IsFloatingEntity(entity.Id)! == true)
             {
