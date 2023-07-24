@@ -58,7 +58,11 @@ namespace Assets.Scripts.Visuals
                 UpdateModel(mad.data);
             }
 
-            UpdateSelection(entity);
+                if (newModel.TryGetComponent(out Animation animation))
+                    animation.enabled = false;
+
+                UpdateSelection(entity);
+            }
 
             if (scene.IsFloatingEntity(entity.Id)! == true)
             {

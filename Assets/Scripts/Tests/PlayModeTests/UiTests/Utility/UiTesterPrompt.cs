@@ -39,7 +39,7 @@ public class UiTesterPrompt : MonoBehaviour
         wasNoPressed = false;
     }
 
-    private void SetPromptText(string text)
+    public void SetPromptText(string text)
     {
         Text.text = text;
     }

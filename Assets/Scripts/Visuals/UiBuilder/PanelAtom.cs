@@ -12,6 +12,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
         public new class Data : Atom.Data
         {
             public PanelHandler.LayoutDirection layoutDirection = PanelHandler.LayoutDirection.Vertical;
+            public TextAnchor anchor = TextAnchor.UpperLeft;
 
             public bool useFullWidth = true;
 
@@ -146,7 +147,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
         protected virtual void MakeLayoutGroup(Data newPanelData)
         {
-            gameObject.gameObject.GetComponent<PanelHandler>().SetLayoutDirection(newPanelData.layoutDirection);
+            gameObject.gameObject.GetComponent<PanelHandler>().SetLayoutDirection(newPanelData.layoutDirection, newPanelData.anchor);
         }
 
         protected virtual int totalBorderHeight { get; set; } = 0;
@@ -189,6 +190,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
         public static PanelAtom.Data AddPanel(
             this PanelAtom.Data panelAtomData,
             PanelHandler.LayoutDirection layoutDirection = PanelHandler.LayoutDirection.Vertical,
+            TextAnchor anchor = TextAnchor.UpperLeft,
             int indentationLevel = 0,
             bool useFullWidth = true,
             [CanBeNull] AtomDataList childDates = null)
@@ -196,6 +198,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
             var data = new PanelAtom.Data
             {
                 layoutDirection = layoutDirection,
+                anchor = anchor,
                 indentationLevel = indentationLevel,
                 useFullWidth = useFullWidth,
                 childDates = childDates ?? new AtomDataList()

@@ -94,6 +94,8 @@ namespace Assets.Scripts.System
         private BuilderAssetFormat.Factory builderAssetFormatFactory;
         private BuilderAssetDownLoader assetDownloader;
 
+        private bool activeWebRequest;
+
         [Inject]
         public void Construct(
             BuilderAssetLoaderState loaderState,
@@ -122,11 +124,14 @@ namespace Assets.Scripts.System
 
         public void CacheAllAssetMetadata()
         {
-            ClearAllData();
+            if (activeWebRequest) return;
+            activeWebRequest = true;
 
             // load all asset metadata from the official builder
+
             webRequestSystem.Get("https://builder-api.decentraland.org/v1/assetPacks?owner=default", request =>
             {
+                ClearAllData();
                 var assetData = JsonConvert.DeserializeObject<AssetPacks>(request.webRequest.downloadHandler.text);
 
                 foreach (AssetPacksData assetPack in assetData.data)
@@ -150,7 +155,6 @@ namespace Assets.Scripts.System
                             categories.Add(asset.category, categoryHierarchyItem);
                         }
                         categories[asset.category].assets.Add(new AssetMetadata(asset.name, id, AssetMetadata.AssetType.Model));
-
 
                         loaderState.Data.Add(id, new BuilderAssetLoaderState.DataStorage
                         {
@@ -179,7 +183,7 @@ namespace Assets.Scripts.System
 
                     loaderState.assetHierarchy.childDirectories.Add(assetPackHierarchyItem);
                 }
-
+                activeWebRequest = false;
                 editorEvents.InvokeAssetMetadataCacheUpdatedEvent();
             });
         }

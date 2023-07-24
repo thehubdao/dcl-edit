@@ -39,7 +39,6 @@ namespace Assets.Scripts.Visuals
         private AssetManagerSystem assetManagerSystem;
         private ContextMenuSystem contextMenuSystem;
 
-
         [Inject]
         private void Construct(
             UiBuilder.UiBuilder.Factory uiBuilderFactory,
@@ -61,7 +60,6 @@ namespace Assets.Scripts.Visuals
             SetupSceneEventListeners();
         }
 
-
         void Start()
         {
             // Workaround: Ui container of asset browser is not initialized in first frame and has 0 width. Therefore
@@ -75,7 +73,6 @@ namespace Assets.Scripts.Visuals
             UpdateVisuals();
         }
 
-
         public void SetupSceneEventListeners()
         {
             editorEvents.onAssetMetadataCacheUpdatedEvent += UpdateVisuals;
@@ -87,8 +84,8 @@ namespace Assets.Scripts.Visuals
         {
             editorEvents.onAssetMetadataCacheUpdatedEvent -= UpdateVisuals;
             editorEvents.onUiChangedEvent -= UpdateVisuals;
+            editorEvents.OnCurrentSceneChangedEvent -= assetManagerSystem.CacheAllAssetMetadata;
         }
-
 
         private void UpdateVisuals()
         {
@@ -96,7 +93,6 @@ namespace Assets.Scripts.Visuals
             UpdateContent();
             UpdateFooter();
         }
-
 
         private void UpdateHeader()
         {
@@ -107,6 +103,7 @@ namespace Assets.Scripts.Visuals
             };
 
             headerData.AddText("Filter:");
+
             foreach (AssetMetadata.AssetType type in assetBrowserSystem.filters)
             {
                 headerData.AddButton(type.ToString() + " x", _ => assetBrowserSystem.RemoveFilter(type));
@@ -165,7 +162,6 @@ namespace Assets.Scripts.Visuals
             footerUiBuilder.Update(footerData);
         }
 
-
         private void BuildHierarchy(AssetHierarchyItem hierarchyItem, PanelAtom.Data panel)
         {
             if (hierarchyItem.IsEmpty()) return;
@@ -195,6 +191,11 @@ namespace Assets.Scripts.Visuals
         {
             string[] directories = hierarchyItem.path.Split(Path.AltDirectorySeparatorChar);
             return directories.Length - 1;
+        }
+
+        public class Factory : PlaceholderFactory<UiAssetBrowserVisuals>
+        {
+
         }
     }
 }
