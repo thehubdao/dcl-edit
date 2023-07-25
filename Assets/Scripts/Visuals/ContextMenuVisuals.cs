@@ -1,6 +1,5 @@
 using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
-using Assets.Scripts.System;
 using Assets.Scripts.Visuals.UiBuilder;
 using Assets.Scripts.Visuals.UiHandler;
 using System.Collections.Generic;
@@ -18,7 +17,6 @@ namespace Assets.Scripts.Visuals
         // Dependencies
         ContextMenuState state;
         EditorEvents editorEvents;
-        ContextMenuSystem contextMenuSystem;
         UiBuilder.UiBuilder.Factory uiBuilderFactory;
         UnityState unityState;
         float CanvasScale => GetComponentInParent<CanvasScaler>().scaleFactor;
@@ -27,13 +25,11 @@ namespace Assets.Scripts.Visuals
         void Construct(
             ContextMenuState contextMenuState,
             EditorEvents editorEvents,
-            ContextMenuSystem contextMenuSystem,
             UiBuilder.UiBuilder.Factory uiBuilderFactory,
             UnityState unityState)
         {
             this.state = contextMenuState;
             this.editorEvents = editorEvents;
-            this.contextMenuSystem = contextMenuSystem;
             this.uiBuilderFactory = uiBuilderFactory;
             this.unityState = unityState;
 
