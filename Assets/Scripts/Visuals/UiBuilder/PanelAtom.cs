@@ -54,16 +54,19 @@ namespace Assets.Scripts.Visuals.UiBuilder
         PanelAtom.Factory panelAtomFactory;
         ContextMenuTextAtom.Factory contextMenuTextAtomFactory;
         ContextMenuSpacerAtom.Factory contextMenuSpacerAtomFactory;
+        ContextSubmenuAtom.Factory contextSubmenuAtomFactory;
 
         [Inject]
         public void Construct(
             ContextMenuTextAtom.Factory contextMenuTextAtomFactory,
             PanelAtom.Factory panelAtomFactory,
-            ContextMenuSpacerAtom.Factory contextMenuSpacerAtomFactory)
+            ContextMenuSpacerAtom.Factory contextMenuSpacerAtomFactory,
+            ContextSubmenuAtom.Factory contextSubmenuAtomFactory)
         {
             this.contextMenuTextAtomFactory = contextMenuTextAtomFactory;
             this.panelAtomFactory = panelAtomFactory;
             this.contextMenuSpacerAtomFactory = contextMenuSpacerAtomFactory;
+            this.contextSubmenuAtomFactory = contextSubmenuAtomFactory;
         }
 
         public override void Update(Atom.Data newData)
@@ -189,7 +192,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
                 AssetPropertyAtom.Data _ => new AssetPropertyAtom(uiBuilder),
                 MenuBarButtonAtom.Data _ => new MenuBarButtonAtom(uiBuilder),
                 ContextMenuTextAtom.Data _ => contextMenuTextAtomFactory.Create(uiBuilder),
-                ContextSubmenuAtom.Data _ => new ContextSubmenuAtom(uiBuilder),
+                ContextSubmenuAtom.Data _ => contextSubmenuAtomFactory.Create(uiBuilder),
                 ContextMenuSpacerAtom.Data _ => contextMenuSpacerAtomFactory.Create(uiBuilder),
                 ButtonAtom.Data _ => new ButtonAtom(uiBuilder),
                 AssetBrowserButtonAtom.Data _ => new AssetBrowserButtonAtom(uiBuilder),

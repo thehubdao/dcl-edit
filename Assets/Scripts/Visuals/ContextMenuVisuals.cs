@@ -106,7 +106,7 @@ namespace Assets.Scripts.Visuals
                     case ContextSubmenuItem subItem:
                         var isDisabled = CheckAllSubItemsDisabledRecursive(subItem.items);
                         menuPanel.AddContextSubmenu(menuData.menuId, subItem.submenuId, subItem.title, subItem.items,
-                            width * CanvasScale, contextMenuSystem, isDisabled);
+                            width * CanvasScale, isDisabled);
                         break;
                     case ContextMenuSpacerItem spItem:
                         menuPanel.AddContextMenuSpacer(menuData.menuId);

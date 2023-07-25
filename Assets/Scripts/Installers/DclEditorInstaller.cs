@@ -145,6 +145,8 @@ public class DclEditorInstaller : MonoInstaller
 
         Container.BindFactory<UiBuilder, ContextMenuSpacerAtom, ContextMenuSpacerAtom.Factory>().AsSingle();
 
+        Container.BindFactory<UiBuilder, ContextSubmenuAtom, ContextSubmenuAtom.Factory>().AsSingle();
+
         Container.BindInterfacesAndSelfTo<SceneManagerSystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<SceneManagerState>().AsSingle();
