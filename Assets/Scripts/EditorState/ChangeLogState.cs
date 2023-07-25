@@ -30,9 +30,8 @@ namespace Assets.Scripts.EditorState
         [Serializable]
         public class ChangeLogStructure
         {
-            public int order { get; set; }
-            public string version { get; set; }
-            public string details { get; set; }
+            public string version;
+            public string details;
         }
 
         [Serializable]
