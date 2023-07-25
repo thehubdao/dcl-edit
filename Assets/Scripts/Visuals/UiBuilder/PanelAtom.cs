@@ -52,10 +52,12 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
         // Dependencies
         PanelAtom.Factory panelAtomFactory;
+        ContextMenuTextAtom.Factory contextMenuTextAtomFactory;
 
         [Inject]
-        public void Construct(PanelAtom.Factory panelAtomFactory)
+        public void Construct(ContextMenuTextAtom.Factory contextMenuTextAtomFactory, PanelAtom.Factory panelAtomFactory)
         {
+            this.contextMenuTextAtomFactory = contextMenuTextAtomFactory;
             this.panelAtomFactory = panelAtomFactory;
         }
 
@@ -181,7 +183,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
                 Vector3PropertyAtom.Data _ => new Vector3PropertyAtom(uiBuilder),
                 AssetPropertyAtom.Data _ => new AssetPropertyAtom(uiBuilder),
                 MenuBarButtonAtom.Data _ => new MenuBarButtonAtom(uiBuilder),
-                ContextMenuTextAtom.Data _ => new ContextMenuTextAtom(uiBuilder),
+                ContextMenuTextAtom.Data _ => contextMenuTextAtomFactory.Create(uiBuilder),
                 ContextSubmenuAtom.Data _ => new ContextSubmenuAtom(uiBuilder),
                 ContextMenuSpacerAtom.Data _ => new ContextMenuSpacerAtom(uiBuilder),
                 ButtonAtom.Data _ => new ButtonAtom(uiBuilder),

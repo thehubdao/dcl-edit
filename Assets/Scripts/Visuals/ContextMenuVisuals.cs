@@ -1,10 +1,10 @@
-using System.Collections.Generic;
 using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
 using Assets.Scripts.System;
-using System.Linq;
 using Assets.Scripts.Visuals.UiBuilder;
 using Assets.Scripts.Visuals.UiHandler;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
@@ -101,8 +101,7 @@ namespace Assets.Scripts.Visuals
                 switch (item)
                 {
                     case ContextMenuTextItem tItem:
-                        menuPanel.AddContextMenuText(menuData.menuId, tItem.title, tItem.onClick, tItem.isDisabled,
-                            contextMenuSystem);
+                        menuPanel.AddContextMenuText(menuData.menuId, tItem.title, tItem.onClick, tItem.isDisabled);
                         break;
                     case ContextSubmenuItem subItem:
                         var isDisabled = CheckAllSubItemsDisabledRecursive(subItem.items);
@@ -179,7 +178,7 @@ namespace Assets.Scripts.Visuals
             {
                 switch (item)
                 {
-                    case ContextMenuTextItem {isDisabled: false}:
+                    case ContextMenuTextItem { isDisabled: false }:
                         return false;
                     case ContextSubmenuItem contextSubmenuItem:
                         if (!CheckAllSubItemsDisabledRecursive(contextSubmenuItem.items))
