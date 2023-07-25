@@ -143,6 +143,8 @@ public class DclEditorInstaller : MonoInstaller
 
         Container.BindFactory<UiBuilder, ContextMenuTextAtom, ContextMenuTextAtom.Factory>().AsSingle();
 
+        Container.BindFactory<UiBuilder, ContextMenuSpacerAtom, ContextMenuSpacerAtom.Factory>().AsSingle();
+
         Container.BindInterfacesAndSelfTo<SceneManagerSystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<SceneManagerState>().AsSingle();
@@ -184,9 +186,9 @@ public class DclEditorInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<SceneChangeDetectSystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<PromptSystem>().AsSingle();
-        
+
         Container.BindInterfacesAndSelfTo<FileUpgraderSystem>().AsSingle();
-        
+
         Container.BindInterfacesAndSelfTo<HierarchyNavigationInteraction>().AsSingle();
 
         Container.BindInterfacesTo<GeneralInputInteraction>().AsSingle();

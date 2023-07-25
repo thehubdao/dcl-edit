@@ -1,5 +1,6 @@
-using System;
 using Assets.Scripts.System;
+using System;
+using Zenject;
 
 namespace Assets.Scripts.Visuals.UiBuilder
 {
@@ -8,7 +9,6 @@ namespace Assets.Scripts.Visuals.UiBuilder
         public new class Data : Atom.Data
         {
             public Guid menuId;
-            public ContextMenuSystem contextMenuSystem;
 
             public override bool Equals(Atom.Data other)
             {
@@ -18,12 +18,20 @@ namespace Assets.Scripts.Visuals.UiBuilder
                 }
 
                 return
-                    menuId.Equals(otherContextMenuText.menuId) &&
-                    contextMenuSystem.Equals(otherContextMenuText.contextMenuSystem);
+                    menuId.Equals(otherContextMenuText.menuId);
             }
         }
 
         protected Data data;
+
+        // Dependencies
+        ContextMenuSystem contextMenuSystem;
+
+        [Inject]
+        public void Construct(ContextMenuSystem contextMenuSystem)
+        {
+            this.contextMenuSystem = contextMenuSystem;
+        }
 
         public override void Update(Atom.Data newData)
         {
@@ -43,7 +51,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
             {
                 // Update data
                 var hoverHandler = gameObject.gameObject.GetComponent<ContextMenuHoverHandler>();
-                hoverHandler.OnHoverAction = () => newContextMenuSpacerData.contextMenuSystem.CloseMenusUntil(newContextMenuSpacerData.menuId);
+                hoverHandler.OnHoverAction = () => contextMenuSystem.CloseMenusUntil(newContextMenuSpacerData.menuId);
 
                 data = newContextMenuSpacerData;
             }
@@ -59,16 +67,17 @@ namespace Assets.Scripts.Visuals.UiBuilder
         public ContextMenuSpacerAtom(UiBuilder uiBuilder) : base(uiBuilder)
         {
         }
+
+        public class Factory : PlaceholderFactory<UiBuilder, ContextMenuSpacerAtom> { }
     }
 
     public static class ContextMenuSpacerPanelHelper
     {
-        public static ContextMenuSpacerAtom.Data AddContextMenuSpacer(this PanelAtom.Data panelAtomData, Guid menuId, ContextMenuSystem contextMenuSystem)
+        public static ContextMenuSpacerAtom.Data AddContextMenuSpacer(this PanelAtom.Data panelAtomData, Guid menuId)
         {
             var data = new ContextMenuSpacerAtom.Data
             {
-                menuId = menuId,
-                contextMenuSystem = contextMenuSystem
+                menuId = menuId
             };
 
             panelAtomData.childDates.Add(data);

@@ -109,7 +109,7 @@ namespace Assets.Scripts.Visuals
                             width * CanvasScale, contextMenuSystem, isDisabled);
                         break;
                     case ContextMenuSpacerItem spItem:
-                        menuPanel.AddContextMenuSpacer(menuData.menuId, contextMenuSystem);
+                        menuPanel.AddContextMenuSpacer(menuData.menuId);
                         break;
                 }
             }
