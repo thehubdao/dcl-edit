@@ -23,7 +23,7 @@ namespace Assets.Scripts.Tests.PlayModeTests.SystemTests
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
-            _cameraState = new CameraState(_editorEvents);
+            _cameraState = new CameraState();
         }
 
         private IEnumerator SetupScene()
@@ -36,7 +36,7 @@ namespace Assets.Scripts.Tests.PlayModeTests.SystemTests
         public IEnumerator CameraStartupTest()
         {
             yield return SetupScene();
-            Assert.Greater(_cameraState.Position.y, 1);
+            Assert.Greater(_cameraState.Position.Value.y, 1);
             Assert.AreEqual(45, _cameraState.Yaw);
             Assert.AreEqual(45, _cameraState.Pitch);
         }
@@ -50,8 +50,8 @@ namespace Assets.Scripts.Tests.PlayModeTests.SystemTests
             float mouseSensitivity = PersistentData.MouseSensitivity;
             float cameraSpeed = PersistentData.CameraSpeed;
 
-            _cameraState.Position = new Vector3(0, 0, 0);
-            _cameraState.Yaw = 0;
+            _cameraState.Position.Value = new Vector3(0, 0, 0);
+            _cameraState.Yaw.Value = 0;
             _cameraState.Pitch = 0;
 
             _cameraState.MoveFixed(new Vector3(1, 2, 3));
@@ -67,30 +67,30 @@ namespace Assets.Scripts.Tests.PlayModeTests.SystemTests
             _cameraState.MoveStep(new Vector3(-2, 0, 0) / cameraSpeed, false);
             Assert.AreEqual(new Vector3(2, 4, 4), _cameraState.Position);
 
-            _cameraState.Yaw = 90;
+            _cameraState.Yaw.Value = 90;
             _cameraState.Pitch = 36;
 
 
             _cameraState.MoveStep(new Vector3(2, 0, 0) / cameraSpeed / 3, true);
-            Assert.IsTrue(Vector3.Distance(new Vector3(2, 4, 2), _cameraState.Position) < 0.001,
+            Assert.IsTrue(Vector3.Distance(new Vector3(2, 4, 2), _cameraState.Position.Value) < 0.001,
                 "The position was expected to be (2,4,2) but was " + _cameraState.Position);
 
 
-            _cameraState.Position = new Vector3(0, 0, 0);
-            _cameraState.Yaw = 90;
+            _cameraState.Position.Value = new Vector3(0, 0, 0);
+            _cameraState.Yaw.Value = 90;
             _cameraState.Pitch = 0;
 
             _cameraState.MoveContinuously(new Vector3(0, 0, 1), false);
-            Assert.IsTrue(Vector3.Distance((new Vector3(1, 0, 0) * cameraSpeed) * Time.deltaTime, _cameraState.Position) < 0.001,
+            Assert.IsTrue(Vector3.Distance((new Vector3(1, 0, 0) * cameraSpeed) * Time.deltaTime, _cameraState.Position.Value) < 0.001,
                 "The position was expected to be " + (new Vector3(1, 0, 0) * cameraSpeed) * Time.deltaTime + " but was " + _cameraState.Position);
 
 
-            _cameraState.Position = new Vector3(0, 0, 0);
-            _cameraState.Yaw = 90;
+            _cameraState.Position.Value = new Vector3(0, 0, 0);
+            _cameraState.Yaw.Value = 90;
             _cameraState.Pitch = 0;
 
             _cameraState.MoveContinuously(new Vector3(0, 0, 1), true);
-            Assert.IsTrue(Vector3.Distance((new Vector3(1, 0, 0) * cameraSpeed * 3) * Time.deltaTime, _cameraState.Position) < 0.001,
+            Assert.IsTrue(Vector3.Distance((new Vector3(1, 0, 0) * cameraSpeed * 3) * Time.deltaTime, _cameraState.Position.Value) < 0.001,
                 "The position was expected to be " + (new Vector3(1, 0, 0) * cameraSpeed * 3) * Time.deltaTime + " but was " + _cameraState.Position);
         }
 
@@ -102,8 +102,8 @@ namespace Assets.Scripts.Tests.PlayModeTests.SystemTests
 
             float mouseSensitivity = PersistentData.MouseSensitivity;
 
-            _cameraState.Position = new Vector3(0, 0, 0);
-            _cameraState.Yaw = 0;
+            _cameraState.Position.Value = new Vector3(0, 0, 0);
+            _cameraState.Yaw.Value = 0;
             _cameraState.Pitch = 0;
 
             _cameraState.MoveFixed(new Vector3(1, 2, 3));
@@ -140,8 +140,8 @@ namespace Assets.Scripts.Tests.PlayModeTests.SystemTests
 
             float mouseSensitivity = PersistentData.MouseSensitivity;
 
-            _cameraState.Position = new Vector3(1, 2, 3);
-            _cameraState.Yaw = 0;
+            _cameraState.Position.Value = new Vector3(1, 2, 3);
+            _cameraState.Yaw.Value = 0;
             _cameraState.Pitch = 0;
 
             Assert.AreEqual(new Vector3(1, 2, 3), _cameraState.Position);
@@ -182,8 +182,8 @@ namespace Assets.Scripts.Tests.PlayModeTests.SystemTests
 
             float mouseSensitivity = PersistentData.MouseSensitivity;
 
-            _cameraState.Position = new Vector3(0, 0, 0);
-            _cameraState.Yaw = 0;
+            _cameraState.Position.Value = new Vector3(0, 0, 0);
+            _cameraState.Yaw.Value = 0;
             _cameraState.Pitch = 0;
 
             _cameraState.Pitch = 90;

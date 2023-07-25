@@ -52,7 +52,6 @@ namespace Assets.Scripts.Command
             SelectionUtility.SetSelection(sceneState, id);
 
             editorEvents.InvokeHierarchyChangedEvent();
-            editorEvents.InvokeSelectionChangedEvent();
         }
 
         public override void Undo(DclScene sceneState, EditorEvents editorEvents)
@@ -61,7 +60,6 @@ namespace Assets.Scripts.Command
             SelectionUtility.SetSelection(sceneState, oldSelection);
 
             editorEvents.InvokeHierarchyChangedEvent();
-            editorEvents.InvokeSelectionChangedEvent();
         }
     }
 }

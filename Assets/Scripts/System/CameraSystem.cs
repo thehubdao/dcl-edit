@@ -47,12 +47,12 @@ namespace Assets.Scripts.System
 
             // Yaw to bounds center from origin (it works since plot location is on plain x,z)
             var newAngle = Vector2.Angle(Vector2.up, new Vector2(parcelBounds.center.x, parcelBounds.center.z));
-            
+
             // Default watch angle
             cameraState.Pitch = 30;
-            cameraState.Yaw = newAngle;
+            cameraState.Yaw.Value = newAngle;
 
-            cameraState.Position = parcelBounds.center;
+            cameraState.Position.Value = parcelBounds.center;
             cameraState.MoveFixed(new Vector3(0, 0, -1 * parcelBounds.size.magnitude));
         }
     }

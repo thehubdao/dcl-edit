@@ -32,13 +32,11 @@ namespace Assets.Scripts.Command
             }
 
             entity.AddComponent(new DclComponent(component));
-            editorEvents.InvokeSelectionChangedEvent();
         }
 
         public override void Undo(DclScene sceneState, EditorEvents editorEvents)
         {
             sceneState.GetEntityById(entityId).RemoveComponent(component);
-            editorEvents.InvokeSelectionChangedEvent();
         }
     }
 }

@@ -34,12 +34,22 @@ public class DialogVisuals : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         this.editorEvents = editorEvents;
         this.sceneManagerSystem = sceneManagerSystem;
         this.commandSystem = commandSystem;
-        editorEvents.onDialogChangedEvent += UpdateDialog;
+    }
+
+    private void OnEnable()
+    {
+        dialogState.currentDialog.OnValueChanged += UpdateDialog;
+        UpdateDialog();
+    }
+
+    private void OnDisable()
+    {
+        dialogState.currentDialog.OnValueChanged -= UpdateDialog;
     }
 
     private void UpdateDialog()
     {
-        switch (dialogState.currentDialog)
+        switch (dialogState.currentDialog.Value)
         {
             case DialogState.DialogType.None:
             //    RemoveChildObjects();
@@ -86,20 +96,18 @@ public class DialogVisuals : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
             }
 
             dialogSystem.CloseCurrentDialog();
-            editorEvents.InvokeSelectionChangedEvent();
-            editorEvents.InvokeUiChangedEvent();
         };
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (dialogState.currentDialog == DialogState.DialogType.DialogSystem) return;
-        if (dialogState.currentDialog != DialogState.DialogType.None) dialogState.mouseOverDialogWindow = true;
+        if (dialogState.currentDialog.Value == DialogState.DialogType.DialogSystem) return;
+        if (dialogState.currentDialog.Value != DialogState.DialogType.None) dialogState.mouseOverDialogWindow = true;
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        if (dialogState.currentDialog == DialogState.DialogType.DialogSystem) return;
+        if (dialogState.currentDialog.Value == DialogState.DialogType.DialogSystem) return;
         dialogState.mouseOverDialogWindow = false;
     }
 }

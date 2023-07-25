@@ -46,7 +46,7 @@ namespace Assets.Scripts.Visuals
 
             parcelInformation ??= new List<DecentralandSceneData.ParcelInformation>();
 
-            var downScaledCameraPosition = cameraState.Position / tilePositionChange;
+            var downScaledCameraPosition = cameraState.Position.Value / tilePositionChange;
             var campos = new Vector2Int((int)downScaledCameraPosition.x, (int)downScaledCameraPosition.z);
 
             // Create new Ground Tile

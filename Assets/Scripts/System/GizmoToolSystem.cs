@@ -53,15 +53,19 @@ namespace Assets.Scripts.System
             this.commandSystem = commandSystem;
         }
 
+        public Subscribable<ToolMode> gizmoToolModeField = new();
+        public Subscribable<bool> isSnapping = new();
+
         public ToolMode gizmoToolMode
         {
-            get => (ToolMode) settingsSystem.selectedGizmoTool.Get();
+            get => gizmoToolModeField.Value;
             set
             {
+                gizmoToolModeField.Value = value;
                 settingsSystem.selectedGizmoTool.Set((int) value);
 
-                editorEvents.InvokeUpdateSceneViewButtons();
-                editorEvents.InvokeSelectionChangedEvent();
+                //editorEvents.InvokeUpdateSceneViewButtons();
+                //editorEvents.InvokeSelectionChangedEvent();
             }
         }
 
@@ -71,9 +75,7 @@ namespace Assets.Scripts.System
             set
             {
                 settingsSystem.gizmoToolDoesSnap.Set(value ? 1 : 0);
-
-                editorEvents.InvokeUpdateSceneViewButtons();
-                editorEvents.InvokeSelectionChangedEvent();
+                isSnapping.Value = value;
             }
         }
 
@@ -83,9 +85,6 @@ namespace Assets.Scripts.System
             set
             {
                 settingsSystem.gizmoLocalGlobalContext.Set((int) value);
-
-                editorEvents.InvokeUpdateSceneViewButtons();
-                editorEvents.InvokeSelectionChangedEvent();
             }
         }
 
@@ -98,7 +97,7 @@ namespace Assets.Scripts.System
             gizmoState.gizmoDirection = new GizmoState.GizmoDirection(gizmoDirectionVector);
 
             // get the affected transform
-            gizmoState.affectedTransform = sceneManagerState.GetCurrentDirectoryState()?.currentScene?.SelectionState.PrimarySelectedEntity?.GetTransformComponent();
+            gizmoState.affectedTransform = sceneManagerState.GetCurrentDirectoryState()?.currentScene?.SelectionState.PrimarySelectedEntity.Value?.GetTransformComponent();
             Assert.IsNotNull(gizmoState.affectedTransform);
 
             // set plane
@@ -322,7 +321,7 @@ namespace Assets.Scripts.System
 
         private Vector3 FigureOutMissingAxisBasedOnCameraPosition(Vector3 centerPos, Vector3 primaryAxisVector)
         {
-            var centerToCameraVector = VectorFromTo(centerPos, cameraState.Position);
+            var centerToCameraVector = VectorFromTo(centerPos, cameraState.Position.Value);
 
             var perpendicularVector = Vector3.Cross(primaryAxisVector, centerToCameraVector);
 
@@ -374,8 +373,6 @@ namespace Assets.Scripts.System
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-
-            editorEvents.InvokeSelectionChangedEvent();
         }
 
         private void TranslateWhileHolding(Vector2 contextSpaceMouseMovementSinceStart)
@@ -457,8 +454,6 @@ namespace Assets.Scripts.System
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-
-            editorEvents.InvokeSelectionChangedEvent();
         }
 
         private void ExecuteTranslateCommand()

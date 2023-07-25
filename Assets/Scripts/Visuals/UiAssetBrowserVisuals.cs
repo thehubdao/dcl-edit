@@ -7,6 +7,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Windows.Forms;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
@@ -38,6 +39,8 @@ namespace Assets.Scripts.Visuals
         private AssetBrowserState assetBrowserState;
         private AssetManagerSystem assetManagerSystem;
         private ContextMenuSystem contextMenuSystem;
+        private SceneManagerState sceneManagerState;
+        private DialogState dialogState;
 
         [Inject]
         private void Construct(
@@ -46,7 +49,9 @@ namespace Assets.Scripts.Visuals
             AssetBrowserSystem assetBrowserSystem,
             AssetBrowserState assetBrowserState,
             AssetManagerSystem assetManagerSystem,
-            ContextMenuSystem contextMenuSystem)
+            ContextMenuSystem contextMenuSystem,
+            SceneManagerState sceneManagerState,
+            DialogState dialogState)
         {
             headerUiBuilder = uiBuilderFactory.Create(headerContent);
             contentUiBuilder = uiBuilderFactory.Create(scrollViewContent);
@@ -56,35 +61,42 @@ namespace Assets.Scripts.Visuals
             this.assetBrowserState = assetBrowserState;
             this.assetManagerSystem = assetManagerSystem;
             this.contextMenuSystem = contextMenuSystem;
-
+            this.sceneManagerState = sceneManagerState;
+            this.dialogState = dialogState;
             SetupSceneEventListeners();
         }
 
-        void Start()
+        private IEnumerator Start()
         {
             // Workaround: Ui container of asset browser is not initialized in first frame and has 0 width. Therefore
             // wait one frame before initial UpdateVisuals().
-            StartCoroutine(LateStart());
-        }
-        IEnumerator LateStart()
-        {
             yield return null;
             assetBrowserSystem.ChangeSorting(AssetBrowserState.Sorting.NameAscending);
             UpdateVisuals();
         }
 
+        private void OnEnable()
+        {
+            sceneManagerState.currentSceneIndex.OnValueChanged += assetManagerSystem.CacheAllAssetMetadata;
+            assetBrowserState.expandedFoldersPaths.OnListChanged += UpdateVisuals;
+            dialogState.currentDialog.OnValueChanged += UpdateVisuals;
+        }
+
+        private void OnDisable()
+        {
+            sceneManagerState.currentSceneIndex.OnValueChanged -= assetManagerSystem.CacheAllAssetMetadata;
+            assetBrowserState.expandedFoldersPaths.OnListChanged -= UpdateVisuals;
+            dialogState.currentDialog.OnValueChanged -= UpdateVisuals;
+        }
+
         public void SetupSceneEventListeners()
         {
             editorEvents.onAssetMetadataCacheUpdatedEvent += UpdateVisuals;
-            editorEvents.onUiChangedEvent += UpdateVisuals;
-            editorEvents.OnCurrentSceneChangedEvent += assetManagerSystem.CacheAllAssetMetadata;
         }
 
         private void OnDestroy()
         {
             editorEvents.onAssetMetadataCacheUpdatedEvent -= UpdateVisuals;
-            editorEvents.onUiChangedEvent -= UpdateVisuals;
-            editorEvents.OnCurrentSceneChangedEvent -= assetManagerSystem.CacheAllAssetMetadata;
         }
 
         private void UpdateVisuals()

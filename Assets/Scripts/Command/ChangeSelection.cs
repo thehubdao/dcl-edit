@@ -64,13 +64,11 @@ namespace Assets.Scripts.Command
         public override void Do(DclScene sceneState, EditorEvents editorEvents)
         {
             SelectionUtility.SetSelection(sceneState, newSelection);
-            editorEvents.InvokeSelectionChangedEvent();
         }
 
         public override void Undo(DclScene sceneState, EditorEvents editorEvents)
         {
             SelectionUtility.SetSelection(sceneState, oldSelection);
-            editorEvents.InvokeSelectionChangedEvent();
         }
     }
 }

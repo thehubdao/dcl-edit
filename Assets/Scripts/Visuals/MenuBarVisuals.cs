@@ -16,17 +16,15 @@ namespace Assets.Scripts.Visuals
     {
         // Dependencies
         MenuBarState _state;
-        EditorEvents _editorEvents;
         ContextMenuSystem _contextMenuSystem;
         UiBuilder.UiBuilder _uiBuilder;
 
         PanelAtom.Data panel;
 
         [Inject]
-        void Construct(MenuBarState menuBarState, EditorEvents editorEvents, ContextMenuSystem contextMenuSystem, UiBuilder.UiBuilder.Factory uiBuilder)
+        void Construct(MenuBarState menuBarState, ContextMenuSystem contextMenuSystem, UiBuilder.UiBuilder.Factory uiBuilder)
         {
             _state = menuBarState;
-            _editorEvents = editorEvents;
             _contextMenuSystem = contextMenuSystem;
             _uiBuilder = uiBuilder.Create(gameObject);
 
@@ -34,12 +32,17 @@ namespace Assets.Scripts.Visuals
             panel.layoutDirection = UiHandler.PanelHandler.LayoutDirection.Horizontal;
 
             UpdateMenuBar(); // initial setup
-            SetupEventListeners();
         }
 
-        public void SetupEventListeners()
+        private void OnEnable()
         {
-            _editorEvents.onUpdateMenuBarEvent += UpdateMenuBar;
+            _state.menuItems.OnListChanged += UpdateMenuBar;
+            UpdateMenuBar();
+        }
+
+        private void OnDisable()
+        {
+            _state.menuItems.OnListChanged -= UpdateMenuBar;
         }
 
         private void UpdateMenuBar()

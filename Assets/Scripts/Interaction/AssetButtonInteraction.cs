@@ -41,7 +41,7 @@ public class AssetButtonInteraction : MonoBehaviour, IBeginDragHandler, IDragHan
     {
         newEntity = SetupEntity();
 
-        Ray ray = new Ray(cameraState.Position, cameraState.Forward);
+        Ray ray = new Ray(cameraState.Position.Value, cameraState.Forward);
         if (Physics.Raycast(ray, out RaycastHit hit, 50))
         {
             AddEntityToScene(hit.point);

@@ -49,7 +49,6 @@ namespace Assets.Scripts.System
         public void AddMenuItem(string path, UnityAction onClick)
         {
             _state.AddMenuItem(path, onClick);
-            _editorEvents.InvokeUpdateMenuBarEvent();
         }
     }
 }

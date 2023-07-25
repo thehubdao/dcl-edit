@@ -166,7 +166,7 @@ namespace Assets.Scripts.Interaction
                 if (Physics.Raycast(mouseRay, out RaycastHit hitInfoGizmos, 10000, LayerMask.GetMask("Gizmos")))
                 {
                     mousePositionIn3DView = hitInfoGizmos.point;
-                    interface3DState.CurrentlyHoveredObject = hitInfoGizmos.transform.gameObject;
+                    interface3DState.SetCurrentlyHoveredObject(hitInfoGizmos.transform.gameObject);
                     interface3DState.CurrentlyHoveredObjectType =
                         Interface3DState.HoveredObjectType.Gizmo;
                 }
@@ -175,20 +175,20 @@ namespace Assets.Scripts.Interaction
                              LayerMask.GetMask("Entity Click"))) // mouse click layer
                 {
                     mousePositionIn3DView = hitInfoEntity.point;
-                    interface3DState.CurrentlyHoveredObject = hitInfoEntity.transform.gameObject;
+                    interface3DState.SetCurrentlyHoveredObject(hitInfoEntity.transform.gameObject);
                     interface3DState.CurrentlyHoveredObjectType =
                         Interface3DState.HoveredObjectType.Entity;
                 }
                 else
                 {
-                    interface3DState.CurrentlyHoveredObject = null;
+                    interface3DState.SetCurrentlyHoveredObject(null);
                     interface3DState.CurrentlyHoveredObjectType =
                         Interface3DState.HoveredObjectType.None;
                 }
             }
             else
             {
-                interface3DState.CurrentlyHoveredObject = null;
+                interface3DState.SetCurrentlyHoveredObject(null);
                 interface3DState.CurrentlyHoveredObjectType =
                     Interface3DState.HoveredObjectType.None;
             }
@@ -213,7 +213,7 @@ namespace Assets.Scripts.Interaction
             if (inputSystemAsset.Hotkeys.Duplicate.triggered)
             {
                 var currentScene = sceneManagerSystem.GetCurrentSceneOrNull();
-                var selectedEntity = currentScene?.SelectionState.PrimarySelectedEntity;
+                var selectedEntity = currentScene?.SelectionState.PrimarySelectedEntity.Value;
 
                 if (selectedEntity != null)
                 {
@@ -226,7 +226,7 @@ namespace Assets.Scripts.Interaction
             if (inputSystemAsset.Hotkeys.Delete.triggered)
             {
                 var currentScene = sceneManagerSystem.GetCurrentSceneOrNull();
-                var selectedEntity = currentScene?.SelectionState.PrimarySelectedEntity;
+                var selectedEntity = currentScene?.SelectionState.PrimarySelectedEntity.Value;
 
                 if (selectedEntity != null)
                 {
@@ -243,7 +243,7 @@ namespace Assets.Scripts.Interaction
                     {
                         inputState.InState = InputState.InStateType.HoldingGizmoTool;
 
-                        if (!interface3DState.CurrentlyHoveredObject.TryGetComponent<GizmoDirection>(out var gizmoDir))
+                        if (!interface3DState.CurrentlyHoveredObject.Value.TryGetComponent<GizmoDirection>(out var gizmoDir))
                         {
                             break;
                         }
@@ -257,7 +257,7 @@ namespace Assets.Scripts.Interaction
                     case Interface3DState.HoveredObjectType.Entity:
                     {
                         // select entity
-                        var selectInteraction = interface3DState.CurrentlyHoveredObject?
+                        var selectInteraction = interface3DState.CurrentlyHoveredObject.Value?
                             .GetComponentInParent<EntitySelectInteraction>();
 
                         if (selectInteraction != null)
@@ -319,10 +319,10 @@ namespace Assets.Scripts.Interaction
 
             // When pressing the focus hotkey and having a selected primary entity, switch to Focus Transition state
             if (inputSystemAsset.CameraMovement.Focus.triggered &&
-                sceneManagerSystem.GetCurrentSceneOrNull()?.SelectionState.PrimarySelectedEntity != null)
+                sceneManagerSystem.GetCurrentSceneOrNull()?.SelectionState.PrimarySelectedEntity.Value != null)
             {
                 // Fetch position of selected object
-                var selectedEntity = sceneManagerSystem.GetCurrentSceneOrNull()?.SelectionState.PrimarySelectedEntity;
+                var selectedEntity = sceneManagerSystem.GetCurrentSceneOrNull()?.SelectionState.PrimarySelectedEntity.Value;
                 var entityPos = selectedEntity.GetTransformComponent().globalPosition;
 
                 // Calculate an offset position so that the camera keeps its rotation and looks at the selected entity

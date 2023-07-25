@@ -86,9 +86,9 @@ namespace Assets.Scripts.Command.Utility
         /// <param name="entity"></param>
         private static void RemoveEntityFromSelectionLists(DclScene scene, DclEntity entity)
         {
-            if (scene.SelectionState.PrimarySelectedEntity == entity)
+            if (scene.SelectionState.PrimarySelectedEntity.Value == entity)
             {
-                scene.SelectionState.PrimarySelectedEntity = null;
+                scene.SelectionState.PrimarySelectedEntity.Value = null;
             }
             
             scene.SelectionState.AllSelectedEntities.ToList().Remove(entity);

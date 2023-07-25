@@ -26,16 +26,20 @@ namespace Assets.Scripts.Visuals
         {
             this.editorEvents = editorEvents;
             this.gizmoToolSystem = gizmoToolSystem;
-
-            SetupListeners();
             SetupButtonCallbacks();
         }
 
-        private void SetupListeners()
+        private void OnEnable()
         {
-            editorEvents.onUpdateSceneViewButtons += UpdateVisuals;
-
+            gizmoToolSystem.isSnapping.OnValueChanged += UpdateVisuals;
+            gizmoToolSystem.gizmoToolModeField.OnValueChanged += UpdateVisuals;
             UpdateVisuals();
+        }
+
+        private void OnDisable()
+        {
+            gizmoToolSystem.isSnapping.OnValueChanged -= UpdateVisuals;
+            gizmoToolSystem.gizmoToolModeField.OnValueChanged -= UpdateVisuals;
         }
 
         private void SetupButtonCallbacks()

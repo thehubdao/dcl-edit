@@ -1,4 +1,6 @@
+using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
+using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
 using UnityEngine;
 using UnityEngine.Profiling;
@@ -12,21 +14,43 @@ namespace Assets.Scripts.Visuals
         private EditorEvents editorEvents;
         private SceneManagerSystem sceneManagerSystem;
         private MainSceneVisuals.Factory mainSceneVisualsFactory;
+        private SceneManagerState sceneManagerState;
 
         [Inject]
-        private void Construct(EditorEvents editorEvents, SceneManagerSystem sceneManagerSystem, MainSceneVisuals.Factory mainSceneVisualsFactory)
+        private void Construct(EditorEvents editorEvents,
+            SceneManagerSystem sceneManagerSystem,
+            MainSceneVisuals.Factory mainSceneVisualsFactory,
+            SceneManagerState sceneManagerState)
         {
             this.editorEvents = editorEvents;
             this.sceneManagerSystem = sceneManagerSystem;
             this.mainSceneVisualsFactory = mainSceneVisualsFactory;
-
+            this.sceneManagerState = sceneManagerState;
             SetupEventListeners();
+        }
+
+        private void OnEnable()
+        {
+            sceneManagerState.currentSceneIndex.OnValueChanged += SubscribeToNewScene;
+            sceneManagerSystem.GetCurrentScene().SelectionState.PrimarySelectedEntity.OnValueChanged += UpdateVisuals;
+            UpdateVisuals();
+        }
+
+        private void OnDisable()
+        {
+            sceneManagerState.currentSceneIndex.OnValueChanged -= SubscribeToNewScene;
+            sceneManagerSystem.GetCurrentScene().SelectionState.PrimarySelectedEntity.OnValueChanged -= UpdateVisuals;
+        }
+
+        private void SubscribeToNewScene()
+        {
+            sceneManagerSystem.GetCurrentScene().SelectionState.PrimarySelectedEntity.OnValueChanged -= UpdateVisuals;
+            sceneManagerSystem.GetCurrentScene().SelectionState.PrimarySelectedEntity.OnValueChanged += UpdateVisuals;
         }
 
         private void SetupEventListeners()
         {
             editorEvents.onHierarchyChangedEvent += UpdateVisuals;
-            editorEvents.onSelectionChangedEvent += UpdateVisuals;
             editorEvents.onAssetDataUpdatedEvent += _ => UpdateVisuals();
             editorEvents.onAssetMetadataCacheUpdatedEvent += UpdateVisuals;
 

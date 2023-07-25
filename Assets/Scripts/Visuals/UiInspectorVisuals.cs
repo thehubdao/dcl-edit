@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
 using Assets.Scripts.SceneState;
@@ -21,55 +22,64 @@ namespace Assets.Scripts.Visuals
         private InputState inputState;
         private UpdatePropertiesFromUiSystem updatePropertiesSystem;
         private UiBuilder.UiBuilder uiBuilder;
-        private EditorEvents editorEvents;
         private CommandSystem commandSystem;
         private SceneManagerSystem sceneManagerSystem;
         private ContextMenuSystem contextMenuSystem;
         private AddComponentSystem addComponentSystem;
         private AvailableComponentsState availableComponentsState;
         private AssetManagerSystem assetManagerSystem;
-        private DialogSystem dialogSystem;
         private ExposeEntitySystem exposeEntitySystem;
         private PromptSystem promptSystem;
+        private SceneManagerState sceneManagerState;
 
         [Inject]
         private void Construct(
             InputState inputState,
             UpdatePropertiesFromUiSystem updatePropertiesSystem,
             UiBuilder.UiBuilder.Factory uiBuilderFactory,
-            EditorEvents editorEvents,
             CommandSystem commandSystem,
             SceneManagerSystem sceneManagerSystem,
             ContextMenuSystem contextMenuSystem,
             AddComponentSystem addComponentSystem,
             AvailableComponentsState availableComponentsState,
             AssetManagerSystem assetManagerSystem,
-            DialogSystem dialogSystem,
             ExposeEntitySystem exposeEntitySystem,
-            PromptSystem promptSystem)
+            PromptSystem promptSystem,
+            SceneManagerState sceneManagerState
+            )
         {
             this.inputState = inputState;
             this.updatePropertiesSystem = updatePropertiesSystem;
             this.uiBuilder = uiBuilderFactory.Create(content);
-            this.editorEvents = editorEvents;
             this.commandSystem = commandSystem;
             this.sceneManagerSystem = sceneManagerSystem;
             this.contextMenuSystem = contextMenuSystem;
             this.addComponentSystem = addComponentSystem;
             this.availableComponentsState = availableComponentsState;
             this.assetManagerSystem = assetManagerSystem;
-            this.dialogSystem = dialogSystem;
             this.exposeEntitySystem = exposeEntitySystem;
             this.promptSystem = promptSystem;
-            SetupEventListeners();
+            this.sceneManagerState = sceneManagerState;
         }
 
-        public void SetupEventListeners()
+        private void OnEnable()
         {
-            editorEvents.onSelectionChangedEvent += SetDirty;
+            sceneManagerSystem.GetCurrentScene().SelectionState.PrimarySelectedEntity.OnValueChanged += SetDirty;
+            sceneManagerState.currentSceneIndex.OnValueChanged += SubscribeToNewScene;
             SetDirty();
         }
 
+        private void OnDisable()
+        {
+            sceneManagerSystem.GetCurrentScene().SelectionState.PrimarySelectedEntity.OnValueChanged -= SetDirty;
+            sceneManagerState.currentSceneIndex.OnValueChanged -= SubscribeToNewScene;
+        }
+
+        private void SubscribeToNewScene()
+        {
+            sceneManagerSystem.GetCurrentScene().SelectionState.PrimarySelectedEntity.OnValueChanged -= UpdateVisuals;
+            sceneManagerSystem.GetCurrentScene().SelectionState.PrimarySelectedEntity.OnValueChanged += UpdateVisuals;
+        }
 
         private bool _dirty;
 
@@ -106,7 +116,7 @@ namespace Assets.Scripts.Visuals
                 return;
             }
 
-            var selectedEntity = currentScene.SelectionState.PrimarySelectedEntity;
+            var selectedEntity = currentScene.SelectionState.PrimarySelectedEntity.Value;
 
             if (selectedEntity == null)
             {

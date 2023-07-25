@@ -34,7 +34,7 @@ namespace Assets.Scripts.Visuals
                 return;
             }
 
-            if (selectionState.PrimarySelectedEntity == entity)
+            if (selectionState.PrimarySelectedEntity.Value == entity)
             {
                 SetRenderingLayerRecursive(gameObject, LayerMask.NameToLayer("Outline2"));
             }

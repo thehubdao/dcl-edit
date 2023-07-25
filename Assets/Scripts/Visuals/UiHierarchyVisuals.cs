@@ -64,6 +64,7 @@ namespace Assets.Scripts.Visuals
         private SceneManagerSystem sceneManagerSystem;
         private CommandSystem commandSystem;
         private HierarchyOrderSystem hierarchyOrderSystem;
+        private SceneManagerState sceneManagerState;
 
         [Inject]
         private void Construct(
@@ -74,7 +75,9 @@ namespace Assets.Scripts.Visuals
             SceneManagerSystem sceneManagerSystem,
             CommandSystem commandSystem,
             HierarchyContextMenuSystem hierarchyContextMenuSystem,
-            HierarchyOrderSystem hierarchyOrderSystem)
+            HierarchyOrderSystem hierarchyOrderSystem,
+            SceneManagerState sceneManagerState
+            )
         {
             this.events = events;
             this.uiBuilder = uiBuilderFactory.Create(content);
@@ -84,15 +87,34 @@ namespace Assets.Scripts.Visuals
             this.commandSystem = commandSystem;
             this.hierarchyContextMenuSystem = hierarchyContextMenuSystem;
             this.hierarchyOrderSystem = hierarchyOrderSystem;
-
+            this.sceneManagerState = sceneManagerState;
+            
             SetupRightClickHandler();
             SetupEventListeners();
+        }
+
+        private void OnEnable()
+        {
+            sceneManagerSystem.GetCurrentScene().SelectionState.PrimarySelectedEntity.OnValueChanged += MarkForUpdate;
+            sceneManagerState.currentSceneIndex.OnValueChanged += SubscribeToNewScene;
+            MarkForUpdate();
+        }
+
+        private void OnDisable()
+        {
+            sceneManagerSystem.GetCurrentScene().SelectionState.PrimarySelectedEntity.OnValueChanged -= MarkForUpdate;
+            sceneManagerState.currentSceneIndex.OnValueChanged -= SubscribeToNewScene;
+        }
+
+        private void SubscribeToNewScene()
+        {
+            sceneManagerSystem.GetCurrentScene().SelectionState.PrimarySelectedEntity.OnValueChanged -= UpdateVisuals;
+            sceneManagerSystem.GetCurrentScene().SelectionState.PrimarySelectedEntity.OnValueChanged += UpdateVisuals;
         }
 
         private void SetupEventListeners()
         {
             events.onHierarchyChangedEvent += MarkForUpdate;
-            events.onSelectionChangedEvent += MarkForUpdate;
             MarkForUpdate();
         }
 
@@ -177,7 +199,7 @@ namespace Assets.Scripts.Visuals
                 Assert.IsNotNull(entity);
 
                 var selectionState = scene.SelectionState;
-                var isPrimarySelection = selectionState.PrimarySelectedEntity == entity;
+                var isPrimarySelection = selectionState.PrimarySelectedEntity.Value == entity;
 
                 var isSecondarySelection = selectionState.SecondarySelectedEntities.Contains(entity);
 
@@ -194,7 +216,7 @@ namespace Assets.Scripts.Visuals
                 var isExpanded = hierarchyChangeSystem.IsExpanded(entity);
                 var isFirstChild = entity.Parent != null && entity.Parent.Children.OrderBy(e => e.hierarchyOrder)
                     .First().Id.Equals(entity.Id);
-                var isNothingOrHoveredEntitySelected = selectionState.PrimarySelectedEntity == null || selectionState.PrimarySelectedEntity.Id.Equals(entity.Id);
+                var isNothingOrHoveredEntitySelected = selectionState.PrimarySelectedEntity.Value == null || selectionState.PrimarySelectedEntity.Value.Id.Equals(entity.Id);
 
                 mainPanelData.AddHierarchyItem(entity.ShownName, level, entity.Children.Any(), isExpanded, isFirstChild, style,
                     isPrimarySelection,
@@ -275,7 +297,7 @@ namespace Assets.Scripts.Visuals
 
         private void ExpandSelectedItem(DclScene scene)
         {
-            var selectedEntity = scene.SelectionState.PrimarySelectedEntity;
+            var selectedEntity = scene.SelectionState.PrimarySelectedEntity.Value;
             hierarchyChangeSystem.ExpandParents(selectedEntity);
         }
 

@@ -11,7 +11,7 @@ namespace Assets.Scripts.EditorState
     {
         private readonly Dictionary<Guid, SceneDirectoryState> sceneDirectoryStates = new Dictionary<Guid, SceneDirectoryState>();
 
-        public Guid currentSceneIndex { get; private set; } = Guid.Empty;
+        public Subscribable<Guid> currentSceneIndex = new(Guid.Empty);
 
         public IReadOnlyCollection<SceneDirectoryState> allSceneDirectoryStates => sceneDirectoryStates.Values;
 
@@ -22,7 +22,7 @@ namespace Assets.Scripts.EditorState
                 throw new ArgumentOutOfRangeException($"There is no SceneDirectoryState with the ID \"{index.Shortened()}\"");
             }
 
-            currentSceneIndex = index;
+            currentSceneIndex.Value = index;
         }
 
         public void AddSceneDirectoryState(SceneDirectoryState sceneDirectoryState)
@@ -79,12 +79,12 @@ namespace Assets.Scripts.EditorState
         [CanBeNull]
         public SceneDirectoryState GetCurrentDirectoryState()
         {
-            if (currentSceneIndex == Guid.Empty)
+            if (currentSceneIndex.Value == Guid.Empty)
             {
                 return null;
             }
 
-            return sceneDirectoryStates[currentSceneIndex];
+            return sceneDirectoryStates[currentSceneIndex.Value];
         }
     }
 }

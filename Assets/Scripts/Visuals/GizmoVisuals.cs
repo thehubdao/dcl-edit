@@ -1,6 +1,7 @@
 using System;
 using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
+using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
 using UnityEngine;
 using Zenject;
@@ -21,27 +22,38 @@ namespace Assets.Scripts.Visuals
         private GameObject activeGizmo = null;
 
         // Dependencies
-
         private GizmoToolSystem gizmoToolSystem;
-        private EditorEvents editorEvents;
         private SceneManagerSystem sceneManagerSystem;
+        private SceneManagerState sceneManagerState;
 
         [Inject]
         private void Construct(
             GizmoToolSystem gizmoToolSystem,
-            EditorEvents editorEvents,
-            SceneManagerSystem sceneManagerSystem)
+            SceneManagerSystem sceneManagerSystem,
+            SceneManagerState sceneManagerState)
         {
             this.gizmoToolSystem = gizmoToolSystem;
-            this.editorEvents = editorEvents;
             this.sceneManagerSystem = sceneManagerSystem;
-
-            SetupEventListeners();
+            this.sceneManagerState = sceneManagerState;
         }
 
-        public void SetupEventListeners()
+        private void OnEnable()
         {
-            editorEvents.onSelectionChangedEvent += UpdateVisuals;
+            sceneManagerSystem.GetCurrentScene().SelectionState.PrimarySelectedEntity.OnValueChanged += UpdateVisuals;
+            sceneManagerState.currentSceneIndex.OnValueChanged += SubscribeToNewScene;
+            UpdateVisuals();
+        }
+
+        private void OnDisable()
+        {
+            sceneManagerSystem.GetCurrentScene().SelectionState.PrimarySelectedEntity.OnValueChanged -= UpdateVisuals;
+            sceneManagerState.currentSceneIndex.OnValueChanged -= SubscribeToNewScene;
+        }
+
+        private void SubscribeToNewScene()
+        {
+            sceneManagerSystem.GetCurrentScene().SelectionState.PrimarySelectedEntity.OnValueChanged -= UpdateVisuals;
+            sceneManagerSystem.GetCurrentScene().SelectionState.PrimarySelectedEntity.OnValueChanged += UpdateVisuals;
         }
 
         private void UpdateVisuals()
@@ -49,7 +61,7 @@ namespace Assets.Scripts.Visuals
             var selectedEntity = sceneManagerSystem
                 .GetCurrentSceneOrNull()?
                 .SelectionState
-                .PrimarySelectedEntity;
+                .PrimarySelectedEntity.Value;
 
             if (selectedEntity == null)
             {

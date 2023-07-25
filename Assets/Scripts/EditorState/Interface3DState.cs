@@ -5,28 +5,13 @@ namespace Assets.Scripts.EditorState
 {
     public class Interface3DState
     {
-        private GameObject _currentlyHoveredObject = null;
+        private Subscribable<GameObject> _currentlyHoveredObject = new();
+        public Subscribable<GameObject> CurrentlyHoveredObject => _currentlyHoveredObject;
 
-        // Dependencies
-        EditorEvents _editorEvents;
-
-        public Interface3DState(EditorEvents editorEvents)
+        public void SetCurrentlyHoveredObject(GameObject go)
         {
-            _editorEvents = editorEvents;
-        }
-
-
-        public GameObject CurrentlyHoveredObject
-        {
-            get => _currentlyHoveredObject;
-            set
-            {
-                if (_currentlyHoveredObject != value)
-                {
-                    _currentlyHoveredObject = value;
-                    _editorEvents.InvokeHoverChangedEvent();
-                }
-            }
+            if(_currentlyHoveredObject.Value != go)
+                _currentlyHoveredObject.Value = go;
         }
 
         public enum HoveredObjectType

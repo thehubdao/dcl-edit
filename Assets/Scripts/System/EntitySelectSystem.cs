@@ -98,7 +98,7 @@ namespace Assets.Scripts.System
 
         public Guid GetPrimarySelectionFromScene([NotNull] DclScene scene)
         {
-            return scene.SelectionState.PrimarySelectedEntity?.Id ?? Guid.Empty;
+            return scene.SelectionState.PrimarySelectedEntity.Value?.Id ?? Guid.Empty;
         }
 
         public IEnumerable<Guid> GetSecondarySelectionFromScene([NotNull] DclScene scene)

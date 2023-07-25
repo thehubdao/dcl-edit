@@ -44,7 +44,6 @@ public class AssetBrowserFolderHandler : MonoBehaviour
             // Mark all folders as closed that are at the current position or further down in the asset hierarchy
             assetBrowserState.expandedFoldersPaths.RemoveAll((path) => path.Contains(hierarchyItem.path));
         }
-        editorEvents.InvokeUiChangedEvent();
     }
 
     public void ToggleExpanded() => SetExpanded(!IsExpanded());

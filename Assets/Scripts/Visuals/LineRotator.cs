@@ -26,7 +26,7 @@ namespace Assets.Scripts.Visuals
 
         private void Update()
         {
-            var relativeCamPos = transform.parent.InverseTransformPoint(cameraState.Position);
+            var relativeCamPos = transform.parent.InverseTransformPoint(cameraState.Position.Value);
 
             if (axis == RelevantAxis.X)
             {

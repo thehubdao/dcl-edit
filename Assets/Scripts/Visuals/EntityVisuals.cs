@@ -184,7 +184,7 @@ namespace Assets.Scripts.Visuals
                 return;
             }
 
-            if (rootScene.SelectionState.PrimarySelectedEntity == overrideEntity)
+            if (rootScene.SelectionState.PrimarySelectedEntity.Value == overrideEntity)
             {
                 shapeVisuals.ShowPrimarySelectionOutline();
             }

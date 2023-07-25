@@ -99,7 +99,6 @@ namespace Assets.Scripts.System
                 }
 
                 sceneChangeDetectSystem.RememberCurrentState();
-                sceneViewSystem.UpdateScene();
             }
             catch (Exception e)
             {

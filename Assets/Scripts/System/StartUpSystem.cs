@@ -19,6 +19,7 @@ namespace Assets.Scripts.System
         private ISceneViewSystem sceneViewSystem;
         private SettingsSystem settingsSystem;
         private CustomComponentMarkupSystem customComponentMarkupSystem;
+        private SnackbarSystem snackbarSystem;
 
         [Inject]
         private void Construct(
@@ -29,7 +30,8 @@ namespace Assets.Scripts.System
             SceneManagerSystem sceneManagerSystem,
             ISceneViewSystem sceneViewSystem,
             SettingsSystem settingsSystem,
-            CustomComponentMarkupSystem customComponentMarkupSystem)
+            CustomComponentMarkupSystem customComponentMarkupSystem,
+            SnackbarSystem snackbarSystem)
         {
             this.assetManagerSystem = assetManagerSystem;
             this.workspaceSaveSystem = workspaceSaveSystem;
@@ -39,6 +41,7 @@ namespace Assets.Scripts.System
             this.settingsSystem = settingsSystem;
             this.pathState = pathState;
             this.customComponentMarkupSystem = customComponentMarkupSystem;
+            this.snackbarSystem = snackbarSystem;
         }
 
         void Awake()
@@ -59,6 +62,12 @@ namespace Assets.Scripts.System
             workspaceSaveSystem.Load();
 
             frameTimeSystem.SetApplicationTargetFramerate();
+        }
+
+        private void Update()
+        {
+            if(Input.GetKeyDown(KeyCode.Alpha5))
+                snackbarSystem.AddMessage("Hello World", SnackbarState.MessageType.Info);
         }
 
         private void InterpretArgs(string[] args)

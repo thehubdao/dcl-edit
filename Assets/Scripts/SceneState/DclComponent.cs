@@ -180,9 +180,12 @@ namespace Assets.Scripts.SceneState
 
         public class DclComponentProperty<T> : DclComponentProperty
         {
-            private T _fixedValue;
-            private T _floatingValue;
-
+            private Subscribable<T> _fixedValue = new();
+            private Subscribable<T> _floatingValue = new();
+            //private T _fixedValue;
+            //private T _floatingValue;
+            public Subscribable<T> _Value => _isFloating ? _floatingValue : _fixedValue;
+            
             /**
              * <summary>Constructor with an initial value</summary>
              * <param name="name"></param>
@@ -191,8 +194,8 @@ namespace Assets.Scripts.SceneState
             public DclComponentProperty(string name, T initialValue)
             {
                 PropertyName = name;
-                _fixedValue = initialValue;
-                _floatingValue = initialValue;
+                _fixedValue.Value = initialValue;
+                _floatingValue.Value = initialValue;
                 _isFloating = false;
             }
 
@@ -202,12 +205,12 @@ namespace Assets.Scripts.SceneState
             /**
              * <summary>The current value. When value is floating, returns the floating value</summary>
              */
-            public T Value => _isFloating ? _floatingValue : _fixedValue;
+            public T Value => _isFloating ? _floatingValue.Value : _fixedValue.Value;
 
             /**
              * <summary>Get fixed value. All ways returns fixed value, even if floating value is available</summary>
              */
-            public T FixedValue => _fixedValue;
+            public T FixedValue => _fixedValue.Value;
 
             /**
              * <summary>Set floating value</summary>
@@ -215,7 +218,7 @@ namespace Assets.Scripts.SceneState
              */
             public void SetFloatingValue(T value)
             {
-                _floatingValue = value;
+                _floatingValue.Value = value;
                 _isFloating = true;
             }
 
@@ -226,7 +229,7 @@ namespace Assets.Scripts.SceneState
              */
             public void SetFixedValue(T value)
             {
-                _fixedValue = value;
+                _fixedValue.Value = value;
                 ResetFloating();
             }
         }

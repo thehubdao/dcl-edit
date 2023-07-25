@@ -21,14 +21,12 @@ namespace Assets.Scripts.Command
         {
             var entity = sceneState.GetEntityById(entityId);
             entity.RemoveComponent(entity.GetComponentByName(component.NameInCode));
-            editorEvents.InvokeSelectionChangedEvent();
         }
 
         public override void Undo(DclScene sceneState, EditorEvents editorEvents)
         {
             var entity = sceneState.GetEntityById(entityId);
             entity.AddComponent(component);
-            editorEvents.InvokeSelectionChangedEvent();
         }
     }
 }

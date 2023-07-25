@@ -11,7 +11,8 @@
         "Events",
         "Visuals",
         "Unity.TextMeshPro",
-        "DclSystems"
+        "DclSystems",
+        "Subscribable"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

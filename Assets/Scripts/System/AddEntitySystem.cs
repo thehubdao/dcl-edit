@@ -36,7 +36,7 @@ namespace Assets.Scripts.System
             commandSystem.ExecuteCommand(
                 commandSystem.CommandFactory.CreateAddEntity(
                     preset,
-                    scene.SelectionState.PrimarySelectedEntity?.Id ?? Guid.Empty,
+                    scene.SelectionState.PrimarySelectedEntity.Value?.Id ?? Guid.Empty,
                     scene.SelectionState.SecondarySelectedEntities.Select(e => e.Id),
                     newHierarchyOrder, parentId));
         }

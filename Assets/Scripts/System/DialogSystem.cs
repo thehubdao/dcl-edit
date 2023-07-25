@@ -25,7 +25,7 @@ public class DialogSystem
     /// <param name="component">The component which this asset will be added to.</param>
     public void OpenAssetDialog(DclComponent component)
     {
-        dialogState.currentDialog = DialogState.DialogType.Asset;
+        dialogState.currentDialog.Value = DialogState.DialogType.Asset;
         dialogState.targetComponent = component;
 
         assetBrowserState.StoreShownTypesTemp();
@@ -40,17 +40,13 @@ public class DialogSystem
             default:
                 break;
         }
-
-        editorEvents.InvokeDialogChangedEvent();
     }
 
     public void CloseCurrentDialog()
     {
-        dialogState.currentDialog = DialogState.DialogType.None;
+        dialogState.currentDialog.Value = DialogState.DialogType.None;
 
         assetBrowserState.RestoreShownTypes();
-
-        editorEvents.InvokeDialogChangedEvent();
     }
 
     public bool IsMouseOverDialog() => dialogState.mouseOverDialogWindow;

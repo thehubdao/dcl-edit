@@ -9,43 +9,46 @@ namespace Assets.Scripts.Visuals
     {
         private bool _isHovering = false;
 
-
         // Dependencies
         private Interface3DState _interface3DState;
-        private EditorEvents _editorEvents;
-
+        
         [Inject]
-        private void Construct(Interface3DState interface3DState, EditorEvents editorEvents)
+        private void Construct(Interface3DState interface3DState)
         {
             _interface3DState = interface3DState;
-            _editorEvents = editorEvents;
-
-            SetupEventListeners();
         }
 
-        public void SetupEventListeners()
+        private void OnEnable()
         {
-            _editorEvents.onHoverChangedEvent += () =>
-            {
-                if (_interface3DState.CurrentlyHoveredObject == gameObject)
-                {
-                    if (!_isHovering)
-                    {
-                        StartHover();
-                        _isHovering = true;
-                    }
+            _interface3DState.CurrentlyHoveredObject.OnValueChanged += UpdateVisuals;
+            UpdateVisuals();
+        }
 
-                    UpdateHover();
-                }
-                else
+        private void OnDisable()
+        {
+            _interface3DState.CurrentlyHoveredObject.OnValueChanged -= UpdateVisuals;
+        }
+
+        private void UpdateVisuals()
+        {
+            if (_interface3DState.CurrentlyHoveredObject.Value == gameObject)
+            {
+                if (!_isHovering)
                 {
-                    if (_isHovering)
-                    {
-                        EndHover();
-                        _isHovering = false;
-                    }
+                    StartHover();
+                    _isHovering = true;
                 }
-            };
+
+                UpdateHover();
+            }
+            else
+            {
+                if (_isHovering)
+                {
+                    EndHover();
+                    _isHovering = false;
+                }
+            }
         }
 
         public virtual void StartHover()

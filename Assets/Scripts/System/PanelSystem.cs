@@ -8,7 +8,7 @@ namespace Assets.Scripts.System
     public class PanelSystem
     {
         private UnityState unityState;
-        
+
         [Inject]
         public void Construct(UnityState unityState)
         {

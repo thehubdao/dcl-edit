@@ -43,7 +43,6 @@ namespace Assets.Scripts.System
                 else
                 {
                     // TODO: show expose failed message
-                    editorEvents.InvokeSelectionChangedEvent();
                 }
             }
             else
@@ -62,8 +61,6 @@ namespace Assets.Scripts.System
             }
 
             scene.GetPropertyFromIdentifier(property).GetConcrete<T>().SetFloatingValue(value);
-
-            editorEvents.InvokeSelectionChangedEvent();
         }
 
         public void RevertFloatingProperty(DclPropertyIdentifier property)
@@ -76,8 +73,6 @@ namespace Assets.Scripts.System
             }
 
             scene.GetPropertyFromIdentifier(property).ResetFloating();
-
-            editorEvents.InvokeSelectionChangedEvent();
         }
 
         public void UpdateFixedProperty<T>(DclPropertyIdentifier property, T value)

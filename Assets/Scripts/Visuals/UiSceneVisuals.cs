@@ -1,6 +1,7 @@
 using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
 using Assets.Scripts.System;
+using TMPro;
 using UnityEngine;
 using Zenject;
 
@@ -10,63 +11,41 @@ namespace Assets.Scripts.Visuals
     {
         [SerializeField]
         public RectTransform scenePanelTab;
-        
-        #region Mark for update
 
-        private bool shouldUpdate;
-
-        private void LateUpdate()
-        {
-            if (!shouldUpdate) return;
-            
-            UpdateVisuals();
-            shouldUpdate = false;
-        }
-
-        private void MarkForUpdate()
-        {
-            shouldUpdate = true;
-        }
-
-        #endregion
-        
         // Dependencies
         private PanelSystem panelSystem;
-        private EditorEvents events;
         private SceneManagerState sceneManagerState;
-        private ISceneChangeDetectSystem sceneChangeDetectSystem;
+        private SceneChangeDetectSystem sceneChangeDetectSystem;
 
         [Inject]
-        private void Construct(PanelSystem panelSystem, EditorEvents events, SceneManagerState sceneManagerState, ISceneChangeDetectSystem sceneChangeDetectSystem)
+        private void Construct(PanelSystem panelSystem, SceneManagerState sceneManagerState, SceneChangeDetectSystem sceneChangeDetectSystem)
         {
             this.panelSystem = panelSystem;
-            this.events = events;
             this.sceneManagerState = sceneManagerState;
             this.sceneChangeDetectSystem = sceneChangeDetectSystem;
-            SetupEventListeners();
         }
 
-        private void SetupEventListeners()
+        private void OnEnable()
         {
-            events.OnCurrentSceneTitleChangedEvent += MarkForUpdate;
-            MarkForUpdate();
+            sceneManagerState.currentSceneIndex.OnValueChanged += UpdateLabel;
+            sceneChangeDetectSystem.savedCommandIndexOffset.OnValueChanged += UpdateLabel;
+            UpdateLabel();
         }
 
-        private void UpdateVisuals()
+        private void OnDisable()
         {
-            ChangeSceneTabTitleToCurrentSceneTitle();
+            sceneManagerState.currentSceneIndex.OnValueChanged -= UpdateLabel;
+            sceneChangeDetectSystem.savedCommandIndexOffset.OnValueChanged -= UpdateLabel;
         }
 
-        private void ChangeSceneTabTitleToCurrentSceneTitle()
+        private void UpdateLabel()
         {
             var currentDirectoryState = sceneManagerState.GetCurrentDirectoryState();
-
-            if (currentDirectoryState != null)
-            {
-                string title = currentDirectoryState.name;
-                if (sceneChangeDetectSystem.HasSceneChanged()) title += "*";
-                panelSystem.ChangePanelTabTitle(scenePanelTab, title);
-            }
+            if (currentDirectoryState == null) return;
+            string title = currentDirectoryState.name;
+            if (sceneChangeDetectSystem.HasSceneChanged())
+                title += "*";
+            panelSystem.ChangePanelTabTitle(scenePanelTab, title);
         }
     }
 }

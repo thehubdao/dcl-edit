@@ -22,12 +22,10 @@ public class ChangeIsExposed : Command
     public override void Do(DclScene sceneState, EditorEvents editorEvents)
     {
         sceneState.GetEntityById(entityId).IsExposed = newExposedState;
-        editorEvents.InvokeSelectionChangedEvent();
     }
 
     public override void Undo(DclScene sceneState, EditorEvents editorEvents)
     {
         sceneState.GetEntityById(entityId).IsExposed = oldExposedState;
-        editorEvents.InvokeSelectionChangedEvent();
     }
 }

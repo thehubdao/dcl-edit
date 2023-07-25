@@ -26,7 +26,7 @@ namespace Assets.Scripts.Command.Utility
 
         public static void SetSelection(DclScene scene, Guid primarySelection, List<Guid> secondarySelection = null)
         {
-            scene.SelectionState.PrimarySelectedEntity = scene.GetEntityById(primarySelection);
+            scene.SelectionState.PrimarySelectedEntity.Value = scene.GetEntityById(primarySelection);
             scene.SelectionState.SecondarySelectedEntities.Clear();
 
             if (secondarySelection != null)

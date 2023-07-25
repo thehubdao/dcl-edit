@@ -185,7 +185,6 @@ namespace Assets.Scripts.System
             sceneViewSystem.SetUpCurrentScene();
             var newSceneIndex = sceneManagerState.currentSceneIndex;
             settingsSystem.openLastOpenedScene.Set(newSceneIndex.ToString());
-            sceneViewSystem.UpdateScene();
         }
 
         /// <summary>
@@ -221,7 +220,6 @@ namespace Assets.Scripts.System
             if (sceneDirectoryState.directoryPath == null)
             {
                 SaveSceneAs(sceneDirectoryState);
-                sceneViewSystem.UpdateSceneTabTitle();
             }
             else
             {
@@ -322,24 +320,24 @@ namespace Assets.Scripts.System
         public DclScene GetCurrentSceneOrNull()
         {
             //return null if no scene is open
-            if (sceneManagerState.currentSceneIndex == Guid.Empty)
+            if (sceneManagerState.currentSceneIndex.Value == Guid.Empty)
             {
                 return null;
             }
 
-            return GetScene(sceneManagerState.currentSceneIndex);
+            return GetScene(sceneManagerState.currentSceneIndex.Value);
         }
         
         [NotNull]
         public DclScene GetCurrentScene()
         {
             //return null if no scene is open
-            if (sceneManagerState.currentSceneIndex == Guid.Empty)
+            if (sceneManagerState.currentSceneIndex.Value == Guid.Empty)
             {
                 throw new NoCurrentSceneException();
             }
 
-            return GetScene(sceneManagerState.currentSceneIndex);
+            return GetScene(sceneManagerState.currentSceneIndex.Value);
         }
 
         [NotNull]

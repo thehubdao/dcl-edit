@@ -8,7 +8,7 @@ public class DialogState
         Asset,
         DialogSystem
     }
-    public DialogType currentDialog = DialogType.None;
+    public Subscribable<DialogType> currentDialog = new(DialogType.None);
     public DclComponent targetComponent;
     public bool mouseOverDialogWindow;
 }

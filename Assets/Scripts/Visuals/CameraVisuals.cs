@@ -10,22 +10,27 @@ namespace Assets.Scripts.Visuals
     {
         // Dependencies
         private CameraState _cameraState;
-        private EditorEvents _editorEvents;
-
+        
         [Inject]
         private void Construct(CameraState cameraState, EditorEvents editorEvents)
         {
             _cameraState = cameraState;
-            _editorEvents = editorEvents;
         }
 
-        void Start()
+        private void OnEnable()
         {
-            _editorEvents.onCameraStateChangedEvent += SetDirty;
-
+            _cameraState.Position.OnValueChanged += SetDirty;
+            _cameraState.AddOnPitchChanged(SetDirty);
+            _cameraState.Yaw.OnValueChanged += SetDirty;
             SetDirty();
         }
 
+        private void OnDisable()
+        {
+            _cameraState.Position.OnValueChanged -= SetDirty;
+            _cameraState.RemoveOnPitchChanged(SetDirty);
+            _cameraState.Yaw.OnValueChanged -= SetDirty;
+        }
         private bool _isDirty = false;
 
         public void SetDirty()
@@ -44,7 +49,7 @@ namespace Assets.Scripts.Visuals
 
         private void UpdateCameraTransform()
         {
-            transform.position = _cameraState.Position;
+            transform.position = _cameraState.Position.Value;
             transform.rotation = _cameraState.Rotation;
         }
     }

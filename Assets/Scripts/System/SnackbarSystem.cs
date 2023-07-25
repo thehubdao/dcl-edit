@@ -20,7 +20,7 @@ namespace Assets.Scripts.System
         public void AddMessage(string message, SnackbarState.MessageType type)
         {
             snackbarState.queuedMessages.Enqueue(new SnackbarState.Data { message = message, type = type });
-            editorEvents.InvokeSnackbarChangedEvent();
+            //editorEvents.InvokeSnackbarChangedEvent();
         }
     }
 }

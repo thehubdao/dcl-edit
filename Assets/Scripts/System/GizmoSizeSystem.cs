@@ -24,7 +24,7 @@ namespace Assets.Scripts.System
         public float GetGizmoSize(Vector3 gizmoPosition)
         {
             // vector from camera to gizmo
-            var diffVector = VectorFromTo(_cameraState.Position, gizmoPosition);
+            var diffVector = VectorFromTo(_cameraState.Position.Value, gizmoPosition);
 
             // camera forward vector
             var camForward = _cameraState.Forward;

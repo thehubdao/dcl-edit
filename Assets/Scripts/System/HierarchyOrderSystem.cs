@@ -486,7 +486,7 @@ namespace Assets.Scripts.System
         public void PlaceAbove([NotNull] DclEntity hoveredEntity)
         {
             var scene = sceneManagerSystem.GetCurrentScene();
-            var selectedEntity = scene.SelectionState.PrimarySelectedEntity;
+            var selectedEntity = scene.SelectionState.PrimarySelectedEntity.Value;
 
             if (selectedEntity == null || selectedEntity.Id == hoveredEntity.Id)
             {
@@ -499,7 +499,7 @@ namespace Assets.Scripts.System
         public void PlaceBelow([NotNull] DclEntity hoveredEntity)
         {
             var scene = sceneManagerSystem.GetCurrentScene();
-            var selectedEntity = scene.SelectionState.PrimarySelectedEntity;
+            var selectedEntity = scene.SelectionState.PrimarySelectedEntity.Value;
 
             if (selectedEntity == null || selectedEntity.Id == hoveredEntity.Id)
             {
@@ -512,7 +512,7 @@ namespace Assets.Scripts.System
         public void PlaceAsChild([NotNull] DclEntity hoveredEntity)
         {
             var scene = sceneManagerSystem.GetCurrentScene();
-            var selectedEntity = scene.SelectionState.PrimarySelectedEntity;
+            var selectedEntity = scene.SelectionState.PrimarySelectedEntity.Value;
 
             if (selectedEntity == null || selectedEntity.Id == hoveredEntity.Id)
             {

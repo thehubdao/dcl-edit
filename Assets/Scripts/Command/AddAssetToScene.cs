@@ -42,13 +42,12 @@ namespace Assets.Scripts.Command
         {
             StoreOldSelection(sceneState);
             sceneState.SelectionState.SecondarySelectedEntities.Clear();
-            sceneState.SelectionState.PrimarySelectedEntity = entity;
-            editorEvents.InvokeSelectionChangedEvent();
+            sceneState.SelectionState.PrimarySelectedEntity.Value = entity;
         }
 
         private void StoreOldSelection(DclScene sceneState)
         {
-            Guid primaryId = sceneState.SelectionState.PrimarySelectedEntity?.Id ?? Guid.Empty;
+            Guid primaryId = sceneState.SelectionState.PrimarySelectedEntity.Value?.Id ?? Guid.Empty;
             List<Guid> secondaryIds = new List<Guid>();
             foreach (DclEntity entity in sceneState.SelectionState.SecondarySelectedEntities)
             {
@@ -59,12 +58,11 @@ namespace Assets.Scripts.Command
 
         private void RestoreOldSelection(DclScene sceneState, EditorEvents editorEvents)
         {
-            sceneState.SelectionState.PrimarySelectedEntity = sceneState.GetEntityById(oldSelection.Primary);
+            sceneState.SelectionState.PrimarySelectedEntity.Value = sceneState.GetEntityById(oldSelection.Primary);
             foreach (Guid id in oldSelection.Secondary)
             {
                 sceneState.SelectionState.SecondarySelectedEntities.Add(sceneState.GetEntityById(id));
             }
-            editorEvents.InvokeSelectionChangedEvent();
         }
     }
 }

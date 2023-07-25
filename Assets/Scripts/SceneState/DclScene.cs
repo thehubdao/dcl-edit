@@ -81,7 +81,7 @@ namespace Assets.Scripts.SceneState
         }
 
         // Other States
-
+        
         public SelectionState SelectionState = new SelectionState();
 
         public CommandHistoryState CommandHistoryState = new CommandHistoryState();

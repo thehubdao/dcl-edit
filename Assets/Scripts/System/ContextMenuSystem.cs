@@ -18,7 +18,6 @@ namespace Assets.Scripts.System
         {
             _editorEvents = editorEvents;
             _state = contextMenuState;
-
             _editorEvents.onMouseButtonDownEvent += OnMouseButtonDownCallback;
         }
 
@@ -52,7 +51,6 @@ namespace Assets.Scripts.System
             var data = new ContextMenuState.Data(Guid.NewGuid(), items, possiblePlacements);
             _state.menuData.Clear();
             _state.menuData.Push(data);
-            _editorEvents.InvokeUpdateContextMenuEvent();
         }
 
 
@@ -71,13 +69,11 @@ namespace Assets.Scripts.System
             }
             var data = new ContextMenuState.Data(menuId, items, possiblePlacements);
             _state.menuData.Push(data);
-            _editorEvents.InvokeUpdateContextMenuEvent();
         }
 
         public void CloseMenu()
         {
             _state.menuData.Clear();
-            _editorEvents.InvokeUpdateContextMenuEvent();
         }
 
         /// <summary>
@@ -92,7 +88,6 @@ namespace Assets.Scripts.System
                 if (_state.menuData.Peek().menuId == id) { break; }
                 _state.menuData.Pop();
             }
-            _editorEvents.InvokeUpdateContextMenuEvent();
         }
 
         private void CloseIfMouseNotOverMenu()

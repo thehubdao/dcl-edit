@@ -71,7 +71,7 @@ namespace Assets.Scripts.Tests.EditModeTests
 
             //prepare
             eventCounter = 0;
-            editorEvents.onUpdateMenuBarEvent += CatchEvent;
+            menuBarState.menuItems.OnListChanged += CatchEvent;
             UnityAction testUnityAction = new UnityAction(TestUnityAction);
 
             //add menu items
@@ -99,7 +99,7 @@ namespace Assets.Scripts.Tests.EditModeTests
 
             //prepare
             eventCounter = 0;
-            editorEvents.onUpdateMenuBarEvent += CatchEvent;
+            menuBarState.menuItems.OnListChanged += CatchEvent;
             UnityAction testUnityAction = new UnityAction(TestUnityAction);
 
             //add menu items
@@ -133,7 +133,7 @@ namespace Assets.Scripts.Tests.EditModeTests
 
             //prepare
             eventCounter = 0;
-            editorEvents.onUpdateMenuBarEvent += CatchEvent;
+            menuBarState.menuItems.OnListChanged += CatchEvent;
             UnityAction testUnityAction = new UnityAction(TestUnityAction);
 
             //add menu items
@@ -178,7 +178,7 @@ namespace Assets.Scripts.Tests.EditModeTests
 
             //prepare
             eventCounter = 0;
-            editorEvents.onUpdateMenuBarEvent += CatchEvent;
+            menuBarState.menuItems.OnListChanged += CatchEvent;
             UnityAction testUnityAction = new UnityAction(TestUnityAction);
 
             //add menu items

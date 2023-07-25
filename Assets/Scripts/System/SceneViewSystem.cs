@@ -7,8 +7,6 @@ namespace Assets.Scripts.System
     public interface ISceneViewSystem
     {
         void SetUpCurrentScene();
-        void UpdateSceneTabTitle();
-        void UpdateScene();
     }
 
     public class SceneViewSystem : ISceneViewSystem
@@ -31,16 +29,6 @@ namespace Assets.Scripts.System
             cameraSystem.CameraStartup();
 
             editorEvents.InvokeHierarchyChangedEvent();
-        }
-
-        public void UpdateSceneTabTitle()
-        {
-            editorEvents.InvokeCurrentSceneTitleChangedEvent();
-        }
-
-        public void UpdateScene()
-        {
-            editorEvents.InvokeCurrentSceneChangedEvent();
         }
     }
 }

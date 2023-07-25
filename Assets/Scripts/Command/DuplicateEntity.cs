@@ -40,9 +40,7 @@ public class DuplicateEntity : Command
         this.secondarySelectedEntities = sceneState.SelectionState.SecondarySelectedEntities.ToList();
 
         sceneState.SelectionState.SecondarySelectedEntities.Clear();
-        sceneState.SelectionState.PrimarySelectedEntity = newEntity;
-
-        editorEvents.InvokeSelectionChangedEvent();
+        sceneState.SelectionState.PrimarySelectedEntity.Value = newEntity;
     }
 
     public override void Undo(DclScene sceneState, EditorEvents editorEvents)
@@ -53,7 +51,6 @@ public class DuplicateEntity : Command
         {
             sceneState.SelectionState.SecondarySelectedEntities.Add(entity);
         }
-        sceneState.SelectionState.PrimarySelectedEntity = sceneState.GetEntityById(entityId);
-        editorEvents.InvokeSelectionChangedEvent();
+        sceneState.SelectionState.PrimarySelectedEntity.Value = sceneState.GetEntityById(entityId);
     }
 }

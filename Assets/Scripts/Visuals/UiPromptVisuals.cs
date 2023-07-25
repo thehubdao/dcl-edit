@@ -142,7 +142,7 @@ public class UiPromptVisuals : MonoBehaviour
             DclScene scene = sceneManagerSystem.GetCurrentScene();
 
             // Update the target component with the new asset
-            var currentSelected = scene.SelectionState.PrimarySelectedEntity;
+            var currentSelected = scene.SelectionState.PrimarySelectedEntity.Value;
             var targetComponent = currentSelected.GetComponentByName("GLTFShape");
             var sceneProperty = targetComponent.GetPropertyByName("scene");
             var assetProperty = targetComponent.GetPropertyByName("asset");
@@ -161,8 +161,6 @@ public class UiPromptVisuals : MonoBehaviour
             }
 
             dialogSystem.CloseCurrentDialog();
-            editorEvents.InvokeSelectionChangedEvent();
-            editorEvents.InvokeUiChangedEvent();
             GetGuid.value = assetId;
             data.notInWindowAction?.Submit(null);
         };
@@ -188,7 +186,7 @@ public class UiPromptVisuals : MonoBehaviour
         mainCanvasGroup.blocksRaycasts = false;
         mainCanvasGroup.alpha = 0.25f;
         unityState.BackgroundCanvas.SetActive(false);
-        dialogState.currentDialog = DialogState.DialogType.DialogSystem;
+        dialogState.currentDialog.Value = DialogState.DialogType.DialogSystem;
         dialogState.mouseOverDialogWindow = true;
     }
 
@@ -197,7 +195,7 @@ public class UiPromptVisuals : MonoBehaviour
         mainCanvasGroup.blocksRaycasts = true;
         mainCanvasGroup.alpha = 1f;
         unityState.BackgroundCanvas.SetActive(true);
-        dialogState.currentDialog = DialogState.DialogType.None;
+        dialogState.currentDialog.Value = DialogState.DialogType.None;
         dialogState.mouseOverDialogWindow = false;
     }
 

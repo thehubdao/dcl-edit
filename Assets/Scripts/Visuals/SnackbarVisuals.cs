@@ -11,7 +11,7 @@ namespace Assets.Scripts.Visuals
     {
         int maxSnackbarCount = 5;
         float itemLifetime = 5;
-        List<GameObject> activeSnackbars = new List<GameObject>();
+        List<SnackbarItemHandler> activeSnackbars = new();
 
         [Header("Icons")]
         [SerializeField]
@@ -39,17 +39,23 @@ namespace Assets.Scripts.Visuals
 
         // Dependencies
         UnityState unityState;
-        EditorEvents editorEvents;
         SnackbarState snackbarState;
 
         [Inject]
-        public void Construct(UnityState unityState, EditorEvents editorEvents, SnackbarState snackbarState)
+        public void Construct(UnityState unityState, SnackbarState snackbarState)
         {
             this.unityState = unityState;
-            this.editorEvents = editorEvents;
             this.snackbarState = snackbarState;
+        }
 
-            editorEvents.OnSnackbarChangedEvent += DisplayQueuedMessages;
+        private void OnEnable()
+        {
+            snackbarState.queuedMessages.OnQueueChanged += DisplayQueuedMessages;
+        }
+
+        private void OnDisable()
+        {
+            snackbarState.queuedMessages.OnQueueChanged -= DisplayQueuedMessages;
         }
 
         public void DisplayQueuedMessages()
@@ -89,18 +95,18 @@ namespace Assets.Scripts.Visuals
                         break;
                 }
 
-                activeSnackbars.Add(newItem);
+                activeSnackbars.Add(handler);
 
                 handler.button.onClick.AddListener(() =>
                 {
-                    StartCoroutine(RemoveSnackbar(newItem, 0));
+                    StartCoroutine(RemoveSnackbar(handler, 0));
                 });
 
-                StartCoroutine(RemoveSnackbar(newItem, itemLifetime));
+                StartCoroutine(RemoveSnackbar(handler, itemLifetime));
             }
         }
 
-        IEnumerator RemoveSnackbar(GameObject snackbarObject, float delay)
+        IEnumerator RemoveSnackbar(SnackbarItemHandler snackbarObject, float delay)
         {
             yield return new WaitForSeconds(delay);
 
@@ -110,7 +116,7 @@ namespace Assets.Scripts.Visuals
             }
             if (snackbarObject != null)
             {
-                Destroy(snackbarObject);
+                Destroy(snackbarObject.gameObject);
             }
 
             DisplayQueuedMessages();

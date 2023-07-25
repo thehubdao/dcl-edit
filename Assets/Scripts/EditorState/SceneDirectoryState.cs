@@ -3,7 +3,6 @@ using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 
-
 namespace Assets.Scripts.EditorState
 {
     public class SceneDirectoryState
@@ -35,8 +34,8 @@ namespace Assets.Scripts.EditorState
          * The currently opened scene object
          * </summary>
          */
-        [CanBeNull]
-        public DclScene currentScene = null;
+        
+        public DclScene currentScene = new();
 
         /**
          * <summary>
@@ -106,7 +105,9 @@ namespace Assets.Scripts.EditorState
         /// </summary>
         public static SceneDirectoryState CreateNewSceneDirectoryState()
         {
-            return new SceneDirectoryState { currentScene = new DclScene() };
+            SceneDirectoryState sceneDirectoryState = new();
+            sceneDirectoryState.currentScene = new();
+            return sceneDirectoryState;
         }
     }
     

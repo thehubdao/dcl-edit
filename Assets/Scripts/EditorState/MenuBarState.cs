@@ -8,7 +8,7 @@ namespace Assets.Scripts.EditorState
 {
     public class MenuBarState
     {
-        public List<MenuBarItem> menuItems = new List<MenuBarItem>();
+        public SubscribableList<MenuBarItem> menuItems = new();
 
         public class MenuBarItem : ContextMenuItem
         {

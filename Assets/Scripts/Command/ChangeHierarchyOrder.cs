@@ -43,7 +43,6 @@ namespace Assets.Scripts.Command
             affectedTransform.globalFixedRotation = oldRotation;
 
             editorEvents.InvokeHierarchyChangedEvent();
-            editorEvents.InvokeSelectionChangedEvent();
         }
 
         public override void Undo(DclScene sceneState, EditorEvents editorEvents)
@@ -62,8 +61,6 @@ namespace Assets.Scripts.Command
             affectedTransform.globalFixedRotation = oldRotation;
 
             editorEvents.InvokeHierarchyChangedEvent();
-            editorEvents.InvokeSelectionChangedEvent();
         }
-
     }
 }

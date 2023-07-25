@@ -20,6 +20,6 @@ namespace Assets.Scripts.EditorState
         }
 
         // These messages get picked up by the visuals and are removed from the queue when they are displayed
-        public Queue<Data> queuedMessages = new Queue<Data>();
+        public SubscribableQueue<Data> queuedMessages = new();
     }
 }

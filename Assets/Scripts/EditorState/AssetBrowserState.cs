@@ -13,7 +13,7 @@ namespace Assets.Scripts.EditorState
 
         public List<AssetMetadata.AssetType> shownAssetTypes { get; private set; }
         public Sorting sorting { get; private set; }
-        public List<string> expandedFoldersPaths = new List<string>();
+        public SubscribableList<string> expandedFoldersPaths = new();
 
         // This is a temporary solution to allow a dialog setting a custom filter. While the dialog
         // is open, the filters set by the user will be stored here. After the dialog is completed

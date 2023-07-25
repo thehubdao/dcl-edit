@@ -29,7 +29,7 @@ namespace Assets.Scripts.Interaction
 
         public void HandleHierarchyUp()
         {
-            var selectedEntity = sceneManagerSystem.GetCurrentSceneOrNull()?.SelectionState.PrimarySelectedEntity;
+            var selectedEntity = sceneManagerSystem.GetCurrentSceneOrNull()?.SelectionState.PrimarySelectedEntity.Value;
 
             if (selectedEntity == null)
             {
@@ -48,7 +48,7 @@ namespace Assets.Scripts.Interaction
 
         public void HandleHierarchyDown()
         {
-            var selectedEntity = sceneManagerSystem.GetCurrentSceneOrNull()?.SelectionState.PrimarySelectedEntity;
+            var selectedEntity = sceneManagerSystem.GetCurrentSceneOrNull()?.SelectionState.PrimarySelectedEntity.Value;
 
             if (selectedEntity == null)
             {
@@ -67,7 +67,7 @@ namespace Assets.Scripts.Interaction
 
         public void HandleHierarchyCollapse()
         {
-            var selectedEntity = sceneManagerSystem.GetCurrentSceneOrNull()?.SelectionState.PrimarySelectedEntity;
+            var selectedEntity = sceneManagerSystem.GetCurrentSceneOrNull()?.SelectionState.PrimarySelectedEntity.Value;
 
             if (selectedEntity == null)
             {
@@ -91,7 +91,7 @@ namespace Assets.Scripts.Interaction
 
         public void HandleHierarchyExpand()
         {
-            var selectedEntity = sceneManagerSystem.GetCurrentSceneOrNull()?.SelectionState.PrimarySelectedEntity;
+            var selectedEntity = sceneManagerSystem.GetCurrentSceneOrNull()?.SelectionState.PrimarySelectedEntity.Value;
 
             if (selectedEntity == null)
             {

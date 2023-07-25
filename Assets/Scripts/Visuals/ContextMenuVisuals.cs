@@ -17,7 +17,6 @@ namespace Assets.Scripts.Visuals
 
         // Dependencies
         ContextMenuState state;
-        EditorEvents editorEvents;
         ContextMenuSystem contextMenuSystem;
         UiBuilder.UiBuilder.Factory uiBuilderFactory;
         UnityState unityState;
@@ -26,28 +25,32 @@ namespace Assets.Scripts.Visuals
         [Inject]
         void Construct(
             ContextMenuState contextMenuState,
-            EditorEvents editorEvents,
             ContextMenuSystem contextMenuSystem,
             UiBuilder.UiBuilder.Factory uiBuilderFactory,
             UnityState unityState)
         {
             this.state = contextMenuState;
-            this.editorEvents = editorEvents;
             this.contextMenuSystem = contextMenuSystem;
             this.uiBuilderFactory = uiBuilderFactory;
             this.unityState = unityState;
-
-            SetupEventListeners();
         }
 
-        private void SetupEventListeners()
+        private void OnEnable()
         {
-            editorEvents.onUpdateContextMenuEvent += () =>
-            {
-                transform.SetAsLastSibling(); // Draw context menu on top of UI
-                RemoveObsoleteMenuVisuals();
-                CreateMissingMenuVisuals();
-            };
+            state.menuData.OnStackChanged += UpdateVisuals;
+            UpdateVisuals();
+        }
+
+        private void OnDisable()
+        {
+            state.menuData.OnStackChanged -= UpdateVisuals;
+        }
+
+        private void UpdateVisuals()
+        {
+            transform.SetAsLastSibling(); // Draw context menu on top of UI
+            RemoveObsoleteMenuVisuals();
+            CreateMissingMenuVisuals();
         }
 
         void RemoveObsoleteMenuVisuals()

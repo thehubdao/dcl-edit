@@ -8,7 +8,7 @@ namespace Assets.Scripts.EditorState
 {
     public class ContextMenuState
     {
-        public Stack<Data> menuData = new Stack<Data>();
+        public SubscribableStack<Data> menuData = new();
         public Dictionary<Guid, GameObject> menuGameObjects = new Dictionary<Guid, GameObject>();
 
         public struct Data

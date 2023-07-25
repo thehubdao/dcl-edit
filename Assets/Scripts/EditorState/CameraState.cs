@@ -1,5 +1,6 @@
 using Assets.Scripts.Events;
 using Assets.Scripts.Utility;
+using Ookii.Dialogs;
 using UnityEngine;
 
 
@@ -11,64 +12,28 @@ namespace Assets.Scripts.EditorState
         private float CameraFastFlySpeed => CameraNormalFlySpeed * 3;
         private float MouseSensitivity => PersistentData.MouseSensitivity;
 
-        private Vector3 _position;
-        private float _pitch;
-        private float _yaw;
+        private Subscribable<Vector3> _position = new();
+        private Subscribable<float> _pitch = new();
+        private Subscribable<float> _yaw = new();
 
-        public Vector3 Position
-        {
-            get => _position;
-            set
-            {
-                _position = value;
-                _editorEvents.InvokeCameraStateChangedEvent();
-            }
-        }
-
+        public void AddOnPitchChanged(System.Action action) => _pitch.OnValueChanged += action;
+        public void RemoveOnPitchChanged(System.Action action) => _pitch.OnValueChanged -= action;
+        
         public float Pitch
         {
-            get => _pitch;
-            set
-            {
-                _pitch = value;
-
-                if (_pitch > 100) // Yes, 100 degrees is correct. In my opinion, it feels less restrictive when looking straight up or down.
-                    _pitch = 100;
-
-                if (_pitch < -100)
-                    _pitch = -100;
-
-                _editorEvents.InvokeCameraStateChangedEvent();
-            }
+            get => _pitch.Value;
+            set => _pitch.Value = Mathf.Clamp(value, -100f, 100f);
         }
+        public Subscribable<Vector3> Position => _position;
+        public Subscribable<float> Yaw => _yaw;
 
-        public float Yaw
-        {
-            get => _yaw;
-            set
-            {
-                _yaw = value;
-                _editorEvents.InvokeCameraStateChangedEvent();
-            }
-        }
-
-        public Quaternion Rotation => Quaternion.Euler(_pitch, _yaw, 0);
+        public Quaternion Rotation => Quaternion.Euler(_pitch.Value, _yaw.Value, 0);
         public Vector3 Forward => Rotation * Vector3.forward;
         public Vector3 Back => Rotation * Vector3.back;
         public Vector3 Right => Rotation * Vector3.right;
         public Vector3 Left => Rotation * Vector3.left;
         public Vector3 Up => Rotation * Vector3.up;
         public Vector3 Down => Rotation * Vector3.down;
-
-
-        // Dependencies
-        private EditorEvents _editorEvents;
-
-        public CameraState(EditorEvents editorEvents)
-        {
-            _editorEvents = editorEvents;
-        }
-
 
         public void RotateStep(Vector2 direction)
         {
@@ -77,7 +42,7 @@ namespace Assets.Scripts.EditorState
 
         public void RotateStep(float directionX, float directionY)
         {
-            Yaw += directionX * MouseSensitivity;
+            Yaw.Value += directionX * MouseSensitivity;
             Pitch += directionY * -MouseSensitivity;
         }
 
@@ -88,24 +53,24 @@ namespace Assets.Scripts.EditorState
 
         public void MoveStep(Vector3 localDirection, bool isFast)
         {
-            Position += Rotation * localDirection * (isFast ? CameraFastFlySpeed : CameraNormalFlySpeed);
+            Position.Value += Rotation * localDirection * (isFast ? CameraFastFlySpeed : CameraNormalFlySpeed);
         }
         public void MoveFixed(Vector3 localDirection)
         {
-            Position += Rotation * localDirection;
+            Position.Value += Rotation * localDirection;
         }
         /// <summary>
         /// Moves the camera towards the given destination. Returns true if the destination was reached.
         /// </summary>
         public bool MoveTowards(Vector3 globalDestination, bool isFast)
         {
-            Vector3 dirToDest = globalDestination - Position;
+            Vector3 dirToDest = globalDestination - Position.Value;
             Vector3 move = dirToDest.normalized * Time.deltaTime * (isFast ? CameraFastFlySpeed : CameraNormalFlySpeed);
 
             // Check if destination was reached
             if (dirToDest.magnitude < move.magnitude)
             {
-                Position += dirToDest;
+                Position.Value += dirToDest;
                 return true;
             }
 
@@ -116,15 +81,15 @@ namespace Assets.Scripts.EditorState
         public void RotateAroundPointStep(Vector3 point, Vector2 direction)
         {
             // Find relations from position to Pivot point
-            var gimbalVector = Position - point;
+            var gimbalVector = Position.Value - point;
             var moveToPivot = Quaternion.Inverse(Rotation) * -gimbalVector;
 
             // Move to pivot
             MoveFixed(moveToPivot);
 
             // Rotate
-            Yaw += direction.x * MouseSensitivity;
-            Pitch += direction.y * -MouseSensitivity;
+            Yaw.Value += direction.x * MouseSensitivity;
+            Pitch += direction.y - MouseSensitivity;
 
             // Move back from pivot
             MoveFixed(-moveToPivot);

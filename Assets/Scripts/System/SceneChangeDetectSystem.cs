@@ -14,7 +14,8 @@ namespace Assets.Scripts.System
 
         // Commands are referenced in the command history by an index. To remember which command was the last one when the scene
         // is saved, the offset to the index of that command is remembered.
-        int savedCommandIndexOffset = 0;
+        //int savedCommandIndexOffset = 0;
+        public Subscribable<int> savedCommandIndexOffset = new(0);
 
         public enum CommandEvent
         {
@@ -30,9 +31,9 @@ namespace Assets.Scripts.System
             this.sceneViewSystem = sceneViewSystem;
         }
 
-        public void RememberCurrentState() => savedCommandIndexOffset = 0;
+        public void RememberCurrentState() => savedCommandIndexOffset.Value = 0;
 
-        public bool HasSceneChanged() => savedCommandIndexOffset != 0;
+        public bool HasSceneChanged() => savedCommandIndexOffset.Value != 0;
 
         /// <summary>
         /// Checks if the given command manipulated the scene. Commands like "ChangeSelection" do not do that.
@@ -53,9 +54,8 @@ namespace Assets.Scripts.System
         {
             // The saved command was lost because it was overwritten by executing another command.
             // Until the scene is saved again, it will remain at this state (int.MinValue).
-            if (savedCommandIndexOffset == int.MinValue)
+            if (savedCommandIndexOffset.Value == int.MinValue)
             {
-                sceneViewSystem.UpdateSceneTabTitle();
                 return;
             }
 
@@ -65,31 +65,29 @@ namespace Assets.Scripts.System
                 case CommandEvent.ExecuteNew:
                     if (IsManipulatingCommand(historyState, historyState.CurrentCommandIndex))
                     {
-                        savedCommandIndexOffset++;
+                        savedCommandIndexOffset.Value++;
                     }
                     break;
                 case CommandEvent.OverwriteHistory:
                     // The saved command is somewhere in the future commands which are now lost.
-                    if (savedCommandIndexOffset < 0)
+                    if (savedCommandIndexOffset.Value < 0)
                     {
-                        savedCommandIndexOffset = int.MinValue;     // int.MinValue means that no command is saved
+                        savedCommandIndexOffset.Value = int.MinValue;     // int.MinValue means that no command is saved
                     }
                     else
                     {
-                        savedCommandIndexOffset++;
+                        savedCommandIndexOffset.Value++;
                     }
                     break;
                 case CommandEvent.Undo:
-                    if (IsManipulatingCommand(historyState, historyState.CurrentCommandIndex + 1)) savedCommandIndexOffset--;
+                    if (IsManipulatingCommand(historyState, historyState.CurrentCommandIndex + 1)) savedCommandIndexOffset.Value--;
                     break;
                 case CommandEvent.Redo:
-                    if (IsManipulatingCommand(historyState, historyState.CurrentCommandIndex)) savedCommandIndexOffset++;
+                    if (IsManipulatingCommand(historyState, historyState.CurrentCommandIndex)) savedCommandIndexOffset.Value++;
                     break;
                 default:
                     break;
             }
-
-            sceneViewSystem.UpdateSceneTabTitle();
         }
     }
 }
