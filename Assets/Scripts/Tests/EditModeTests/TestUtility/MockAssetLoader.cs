@@ -91,6 +91,14 @@ namespace Assets.Scripts.Tests.EditModeTests.TestUtility
             return null;
         }
 
+        public AssetData GetOnlyAssetDataById(Guid id)
+        {
+            if (loaderState.assetDataCache.TryGetValue(id, out var assetData))
+                return assetData;
+
+            return GetDataById(id);
+        }
+
         public AssetMetadata GetMetadataById(Guid id)
         {
             if (loaderState.assetMetadataCache.TryGetValue(id, out AssetMetadataFile file))

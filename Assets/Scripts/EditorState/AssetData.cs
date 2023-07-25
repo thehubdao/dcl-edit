@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Assets.Scripts.EditorState
@@ -79,6 +80,26 @@ namespace Assets.Scripts.EditorState
         public ImageAssetData(Guid id, Texture2D data) : base(id, State.IsAvailable)
         {
             this.data = data;
+        }
+    }
+
+    public class SceneAssetData: AssetData
+    {
+        public bool preLoaded;
+        public Dictionary<Guid, bool> assetList;
+
+        public SceneAssetData(Guid id, bool preLoaded, Dictionary<Guid, bool> assetList) : base(id, State.IsLoading)
+        {
+            this.preLoaded = preLoaded;
+            this.assetList = assetList;
+        }
+
+        public bool IsReady()
+        {
+            var ready = assetList.All(i => i.Value);
+            if (ready) state = State.IsAvailable;
+
+            return ready;
         }
     }
 

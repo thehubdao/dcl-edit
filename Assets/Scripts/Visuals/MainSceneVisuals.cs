@@ -47,7 +47,7 @@ namespace Assets.Scripts.Visuals
             InitializeEntityVisuals(scene, visuals, overrideSelectionId);
         }
 
-        private void RemoveChildGameObjects()
+        public void RemoveChildGameObjects()
         {
             foreach (var interaction in GetComponentsInChildren<EntitySelectInteraction>())
             {

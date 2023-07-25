@@ -370,6 +370,30 @@ namespace Assets.Scripts.System
 
             return StaticUtilities.MakeRelativePath(pathState.ProjectPath, Path.Combine(modelBuildPath, data.modelPath));
         }
+
+        public AssetData GetOnlyAssetDataById(Guid id)
+        {
+            // check if id was already built else return GetDataById
+            if (!loaderState.Data.TryGetValue(id, out var data)) return GetDataById(id);
+            
+            var dataState = AssetData.State.IsLoading;
+            switch (data.DataCacheState)
+            {
+                case BuilderAssetLoaderState.DataStorage.CacheState.Cached:
+                case BuilderAssetLoaderState.DataStorage.CacheState.Loaded:
+                    dataState = AssetData.State.IsAvailable;
+                    break;
+            }
+
+            if (!loaderState.loadedModels.TryGetValue(data.Id, out var dataModel))
+                return new AssetData(id, dataState);
+            
+            
+            return new ModelAssetData(id, dataModel)
+            {
+                state = dataState
+            };
+        }
     }
 
     class BuilderAssetGltfDataLoader : IDataLoader

@@ -15,5 +15,6 @@ namespace Assets.Scripts.System
         AssetThumbnail GetThumbnailById(Guid id);
         AssetData GetDataById(Guid id);
         Task<string> CopyAssetTo(Guid id);
+        AssetData GetOnlyAssetDataById(Guid id);
     }
 }
