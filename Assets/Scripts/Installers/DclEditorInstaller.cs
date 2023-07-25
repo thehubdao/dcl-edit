@@ -139,6 +139,9 @@ public class DclEditorInstaller : MonoInstaller
 
         Container.BindFactory<AssetBrowserFolderHandler, AssetBrowserFolderHandler.Factory>().FromComponentInNewPrefab(unityState.AssetBrowserFolderAtom);
 
+        Container.BindFactory<UiBuilder, PanelAtom, PanelAtom.Factory>().AsSingle();
+
+
         Container.BindInterfacesAndSelfTo<SceneManagerSystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<SceneManagerState>().AsSingle();

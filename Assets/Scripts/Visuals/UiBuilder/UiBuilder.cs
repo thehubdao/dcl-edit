@@ -1,7 +1,7 @@
-using System;
-using System.Collections.Generic;
 using Assets.Scripts.EditorState;
 using JetBrains.Annotations;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 using Object = UnityEngine.Object;
@@ -65,16 +65,19 @@ namespace Assets.Scripts.Visuals.UiBuilder
         private UnityState unityState;
         private AssetBrowserButtonHandler.Factory assetBrowserButtonHandlerFactory;
         private AssetBrowserFolderHandler.Factory assetBrowserFolderHandlerFactory;
+        private PanelAtom.Factory panelAtomFactory;
 
         [Inject]
         public void Constructor(
             UnityState unityState,
             AssetBrowserButtonHandler.Factory assetBrowserButtonHandlerFactory,
-            AssetBrowserFolderHandler.Factory assetBrowserFolderHandlerFactory)
+            AssetBrowserFolderHandler.Factory assetBrowserFolderHandlerFactory,
+            PanelAtom.Factory panelAtomFactory)
         {
             this.unityState = unityState;
             this.assetBrowserButtonHandlerFactory = assetBrowserButtonHandlerFactory;
             this.assetBrowserFolderHandlerFactory = assetBrowserFolderHandlerFactory;
+            this.panelAtomFactory = panelAtomFactory;
         }
 
         #region Object Pool
@@ -178,7 +181,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
             Stats.uiBuilderUpdatedCount++;
 
             // Create new root atom if not exists
-            currentRootAtom ??= new PanelAtom(this);
+            currentRootAtom ??= panelAtomFactory.Create(this);
 
             currentRootAtom.Update(newData);
             currentRootAtom.gameObject.gameObject.transform.SetParent(parentObject.transform, false);
