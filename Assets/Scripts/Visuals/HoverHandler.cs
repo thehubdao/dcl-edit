@@ -1,4 +1,5 @@
 using Assets.Scripts.EditorState;
+using Assets.Scripts.System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -10,13 +11,17 @@ using Zenject;
 public class HoverHandler : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     private const int CharacterWrapLimit = 40;
+
+    private UnityState unityState;
+
     [SerializeField][TextArea(5, 30)] private string text;
     [SerializeField] private float timeToAppear = 0.5f;
     [SerializeField] private bool appearAtObjectCenter = false;
     [Tooltip("Adds automatically new lines if the text is too long.")]
     [SerializeField] private bool autoWrap = false;
-    private UnityState unityState;
-    private GameObject currentHoverLabel;
+
+    private GameObject hoverLabel;
+    private static GameObject currentHoverLabel;
 
     [Inject]
     void Construct(UnityState unityState)
@@ -48,30 +53,28 @@ public class HoverHandler : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
             yield return null;
         }
 
-        currentHoverLabel = Instantiate(unityState.HoverLabel, unityState.Ui.transform);
-        var rectTransform = currentHoverLabel.GetComponent<RectTransform>();
-        var textField = currentHoverLabel.GetComponentInChildren<TMP_Text>();
-        var canvasGroup = currentHoverLabel.GetComponent<CanvasGroup>();
-        var layoutElement = currentHoverLabel.GetComponent<LayoutElement>();
-        textField.text = text;
-        float pivotX = Input.mousePosition.x < Screen.width / 2 ? 0 : 1;
-        float pivotY = Input.mousePosition.y < Screen.height / 2 ? 0 : 1f;
-        rectTransform.pivot = new(pivotX, pivotY);
-        rectTransform.position = appearAtObjectCenter ? transform.position : new Vector2(Input.mousePosition.x, pivotY == 0 ? Input.mousePosition.y : Input.mousePosition.y - 25);
-        layoutElement.enabled = autoWrap && text.Length > CharacterWrapLimit;
-        
-        time = 0;
-        while(time <= 0.2f)
+        if (currentHoverLabel == null)
         {
-            time += Time.deltaTime;
-            canvasGroup.alpha = time * 5;
-            yield return null;
-        }
-    }
+            hoverLabel = currentHoverLabel = Instantiate(unityState.HoverLabel, unityState.Ui.transform);
+            var rectTransform = currentHoverLabel.GetComponent<RectTransform>();
+            var textField = currentHoverLabel.GetComponentInChildren<TMP_Text>();
+            var canvasGroup = currentHoverLabel.GetComponent<CanvasGroup>();
+            var layoutElement = currentHoverLabel.GetComponent<LayoutElement>();
+            textField.text = text;
+            float pivotX = Input.mousePosition.x < Screen.width / 2 ? 0 : 1;
+            float pivotY = Input.mousePosition.y < Screen.height / 2 ? 0 : 1f;
+            rectTransform.pivot = new(pivotX, pivotY);
+            rectTransform.position = appearAtObjectCenter ? transform.position : new Vector2(Input.mousePosition.x, pivotY == 0 ? Input.mousePosition.y : Input.mousePosition.y - 25);
+            layoutElement.enabled = autoWrap && text.Length > CharacterWrapLimit;
 
-    private void DestroyHoverLabel()
-    {
-        Destroy(currentHoverLabel);
+            time = 0;
+            while (time <= 0.2f)
+            {
+                time += Time.deltaTime;
+                canvasGroup.alpha = time * 5;
+                yield return null;
+            }
+        }
     }
 
     public void OnPointerEnter(PointerEventData eventData)
@@ -83,6 +86,7 @@ public class HoverHandler : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     public void OnPointerExit(PointerEventData eventData)
     {
         StopAllCoroutines();
-        DestroyHoverLabel();
+        if(hoverLabel == currentHoverLabel)
+            Destroy(currentHoverLabel);
     }
 }
