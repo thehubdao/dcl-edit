@@ -1,96 +1,114 @@
+using System;
+using System.Collections.Generic;
+using Assets.Scripts.Utility;
+using JetBrains.Annotations;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using Zenject;
+
 namespace Visuals.UiHandler
 {
-    using System;
-    using UnityEngine;
-    using UnityEngine.EventSystems;
-    using UnityEngine.UI;
-
-    public class DropHandler : MonoBehaviour, IDropHandler, IPointerEnterHandler, IPointerExitHandler
+    public class DropHandler : MonoBehaviour, IDropHandler, IPointerEnterHandler, IPointerExitHandler, IDropZoneHandler
     {
-        public Action<GameObject> onDrop;
-        public Image clickableImage;
-        public Image hoverImageDefault;
-        public Image hoverImageSpecial;
-        private Image currentHoverImage;
-        [HideInInspector]
-        public bool rayCastTarget = false;
+        // Dependencies
+        private DragAndDropState dragAndDropState;
 
-        private void Awake()
+
+        [Inject]
+        private void Construct(DragAndDropState dragAndDropState)
         {
-            currentHoverImage = hoverImageDefault;
+            this.dragAndDropState = dragAndDropState;
+        }
+
+
+        [CanBeNull]
+        private DropStrategy dropStrategyInternal;
+
+        [CanBeNull]
+        public DropStrategy dropStrategy
+        {
+            get => dropStrategyInternal;
+            set
+            {
+                var dropCategories = new List<DragAndDropState.DropZoneCategory>();
+
+                if (value?.dropEntityStrategy != null)
+                {
+                    dropCategories.Add(DragAndDropState.DropZoneCategory.Entity);
+                }
+
+                if (value?.dropModelAssetStrategy != null)
+                {
+                    dropCategories.Add(DragAndDropState.DropZoneCategory.ModelAsset);
+                }
+
+                if (value?.dropSceneAssetStrategy != null)
+                {
+                    dropCategories.Add(DragAndDropState.DropZoneCategory.SceneAsset);
+                }
+
+                if (value?.dropImageAssetStrategy != null)
+                {
+                    dropCategories.Add(DragAndDropState.DropZoneCategory.ImageAsset);
+                }
+
+                dragAndDropState.RegisterHandler(this, dropCategories);
+                dropStrategyInternal = value;
+            }
         }
 
         public void OnDrop(PointerEventData eventData)
         {
-            var draggedGameObject = eventData.pointerDrag;
+            //Debug.Log($"Dropped on {StaticUtilities.ListGameObjectStack(gameObject)}");
 
-            if (!rayCastTarget || draggedGameObject == null || !CheckIsDraggable(eventData))
+            if (eventData.pointerDrag == null) return;
+            if (dropStrategy == null) return;
+
+            if (eventData.pointerDrag.TryGetComponent(out DragHandler dragHandler))
             {
-                return;
+                dropStrategy.OnDropped(dragHandler.dragStrategy);
             }
-
-            onDrop?.Invoke(draggedGameObject);
         }
 
-        //TODO make more efficient by preventing all scroll rects from being draggable
+        // on hover
+        [CanBeNull]
+        private PointerEventData isHovering = null;
+
         public void OnPointerEnter(PointerEventData eventData)
         {
-            if (!rayCastTarget || eventData.pointerDrag == null || !CheckIsDraggable(eventData))
-            {
-                return;
-            }
-            
-            ShowCurrentImage();
+            if (!eventData.dragging) return;
+
+            isHovering = eventData;
         }
 
-        //TODO make more efficient by preventing all scroll rects from being draggable
         public void OnPointerExit(PointerEventData eventData)
         {
-            if (!rayCastTarget || eventData.pointerDrag == null ||!CheckIsDraggable(eventData))
+            if (!eventData.dragging) return;
+
+            isHovering = null;
+        }
+
+        void Update()
+        {
+            if (isHovering == null) return;
+            if (isHovering.pointerDrag == null) return;
+            if (dropStrategy == null) return;
+            if (!gameObject.activeSelf) return;
+
+            if (isHovering.pointerDrag.TryGetComponent(out DragHandler dragHandler))
             {
-                return;
+                dropStrategy.OnHover(dragHandler.dragStrategy);
             }
-
-            HideImages();
         }
 
-        private void ShowCurrentImage()
+        public void Enable()
         {
-            currentHoverImage.enabled = true;
+            gameObject.SetActive(true);
         }
 
-        private void HideImages()
+        public void Disable()
         {
-            currentHoverImage.enabled = false;
-            hoverImageDefault.enabled = false;
-            hoverImageSpecial.enabled = false;
-        }
-        
-        public void SetEnabled(bool enabled)
-        {
-            clickableImage.raycastTarget = enabled;
-            rayCastTarget = enabled;
-        }
-
-        public void ResetHandler()
-        {
-            HideImages();
-            SetEnabled(false);
-        }
-
-        private static bool CheckIsDraggable(PointerEventData eventData)
-        {
-            return eventData.pointerDrag.TryGetComponent(out DragAndDropHandler dragAndDropHandler);
-        }
-
-        public void SetCurrentHoverImageDefault()
-        {
-            currentHoverImage = hoverImageDefault;
-        }
-        
-        public void SetCurrentHoverImageSpecial()
-        {
-            currentHoverImage = hoverImageSpecial;
+            gameObject.SetActive(false);
         }
     }
 }

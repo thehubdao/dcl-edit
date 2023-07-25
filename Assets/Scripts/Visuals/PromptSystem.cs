@@ -31,10 +31,10 @@ public class PromptSystem
         return (Value<Color>)await promptVisual.data.taskCompleted.Task;
     }
 
-    public async Task<Value<System.Guid>> CreateAssetMenu()
+    public async Task<Value<System.Guid>> CreateAssetMenu(DclPropertyIdentifier property)
     {
         var promptVisual = unityState.PromptAssetPicker.GetComponent<UiPromptVisuals>();
-        promptVisual.ActivateAssetBrowser("Choose an asset.");
+        promptVisual.ActivateAssetBrowser("Choose an asset.", property);
         return (Value<System.Guid>)await promptVisual.data.taskCompleted.Task;
     }
 
@@ -44,7 +44,8 @@ public class PromptSystem
         public System.Action action;
         public System.Action ToDo => action;
         public string name;
-        public void Submit(GameObject go) 
+
+        public void Submit()
         {
             action?.Invoke(); 
             data.window?.SetActive(false); 

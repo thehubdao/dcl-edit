@@ -42,6 +42,7 @@ namespace Assets.Scripts.Visuals
         public void SetupEventListeners()
         {
             editorEvents.onSelectionChangedEvent += UpdateVisuals;
+            editorEvents.onValueChangedEvent += UpdateVisuals;
         }
 
         private void UpdateVisuals()

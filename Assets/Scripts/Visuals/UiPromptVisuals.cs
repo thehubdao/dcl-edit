@@ -14,12 +14,18 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Assets.Scripts.EditorState;
 using HSVPicker;
+using System.Linq;
 
 public class UiPromptVisuals : MonoBehaviour
 {
-    [SerializeField] private GameObject content;
-    [SerializeField] private RectTransform contentRectTransform;
-    [SerializeField] private CanvasGroup mainCanvasGroup;
+    [SerializeField]
+    private GameObject content;
+
+    [SerializeField]
+    private RectTransform contentRectTransform;
+
+    [SerializeField]
+    private CanvasGroup mainCanvasGroup;
 
     private UiBuilder uiBuilder;
     private UiAssetBrowserVisuals.Factory uiAssetBrowserViusalsFactory;
@@ -30,6 +36,7 @@ public class UiPromptVisuals : MonoBehaviour
     private DialogSystem dialogSystem;
     private AssetBrowserState assetBrowserState;
     private UnityState unityState;
+    private AvailableComponentsState availableComponentsState;
 
     private PanelAtom.Data panel;
     public Data data;
@@ -38,15 +45,16 @@ public class UiPromptVisuals : MonoBehaviour
 
     [Inject]
     void Construct(
-    UiBuilder.Factory uiBuilderFactory,
-    UiAssetBrowserVisuals.Factory uiAssetBrowserViusalsFactory,
-    EditorEvents editorEvents,
-    DialogState dialogState,
-    SceneManagerSystem sceneManagerSystem,
-    CommandSystem commandSystem,
-    AssetBrowserState assetBrowserState,
-    DialogSystem dialogSystem,
-    UnityState unityState)
+        UiBuilder.Factory uiBuilderFactory,
+        UiAssetBrowserVisuals.Factory uiAssetBrowserViusalsFactory,
+        EditorEvents editorEvents,
+        DialogState dialogState,
+        SceneManagerSystem sceneManagerSystem,
+        CommandSystem commandSystem,
+        AssetBrowserState assetBrowserState,
+        DialogSystem dialogSystem,
+        UnityState unityState,
+        AvailableComponentsState availableComponentsState)
     {
         uiBuilder = uiBuilderFactory.Create(content);
         this.uiAssetBrowserViusalsFactory = uiAssetBrowserViusalsFactory;
@@ -57,6 +65,7 @@ public class UiPromptVisuals : MonoBehaviour
         this.dialogSystem = dialogSystem;
         this.assetBrowserState = assetBrowserState;
         this.unityState = unityState;
+        this.availableComponentsState = availableComponentsState;
     }
 
     public static void CreateText(PanelAtom.Data panel, Data data)
@@ -69,7 +78,7 @@ public class UiPromptVisuals : MonoBehaviour
     {
         foreach (var action in data.actions)
             action.data = data;
-        if(data.notInWindowAction != null)
+        if (data.notInWindowAction != null)
             data.notInWindowAction.data = data;
     }
 
@@ -77,7 +86,7 @@ public class UiPromptVisuals : MonoBehaviour
     {
         var horizontalPanel = panel.AddPanel(PanelHandler.LayoutDirection.Horizontal, TextAnchor.UpperCenter);
         foreach (var action in data.actions)
-            horizontalPanel.AddButton(action.name, action.Submit);
+            horizontalPanel.AddButton(action.name, new LeftClickStrategy(e => action.Submit()));
     }
 
     public void ActivateDialog(string dialogText, PromptSystem.Action[] actions, PromptSystem.Action notInWindowAction)
@@ -116,14 +125,37 @@ public class UiPromptVisuals : MonoBehaviour
         }
     }
 
-    public void ActivateAssetBrowser(string dialogText)
+    public void ActivateAssetBrowser(string dialogText, DclPropertyIdentifier propertyIdentifier)
     {
+        // Setup the asset filter
+        assetBrowserState.StoreShownTypesTemp();
+
+        var component = sceneManagerSystem.GetCurrentScene().GetEntityById(propertyIdentifier.Entity).GetComponentByName(propertyIdentifier.Component);
+        var property = component.GetPropertyByName(propertyIdentifier.Property);
+
+        var componentDefinition = availableComponentsState.GetComponentDefinitionByName(component.NameInCode);
+        var propertyDefinition = componentDefinition.properties.First(p => p.name == propertyIdentifier.Property);
+
+        if ((propertyDefinition.flags & DclComponent.DclComponentProperty.PropertyDefinition.Flags.ModelAssets) != 0)
+        {
+            // Model asset
+            assetBrowserState.shownAssetTypes.Add(AssetMetadata.AssetType.Model);
+        }
+
+        if ((propertyDefinition.flags & DclComponent.DclComponentProperty.PropertyDefinition.Flags.SceneAssets) != 0)
+        {
+            // Scene asset
+            assetBrowserState.shownAssetTypes.Add(AssetMetadata.AssetType.Scene);
+        }
+
+        // Create the asset browser visuals
         if (tmpObject != null)
         {
             Destroy(tmpObject);
             data.window.SetActive(false);
             return;
         }
+
         panel = UiBuilder.NewPanelData();
         var uiAssetBrowserVisuals = uiAssetBrowserViusalsFactory.Create();
         tmpObject = uiAssetBrowserVisuals.gameObject;
@@ -134,37 +166,26 @@ public class UiPromptVisuals : MonoBehaviour
 
         AssignActions(data);
         CreateText(panel, data);
-        
-        assetBrowserState.StoreShownTypesTemp();
+
 
         visuals.assetButtonOnClickOverride = (Guid assetId) =>
         {
-            DclScene scene = sceneManagerSystem.GetCurrentScene();
-
-            // Update the target component with the new asset
-            var currentSelected = scene.SelectionState.PrimarySelectedEntity;
-            var targetComponent = currentSelected.GetComponentByName("GLTFShape");
-            var sceneProperty = targetComponent.GetPropertyByName("scene");
-            var assetProperty = targetComponent.GetPropertyByName("asset");
-
-            if (sceneProperty != null)
+            if (assetId != Guid.Empty)
             {
-                var oldValue = sceneProperty.GetConcrete<Guid>().FixedValue;
-                var identifier = new DclPropertyIdentifier(targetComponent.Entity.Id, targetComponent.NameInCode, "scene");
-                commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateChangePropertyCommand(identifier, oldValue, assetId));
-            }
-            if (assetProperty != null)
-            {
-                var oldValue = assetProperty.GetConcrete<Guid>().FixedValue;
-                var identifier = new DclPropertyIdentifier(targetComponent.Entity.Id, targetComponent.NameInCode, "asset");
-                commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateChangePropertyCommand(identifier, oldValue, assetId));
+                // Update the target component with the new asset
+                if (property != null)
+                {
+                    var oldValue = property.GetConcrete<Guid>().FixedValue;
+                    commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateChangePropertyCommand(propertyIdentifier, oldValue, assetId));
+                }
             }
 
             dialogSystem.CloseCurrentDialog();
+            assetBrowserState.RestoreShownTypes();
             editorEvents.InvokeSelectionChangedEvent();
             editorEvents.InvokeUiChangedEvent();
             GetGuid.value = assetId;
-            data.notInWindowAction?.Submit(null);
+            data.notInWindowAction?.Submit();
         };
 
         //this is not nice
@@ -180,7 +201,7 @@ public class UiPromptVisuals : MonoBehaviour
     {
         if (!Input.GetMouseButtonDown(0)) return;
         if (RectTransformUtility.RectangleContainsScreenPoint(contentRectTransform, Input.mousePosition)) return;
-        data.notInWindowAction?.Submit(null);
+        data.notInWindowAction?.Submit();
     }
 
     private void OnEnable()
@@ -208,7 +229,7 @@ public class UiPromptVisuals : MonoBehaviour
         public PromptSystem.Action[] actions;
         public PromptSystem.Action notInWindowAction;
         public TaskCompletionSource<PromptSystem.Action> taskCompleted = new();
-        
+
         public Data(GameObject window, string dialogText, PromptSystem.Action[] actions, PromptSystem.Action notInWindowAction)
         {
             this.window = window;

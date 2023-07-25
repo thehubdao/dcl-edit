@@ -44,9 +44,9 @@ namespace Assets.Scripts.Tests.PlayModeTests.UiTests
             var testerPrompt = UiTester.instance.uiTesterPrompt;
             var mainPanel = UiBuilder.NewPanelData();
 
-            mainPanel.AddHierarchyItem("This is some header", 0, true, true, false,TextHandler.TextStyle.Normal, false, new HierarchyItemHandler.UiHierarchyItemActions(), _ => { }, _ => { }, _ => { }, _ => { });
-            mainPanel.AddHierarchyItem("This is some more header", 1, true, false, false,TextHandler.TextStyle.Normal, false, new HierarchyItemHandler.UiHierarchyItemActions(), _ => { }, _ => { }, _ => { }, _ => { });
-            mainPanel.AddHierarchyItem("This is even more header", 1, false, true, false,TextHandler.TextStyle.Normal, false, new HierarchyItemHandler.UiHierarchyItemActions(), _ => { }, _ => { }, _ => { }, _ => { });
+            mainPanel.AddHierarchyItem("This is some header", 0, true, true, false, TextHandler.TextStyle.Normal, false);
+            mainPanel.AddHierarchyItem("This is some more header", 1, true, false, false, TextHandler.TextStyle.Normal, false);
+            mainPanel.AddHierarchyItem("This is even more header", 1, false, true, false, TextHandler.TextStyle.Normal, false);
 
             uiBuilder.Update(mainPanel);
 
@@ -59,22 +59,22 @@ namespace Assets.Scripts.Tests.PlayModeTests.UiTests
             var testerPrompt = UiTester.instance.uiTesterPrompt;
             var mainPanel = UiBuilder.NewPanelData();
 
-            mainPanel.AddHierarchyItem("Level 0", 0, false, false, false,TextHandler.TextStyle.Normal, false, new HierarchyItemHandler.UiHierarchyItemActions(), _ => { }, _ => { }, _ => { }, _ => { });
-            mainPanel.AddHierarchyItem("Level 0", 0, true, false, false,TextHandler.TextStyle.Normal, false, new HierarchyItemHandler.UiHierarchyItemActions(), _ => { }, _ => { }, _ => { }, _ => { });
-            mainPanel.AddHierarchyItem("Level 1", 1, false, false,false, TextHandler.TextStyle.Normal, false, new HierarchyItemHandler.UiHierarchyItemActions(), _ => { }, _ => { }, _ => { }, _ => { });
-            mainPanel.AddHierarchyItem("Level 1", 1, true, false, false,TextHandler.TextStyle.Normal, false, new HierarchyItemHandler.UiHierarchyItemActions(), _ => { }, _ => { }, _ => { }, _ => { });
-            mainPanel.AddHierarchyItem("Level 2", 2, false, false,false, TextHandler.TextStyle.Normal, false, new HierarchyItemHandler.UiHierarchyItemActions(), _ => { }, _ => { }, _ => { }, _ => { });
-            mainPanel.AddHierarchyItem("Level 2", 2, true, false, false,TextHandler.TextStyle.Normal, false, new HierarchyItemHandler.UiHierarchyItemActions(), _ => { }, _ => { }, _ => { }, _ => { });
-            mainPanel.AddHierarchyItem("Level 3", 3, false, false,false, TextHandler.TextStyle.Normal, false, new HierarchyItemHandler.UiHierarchyItemActions(), _ => { }, _ => { }, _ => { }, _ => { });
-            mainPanel.AddHierarchyItem("Level 3", 3, true, false,false, TextHandler.TextStyle.Normal, false, new HierarchyItemHandler.UiHierarchyItemActions(), _ => { }, _ => { }, _ => { }, _ => { });
-            mainPanel.AddHierarchyItem("Level 4", 4, false, false, false,TextHandler.TextStyle.Normal, false, new HierarchyItemHandler.UiHierarchyItemActions(), _ => { }, _ => { }, _ => { }, _ => { });
-            mainPanel.AddHierarchyItem("Level 4", 4, true, false,false, TextHandler.TextStyle.Normal, false, new HierarchyItemHandler.UiHierarchyItemActions(), _ => { }, _ => { }, _ => { }, _ => { });
-            mainPanel.AddHierarchyItem("Level 5", 5, false, false,false, TextHandler.TextStyle.Normal, false, new HierarchyItemHandler.UiHierarchyItemActions(), _ => { }, _ => { }, _ => { }, _ => { });
-            mainPanel.AddHierarchyItem("Level 5", 5, true, false,false, TextHandler.TextStyle.Normal, false, new HierarchyItemHandler.UiHierarchyItemActions(), _ => { }, _ => { }, _ => { }, _ => { });
-            mainPanel.AddHierarchyItem("Level 6", 6, false, false,false, TextHandler.TextStyle.Normal, false, new HierarchyItemHandler.UiHierarchyItemActions(), _ => { }, _ => { }, _ => { }, _ => { });
-            mainPanel.AddHierarchyItem("Level 6", 6, true, false, false,TextHandler.TextStyle.Normal, false, new HierarchyItemHandler.UiHierarchyItemActions(), _ => { }, _ => { }, _ => { }, _ => { });
-            mainPanel.AddHierarchyItem("Level 7", 7, false, false,false, TextHandler.TextStyle.Normal, false, new HierarchyItemHandler.UiHierarchyItemActions(), _ => { }, _ => { }, _ => { }, _ => { });
-            mainPanel.AddHierarchyItem("Level 7", 7, true, false, false,TextHandler.TextStyle.Normal, false, new HierarchyItemHandler.UiHierarchyItemActions(), _ => { }, _ => { }, _ => { }, _ => { });
+            mainPanel.AddHierarchyItem("Level 0", 0, false, false, false, TextHandler.TextStyle.Normal, false);
+            mainPanel.AddHierarchyItem("Level 0", 0, true, false, false, TextHandler.TextStyle.Normal, false);
+            mainPanel.AddHierarchyItem("Level 1", 1, false, false, false, TextHandler.TextStyle.Normal, false);
+            mainPanel.AddHierarchyItem("Level 1", 1, true, false, false, TextHandler.TextStyle.Normal, false);
+            mainPanel.AddHierarchyItem("Level 2", 2, false, false, false, TextHandler.TextStyle.Normal, false);
+            mainPanel.AddHierarchyItem("Level 2", 2, true, false, false, TextHandler.TextStyle.Normal, false);
+            mainPanel.AddHierarchyItem("Level 3", 3, false, false, false, TextHandler.TextStyle.Normal, false);
+            mainPanel.AddHierarchyItem("Level 3", 3, true, false, false, TextHandler.TextStyle.Normal, false);
+            mainPanel.AddHierarchyItem("Level 4", 4, false, false, false, TextHandler.TextStyle.Normal, false);
+            mainPanel.AddHierarchyItem("Level 4", 4, true, false, false, TextHandler.TextStyle.Normal, false);
+            mainPanel.AddHierarchyItem("Level 5", 5, false, false, false, TextHandler.TextStyle.Normal, false);
+            mainPanel.AddHierarchyItem("Level 5", 5, true, false, false, TextHandler.TextStyle.Normal, false);
+            mainPanel.AddHierarchyItem("Level 6", 6, false, false, false, TextHandler.TextStyle.Normal, false);
+            mainPanel.AddHierarchyItem("Level 6", 6, true, false, false, TextHandler.TextStyle.Normal, false);
+            mainPanel.AddHierarchyItem("Level 7", 7, false, false, false, TextHandler.TextStyle.Normal, false);
+            mainPanel.AddHierarchyItem("Level 7", 7, true, false, false, TextHandler.TextStyle.Normal, false);
 
             uiBuilder.Update(mainPanel);
 
@@ -87,9 +87,9 @@ namespace Assets.Scripts.Tests.PlayModeTests.UiTests
             var testerPrompt = UiTester.instance.uiTesterPrompt;
             var mainPanel = UiBuilder.NewPanelData();
 
-            mainPanel.AddHierarchyItem("Item", 0, false, false, false,TextHandler.TextStyle.Normal, false, new HierarchyItemHandler.UiHierarchyItemActions(), _ => { }, _ => { }, _ => { }, _ => { });
-            mainPanel.AddHierarchyItem("Item", 1, false, true, false,TextHandler.TextStyle.Normal, false, new HierarchyItemHandler.UiHierarchyItemActions(), _ => { }, _ => { }, _ => { }, _ => { });
-            mainPanel.AddHierarchyItem("Item", 2, false, false, false,TextHandler.TextStyle.Normal, false, new HierarchyItemHandler.UiHierarchyItemActions(), _ => { }, _ => { }, _ => { }, _ => { });
+            mainPanel.AddHierarchyItem("Item", 0, false, false, false, TextHandler.TextStyle.Normal, false);
+            mainPanel.AddHierarchyItem("Item", 1, false, true, false, TextHandler.TextStyle.Normal, false);
+            mainPanel.AddHierarchyItem("Item", 2, false, false, false, TextHandler.TextStyle.Normal, false);
 
             uiBuilder.Update(mainPanel);
 
@@ -98,9 +98,9 @@ namespace Assets.Scripts.Tests.PlayModeTests.UiTests
 
             mainPanel.childDates.Clear();
 
-            mainPanel.AddHierarchyItem("Item", 0, true, false, false,TextHandler.TextStyle.Normal, false, new HierarchyItemHandler.UiHierarchyItemActions(), _ => { }, _ => { }, _ => { }, _ => { });
-            mainPanel.AddHierarchyItem("Item", 1, true, false, false,TextHandler.TextStyle.Normal, false, new HierarchyItemHandler.UiHierarchyItemActions(), _ => { }, _ => { }, _ => { }, _ => { });
-            mainPanel.AddHierarchyItem("Item", 2, true, false, false,TextHandler.TextStyle.Normal, false, new HierarchyItemHandler.UiHierarchyItemActions(), _ => { }, _ => { }, _ => { }, _ => { });
+            mainPanel.AddHierarchyItem("Item", 0, true, false, false, TextHandler.TextStyle.Normal, false);
+            mainPanel.AddHierarchyItem("Item", 1, true, false, false, TextHandler.TextStyle.Normal, false);
+            mainPanel.AddHierarchyItem("Item", 2, true, false, false, TextHandler.TextStyle.Normal, false);
 
             uiBuilder.Update(mainPanel);
 
@@ -112,9 +112,9 @@ namespace Assets.Scripts.Tests.PlayModeTests.UiTests
 
             mainPanel.childDates.Clear();
 
-            mainPanel.AddHierarchyItem("Item", 0, true, true, false,TextHandler.TextStyle.Normal, false, new HierarchyItemHandler.UiHierarchyItemActions(), _ => { }, _ => { }, _ => { }, _ => { });
-            mainPanel.AddHierarchyItem("Item", 1, true, true, false,TextHandler.TextStyle.Normal, false, new HierarchyItemHandler.UiHierarchyItemActions(), _ => { }, _ => { }, _ => { }, _ => { });
-            mainPanel.AddHierarchyItem("Item", 2, true, true, false,TextHandler.TextStyle.Normal, false, new HierarchyItemHandler.UiHierarchyItemActions(), _ => { }, _ => { }, _ => { }, _ => { });
+            mainPanel.AddHierarchyItem("Item", 0, true, true, false, TextHandler.TextStyle.Normal, false);
+            mainPanel.AddHierarchyItem("Item", 1, true, true, false, TextHandler.TextStyle.Normal, false);
+            mainPanel.AddHierarchyItem("Item", 2, true, true, false, TextHandler.TextStyle.Normal, false);
 
             uiBuilder.Update(mainPanel);
 
@@ -140,13 +140,10 @@ namespace Assets.Scripts.Tests.PlayModeTests.UiTests
                     false,
                     TextHandler.TextStyle.Normal,
                     false,
-                    new HierarchyItemHandler.UiHierarchyItemActions
-                    {
-                        onArrowClick = () => clickChecker.Success(),
-                        onNameClick = () => clickChecker.Fail("The user clicked on the text")
-                    },
-                    _ => clickChecker.Fail("The user right clicked"),
-                    _ => { }, _ => { }, _ => { });
+                    clickArrowStrategy: new LeftClickStrategy(_ => clickChecker.Success()),
+                    clickTextStrategy: new ClickStrategy(
+                        new LeftClickStrategy(_ => clickChecker.Fail("The user clicked on the text")),
+                        new RightClickStrategy(_ => clickChecker.Fail("The user right clicked"))));
 
                 uiBuilder.Update(mainPanel);
 
@@ -166,13 +163,11 @@ namespace Assets.Scripts.Tests.PlayModeTests.UiTests
                     false,
                     TextHandler.TextStyle.Normal,
                     false,
-                    new HierarchyItemHandler.UiHierarchyItemActions
-                    {
-                        onArrowClick = () => clickChecker.Fail("The user clicked on the arrow"),
-                        onNameClick = () => clickChecker.Success()
-                    },
-                    _ => clickChecker.Fail("The user right clicked"),
-                    _ => { }, _ => { }, _ => { });
+                    clickArrowStrategy: new LeftClickStrategy(_ => clickChecker.Fail("The user clicked on the arrow")),
+                    clickTextStrategy: new ClickStrategy(
+                        new LeftClickStrategy(_ => clickChecker.Success()),
+                        new RightClickStrategy(_ => clickChecker.Fail("The user right clicked"))));
+
 
                 uiBuilder.Update(mainPanel);
 
@@ -192,13 +187,11 @@ namespace Assets.Scripts.Tests.PlayModeTests.UiTests
                     false,
                     TextHandler.TextStyle.Normal,
                     false,
-                    new HierarchyItemHandler.UiHierarchyItemActions
-                    {
-                        onArrowClick = () => clickChecker.Fail("The user clicked on the arrow"),
-                        onNameClick = () => clickChecker.Fail("The user clicked on the text")
-                    },
-                    _ => clickChecker.Success(),
-                    _ => { }, _ => { }, _ => { });
+                    clickArrowStrategy: new LeftClickStrategy(_ => clickChecker.Fail("The user clicked on the arrow")),
+                    clickTextStrategy: new ClickStrategy(
+                        new LeftClickStrategy(_ => clickChecker.Fail("The user clicked on the text")),
+                        new RightClickStrategy(_ => clickChecker.Success())));
+
 
                 uiBuilder.Update(mainPanel);
 
@@ -216,13 +209,7 @@ namespace Assets.Scripts.Tests.PlayModeTests.UiTests
                     false,
                     false,
                     TextHandler.TextStyle.Normal,
-                    false,
-                    new HierarchyItemHandler.UiHierarchyItemActions
-                    {
-                        onArrowClick = null,
-                        onNameClick = null
-                    },
-                    null, null, null, null);
+                    false);
 
                 uiBuilder.Update(mainPanel);
 

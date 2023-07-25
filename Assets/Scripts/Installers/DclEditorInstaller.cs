@@ -5,7 +5,9 @@ using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
 using Assets.Scripts.Visuals;
 using Assets.Scripts.Visuals.UiBuilder;
+using Assets.Scripts.Visuals.UiHandler;
 using UnityEngine;
+using Visuals.UiHandler;
 using Zenject;
 
 public class DclEditorInstaller : MonoInstaller
@@ -43,8 +45,6 @@ public class DclEditorInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<CommandSystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<CommandFactorySystem>().AsSingle();
-
-        Container.BindInterfacesAndSelfTo<UpdatePropertiesFromUiSystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<InputState>().AsSingle();
 
@@ -122,7 +122,6 @@ public class DclEditorInstaller : MonoInstaller
 
         Container.BindInterfacesAndSelfTo<WebRequestSystem>().AsSingle();
 
-
         Container.BindInterfacesAndSelfTo<SceneJsonReaderSystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<NumberInputSystem>().AsSingle();
@@ -135,15 +134,21 @@ public class DclEditorInstaller : MonoInstaller
 
         Container.BindInterfacesAndSelfTo<AssetThumbnailGeneratorState>().AsSingle();
 
-        Container.BindFactory<AssetBrowserButtonHandler, AssetBrowserButtonHandler.Factory>().FromComponentInNewPrefab(unityState.AssetBrowserButtonAtom);
+        Container.BindFactory<AssetButtonHandler, AssetButtonHandler.Factory>().FromComponentInNewPrefab(unityState.AssetBrowserButtonAtom);
 
         Container.BindFactory<AssetBrowserFolderHandler, AssetBrowserFolderHandler.Factory>().FromComponentInNewPrefab(unityState.AssetBrowserFolderAtom);
+
+        Container.BindFactory<HierarchyItemHandler, HierarchyItemHandler.Factory>().FromComponentInNewPrefab(unityState.HierarchyItemAtom);
+
+        Container.BindFactory<SpacerHandler, SpacerHandler.Factory>().FromComponentInNewPrefab(unityState.SpacerAtom);
 
         Container.BindInterfacesAndSelfTo<SceneManagerSystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<SceneManagerState>().AsSingle();
 
         Container.Bind<ISceneViewSystem>().To<SceneViewSystem>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<DragAndDropState>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<MenuBarState>().AsSingle();
 
@@ -164,6 +169,8 @@ public class DclEditorInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<EntityPresetState>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<DialogSystem>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<EntityChangeManager>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<DialogState>().AsSingle();
 

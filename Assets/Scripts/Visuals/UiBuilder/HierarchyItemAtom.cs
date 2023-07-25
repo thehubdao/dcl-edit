@@ -1,6 +1,7 @@
 using System;
 using Assets.Scripts.SceneState;
 using Assets.Scripts.Visuals.UiHandler;
+using JetBrains.Annotations;
 using UnityEngine;
 
 namespace Assets.Scripts.Visuals.UiBuilder
@@ -9,17 +10,32 @@ namespace Assets.Scripts.Visuals.UiBuilder
     {
         public new class Data : Atom.Data
         {
-            public string name;
+            public SetValueStrategy<string> name;
             public int level;
             public bool hasChildren;
             public bool isExpanded;
             public bool isFirstChild;
             public TextHandler.TextStyle style;
             public bool isPrimarySelected;
-            public HierarchyItemHandler.UiHierarchyItemActions actions;
-            public Action<Vector3> rightClickAction;
-            public DropActions dropActions;
-            public DclEntity draggedEntity;
+
+            [NotNull]
+            public ClickStrategy clickArrowStrategy;
+
+            [NotNull]
+            public ClickStrategy clickTextStrategy;
+
+            [CanBeNull]
+            public DropStrategy dropStrategyUpper;
+
+            [CanBeNull]
+            public DropStrategy dropStrategyMiddle;
+
+            [CanBeNull]
+            public DropStrategy dropStrategyLower;
+
+            [CanBeNull]
+            public DragStrategy dragStrategy;
+
 
             public override bool Equals(Atom.Data other)
             {
@@ -36,10 +52,10 @@ namespace Assets.Scripts.Visuals.UiBuilder
                     isPrimarySelected.Equals(otherHierarchyItem.isPrimarySelected) &&
                     isFirstChild.Equals(otherHierarchyItem.isFirstChild) &&
                     style.Equals(otherHierarchyItem.style) &&
-                    actions.Equals(otherHierarchyItem.actions) &&
-                    rightClickAction.Equals(otherHierarchyItem.rightClickAction) &&
-                    dropActions.Equals(otherHierarchyItem.dropActions) &&
-                    draggedEntity.Equals(otherHierarchyItem.draggedEntity);
+                    (dropStrategyUpper?.Equals(otherHierarchyItem.dropStrategyUpper) ?? otherHierarchyItem.dropStrategyUpper == null) &&
+                    (dropStrategyMiddle?.Equals(otherHierarchyItem.dropStrategyMiddle) ?? otherHierarchyItem.dropStrategyMiddle == null) &&
+                    (dropStrategyLower?.Equals(otherHierarchyItem.dropStrategyLower) ?? otherHierarchyItem.dropStrategyLower == null) &&
+                    (dragStrategy?.Equals(otherHierarchyItem.dragStrategy) ?? otherHierarchyItem.dragStrategy == null);
             }
         }
 
@@ -84,11 +100,25 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
     public static class HierarchyItemPanelHelper
     {
-        public static HierarchyItemAtom.Data AddHierarchyItem(this PanelAtom.Data panelAtomData, string name, int level,
-            bool hasChildren, bool isExpanded, bool isFirstChild, TextHandler.TextStyle textStyle, bool isPrimarySelected,
-            HierarchyItemHandler.UiHierarchyItemActions actions, Action<Vector3> rightClickAction,
-            Action<GameObject> dropActionUpper, Action<GameObject> dropActionMiddle, Action<GameObject> dropActionLower, DclEntity entity = null)
+        public static HierarchyItemAtom.Data AddHierarchyItem(
+            this PanelAtom.Data panelAtomData,
+            SetValueStrategy<string> name,
+            int level,
+            bool hasChildren,
+            bool isExpanded,
+            bool isFirstChild,
+            TextHandler.TextStyle textStyle,
+            bool isPrimarySelected,
+            ClickStrategy clickArrowStrategy = null,
+            ClickStrategy clickTextStrategy = null,
+            DropStrategy dropStrategyUpper = null,
+            DropStrategy dropStrategyMiddle = null,
+            DropStrategy dropStrategyLower = null,
+            DragStrategy dragStrategy = null)
         {
+            clickTextStrategy ??= new ClickStrategy();
+            clickArrowStrategy ??= new ClickStrategy();
+
             var data = new HierarchyItemAtom.Data
             {
                 name = name,
@@ -98,26 +128,16 @@ namespace Assets.Scripts.Visuals.UiBuilder
                 isFirstChild = isFirstChild,
                 style = textStyle,
                 isPrimarySelected = isPrimarySelected,
-                actions = actions,
-                rightClickAction = rightClickAction,
-                dropActions =
-                {
-                    dropActionUpper = dropActionUpper,
-                    dropActionMiddle = dropActionMiddle,
-                    dropActionLower = dropActionLower,
-                },
-                draggedEntity = entity
+                clickArrowStrategy = clickArrowStrategy,
+                clickTextStrategy = clickTextStrategy,
+                dragStrategy = dragStrategy,
+                dropStrategyUpper = dropStrategyUpper,
+                dropStrategyMiddle = dropStrategyMiddle,
+                dropStrategyLower = dropStrategyLower
             };
 
             panelAtomData.childDates.Add(data);
             return data;
         }
-    }
-
-    public struct DropActions
-    {
-        public Action<GameObject> dropActionUpper;
-        public Action<GameObject> dropActionMiddle;
-        public Action<GameObject> dropActionLower;
     }
 }

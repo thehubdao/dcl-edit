@@ -11,8 +11,12 @@ namespace Assets.Scripts.Visuals.UiBuilder
         public new class Data : Atom.Data
         {
             public int height;
-            [CanBeNull] public Action<Vector3> rightClickAction;
-            [CanBeNull] public Action<GameObject> dropAction;
+
+            [NotNull]
+            public ClickStrategy clickStrategy;
+
+            [CanBeNull]
+            public DropStrategy dropStrategy;
 
             public override bool Equals(Atom.Data other)
             {
@@ -23,8 +27,8 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
                 return
                     height.Equals(otherSpacer.height) &&
-                    rightClickAction == otherSpacer.rightClickAction &&
-                    dropAction == otherSpacer.dropAction;
+                    clickStrategy == otherSpacer.clickStrategy &&
+                    dropStrategy == otherSpacer.dropStrategy;
             }
         }
 
@@ -51,14 +55,8 @@ namespace Assets.Scripts.Visuals.UiBuilder
                 var le = gameObject.gameObject.GetComponent<LayoutElement>();
                 
                 le.minHeight = newSpacerData.height;
-                spacerHandler.rightClickHandler.onRightClick = newSpacerData.rightClickAction;
-                spacerHandler.dropHandler.onDrop = newSpacerData.dropAction;
-                spacerHandler.dropHandler.ResetHandler();
-                
-                if (newSpacerData.dropAction != null)
-                {
-                    spacerHandler.dropHandler.SetEnabled(true);
-                }
+                spacerHandler.clickHandler.clickStrategy = newSpacerData.clickStrategy;
+                spacerHandler.dropHandler.dropStrategy = newSpacerData.dropStrategy;
 
                 data = newSpacerData;
             }
@@ -78,13 +76,19 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
     public static class SpacerPanelHelper
     {
-        public static SpacerAtom.Data AddSpacer(this PanelAtom.Data panelAtomData, int height, Action<Vector3> rightClickAction = null, Action<GameObject> dropAction = null)
+        public static SpacerAtom.Data AddSpacer(
+            this PanelAtom.Data panelAtomData,
+            int height,
+            [CanBeNull] ClickStrategy clickStrategy = null,
+            [CanBeNull] DropStrategy dropStrategy = null)
         {
+            clickStrategy ??= new ClickStrategy();
+
             var data = new SpacerAtom.Data
             {
                 height = height,
-                rightClickAction = rightClickAction,
-                dropAction = dropAction
+                clickStrategy = clickStrategy,
+                dropStrategy = dropStrategy
             };
 
             panelAtomData.childDates.Add(data);

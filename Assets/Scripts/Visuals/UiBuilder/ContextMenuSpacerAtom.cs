@@ -63,7 +63,10 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
     public static class ContextMenuSpacerPanelHelper
     {
-        public static ContextMenuSpacerAtom.Data AddContextMenuSpacer(this PanelAtom.Data panelAtomData, Guid menuId, ContextMenuSystem contextMenuSystem)
+        public static ContextMenuSpacerAtom.Data AddContextMenuSpacer(
+            this PanelAtom.Data panelAtomData,
+            Guid menuId,
+            ContextMenuSystem contextMenuSystem)
         {
             var data = new ContextMenuSpacerAtom.Data
             {

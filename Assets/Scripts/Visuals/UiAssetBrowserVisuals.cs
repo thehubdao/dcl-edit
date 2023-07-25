@@ -7,6 +7,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
@@ -15,6 +16,7 @@ namespace Assets.Scripts.Visuals
 {
     public class UiAssetBrowserVisuals : MonoBehaviour
     {
+        [CanBeNull]
         public Action<Guid> assetButtonOnClickOverride = null;
 
         [SerializeField]
@@ -77,7 +79,7 @@ namespace Assets.Scripts.Visuals
         {
             editorEvents.onAssetMetadataCacheUpdatedEvent += UpdateVisuals;
             editorEvents.onUiChangedEvent += UpdateVisuals;
-            editorEvents.OnCurrentSceneChangedEvent += assetManagerSystem.CacheAllAssetMetadata;
+            //editorEvents.OnCurrentSceneChangedEvent += assetManagerSystem.CacheAllAssetMetadata;
         }
 
         private void OnDestroy()
@@ -106,33 +108,35 @@ namespace Assets.Scripts.Visuals
 
             foreach (AssetMetadata.AssetType type in assetBrowserSystem.filters)
             {
-                headerData.AddButton(type.ToString() + " x", _ => assetBrowserSystem.RemoveFilter(type));
+                headerData.AddButton(type.ToString() + " x", new LeftClickStrategy(_ => assetBrowserSystem.RemoveFilter(type)));
             }
 
-            headerData.AddButton("+", btn =>
-            {
-                var rect = btn.GetComponent<RectTransform>();
-                contextMenuSystem.OpenMenu(new List<ContextMenuState.Placement>
+            headerData.AddButton("+", new LeftClickStrategy
+            (eventData =>
                 {
-                    new ContextMenuState.Placement
+                    var rect = eventData.gameObject.GetComponent<RectTransform>();
+                    contextMenuSystem.OpenMenu(new List<ContextMenuState.Placement>
                     {
-                        position = rect.position + new Vector3(0, -rect.sizeDelta.y, 0),
-                        expandDirection = ContextMenuState.Placement.Direction.Right,
-                    },
-                    new ContextMenuState.Placement
+                        new ContextMenuState.Placement
+                        {
+                            position = rect.position + new Vector3(0, -rect.sizeDelta.y, 0),
+                            expandDirection = ContextMenuState.Placement.Direction.Right,
+                        },
+                        new ContextMenuState.Placement
+                        {
+                            position = rect.position + new Vector3(rect.sizeDelta.x, -rect.sizeDelta.y, 0),
+                            expandDirection = ContextMenuState.Placement.Direction.Left,
+                        }
+                    }, new List<ContextMenuItem>
                     {
-                        position = rect.position + new Vector3(rect.sizeDelta.x, -rect.sizeDelta.y, 0),
-                        expandDirection = ContextMenuState.Placement.Direction.Left,
-                    }
-                }, new List<ContextMenuItem>
-                {
-                    new ContextMenuTextItem("Add model filter", () => assetBrowserSystem.AddFilter(AssetMetadata.AssetType.Model)),
-                    //new ContextMenuTextItem("Add image filter", () => assetBrowserSystem.AddFilter(AssetMetadata.AssetType.Image)),
-                    new ContextMenuTextItem("Add scene filter", () => assetBrowserSystem.AddFilter(AssetMetadata.AssetType.Scene)),
-                    new ContextMenuTextItem("Sort by name (A-Z)", () => assetBrowserSystem.ChangeSorting(AssetBrowserState.Sorting.NameAscending)),
-                    new ContextMenuTextItem("Sort by name (Z-A)", () => assetBrowserSystem.ChangeSorting(AssetBrowserState.Sorting.NameDescending)),
-                });
-            });
+                        new ContextMenuTextItem("Add model filter", () => assetBrowserSystem.AddFilter(AssetMetadata.AssetType.Model)),
+                        //new ContextMenuTextItem("Add image filter", () => assetBrowserSystem.AddFilter(AssetMetadata.AssetType.Image)),
+                        new ContextMenuTextItem("Add scene filter", () => assetBrowserSystem.AddFilter(AssetMetadata.AssetType.Scene)),
+                        new ContextMenuTextItem("Sort by name (A-Z)", () => assetBrowserSystem.ChangeSorting(AssetBrowserState.Sorting.NameAscending)),
+                        new ContextMenuTextItem("Sort by name (Z-A)", () => assetBrowserSystem.ChangeSorting(AssetBrowserState.Sorting.NameDescending)),
+                    });
+                }
+            ));
 
             headerUiBuilder.Update(headerData);
         }
@@ -158,7 +162,7 @@ namespace Assets.Scripts.Visuals
                 useFullWidth = false
             };
 
-            footerData.AddButton("Refresh", _ => assetManagerSystem.CacheAllAssetMetadata());
+            footerData.AddButton("Refresh", new LeftClickStrategy(_ => assetManagerSystem.CacheAllAssetMetadata()));
             footerUiBuilder.Update(footerData);
         }
 
@@ -180,14 +184,31 @@ namespace Assets.Scripts.Visuals
             if (hierarchyItem.assets.Count == 0) return;
 
             var grid = panel.AddGrid(indentationLevel);
-            bool enableDragAndDrop = assetButtonOnClickOverride == null;
-            foreach (AssetMetadata asset in hierarchyItem.assets)
+
+            foreach (var assetMetadata in hierarchyItem.assets)
             {
-                grid.AddAssetBrowserButton(asset, enableDragAndDrop, assetButtonOnClickOverride, scrollViewRect);
+                DragStrategy dragStrategy = assetMetadata.assetType switch
+                {
+                    AssetMetadata.AssetType.Unknown => null,
+                    AssetMetadata.AssetType.Model => new DragModelAssetStrategy(assetMetadata.assetId),
+                    AssetMetadata.AssetType.Image => new DragImageAssetStrategy(assetMetadata.assetId),
+                    AssetMetadata.AssetType.Scene => new DragSceneAssetStrategy(assetMetadata.assetId),
+                    _ => throw new ArgumentOutOfRangeException(nameof(assetMetadata.assetType))
+                };
+
+                var clickStrategy = assetButtonOnClickOverride != null ?
+                    new LeftClickStrategy(_ => assetButtonOnClickOverride(assetMetadata.assetId)) :
+                    new LeftClickStrategy(_ => assetBrowserSystem.AddAssetToSceneInViewportCenter(assetMetadata));
+
+                grid.AddAssetBrowserButton(
+                    assetMetadata.assetId,
+                    dragStrategy: dragStrategy,
+                    clickStrategy: clickStrategy
+                );
             }
         }
 
-        int GetIndentationLevel(AssetHierarchyItem hierarchyItem)
+        private int GetIndentationLevel(AssetHierarchyItem hierarchyItem)
         {
             string[] directories = hierarchyItem.path.Split(Path.AltDirectorySeparatorChar);
             return directories.Length - 1;

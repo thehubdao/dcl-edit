@@ -78,7 +78,7 @@ namespace Assets.Scripts.Visuals
                 UpdateSelection(entity);
             }
 
-            if (scene.IsFloatingEntity(entity.Id)! == true)
+            if (GetComponentInParent<FloatingVisualsMarker>() != null)
             {
                 StaticUtilities.SetLayerRecursive(gameObject, LayerMask.NameToLayer("Ignore Raycast"));
             }

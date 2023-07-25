@@ -375,7 +375,7 @@ namespace Assets.Scripts.System
                     throw new ArgumentOutOfRangeException();
             }
 
-            editorEvents.InvokeSelectionChangedEvent();
+            editorEvents.InvokeOnValueChangedEvent();
         }
 
         private void TranslateWhileHolding(Vector2 contextSpaceMouseMovementSinceStart)
@@ -458,7 +458,7 @@ namespace Assets.Scripts.System
                     throw new ArgumentOutOfRangeException();
             }
 
-            editorEvents.InvokeSelectionChangedEvent();
+            editorEvents.InvokeOnValueChangedEvent();
         }
 
         private void ExecuteTranslateCommand()

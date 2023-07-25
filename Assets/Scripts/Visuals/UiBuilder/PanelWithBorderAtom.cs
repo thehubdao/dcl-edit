@@ -24,7 +24,10 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
     public static class PanelWithBorderPanelHelper
     {
-        public static PanelWithBorderAtom.Data AddPanelWithBorder(this PanelAtom.Data panelAtomData, PanelHandler.LayoutDirection layoutDirection = PanelHandler.LayoutDirection.Vertical, [CanBeNull] AtomDataList childDates = null)
+        public static PanelWithBorderAtom.Data AddPanelWithBorder(
+            this PanelAtom.Data panelAtomData,
+            PanelHandler.LayoutDirection layoutDirection = PanelHandler.LayoutDirection.Vertical,
+            [CanBeNull] AtomDataList childDates = null)
         {
             var data = new PanelWithBorderAtom.Data
             {

@@ -36,6 +36,11 @@ namespace Assets.Scripts.Events
         public event Action<int> onMouseButtonDownEvent;
         public void InvokeOnMouseButtonDownEvent(int button) => onMouseButtonDownEvent?.Invoke(button);
 
+        // Scene states changed
+        // this is called, when the name of an entity is changed
+        public event Action<Guid> onEntityNameChangedEvent;
+        public void InvokeEntityNameChangedEvent(Guid id) => onEntityNameChangedEvent?.Invoke(id);
+
 
         // Asset management
         public event Action<List<Guid>> onAssetDataUpdatedEvent;
@@ -57,12 +62,19 @@ namespace Assets.Scripts.Events
         public event Action onDialogChangedEvent;
         public void InvokeDialogChangedEvent() => onDialogChangedEvent?.Invoke();
 
+
         public event Action onUpdateSceneViewButtons;
         public void InvokeUpdateSceneViewButtons() => onUpdateSceneViewButtons?.Invoke();
+
 
         public event Action OnCurrentSceneChangedEvent;
         public void InvokeCurrentSceneChangedEvent() => OnCurrentSceneChangedEvent?.Invoke();
 
+
+        public event Action onValueChangedEvent;
+        public void InvokeOnValueChangedEvent() => onValueChangedEvent?.Invoke();
+
+        
         public event Action OnCurrentSceneTitleChangedEvent;
         public void InvokeCurrentSceneTitleChangedEvent() => OnCurrentSceneTitleChangedEvent?.Invoke();
 

@@ -9,7 +9,7 @@ public class DclGltfShapeComponent : DclComponent
             "GLTFShape",
             "Shape",
             null,
-            new DclComponentProperty.PropertyDefinition("asset", DclComponentProperty.PropertyType.Asset, Guid.Empty, ParseInConstructor),
+            new DclComponentProperty.PropertyDefinition("asset", DclComponentProperty.PropertyType.Asset, Guid.Empty, ParseInConstructor, ModelAssets),
             new DclComponentProperty.PropertyDefinition("visible", DclComponentProperty.PropertyType.Boolean, true),
             new DclComponentProperty.PropertyDefinition("withCollisions", DclComponentProperty.PropertyType.Boolean, true),
             new DclComponentProperty.PropertyDefinition("isPointerBlocker", DclComponentProperty.PropertyType.Boolean, true));

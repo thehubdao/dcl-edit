@@ -7,8 +7,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
         public new class Data : Atom.Data
         {
             public string name;
-            public bool currentContents;
-            public StringPropertyAtom.UiPropertyActions<bool> actions;
+            public ValueBindStrategy<bool> valueBindStrategy { get; set; }
 
 
             public override bool Equals(Atom.Data other)
@@ -20,8 +19,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
                 return
                     name.Equals(otherBooleanProperty.name) &&
-                    currentContents.Equals(otherBooleanProperty.currentContents) &&
-                    actions.Equals(otherBooleanProperty.actions);
+                    valueBindStrategy.Equals(otherBooleanProperty.valueBindStrategy);
             }
         }
 
@@ -49,10 +47,8 @@ namespace Assets.Scripts.Visuals.UiBuilder
                 booleanPropertyHandler.ResetActions();
 
                 booleanPropertyHandler.PropertyNameText.text = newBooleanPropertyData.name;
-                booleanPropertyHandler.CheckBoxInput.isOn = newBooleanPropertyData.currentContents;
 
-                // setup actions
-                booleanPropertyHandler.SetActions(newBooleanPropertyData.actions);
+                booleanPropertyHandler.Setup(newBooleanPropertyData.valueBindStrategy);
             }
         }
 
@@ -70,13 +66,15 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
     public static class BooleanPropertyPanelHelper
     {
-        public static BooleanPropertyAtom.Data AddBooleanProperty(this PanelAtom.Data panelAtomData, string name, bool currentContents, StringPropertyAtom.UiPropertyActions<bool> actions)
+        public static BooleanPropertyAtom.Data AddBooleanProperty(
+            this PanelAtom.Data panelAtomData,
+            string name,
+            ValueBindStrategy<bool> valueBindStrategy)
         {
             var data = new BooleanPropertyAtom.Data
             {
                 name = name,
-                currentContents = currentContents,
-                actions = actions
+                valueBindStrategy = valueBindStrategy
             };
 
             panelAtomData.childDates.Add(data);

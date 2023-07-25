@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
 using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
-using Assets.Scripts.Utility;
 using Assets.Scripts.Visuals.UiBuilder;
 using UnityEngine;
 using Zenject;
@@ -19,7 +19,6 @@ namespace Assets.Scripts.Visuals
 
         // Dependencies
         private InputState inputState;
-        private UpdatePropertiesFromUiSystem updatePropertiesSystem;
         private UiBuilder.UiBuilder uiBuilder;
         private EditorEvents editorEvents;
         private CommandSystem commandSystem;
@@ -29,13 +28,13 @@ namespace Assets.Scripts.Visuals
         private AvailableComponentsState availableComponentsState;
         private AssetManagerSystem assetManagerSystem;
         private DialogSystem dialogSystem;
+        private EntityChangeManager entityChangeManager;
         private ExposeEntitySystem exposeEntitySystem;
         private PromptSystem promptSystem;
 
         [Inject]
         private void Construct(
             InputState inputState,
-            UpdatePropertiesFromUiSystem updatePropertiesSystem,
             UiBuilder.UiBuilder.Factory uiBuilderFactory,
             EditorEvents editorEvents,
             CommandSystem commandSystem,
@@ -45,11 +44,11 @@ namespace Assets.Scripts.Visuals
             AvailableComponentsState availableComponentsState,
             AssetManagerSystem assetManagerSystem,
             DialogSystem dialogSystem,
+            EntityChangeManager entityChangeManager,
             ExposeEntitySystem exposeEntitySystem,
             PromptSystem promptSystem)
         {
             this.inputState = inputState;
-            this.updatePropertiesSystem = updatePropertiesSystem;
             this.uiBuilder = uiBuilderFactory.Create(content);
             this.editorEvents = editorEvents;
             this.commandSystem = commandSystem;
@@ -59,14 +58,17 @@ namespace Assets.Scripts.Visuals
             this.availableComponentsState = availableComponentsState;
             this.assetManagerSystem = assetManagerSystem;
             this.dialogSystem = dialogSystem;
+            this.entityChangeManager = entityChangeManager;
             this.exposeEntitySystem = exposeEntitySystem;
             this.promptSystem = promptSystem;
+
             SetupEventListeners();
         }
 
         public void SetupEventListeners()
         {
             editorEvents.onSelectionChangedEvent += SetDirty;
+            editorEvents.onValueChangedEvent += UpdateValues;
             SetDirty();
         }
 
@@ -85,6 +87,11 @@ namespace Assets.Scripts.Visuals
                 _dirty = false;
                 UpdateVisuals();
             }
+        }
+
+        private void UpdateValues()
+        {
+            uiBuilder.UpdateValues();
         }
 
         private void UpdateVisuals()
@@ -116,37 +123,24 @@ namespace Assets.Scripts.Visuals
                 return;
             }
 
-            var nameInputActions = new StringPropertyAtom.UiPropertyActions<string>
-            {
-                OnChange = _ => { },
-                OnSubmit = value => updatePropertiesSystem.SetNewName(selectedEntity, value),
-                OnAbort = _ => { }
-            };
-
-            var exposedInputActions = new StringPropertyAtom.UiPropertyActions<bool>
-            {
-                OnChange = _ => { },
-                OnSubmit = value => updatePropertiesSystem.SetIsExposed(selectedEntity, value),
-                OnAbort = _ => { }
-            };
-
             var entityHeadPanel = inspectorPanel.AddPanelWithBorder();
-            entityHeadPanel.AddStringProperty("Name", "Name", selectedEntity.CustomName ?? "", nameInputActions);
-            entityHeadPanel.AddBooleanProperty("Is Exposed", selectedEntity.IsExposed, exposedInputActions);
-            
+            entityHeadPanel.AddStringProperty("Name", "Name", entityChangeManager.GetNameFieldBinding(selectedEntity.Id));
+            entityHeadPanel.AddBooleanProperty("Is Exposed", entityChangeManager.GetIsExposedBinding(selectedEntity.Id));
+
             if (selectedEntity.IsExposed)
             {
-                entityHeadPanel.AddText($"Exposed Name: {exposeEntitySystem.ExposedName(selectedEntity)}");
+                entityHeadPanel.AddText(entityChangeManager.GetExposedNameStrategy(selectedEntity.Id));
             }
 
             foreach (var component in selectedEntity.Components ?? new List<DclComponent>())
             {
                 var componentPanel = inspectorPanel.AddPanelWithBorder();
-                
+
                 if (component.NameInCode == "Transform")
                     componentPanel.AddPanelHeader(component.NameInCode, null);
                 else
-                    componentPanel.AddPanelHeader(component.NameInCode, () => commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateRemoveComponent(selectedEntity.Id, component)));
+                    componentPanel.AddPanelHeader(component.NameInCode, clickCloseStrategy:
+                        new LeftClickStrategy(_ => commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateRemoveComponent(selectedEntity.Id, component))));
 
                 foreach (var property in component.Properties)
                 {
@@ -156,117 +150,78 @@ namespace Assets.Scripts.Visuals
                         case DclComponent.DclComponentProperty.PropertyType.None: // not supported
                             componentPanel.AddText("None property not supported");
                             break;
+
                         case DclComponent.DclComponentProperty.PropertyType.String:
                         {
-                            var stringActions = new StringPropertyAtom.UiPropertyActions<string>
-                            {
-                                OnChange = (value) => updatePropertiesSystem.UpdateFloatingProperty(propertyIdentifier, value),
-                                OnSubmit = (value) => updatePropertiesSystem.UpdateFixedProperty(propertyIdentifier, value),
-                                OnAbort = (_) => updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier)
-                            };
-
                             componentPanel.AddStringProperty(
                                 property.PropertyName,
                                 property.PropertyName,
-                                property.GetConcrete<string>().Value,
-                                stringActions);
-
+                                entityChangeManager.GetPropertyBinding<string>(propertyIdentifier));
                             break;
                         }
                         case DclComponent.DclComponentProperty.PropertyType.Int:
                         {
-                            var intActions = new StringPropertyAtom.UiPropertyActions<float> // number property requires float actions
-                            {
-                                OnChange = (value) => updatePropertiesSystem.UpdateFloatingProperty(propertyIdentifier, (int) value),
-                                OnInvalid = () => updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier),
-                                OnSubmit = (value) => updatePropertiesSystem.UpdateFixedProperty(propertyIdentifier, (int) value),
-                                OnAbort = (value) => updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier)
-                            };
-
                             componentPanel.AddNumberProperty(
                                 property.PropertyName,
                                 property.PropertyName,
-                                property.GetConcrete<int>().Value,
-                                intActions);
-
+                                entityChangeManager.GetPropertyBinding<int>(propertyIdentifier));
                             break;
                         }
                         case DclComponent.DclComponentProperty.PropertyType.Float:
                         {
-                            var floatActions = new StringPropertyAtom.UiPropertyActions<float>
-                            {
-                                OnChange = (value) => updatePropertiesSystem.UpdateFloatingProperty(propertyIdentifier, value),
-                                OnInvalid = () => updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier),
-                                OnSubmit = (value) => updatePropertiesSystem.UpdateFixedProperty(propertyIdentifier, value),
-                                OnAbort = (value) => updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier)
-                            };
-
                             componentPanel.AddNumberProperty(
                                 property.PropertyName,
                                 property.PropertyName,
-                                property.GetConcrete<float>().Value,
-                                floatActions);
-
+                                entityChangeManager.GetPropertyBinding<float>(propertyIdentifier));
                             break;
                         }
                         case DclComponent.DclComponentProperty.PropertyType.Boolean:
                         {
-                            var boolActions = new StringPropertyAtom.UiPropertyActions<bool>
-                            {
-                                OnChange = (value) => updatePropertiesSystem.UpdateFixedProperty(propertyIdentifier, value),
-                                OnSubmit = (value) => updatePropertiesSystem.UpdateFixedProperty(propertyIdentifier, value)
-                                // OnInvalid, OnAbort not required for a checkbox
-                            };
-
                             componentPanel.AddBooleanProperty(
                                 property.PropertyName,
-                                property.GetConcrete<bool>().Value,
-                                boolActions);                                    
+                                entityChangeManager.GetPropertyBinding<bool>(propertyIdentifier));
                             break;
                         }
                         case DclComponent.DclComponentProperty.PropertyType.Vector3:
                         {
-                            var vec3Actions = new StringPropertyAtom.UiPropertyActions<Vector3>
-                            {
-                                OnChange = (value) => updatePropertiesSystem.UpdateFloatingProperty(propertyIdentifier, value),
-                                OnInvalid = () => updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier),
-                                OnSubmit = (value) => updatePropertiesSystem.UpdateFixedProperty(propertyIdentifier, value),
-                                OnAbort = (value) => updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier)
-                            };
-
                             componentPanel.AddVector3Property(
                                 property.PropertyName,
-                                new List<string> {"x", "y", "z"},
-                                property.GetConcrete<Vector3>().Value,
-                                vec3Actions);
-
+                                ("x", "y", "z"),
+                                entityChangeManager.GetPropertyBinding<Vector3>(propertyIdentifier));
                             break;
                         }
                         case DclComponent.DclComponentProperty.PropertyType.Quaternion: // Shows quaternions in euler angles
                         {
-                            var vec3Actions = new StringPropertyAtom.UiPropertyActions<Vector3>
-                            {
-                                OnChange = (value) => updatePropertiesSystem.UpdateFloatingProperty(propertyIdentifier, Quaternion.Euler(value)),
-                                OnInvalid = () => updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier),
-                                OnSubmit = (value) => updatePropertiesSystem.UpdateFixedProperty(propertyIdentifier, Quaternion.Euler(value)),
-                                OnAbort = (value) => updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier)
-                            };
+                            // TODO Make a rotation property based on a Quaternion
+                            var concreteProperty = sceneManagerSystem.GetCurrentScene().GetPropertyFromIdentifier(propertyIdentifier).GetConcrete<Quaternion>();
+                            var valueBindStrategy = new ValueBindStrategy<Vector3>(
+                                value: () => concreteProperty.Value.eulerAngles,
+                                onValueSubmitted: value =>
+                                {
+                                    concreteProperty.ResetFloating();
+                                    var oldValue = concreteProperty.Value;
+                                    var command = commandSystem.CommandFactory.CreateChangePropertyCommand(propertyIdentifier, oldValue, Quaternion.Euler(value));
+
+                                    commandSystem.ExecuteCommand(command);
+                                },
+                                onErrorSubmitted: _ => concreteProperty.ResetFloating(),
+                                onValueChanged: value => concreteProperty.SetFloatingValue(Quaternion.Euler(value)),
+                                onErrorChanged: _ => concreteProperty.ResetFloating());
 
                             componentPanel.AddVector3Property(
                                 property.PropertyName,
-                                new List<string> {"pitch", "yaw", "roll"},
-                                property.GetConcrete<Quaternion>().Value.eulerAngles,
-                                vec3Actions);
+                                ("pitch", "yaw", "roll"),
+                                valueBindStrategy);
 
                             break;
                         }
-                        case DclComponent.DclComponentProperty.PropertyType.Asset: // not supported yet
-                            {
-                                var assetMetadata = assetManagerSystem.GetMetadataById(property.GetConcrete<Guid>().Value);
-                                componentPanel.AddAssetProperty(
-                                    property.PropertyName,
-                                    assetMetadata,
-                                    async (_) => await promptSystem.CreateAssetMenu());
+                        case DclComponent.DclComponentProperty.PropertyType.Asset:
+                        {
+                            componentPanel.AddAssetProperty(
+                                property.PropertyName,
+                                new SetValueStrategy<Guid>(() => property.GetConcrete<Guid>().Value),
+                                entityChangeManager.GetClickAssetStrategy(propertyIdentifier),
+                                dropStrategy: entityChangeManager.GetAssetDropStrategy(propertyIdentifier));
 
                             break;
                         }
@@ -278,71 +233,73 @@ namespace Assets.Scripts.Visuals
 
             inspectorPanel.AddSpacer(20);
 
-            inspectorPanel.AddButton("Add Component", go =>
-            {
-                var rect = go.GetComponent<RectTransform>();
-
-                var menuItemCategories = new Dictionary<string, List<ContextMenuItem>>
+            inspectorPanel.AddButton("Add Component", new LeftClickStrategy
+                (eventData =>
                 {
-                    {"", new List<ContextMenuItem>()}
-                };
+                    var rect = eventData.gameObject.GetComponent<RectTransform>();
 
-                List<ContextMenuItem> GetCategoryList(string categoryPath)
-                {
-                    // Try to get the category list
-                    if (menuItemCategories.TryGetValue(categoryPath, out var categoryList)) return categoryList;
-
-                    // if category list does NOT exist yet
-                    // split category by '/'
-                    var categoryParts = categoryPath.Split('/');
-
-                    // Generate parent category name. Either by concatenating the previews path parts or "" for the root category
-                    var parentCategoryPath =
-                        categoryParts.Length > 1 ?
-                            string.Join("/", categoryParts.Take(categoryParts.Length - 1)) :
-                            "";
-
-                    // recursively get the parent category list
-                    var parentCategoryList = GetCategoryList(parentCategoryPath);
-
-                    // Create new list
-                    categoryList = new List<ContextMenuItem>();
-
-                    // add the list to the parent category
-                    parentCategoryList.Add(new ContextSubmenuItem(categoryParts[categoryParts.Length - 1], categoryList));
-
-                    // add the list to the categories dictionary
-                    menuItemCategories.Add(categoryPath, categoryList);
-
-                    // return the list
-                    return categoryList;
-                }
-
-                foreach (var component in availableComponentsState.allAvailableComponents.Where(c => c.availableInAddComponentMenu))
-                {
-                    var categoryMenu = GetCategoryList(component.category);
-
-                    categoryMenu.Add(
-                        new ContextMenuTextItem(
-                            component.name,
-                            () => addComponentSystem.AddComponent(selectedEntity.Id, component.componentDefinition),
-                            !addComponentSystem.CanComponentBeAdded(selectedEntity, component.componentDefinition)));
-                }
-
-                contextMenuSystem.OpenMenu(new List<ContextMenuState.Placement>
-                {
-                    new ContextMenuState.Placement
+                    var menuItemCategories = new Dictionary<string, List<ContextMenuItem>>
                     {
-                        position = rect.position + new Vector3(0, -rect.sizeDelta.y, 0),
-                        expandDirection = ContextMenuState.Placement.Direction.Right,
-                    },
-                    new ContextMenuState.Placement
+                        {"", new List<ContextMenuItem>()}
+                    };
+
+                    List<ContextMenuItem> GetCategoryList(string categoryPath)
                     {
-                        position = rect.position + new Vector3(rect.sizeDelta.x, -rect.sizeDelta.y, 0),
-                        expandDirection = ContextMenuState.Placement.Direction.Left,
+                        // Try to get the category list
+                        if (menuItemCategories.TryGetValue(categoryPath, out var categoryList)) return categoryList;
+
+                        // if category list does NOT exist yet
+                        // split category by '/'
+                        var categoryParts = categoryPath.Split('/');
+
+                        // Generate parent category name. Either by concatenating the previews path parts or "" for the root category
+                        var parentCategoryPath =
+                            categoryParts.Length > 1 ?
+                                string.Join("/", categoryParts.Take(categoryParts.Length - 1)) :
+                                "";
+
+                        // recursively get the parent category list
+                        var parentCategoryList = GetCategoryList(parentCategoryPath);
+
+                        // Create new list
+                        categoryList = new List<ContextMenuItem>();
+
+                        // add the list to the parent category
+                        parentCategoryList.Add(new ContextSubmenuItem(categoryParts[categoryParts.Length - 1], categoryList));
+
+                        // add the list to the categories dictionary
+                        menuItemCategories.Add(categoryPath, categoryList);
+
+                        // return the list
+                        return categoryList;
                     }
-                }, menuItemCategories[""]);
-            });
+
+                    foreach (var component in availableComponentsState.allAvailableComponents.Where(c => c.availableInAddComponentMenu))
+                    {
+                        var categoryMenu = GetCategoryList(component.category);
+
+                        categoryMenu.Add(
+                            new ContextMenuTextItem(
+                                component.name,
+                                () => addComponentSystem.AddComponent(selectedEntity.Id, component.componentDefinition),
+                                !addComponentSystem.CanComponentBeAdded(selectedEntity, component.componentDefinition)));
+                    }
+
+                    contextMenuSystem.OpenMenu(new List<ContextMenuState.Placement>
+                    {
+                        new ContextMenuState.Placement
+                        {
+                            position = rect.position + new Vector3(0, -rect.sizeDelta.y, 0),
+                            expandDirection = ContextMenuState.Placement.Direction.Right,
+                        },
+                        new ContextMenuState.Placement
+                        {
+                            position = rect.position + new Vector3(rect.sizeDelta.x, -rect.sizeDelta.y, 0),
+                            expandDirection = ContextMenuState.Placement.Direction.Left,
+                        }
+                    }, menuItemCategories[""]);
+                })
+            );
 
             inspectorPanel.AddSpacer(20);
 

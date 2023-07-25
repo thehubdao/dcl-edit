@@ -103,9 +103,15 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
     public static class ContextSubmenuPanelHelper
     {
-        public static ContextSubmenuAtom.Data AddContextSubmenu(this PanelAtom.Data panelAtomData, Guid menuId,
-            Guid submenuId, string title, List<ContextMenuItem> submenuItems, float menuWidth,
-            ContextMenuSystem contextMenuSystem, bool isDisabled)
+        public static ContextSubmenuAtom.Data AddContextSubmenu(
+            this PanelAtom.Data panelAtomData,
+            Guid menuId,
+            Guid submenuId,
+            string title,
+            List<ContextMenuItem> submenuItems,
+            float menuWidth,
+            ContextMenuSystem contextMenuSystem,
+            bool isDisabled)
         {
             var data = new ContextSubmenuAtom.Data
             {

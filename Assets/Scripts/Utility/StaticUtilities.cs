@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
+using UnityEngine.Profiling;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -213,6 +214,56 @@ namespace Assets.Scripts.Utility
             {
                 return default(T);
             }
+        }
+
+        public static IEnumerable<T> Flatten<T>(this IEnumerable<IEnumerable<T>> listOfLists)
+        {
+            return listOfLists.SelectMany(list => list);
+        }
+
+        public static string ListGameObjectStack(GameObject gameObject)
+        {
+            var queue = new Queue<string>();
+            var current = gameObject;
+            while (current != null)
+            {
+                queue.Enqueue(current.name);
+                current = current.transform.parent?.gameObject;
+            }
+
+            return string.Join(" -> ", queue);
+        }
+
+        public static bool NotCollides(this Rect rect, Rect otherRect)
+        {
+            return
+                rect.yMax < otherRect.yMin ||
+                rect.yMin > otherRect.yMax ||
+                rect.xMax < otherRect.xMin ||
+                rect.xMin > otherRect.xMax;
+        }
+
+        public static bool Collides(this Rect rect, Rect otherRect)
+        {
+            return !rect.NotCollides(otherRect);
+        }
+
+
+        private static Vector3[] wordCornerArray = new Vector3[4];
+
+        public static Rect GetWorldRect(this RectTransform rt)
+        {
+            Profiler.BeginSample("GetWorldRect");
+            // Convert the rectangle to world corners and grab the top left
+            rt.GetWorldCorners(wordCornerArray);
+
+            // Rescale the size appropriately based on the current Canvas scale
+            var scaledSize = new Vector2(rt.rect.size.x, rt.rect.size.y);
+
+            var rect = new Rect(wordCornerArray[0], scaledSize);
+
+            Profiler.EndSample();
+            return rect;
         }
     }
 }

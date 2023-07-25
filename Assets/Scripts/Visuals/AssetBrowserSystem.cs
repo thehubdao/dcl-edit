@@ -1,8 +1,10 @@
+using System;
 using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
 using System.Collections.Generic;
 using System.Linq;
 using Zenject;
+using UnityEngine;
 
 namespace Assets.Scripts.System
 {
@@ -14,13 +16,25 @@ namespace Assets.Scripts.System
         private AssetManagerSystem assetManagerSystem;
         private AssetBrowserState assetBrowserState;
         private EditorEvents editorEvents;
+        private CameraState cameraState;
+        private AddEntitySystem addEntitySystem;
+        private InputHelper inputHelper;
 
         [Inject]
-        public void Construct(AssetManagerSystem assetManagerSystem, AssetBrowserState assetBrowserState, EditorEvents editorEvents)
+        public void Construct(
+            AssetManagerSystem assetManagerSystem,
+            AssetBrowserState assetBrowserState,
+            EditorEvents editorEvents,
+            CameraState cameraState,
+            AddEntitySystem addEntitySystem,
+            InputHelper inputHelper)
         {
             this.assetManagerSystem = assetManagerSystem;
             this.assetBrowserState = assetBrowserState;
             this.editorEvents = editorEvents;
+            this.cameraState = cameraState;
+            this.addEntitySystem = addEntitySystem;
+            this.inputHelper = inputHelper;
         }
 
 
@@ -40,6 +54,42 @@ namespace Assets.Scripts.System
             }
 
             return filteredHierarchy;
+        }
+
+        public void AddAssetToSceneInViewportCenter(AssetMetadata asset)
+        {
+            Ray ray = new Ray(cameraState.Position, cameraState.Forward);
+            var position = Physics.Raycast(ray, out RaycastHit hit, 50) ?
+                hit.point :
+                ray.GetPoint(10);
+
+            AddAssetToSceneAtPosition(asset, position);
+        }
+
+        public void AddAssetToSceneAtMousePositionInViewport(AssetMetadata asset)
+        {
+            var position = inputHelper.GetMousePositionInScene();
+
+            AddAssetToSceneAtPosition(asset, position);
+        }
+
+        private void AddAssetToSceneAtPosition(AssetMetadata asset, Vector3 position)
+        {
+            switch (asset.assetType)
+            {
+                case AssetMetadata.AssetType.Unknown:
+                    throw new ArgumentOutOfRangeException();
+                case AssetMetadata.AssetType.Model:
+                    addEntitySystem.AddModelAssetEntityAsCommand(asset.assetDisplayName, asset.assetId, position);
+                    break;
+                case AssetMetadata.AssetType.Scene:
+                    addEntitySystem.AddSceneAssetEntityAsCommand(asset.assetDisplayName, asset.assetId, position);
+                    break;
+                case AssetMetadata.AssetType.Image:
+                    throw new NotImplementedException();
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
 

@@ -10,8 +10,10 @@ namespace Assets.Scripts.Visuals.UiBuilder
         {
             public string title;
 
-            [CanBeNull]
-            public UnityAction onClose = null;
+            public bool showCloseButton = false;
+
+            [NotNull]
+            public ClickStrategy clickCloseStrategy = null;
 
             public override bool Equals(Atom.Data other)
             {
@@ -22,7 +24,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
                 return
                     title.Equals(otherPanelHeader.title) &&
-                    onClose == otherPanelHeader.onClose;
+                    clickCloseStrategy == otherPanelHeader.clickCloseStrategy;
             }
         }
 
@@ -48,16 +50,15 @@ namespace Assets.Scripts.Visuals.UiBuilder
                 var headerHandler = gameObject.gameObject.GetComponent<PanelHeaderHandler>();
                 headerHandler.Title.text = newHeaderData.title;
 
-                if (newHeaderData.onClose != null)
+                if (newHeaderData.showCloseButton)
                 {
                     headerHandler.CloseButtonContainer.SetActive(true);
-                    headerHandler.CloseButton.onClick.RemoveAllListeners();
-                    headerHandler.CloseButton.onClick.AddListener(newHeaderData.onClose);
+                    headerHandler.CloseButton.clickStrategy = newHeaderData.clickCloseStrategy;
                 }
                 else
                 {
                     headerHandler.CloseButtonContainer.SetActive(false);
-                    headerHandler.CloseButton.onClick.RemoveAllListeners();
+                    headerHandler.CloseButton.clickStrategy = new ClickStrategy();
                 }
             }
         }
@@ -76,12 +77,16 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
     public static class PanelHeaderPanelHelper
     {
-        public static PanelHeaderAtom.Data AddPanelHeader(this PanelAtom.Data panelAtomData, string title, [CanBeNull] UnityAction onClose = null)
+        public static PanelHeaderAtom.Data AddPanelHeader(
+            this PanelAtom.Data panelAtomData,
+            string title,
+            [CanBeNull] ClickStrategy clickCloseStrategy = null)
         {
             var data = new PanelHeaderAtom.Data
             {
                 title = title,
-                onClose = onClose
+                showCloseButton = clickCloseStrategy != null,
+                clickCloseStrategy = clickCloseStrategy ?? new ClickStrategy()
             };
 
             panelAtomData.childDates.Add(data);

@@ -26,13 +26,13 @@ namespace Assets.Scripts.Command
         public override void Do(DclScene sceneState, EditorEvents editorEvents)
         {
             sceneState.GetPropertyFromIdentifier(_identifier).GetConcrete<T>().SetFixedValue(_newValue);
-            editorEvents.InvokeSelectionChangedEvent();
+            editorEvents.InvokeOnValueChangedEvent();
         }
 
         public override void Undo(DclScene sceneState, EditorEvents editorEvents)
         {
             sceneState.GetPropertyFromIdentifier(_identifier).GetConcrete<T>().SetFixedValue(_oldValue);
-            editorEvents.InvokeSelectionChangedEvent();
+            editorEvents.InvokeOnValueChangedEvent();
         }
     }
 }

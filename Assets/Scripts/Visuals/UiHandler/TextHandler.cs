@@ -1,10 +1,11 @@
 using System;
+using JetBrains.Annotations;
 using TMPro;
 using UnityEngine;
 
 namespace Assets.Scripts.Visuals.UiHandler
 {
-    public class TextHandler : MonoBehaviour
+    public class TextHandler : MonoBehaviour, IUpdateValue
     {
         public enum TextStyle
         {
@@ -22,7 +23,7 @@ namespace Assets.Scripts.Visuals.UiHandler
 
         [SerializeField]
         public TMP_ColorGradient SecondaryColorGradient;
-        
+
         [SerializeField]
         public TMP_ColorGradient DisabledColorGradient;
 
@@ -30,10 +31,24 @@ namespace Assets.Scripts.Visuals.UiHandler
         [SerializeField]
         public TextMeshProUGUI TextComponent;
 
-        public string text
+        [CanBeNull]
+        private SetValueStrategy<string> valueStrategyInternal;
+
+        public void SetTextValueStrategy(SetValueStrategy<string> strategy)
         {
-            get => TextComponent.text;
-            set => TextComponent.text = value;
+            valueStrategyInternal = strategy;
+
+            UpdateValue();
+        }
+
+        public void UpdateValue()
+        {
+            if (valueStrategyInternal == null)
+            {
+                return;
+            }
+
+            TextComponent.text = valueStrategyInternal.value();
         }
 
         public TextStyle textStyle
@@ -44,7 +59,7 @@ namespace Assets.Scripts.Visuals.UiHandler
                 {
                     return TextStyle.Normal;
                 }
-                
+
                 if (TextComponent.colorGradientPreset == PrimaryColorGradient)
                 {
                     return TextStyle.PrimarySelection;

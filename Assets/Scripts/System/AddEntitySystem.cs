@@ -41,20 +41,28 @@ namespace Assets.Scripts.System
                     newHierarchyOrder, parentId));
         }
 
-        public void AddModelAssetEntityAsCommand(DclEntity newEntity, AssetMetadata assetMetadata, Vector3 position)
+        public void AddModelAssetEntityAsCommand(string name, Guid assetId, Vector3 position)
         {
-            var hierarchyOrder = hierarchyOrderSystem.GetDefaultHierarchyOrder(newEntity.ParentId);
+            var hierarchyOrder = hierarchyOrderSystem.GetDefaultHierarchyOrder(default);
 
-            commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateAddModelAssetToScene(newEntity.Id,
-                newEntity.CustomName, assetMetadata.assetId, position, hierarchyOrder));
+            commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateAddModelAssetToScene(
+                Guid.NewGuid(),
+                name,
+                assetId,
+                position,
+                hierarchyOrder));
         }
 
-        public void AddSceneAssetEntityAsCommand(DclEntity newEntity, AssetMetadata assetMetadata, Vector3 position)
+        public void AddSceneAssetEntityAsCommand(string name, Guid assetId, Vector3 position)
         {
-            var hierarchyOrder = hierarchyOrderSystem.GetDefaultHierarchyOrder(newEntity.ParentId);
+            var hierarchyOrder = hierarchyOrderSystem.GetDefaultHierarchyOrder(default);
 
-            commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateAddSceneAssetToScene(newEntity.Id,
-                newEntity.CustomName, assetMetadata.assetId, position, hierarchyOrder));
+            commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateAddSceneAssetToScene(
+                Guid.NewGuid(),
+                name,
+                assetId,
+                position,
+                hierarchyOrder));
         }
 
         public void DuplicateEntityAsCommand(DclEntity selectedEntity)

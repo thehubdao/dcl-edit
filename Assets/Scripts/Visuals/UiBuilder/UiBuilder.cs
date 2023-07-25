@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using Assets.Scripts.EditorState;
+using Assets.Scripts.Visuals.UiHandler;
 using JetBrains.Annotations;
 using UnityEngine;
+using Visuals.UiHandler;
 using Zenject;
 using Object = UnityEngine.Object;
 
@@ -63,18 +65,24 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
         // Dependencies
         private UnityState unityState;
-        private AssetBrowserButtonHandler.Factory assetBrowserButtonHandlerFactory;
+        private AssetButtonHandler.Factory assetBrowserButtonHandlerFactory;
         private AssetBrowserFolderHandler.Factory assetBrowserFolderHandlerFactory;
+        private HierarchyItemHandler.Factory hierarchyItemHandlerFactory;
+        private SpacerHandler.Factory spacerHandlerFactory;
 
         [Inject]
         public void Constructor(
             UnityState unityState,
-            AssetBrowserButtonHandler.Factory assetBrowserButtonHandlerFactory,
-            AssetBrowserFolderHandler.Factory assetBrowserFolderHandlerFactory)
+            AssetButtonHandler.Factory assetBrowserButtonHandlerFactory,
+            AssetBrowserFolderHandler.Factory assetBrowserFolderHandlerFactory,
+            HierarchyItemHandler.Factory hierarchyItemHandlerFactory,
+            SpacerHandler.Factory spacerHandlerFactory)
         {
             this.unityState = unityState;
             this.assetBrowserButtonHandlerFactory = assetBrowserButtonHandlerFactory;
             this.assetBrowserFolderHandlerFactory = assetBrowserFolderHandlerFactory;
+            this.hierarchyItemHandlerFactory = hierarchyItemHandlerFactory;
+            this.spacerHandlerFactory = spacerHandlerFactory;
         }
 
         #region Object Pool
@@ -107,15 +115,15 @@ namespace Assets.Scripts.Visuals.UiBuilder
         {
             Stats.instantiateCount++;
 
-            GameObject gameObject = type switch
+            var gameObject = type switch
             {
                 AtomType.Title => Object.Instantiate(unityState.TitleAtom),
                 AtomType.Text => Object.Instantiate(unityState.TextAtom),
-                AtomType.Spacer => Object.Instantiate(unityState.SpacerAtom),
+                AtomType.Spacer => spacerHandlerFactory.Create().gameObject,
                 AtomType.Panel => Object.Instantiate(unityState.PanelAtom),
                 AtomType.PanelWithBorder => Object.Instantiate(unityState.PanelWithBorderAtom),
                 AtomType.PanelHeader => Object.Instantiate(unityState.PanelHeaderAtom),
-                AtomType.HierarchyItem => Object.Instantiate(unityState.HierarchyItemAtom),
+                AtomType.HierarchyItem => hierarchyItemHandlerFactory.Create().gameObject,
                 AtomType.StringPropertyInput => Object.Instantiate(unityState.StringInputAtom),
                 AtomType.NumberPropertyInput => Object.Instantiate(unityState.NumberInputAtom),
                 AtomType.BooleanPropertyInput => Object.Instantiate(unityState.BooleanInputAtom),
@@ -130,9 +138,9 @@ namespace Assets.Scripts.Visuals.UiBuilder
                 AtomType.Grid => Object.Instantiate(unityState.GridAtom),
                 AtomType.AssetBrowserFolder => assetBrowserFolderHandlerFactory.Create().gameObject,
                 AtomType.AssetBrowserButton => assetBrowserButtonHandlerFactory.Create().gameObject,
-                _ => throw new ArgumentOutOfRangeException($"The type {type.ToString()} is not listed to instantiate.")
+                _ => throw new ArgumentOutOfRangeException($"The type {type} is not listed to instantiate.")
             };
-            return gameObject; ;
+            return gameObject;
         }
 
         public void ReturnAtomsToPool([CanBeNull] AtomGameObject atomGameObject)
@@ -158,6 +166,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
         // ----------------------------
 
+        [CanBeNull]
         private PanelAtom currentRootAtom = null;
         public GameObject parentObject;
 
@@ -182,6 +191,16 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
             currentRootAtom.Update(newData);
             currentRootAtom.gameObject.gameObject.transform.SetParent(parentObject.transform, false);
+        }
+
+        public void UpdateValues()
+        {
+            if (currentRootAtom == null) return;
+
+            foreach (var valueHandler in currentRootAtom.gameObject.gameObject.GetComponentsInChildren<IUpdateValue>())
+            {
+                valueHandler.UpdateValue();
+            }
         }
 
         public class Factory : PlaceholderFactory<GameObject, UiBuilder>
