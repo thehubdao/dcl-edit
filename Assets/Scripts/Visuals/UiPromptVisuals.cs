@@ -4,14 +4,12 @@ using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
 using Assets.Scripts.Visuals.UiBuilder;
 using Assets.Scripts.Visuals.UiHandler;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using Zenject;
 using UnityEngine.UI;
 using Assets.Scripts.EditorState;
 using HSVPicker;
+using Visuals;
 
 namespace Assets.Scripts.Visuals
 {
@@ -20,9 +18,9 @@ namespace Assets.Scripts.Visuals
         [SerializeField] private GameObject content;
         [SerializeField] private RectTransform contentRectTransform;
         [SerializeField] private CanvasGroup mainCanvasGroup;
-
+        
         private UiBuilder.UiBuilder uiBuilder;
-        private UiAssetBrowserVisuals.Factory uiAssetBrowserViusalsFactory;
+        private UiAssetBrowserVisuals.Factory uiAssetBrowserVisualsFactory;
         private EditorEvents editorEvents;
         private DialogState dialogState;
         private SceneManagerSystem sceneManagerSystem;
@@ -31,19 +29,16 @@ namespace Assets.Scripts.Visuals
         private AssetBrowserState assetBrowserState;
         private UnityState unityState;
         private PromptSystem promptSystem;
-        private ChangeLogState changeLogState;
-
         private PanelAtom.Data panel;
-        public PromptSystem.PromptData data;
-
+        private PromptSystem.PromptData data;
         private GameObject tmpObject;
-        
-        private UiBuilder.UiBuilder.Factory uiBuilderFactory;
+        private ChangeLogVisuals changeLogVisuals;
+
 
         [Inject]
         void Construct(
         UiBuilder.UiBuilder.Factory uiBuilderFactory,
-        UiAssetBrowserVisuals.Factory uiAssetBrowserViusalsFactory,
+        UiAssetBrowserVisuals.Factory uiAssetBrowserVisualsFactory,
         EditorEvents editorEvents,
         DialogState dialogState,
         SceneManagerSystem sceneManagerSystem,
@@ -51,12 +46,10 @@ namespace Assets.Scripts.Visuals
         AssetBrowserState assetBrowserState,
         DialogSystem dialogSystem,
         UnityState unityState,
-        PromptSystem promptSystem,
-        ChangeLogState changeLogState)
+        PromptSystem promptSystem)
         {
-            this.uiBuilderFactory = uiBuilderFactory;
             uiBuilder = uiBuilderFactory.Create(content);
-            this.uiAssetBrowserViusalsFactory = uiAssetBrowserViusalsFactory;
+            this.uiAssetBrowserVisualsFactory = uiAssetBrowserVisualsFactory;
             this.editorEvents = editorEvents;
             this.dialogState = dialogState;
             this.sceneManagerSystem = sceneManagerSystem;
@@ -65,7 +58,7 @@ namespace Assets.Scripts.Visuals
             this.assetBrowserState = assetBrowserState;
             this.unityState = unityState;
             this.promptSystem = promptSystem;
-            this.changeLogState = changeLogState;
+            changeLogVisuals = GetComponent<ChangeLogVisuals>();
         }
 
         private void Update()
@@ -150,7 +143,7 @@ namespace Assets.Scripts.Visuals
 
         public void AddAssetBrowser()
         {
-            var uiAssetBrowserVisuals = uiAssetBrowserViusalsFactory.Create();
+            var uiAssetBrowserVisuals = uiAssetBrowserVisualsFactory.Create();
             tmpObject = uiAssetBrowserVisuals.gameObject;
             UiAssetBrowserVisuals visuals = uiAssetBrowserVisuals.GetComponent<UiAssetBrowserVisuals>();
 
@@ -198,33 +191,12 @@ namespace Assets.Scripts.Visuals
         
         private void AddChangeLog()
         {
-            TryGetComponent<ChangeLogHandler>(out var changeLogHandler);
-            
-            if (!changeLogHandler)
-            {
-                return;
-            }
-            
-            var uiBuilderVersions = this.uiBuilderFactory.Create(changeLogHandler.logVersions);
-            var uiBuilderDescription = this.uiBuilderFactory.Create(changeLogHandler.logDescription);
-            
-            var versionsPanelData = UiBuilder.UiBuilder.NewPanelData();
+            //TODO?
+            PromptSystem.Value<bool> destroyValue = new(() => Destroy(tmpObject));
+            destroyValue.data = data;
+            data.notInWindowAction = destroyValue;
 
-            versionsPanelData.layoutDirection = PanelHandler.LayoutDirection.Vertical;
-
-            var orderedChangeLogs = changeLogState.ChangeLog.OrderBy(l => l.version);
-            
-            foreach (var changeLog in orderedChangeLogs)
-            {
-                var button = versionsPanelData.AddButton(changeLog.version, arg0 =>
-                {
-                    var descriptionPanelData = UiBuilder.UiBuilder.NewPanelData();
-                    descriptionPanelData.AddText(changeLog.details);
-                    uiBuilderDescription.Update(descriptionPanelData);
-                });
-            }
-
-            uiBuilderVersions.Update(versionsPanelData);
+            changeLogVisuals.AddChangeLog();
         }
     }
 }
