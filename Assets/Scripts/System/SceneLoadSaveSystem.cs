@@ -289,6 +289,7 @@ namespace Assets.Scripts.System
         {
             public string nameInCode;
             public string nameOfSlot;
+
             public List<DclComponentPropertyData> properties;
 
             public DclComponentData(DclComponent component)

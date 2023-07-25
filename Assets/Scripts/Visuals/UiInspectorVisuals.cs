@@ -142,8 +142,8 @@ namespace Assets.Scripts.Visuals
             foreach (var component in selectedEntity.Components ?? new List<DclComponent>())
             {
                 var componentPanel = inspectorPanel.AddPanelWithBorder();
-                
-                if (component.NameInCode == "Transform")
+
+                if(!availableComponentsState.GetComponentDefinitionByName(component.NameInCode).IsRemovable)
                     componentPanel.AddPanelHeader(component.NameInCode, null);
                 else
                     componentPanel.AddPanelHeader(component.NameInCode, () => commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateRemoveComponent(selectedEntity.Id, component)));
