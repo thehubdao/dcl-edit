@@ -6,6 +6,7 @@ using Assets.Scripts.Visuals.UiBuilder;
 using Assets.Scripts.Visuals.UiHandler;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Zenject;
 using UnityEngine.UI;
@@ -36,6 +37,8 @@ namespace Assets.Scripts.Visuals
         public PromptSystem.PromptData data;
 
         private GameObject tmpObject;
+        
+        private UiBuilder.UiBuilder.Factory uiBuilderFactory;
 
         [Inject]
         void Construct(
@@ -51,6 +54,7 @@ namespace Assets.Scripts.Visuals
         PromptSystem promptSystem,
         ChangeLogState changeLogState)
         {
+            this.uiBuilderFactory = uiBuilderFactory;
             uiBuilder = uiBuilderFactory.Create(content);
             this.uiAssetBrowserViusalsFactory = uiAssetBrowserViusalsFactory;
             this.editorEvents = editorEvents;
@@ -194,13 +198,33 @@ namespace Assets.Scripts.Visuals
         
         private void AddChangeLog()
         {
-            var headerData = new PanelAtom.Data
+            TryGetComponent<ChangeLogHandler>(out var changeLogHandler);
+            
+            if (!changeLogHandler)
             {
-                layoutDirection = PanelHandler.LayoutDirection.Horizontal,
-                useFullWidth = false
-            };
+                return;
+            }
             
+            var uiBuilderVersions = this.uiBuilderFactory.Create(changeLogHandler.logVersions);
+            var uiBuilderDescription = this.uiBuilderFactory.Create(changeLogHandler.logDescription);
             
+            var versionsPanelData = UiBuilder.UiBuilder.NewPanelData();
+
+            versionsPanelData.layoutDirection = PanelHandler.LayoutDirection.Vertical;
+
+            var orderedChangeLogs = changeLogState.ChangeLog.OrderBy(l => l.version);
+            
+            foreach (var changeLog in orderedChangeLogs)
+            {
+                var button = versionsPanelData.AddButton(changeLog.version, arg0 =>
+                {
+                    var descriptionPanelData = UiBuilder.UiBuilder.NewPanelData();
+                    descriptionPanelData.AddText(changeLog.details);
+                    uiBuilderDescription.Update(descriptionPanelData);
+                });
+            }
+
+            uiBuilderVersions.Update(versionsPanelData);
         }
     }
 }
