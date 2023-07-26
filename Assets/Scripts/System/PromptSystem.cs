@@ -93,12 +93,12 @@ namespace Assets.Scripts.System
         public class Value<T> : PromptAction
         {
             public T value;
-            public Value(Action action) : base(action) => name = "Value";
+            public Value(Action action = null) : base(action) => name = "Value";
         }
 
         public class NotInWindow : PromptAction
         {
-            public NotInWindow(Action action) : base(action) => name = "NotInWindow";
+            public NotInWindow(Action action = null) : base(action) => name = "NotInWindow";
         }
 
         public class PromptData
