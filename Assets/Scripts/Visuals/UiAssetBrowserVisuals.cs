@@ -77,14 +77,14 @@ namespace Assets.Scripts.Visuals
         {
             editorEvents.onAssetMetadataCacheUpdatedEvent += UpdateVisuals;
             editorEvents.onUiChangedEvent += UpdateVisuals;
-            editorEvents.OnCurrentSceneChangedEvent += assetManagerSystem.CacheAllAssetMetadata;
+            editorEvents.OnCurrentSceneChangedEvent += UpdateContent;
         }
 
         private void OnDestroy()
         {
             editorEvents.onAssetMetadataCacheUpdatedEvent -= UpdateVisuals;
             editorEvents.onUiChangedEvent -= UpdateVisuals;
-            editorEvents.OnCurrentSceneChangedEvent -= assetManagerSystem.CacheAllAssetMetadata;
+            editorEvents.OnCurrentSceneChangedEvent -= UpdateContent;
         }
 
         private void UpdateVisuals()
