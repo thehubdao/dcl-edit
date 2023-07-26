@@ -62,31 +62,31 @@ namespace Assets.Scripts.EditorState
             {
                 category = "Built-in/Shape",
                 availableInAddComponentMenu = true,
-                componentDefinition = new DclComponent.ComponentDefinition("BoxShape", "Shape")
+                componentDefinition = new DclComponent.ComponentDefinition("BoxShape", "Shape", true)
             },
             new AvailableComponent
             {
                 category = "Built-in/Shape",
                 availableInAddComponentMenu = true,
-                componentDefinition = new DclComponent.ComponentDefinition("SphereShape", "Shape")
+                componentDefinition = new DclComponent.ComponentDefinition("SphereShape", "Shape", true)
             },
             new AvailableComponent
             {
                 category = "Built-in/Shape",
                 availableInAddComponentMenu = true,
-                componentDefinition = new DclComponent.ComponentDefinition("PlaneShape", "Shape")
+                componentDefinition = new DclComponent.ComponentDefinition("PlaneShape", "Shape", true)
             },
             new AvailableComponent
             {
                 category = "Built-in/Shape",
                 availableInAddComponentMenu = true,
-                componentDefinition = new DclComponent.ComponentDefinition("CylinderShape", "Shape")
+                componentDefinition = new DclComponent.ComponentDefinition("CylinderShape", "Shape", true)
             },
             new AvailableComponent
             {
                 category = "Built-in/Shape",
                 availableInAddComponentMenu = true,
-                componentDefinition = new DclComponent.ComponentDefinition("ConeShape", "Shape")
+                componentDefinition = new DclComponent.ComponentDefinition("ConeShape", "Shape", true)
             },
             new AvailableComponent
             {

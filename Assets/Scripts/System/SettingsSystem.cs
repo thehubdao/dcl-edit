@@ -433,8 +433,23 @@ namespace Assets.Scripts.System
                 userSettingSaverInstance,
                 new SettingOptions.Default<float>(0.25f),
                 new SettingOptions.ClampMin<float>(0f));
-        }
 
+            groundGridSetting = new Setting<int>(
+                editorEvents,
+                "Change Grid",
+                userSettingSaverInstance,
+                new SettingOptions.Default<int>(1),
+                new SettingOptions.ClampMin<int>(0),
+                new SettingOptions.ClampMax<int>(2));
+
+            groundGridSizeSetting = new Setting<int>(
+                editorEvents,
+                "Change GridSize",
+                userSettingSaverInstance,
+                new SettingOptions.Default<int>(16),
+                new SettingOptions.ClampMin<int>(2),
+                new SettingOptions.ClampMax<int>(100));
+        }
 
         public Setting<float> uiScalingFactor;
         public Setting<float> mouseSensitivity;
@@ -463,6 +478,14 @@ namespace Assets.Scripts.System
         /// </summary>
         public Setting<int> gizmoToolDoesSnap;
 
+
+        /// <summary>
+        /// 0 = No grid
+        /// 1 = Old grid
+        /// 2 = New grid
+        /// </summary>
+        public Setting<int> groundGridSetting;
+        public Setting<int> groundGridSizeSetting;
 
         public Setting<float> gizmoToolTranslateSnapping;
         public Setting<float> gizmoToolRotateSnapping;

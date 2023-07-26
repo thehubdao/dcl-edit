@@ -23,11 +23,11 @@ namespace Assets.Scripts.System
         {
             return new List<DclComponent.ComponentDefinition>
             {
-                new DclComponent.ComponentDefinition("BoxShape", "Shape"),
-                new DclComponent.ComponentDefinition("SphereShape", "Shape"),
-                new DclComponent.ComponentDefinition("PlaneShape", "Shape"),
-                new DclComponent.ComponentDefinition("CylinderShape", "Shape"),
-                new DclComponent.ComponentDefinition("ConeShape", "Shape"),
+                new DclComponent.ComponentDefinition("BoxShape", "Shape", true),
+                new DclComponent.ComponentDefinition("SphereShape", "Shape", true),
+                new DclComponent.ComponentDefinition("PlaneShape", "Shape", true),
+                new DclComponent.ComponentDefinition("CylinderShape", "Shape", true),
+                new DclComponent.ComponentDefinition("ConeShape", "Shape", true),
             };
         }
 

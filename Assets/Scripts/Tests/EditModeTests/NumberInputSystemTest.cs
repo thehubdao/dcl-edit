@@ -17,7 +17,7 @@ namespace Assets.Scripts.Tests.EditModeTests
             Assert.AreEqual(-1f, numberInputSystem.ValidateNumberInput("-1"), roundingError);
             Assert.AreEqual(-1f, numberInputSystem.ValidateNumberInput("-1.0"), roundingError);
             Assert.AreEqual(1.1f, numberInputSystem.ValidateNumberInput("1.1"), roundingError);
-            Assert.AreEqual(null, numberInputSystem.ValidateNumberInput("1,1"));
+            Assert.AreEqual(1.1f, numberInputSystem.ValidateNumberInput("1,1"));
             Assert.AreEqual(100000000f, numberInputSystem.ValidateNumberInput("100000000"), roundingError);
             Assert.AreEqual(0.0000001f, numberInputSystem.ValidateNumberInput("0.0000001"), roundingError);
             Assert.AreEqual(null, numberInputSystem.ValidateNumberInput("a"));
@@ -42,9 +42,10 @@ namespace Assets.Scripts.Tests.EditModeTests
             Assert.AreEqual(null, numberInputSystem.ValidateNumberInput("1. 01"));
             Assert.AreEqual(null, numberInputSystem.ValidateNumberInput("1.\n01"));
             Assert.AreEqual(null, numberInputSystem.ValidateNumberInput("1.\t01"));
-            Assert.AreEqual(null, numberInputSystem.ValidateNumberInput("1..01"));
-            Assert.AreEqual(null, numberInputSystem.ValidateNumberInput("1.,01"));
-            Assert.AreEqual(null, numberInputSystem.ValidateNumberInput("1,.01"));
+            Assert.AreEqual(1.01f, numberInputSystem.ValidateNumberInput("1..01"));
+            Assert.AreEqual(1.01f, numberInputSystem.ValidateNumberInput("1.,01"));
+            Assert.AreEqual(1.01f, numberInputSystem.ValidateNumberInput("1,.01"));
+            Assert.AreEqual(1.2345f, numberInputSystem.ValidateNumberInput("1.2.3.4.5"));
             Assert.AreEqual(null, numberInputSystem.ValidateNumberInput("1-"));
         }
     }

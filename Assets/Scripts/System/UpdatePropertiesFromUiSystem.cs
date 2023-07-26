@@ -11,17 +11,20 @@ namespace Assets.Scripts.System
         private ExposeEntitySystem exposeEntitySystem;
         private EditorEvents editorEvents;
         private SceneManagerSystem sceneManagerSystem;
+        private SnackbarSystem snackbarSystem;
 
         [Inject]
         public void Construct(ICommandSystem commandSystem,
             ExposeEntitySystem exposeEntitySystem,
             EditorEvents editorEvents,
-            SceneManagerSystem sceneManagerSystem)
+            SceneManagerSystem sceneManagerSystem,
+            SnackbarSystem snackbarSystem)
         {
             this.commandSystem = commandSystem;
             this.exposeEntitySystem = exposeEntitySystem;
             this.editorEvents = editorEvents;
             this.sceneManagerSystem = sceneManagerSystem;
+            this.snackbarSystem = snackbarSystem;
         }
 
         public void SetNewName(DclEntity entity, string newName)
@@ -42,7 +45,7 @@ namespace Assets.Scripts.System
                 }
                 else
                 {
-                    // TODO: show expose failed message
+                    snackbarSystem.AddMessage("Exposing failed!", EditorState.SnackbarState.MessageType.Error);
                     editorEvents.InvokeSelectionChangedEvent();
                 }
             }
