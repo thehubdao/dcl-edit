@@ -10,7 +10,6 @@ public class InputState
         RotateAroundPoint,
         SlideSideways,
         HoldingGizmoTool,
-        FocusTransition,
         UiInput
     }
 

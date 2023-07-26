@@ -92,9 +92,6 @@ namespace Assets.Scripts.Interaction
                 case InputState.InStateType.SlideSideways:
                     UpdateSlideSideways();
                     break;
-                case InputState.InStateType.FocusTransition:
-                    UpdateFocusTransition();
-                    break;
                 case InputState.InStateType.UiInput:
                     UpdateUiInput();
                     break;
@@ -330,7 +327,7 @@ namespace Assets.Scripts.Interaction
                 Vector3 destination = entityPos - cameraForward * 10;
                 inputState.FocusTransitionDestination = destination;
 
-                inputState.InState = InputState.InStateType.FocusTransition;
+                cameraState.MoveTowards(destination, true);
             }
 
             // When pressing the save hotkey, save the scene
@@ -451,24 +448,6 @@ namespace Assets.Scripts.Interaction
             {
                 inputState.InState = InputState.InStateType.NoInput;
                 inputHelper.ShowMouse();
-            }
-        }
-
-        private void UpdateFocusTransition()
-        {
-            // Control inputs are prioritized over the focus transition.
-            UpdateNoInput();
-
-            // Check if the state changed because of a user interaction.
-            if (inputState.InState != InputState.InStateType.FocusTransition)
-            {
-                return;
-            }
-
-
-            if (cameraState.MoveTowards((Vector3) inputState.FocusTransitionDestination, true))
-            {
-                inputState.InState = InputState.InStateType.NoInput;
             }
         }
 
