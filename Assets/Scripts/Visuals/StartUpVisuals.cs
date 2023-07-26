@@ -55,7 +55,7 @@ namespace Visuals
         /// </summary>
         private bool QuitApplication()
         {
-            var quitActions = new PromptSystem.Action[]
+            var quitActions = new PromptSystem.PromptAction[]
             {
                 new PromptSystem.Yes(() =>
                 {
@@ -63,7 +63,7 @@ namespace Visuals
                     {
                         sceneManagerSystem.SaveCurrentScene();
                     }
-                    
+
 #if UNITY_EDITOR
                     EditorApplication.isPlaying = false;
 #else
