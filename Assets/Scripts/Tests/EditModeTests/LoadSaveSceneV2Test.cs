@@ -79,6 +79,7 @@ namespace Assets.Scripts.Tests.EditModeTests
             MenuBarState menuBarState = new MenuBarState();
             FileManagerSystem fileManagerSystem = new FileManagerSystem();
             SettingsSystem settingsSystem = new SettingsSystem();
+            PromptSystem promptSystem = new PromptSystem();
             SnackbarSystem snackbarSystem = new SnackbarSystem();
 
             menuBarSystem.Construct(editorEvents, menuBarState);
@@ -97,6 +98,7 @@ namespace Assets.Scripts.Tests.EditModeTests
                 sceneViewSystem,
                 menuBarSystem,
                 settingsSystem,
+                promptSystem,
                 snackbarSystem);
             loadSaveSystem.Construct(null, new FileUpgraderSystem(), sceneViewSystem, new MockSceneChangeDetectSystem());
 
