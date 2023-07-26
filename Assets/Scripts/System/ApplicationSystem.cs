@@ -18,43 +18,17 @@ namespace Assets.Scripts.System
         // Dependencies
         private SettingsSystem settingsSystem;
         private EditorEvents editorEvents;
-        private MenuBarSystem menuBarSystem;
 
         [Inject]
         private void Construct(
             SettingsSystem settingsSystem,
-            EditorEvents editorEvents,
-            MenuBarSystem menuBarSystem)
+            EditorEvents editorEvents)
         {
             this.settingsSystem = settingsSystem;
             this.editorEvents = editorEvents;
-            this.menuBarSystem = menuBarSystem;
-
-            CreateMenuBarItems();
-            CreateHelpMenuBarItems();
 
             // subscribe events
             this.editorEvents.onSettingsChangedEvent += SetApplicationTargetFramerate;
-        }
-
-        private void CreateMenuBarItems()
-        {
-            menuBarSystem.AddMenuItem("File#1/Exit#1000", QuitApplication);
-        }
-
-        private void CreateHelpMenuBarItems()
-        {
-            menuBarSystem.AddMenuItem("Help#30/Support",
-                () =>
-                {
-                    Application.OpenURL("https://discord.com/channels/843557607373275206/1033310423010775120");
-                });
-            menuBarSystem.AddMenuItem("Help#30/Tweet about us",
-                () =>
-                {
-                    Application.OpenURL(
-                        "https://twitter.com/intent/tweet?text=Using%20%23DCLEdit%20by%20%40MGH_DAO%20right%20now");
-                });
         }
 
         /// <summary>
@@ -67,19 +41,6 @@ namespace Assets.Scripts.System
         public void SetApplicationTargetFramerate()
         {
             Application.targetFrameRate = settingsSystem.applicationTargetFramerate.Get();
-        }
-
-        /// <summary>
-        /// Close the application
-        /// </summary>
-        private void QuitApplication()
-        {
-            //TODO: Check for unsaved content
-#if UNITY_EDITOR
-            EditorApplication.isPlaying = false;
-#else
-            Application.Quit();
-#endif
         }
     }
 }

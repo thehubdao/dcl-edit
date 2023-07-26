@@ -434,6 +434,15 @@ namespace Assets.Scripts.System
                 new SettingOptions.Default<float>(0.25f),
                 new SettingOptions.ClampMin<float>(0f));
 
+            skyboxTime = new Setting<float>(
+                editorEvents,
+                "Skybox Time",
+                projectSettingsSaverInstance,
+                new SettingOptions.Default<float>(12f),
+                new SettingOptions.ClampMin<float>(0f),
+                new SettingOptions.ClampMax<float>(24f)
+                );
+
             groundGridSetting = new Setting<int>(
                 editorEvents,
                 "Change Grid",
@@ -492,5 +501,10 @@ namespace Assets.Scripts.System
         public Setting<float> gizmoToolScaleSnapping;
 
         public Setting<string> panelSize;
+
+        /// <summary>
+        /// Time of day for the skybox in 24h format
+        /// </summary>
+        public Setting<float> skyboxTime;
     }
 }

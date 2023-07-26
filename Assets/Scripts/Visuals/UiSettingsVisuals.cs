@@ -158,6 +158,23 @@ namespace Assets.Scripts.Visuals
                 {
                     OnSubmit = settingsSystem.gizmoToolScaleSnapping.Set
                 });
+            
+            
+            // Environment Settings
+
+            var environmentPanel = settingsPanel.AddPanelWithBorder();
+
+            environmentPanel.AddPanelHeader("Environment");
+
+            // skybox
+            environmentPanel.AddNumberProperty(
+                "Time of day",
+                "Time (default: 12)",
+                settingsSystem.skyboxTime.Get(),
+                new StringPropertyAtom.UiPropertyActions<float>
+                {
+                    OnSubmit = settingsSystem.skyboxTime.Set
+                });
 
             gizmoToolSnappingPanel.AddNumberProperty(
                 "Grid Selection",
