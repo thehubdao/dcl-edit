@@ -13,12 +13,12 @@ namespace Assets.Scripts.System
     public class LoadGltfFromFileSystem
     {
         // Dependencies
-        private UnityState _unityState;
+        private UnityState unityState;
 
         [Inject]
         public void Construct(UnityState unityState)
         {
-            _unityState = unityState;
+            this.unityState = unityState;
         }
 
         public void LoadGltfFromPath(string gltfPath, Action<GameObject> then, IDataLoader dataLoader = null)
@@ -30,7 +30,7 @@ namespace Assets.Scripts.System
                 var options = new ImportOptions()
                 {
                     DataLoader = dataLoader,
-                    AsyncCoroutineHelper = _unityState.AsyncCoroutineHelper
+                    AsyncCoroutineHelper = unityState.AsyncCoroutineHelper
                 };
 
                 var importer = new GLTFSceneImporter(gltfPath, options);
@@ -78,9 +78,23 @@ namespace Assets.Scripts.System
                             .Where(t => !t.name.EndsWith("_collider"))
                             .Where(t => t.TryGetComponent<MeshFilter>(out _) || t.TryGetComponent<SkinnedMeshRenderer>(out _));
 
+                        //Change opaque shader to transparent shader when necessary
+                        var transforms = visibleChildren.ToList();
+                        foreach (var transform in transforms)
+                        {
+                            var materials = transform.GetComponent<Renderer>().materials;
+                            
+                            foreach (var material in materials)
+                            {
+                                if (material.color.a < 1)
+                                {
+                                    material.shader = Shader.Find("Shader Graphs/GLTFShaderTrans");
+                                }
+                            }
+                        }
 
                         // Add click collider to all visible GameObjects
-                        foreach (var child in visibleChildren)
+                        foreach (var child in transforms)
                         {
                             var colliderGameObject = new GameObject("Click Collider");
                             colliderGameObject.transform.parent = child;
