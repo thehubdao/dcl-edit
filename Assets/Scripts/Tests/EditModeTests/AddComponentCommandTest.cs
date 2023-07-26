@@ -43,7 +43,7 @@ namespace Assets.Scripts.Tests.EditModeTests
         public void AddShapeComponent()
         {
             // create a command to add a SphereShape to test entity 1
-            var componentDefinition = new DclComponent.ComponentDefinition("SphereShape", "Shape");
+            var componentDefinition = new DclComponent.ComponentDefinition("SphereShape", "Shape", true);
             var command = commandFactory.CreateAddComponent(testEntity1.Id, componentDefinition);
 
             // execute the command
@@ -57,7 +57,7 @@ namespace Assets.Scripts.Tests.EditModeTests
         public void AddShapeComponentToChild()
         {
             // create a command to add a SphereShape to test entity 3
-            var componentDefinition = new DclComponent.ComponentDefinition("SphereShape", "Shape");
+            var componentDefinition = new DclComponent.ComponentDefinition("SphereShape", "Shape", true);
             var command = commandFactory.CreateAddComponent(testEntity3.Id, componentDefinition);
 
             // execute the command
@@ -71,7 +71,7 @@ namespace Assets.Scripts.Tests.EditModeTests
         public void UndoAndRedo()
         {
             // create a command to add a SphereShape to test entity 1
-            var componentDefinition = new DclComponent.ComponentDefinition("SphereShape", "Shape");
+            var componentDefinition = new DclComponent.ComponentDefinition("SphereShape", "Shape", true);
             var command = commandFactory.CreateAddComponent(testEntity1.Id, componentDefinition);
 
             // execute the command
@@ -97,7 +97,7 @@ namespace Assets.Scripts.Tests.EditModeTests
         public void TryAddingComponentWithOccupiedSlot()
         {
             // create a command to add a SphereShape to test entity 1
-            var componentDefinition = new DclComponent.ComponentDefinition("SphereShape", "Shape");
+            var componentDefinition = new DclComponent.ComponentDefinition("SphereShape", "Shape", true);
             var command = commandFactory.CreateAddComponent(testEntity1.Id, componentDefinition);
 
             // execute the command
@@ -107,7 +107,7 @@ namespace Assets.Scripts.Tests.EditModeTests
             Assert.IsTrue(testEntity1.HasComponent(componentDefinition.NameInCode));
 
             // create a command to add a BoxShape to test entity 1
-            var componentDefinition2 = new DclComponent.ComponentDefinition("BoxShape", "Shape");
+            var componentDefinition2 = new DclComponent.ComponentDefinition("BoxShape", "Shape", true);
             var command2 = commandFactory.CreateAddComponent(testEntity1.Id, componentDefinition2);
 
             // execute the command
@@ -127,6 +127,7 @@ namespace Assets.Scripts.Tests.EditModeTests
             var componentDefinition = new DclComponent.ComponentDefinition(
                 "MoveUp",
                 "MoveUp",
+                true,
                 null,
                 new PropertyDefinition("speed", PropertyType.Float, 1f),
                 new PropertyDefinition("distance", PropertyType.Float, 1f),
@@ -163,7 +164,7 @@ namespace Assets.Scripts.Tests.EditModeTests
         public void AddMultipleComponents()
         {
             // create a command to add a SphereShape to test entity 1
-            var componentDefinition = new DclComponent.ComponentDefinition("SphereShape", "Shape");
+            var componentDefinition = new DclComponent.ComponentDefinition("SphereShape", "Shape", true);
             var command = commandFactory.CreateAddComponent(testEntity1.Id, componentDefinition);
 
             // execute the command
@@ -173,6 +174,7 @@ namespace Assets.Scripts.Tests.EditModeTests
             var componentDefinition2 = new DclComponent.ComponentDefinition(
                 "MoveUp",
                 "MoveUp",
+                true,
                 null,
                 new PropertyDefinition("speed", PropertyType.Float, 1f),
                 new PropertyDefinition("distance", PropertyType.Float, 1f),
@@ -197,6 +199,7 @@ namespace Assets.Scripts.Tests.EditModeTests
             var componentDefinition = new DclComponent.ComponentDefinition(
                 "MoveUp",
                 "MoveUp",
+                true,
                 null,
                 new PropertyDefinition("speed", PropertyType.Float, 1f),
                 new PropertyDefinition("distance", PropertyType.Float, 1f),

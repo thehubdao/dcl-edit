@@ -2,219 +2,188 @@ using System;
 using Assets.Scripts.Events;
 using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
-using Assets.Scripts.Visuals;
 using Assets.Scripts.Visuals.UiBuilder;
 using Assets.Scripts.Visuals.UiHandler;
 using System.Collections;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using UnityEngine;
 using Zenject;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Assets.Scripts.EditorState;
 using HSVPicker;
 
-public class UiPromptVisuals : MonoBehaviour
+namespace Assets.Scripts.Visuals
 {
-    [SerializeField] private GameObject content;
-    [SerializeField] private RectTransform contentRectTransform;
-    [SerializeField] private CanvasGroup mainCanvasGroup;
-
-    private UiBuilder uiBuilder;
-    private UiAssetBrowserVisuals.Factory uiAssetBrowserViusalsFactory;
-    private EditorEvents editorEvents;
-    private DialogState dialogState;
-    private SceneManagerSystem sceneManagerSystem;
-    private CommandSystem commandSystem;
-    private DialogSystem dialogSystem;
-    private AssetBrowserState assetBrowserState;
-    private UnityState unityState;
-
-    private PanelAtom.Data panel;
-    public Data data;
-
-    private GameObject tmpObject;
-
-    [Inject]
-    void Construct(
-    UiBuilder.Factory uiBuilderFactory,
-    UiAssetBrowserVisuals.Factory uiAssetBrowserViusalsFactory,
-    EditorEvents editorEvents,
-    DialogState dialogState,
-    SceneManagerSystem sceneManagerSystem,
-    CommandSystem commandSystem,
-    AssetBrowserState assetBrowserState,
-    DialogSystem dialogSystem,
-    UnityState unityState)
+    public class UiPromptVisuals : MonoBehaviour
     {
-        uiBuilder = uiBuilderFactory.Create(content);
-        this.uiAssetBrowserViusalsFactory = uiAssetBrowserViusalsFactory;
-        this.editorEvents = editorEvents;
-        this.dialogState = dialogState;
-        this.sceneManagerSystem = sceneManagerSystem;
-        this.commandSystem = commandSystem;
-        this.dialogSystem = dialogSystem;
-        this.assetBrowserState = assetBrowserState;
-        this.unityState = unityState;
-    }
+        [SerializeField] private GameObject content;
+        [SerializeField] private RectTransform contentRectTransform;
+        [SerializeField] private CanvasGroup mainCanvasGroup;
 
-    public static void CreateText(PanelAtom.Data panel, Data data)
-    {
-        if (!string.IsNullOrEmpty(data.dialogText))
-            panel.AddText(data.dialogText);
-    }
+        private UiBuilder.UiBuilder uiBuilder;
+        private UiAssetBrowserVisuals.Factory uiAssetBrowserViusalsFactory;
+        private EditorEvents editorEvents;
+        private DialogState dialogState;
+        private SceneManagerSystem sceneManagerSystem;
+        private CommandSystem commandSystem;
+        private DialogSystem dialogSystem;
+        private AssetBrowserState assetBrowserState;
+        private UnityState unityState;
+        private PromptSystem promptSystem;
 
-    public static void AssignActions(Data data)
-    {
-        foreach (var action in data.actions)
-            action.data = data;
-        if(data.notInWindowAction != null)
-            data.notInWindowAction.data = data;
-    }
+        private PanelAtom.Data panel;
+        public PromptSystem.PromptData data;
 
-    public static void AddButtons(PanelAtom.Data panel, Data data)
-    {
-        var horizontalPanel = panel.AddPanel(PanelHandler.LayoutDirection.Horizontal, TextAnchor.UpperCenter);
-        foreach (var action in data.actions)
-            horizontalPanel.AddButton(action.name, action.Submit);
-    }
+        private GameObject tmpObject;
 
-    public void ActivateDialog(string dialogText, PromptSystem.Action[] actions, PromptSystem.Action notInWindowAction)
-    {
-        data = new(gameObject, dialogText, actions, notInWindowAction);
-        panel = UiBuilder.NewPanelData();
-        CreateText(panel, data);
-        AssignActions(data);
-        AddButtons(panel, data);
-        uiBuilder.Update(panel);
-        gameObject.SetActive(true);
-    }
-
-    public ColorPicker ActivateColorPicker(string dialogText, GameObject uiElement)
-    {
-        if (tmpObject != null)
-            Destroy(tmpObject);
-
-        tmpObject = Instantiate(uiElement);
-        var colorPicker = tmpObject.GetComponent<ColorPicker>();
-        PromptSystem.Value<Color> GetColor = new(null);
-        GetColor.action = SetColor;
-        data = new(gameObject, dialogText, null, GetColor);
-        panel = UiBuilder.NewPanelData();
-        CreateText(panel, data);
-        AssignActions(data);
-        uiBuilder.Update(panel);
-        tmpObject.transform.SetParent(content.transform, false);
-        gameObject.SetActive(true);
-        return colorPicker;
-
-        void SetColor()
+        [Inject]
+        void Construct(
+        UiBuilder.UiBuilder.Factory uiBuilderFactory,
+        UiAssetBrowserVisuals.Factory uiAssetBrowserViusalsFactory,
+        EditorEvents editorEvents,
+        DialogState dialogState,
+        SceneManagerSystem sceneManagerSystem,
+        CommandSystem commandSystem,
+        AssetBrowserState assetBrowserState,
+        DialogSystem dialogSystem,
+        UnityState unityState,
+        PromptSystem promptSystem)
         {
-            GetColor.value = colorPicker.CurrentColor;
-            Destroy(tmpObject);
+            uiBuilder = uiBuilderFactory.Create(content);
+            this.uiAssetBrowserViusalsFactory = uiAssetBrowserViusalsFactory;
+            this.editorEvents = editorEvents;
+            this.dialogState = dialogState;
+            this.sceneManagerSystem = sceneManagerSystem;
+            this.commandSystem = commandSystem;
+            this.dialogSystem = dialogSystem;
+            this.assetBrowserState = assetBrowserState;
+            this.unityState = unityState;
+            this.promptSystem = promptSystem;
         }
-    }
 
-    public void ActivateAssetBrowser(string dialogText)
-    {
-        if (tmpObject != null)
+        private void Update()
         {
-            Destroy(tmpObject);
-            data.window.SetActive(false);
-            return;
+            if (!Input.GetMouseButtonDown(0)) return;
+            if (RectTransformUtility.RectangleContainsScreenPoint(contentRectTransform, Input.mousePosition)) return;
+            data.notInWindowAction?.Submit();
         }
-        panel = UiBuilder.NewPanelData();
-        var uiAssetBrowserVisuals = uiAssetBrowserViusalsFactory.Create();
-        tmpObject = uiAssetBrowserVisuals.gameObject;
-        UiAssetBrowserVisuals visuals = uiAssetBrowserVisuals.GetComponent<UiAssetBrowserVisuals>();
 
-        PromptSystem.Value<Guid> GetGuid = new(() => Destroy(tmpObject));
-        data = new(gameObject, dialogText, null, GetGuid);
-
-        AssignActions(data);
-        CreateText(panel, data);
-        
-        assetBrowserState.StoreShownTypesTemp();
-
-        visuals.assetButtonOnClickOverride = (Guid assetId) =>
+        private void OnEnable()
         {
-            DclScene scene = sceneManagerSystem.GetCurrentScene();
+            ActivatePrompt();
+            mainCanvasGroup.blocksRaycasts = false;
+            mainCanvasGroup.alpha = 0.25f;
+            unityState.BackgroundCanvas.SetActive(false);
+            dialogState.currentDialog = DialogState.DialogType.DialogSystem;
+            dialogState.mouseOverDialogWindow = true;
+        }
 
-            // Update the target component with the new asset
-            var currentSelected = scene.SelectionState.PrimarySelectedEntity;
-            var targetComponent = currentSelected.GetComponentByName("GLTFShape");
-            var sceneProperty = targetComponent.GetPropertyByName("scene");
-            var assetProperty = targetComponent.GetPropertyByName("asset");
+        private void OnDisable()
+        {
+            mainCanvasGroup.blocksRaycasts = true;
+            mainCanvasGroup.alpha = 1f;
+            unityState.BackgroundCanvas.SetActive(true);
+            dialogState.currentDialog = DialogState.DialogType.None;
+            dialogState.mouseOverDialogWindow = false;
+        }
 
-            if (sceneProperty != null)
+        public void ActivatePrompt()
+        {
+            if (tmpObject != null)
+                Destroy(tmpObject);
+
+            data = promptSystem.promptData;
+            panel = UiBuilder.UiBuilder.NewPanelData();
+            if (!string.IsNullOrEmpty(data.dialogText))
+                panel.AddText(data.dialogText);
+
+            switch(data.promptType)
             {
-                var oldValue = sceneProperty.GetConcrete<Guid>().FixedValue;
-                var identifier = new DclPropertyIdentifier(targetComponent.Entity.Id, targetComponent.NameInCode, "scene");
-                commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateChangePropertyCommand(identifier, oldValue, assetId));
-            }
-            if (assetProperty != null)
-            {
-                var oldValue = assetProperty.GetConcrete<Guid>().FixedValue;
-                var identifier = new DclPropertyIdentifier(targetComponent.Entity.Id, targetComponent.NameInCode, "asset");
-                commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateChangePropertyCommand(identifier, oldValue, assetId));
+                case PromptSystem.PromptData.PromptType.Dialog:
+                    AddButtons(panel, data);
+                    break;
+                case PromptSystem.PromptData.PromptType.ColorPicker:
+                    AddColorPicker();
+                    break;
+                case PromptSystem.PromptData.PromptType.AssetPicker:
+                    AddAssetBrowser();
+                    break;
             }
 
-            dialogSystem.CloseCurrentDialog();
-            editorEvents.InvokeSelectionChangedEvent();
-            editorEvents.InvokeUiChangedEvent();
-            GetGuid.value = assetId;
-            data.notInWindowAction?.Submit(null);
-        };
+            uiBuilder.Update(panel);
+        }
 
-        //this is not nice
-        var layoutElement = uiAssetBrowserVisuals.gameObject.AddComponent<LayoutElement>();
-        layoutElement.minHeight = 400;
-        layoutElement.minWidth = 600;
-        uiBuilder.Update(panel);
-        uiAssetBrowserVisuals.transform.SetParent(content.transform, false);
-        gameObject.SetActive(true);
-    }
-
-    private void Update()
-    {
-        if (!Input.GetMouseButtonDown(0)) return;
-        if (RectTransformUtility.RectangleContainsScreenPoint(contentRectTransform, Input.mousePosition)) return;
-        data.notInWindowAction?.Submit(null);
-    }
-
-    private void OnEnable()
-    {
-        mainCanvasGroup.blocksRaycasts = false;
-        mainCanvasGroup.alpha = 0.25f;
-        unityState.BackgroundCanvas.SetActive(false);
-        dialogState.currentDialog = DialogState.DialogType.DialogSystem;
-        dialogState.mouseOverDialogWindow = true;
-    }
-
-    private void OnDisable()
-    {
-        mainCanvasGroup.blocksRaycasts = true;
-        mainCanvasGroup.alpha = 1f;
-        unityState.BackgroundCanvas.SetActive(true);
-        dialogState.currentDialog = DialogState.DialogType.None;
-        dialogState.mouseOverDialogWindow = false;
-    }
-
-    public class Data
-    {
-        public GameObject window;
-        public string dialogText;
-        public PromptSystem.Action[] actions;
-        public PromptSystem.Action notInWindowAction;
-        public TaskCompletionSource<PromptSystem.Action> taskCompleted = new();
-        
-        public Data(GameObject window, string dialogText, PromptSystem.Action[] actions, PromptSystem.Action notInWindowAction)
+        private void AddButtons(PanelAtom.Data panel, PromptSystem.PromptData data)
         {
-            this.window = window;
-            this.dialogText = dialogText ?? "";
-            this.actions = actions ?? new PromptSystem.Action[0];
-            this.notInWindowAction = notInWindowAction;
+            var horizontalPanel = panel.AddPanel(PanelHandler.LayoutDirection.Horizontal, TextAnchor.UpperCenter);
+            foreach (var action in data.actions)
+                horizontalPanel.AddButton(action.name, (gameObject) => action.Submit());
+        }
+
+        public void AddColorPicker()
+        {
+            tmpObject = Instantiate(unityState.ColorPicker);
+            var colorPicker = tmpObject.GetComponent<ColorPicker>();
+            PromptSystem.Value<Color> ReturnColor = new(null);
+            ReturnColor.data = data;
+            ReturnColor.action = GetColor;
+            data.notInWindowAction = ReturnColor;
+
+            tmpObject.transform.SetParent(content.transform, false);
+            Debug.Log(gameObject);
+            void GetColor()
+            {
+                ReturnColor.value = colorPicker.CurrentColor;
+                Destroy(tmpObject);
+            }
+        }
+
+        public void AddAssetBrowser()
+        {
+            var uiAssetBrowserVisuals = uiAssetBrowserViusalsFactory.Create();
+            tmpObject = uiAssetBrowserVisuals.gameObject;
+            UiAssetBrowserVisuals visuals = uiAssetBrowserVisuals.GetComponent<UiAssetBrowserVisuals>();
+
+            PromptSystem.Value<Guid> GetGuid = new(() => Destroy(tmpObject));
+            GetGuid.data = data;
+            data.notInWindowAction = GetGuid;
+            assetBrowserState.StoreShownTypesTemp();
+
+            visuals.assetButtonOnClickOverride = (Guid assetId) =>
+            {
+                DclScene scene = sceneManagerSystem.GetCurrentScene();
+
+                // Update the target component with the new asset
+                var currentSelected = scene.SelectionState.PrimarySelectedEntity;
+                var targetComponent = currentSelected.GetComponentByName("GLTFShape");
+                var sceneProperty = targetComponent.GetPropertyByName("scene");
+                var assetProperty = targetComponent.GetPropertyByName("asset");
+
+                if (sceneProperty != null)
+                {
+                    var oldValue = sceneProperty.GetConcrete<Guid>().FixedValue;
+                    var identifier = new DclPropertyIdentifier(targetComponent.Entity.Id, targetComponent.NameInCode, "scene");
+                    commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateChangePropertyCommand(identifier, oldValue, assetId));
+                }
+                if (assetProperty != null)
+                {
+                    var oldValue = assetProperty.GetConcrete<Guid>().FixedValue;
+                    var identifier = new DclPropertyIdentifier(targetComponent.Entity.Id, targetComponent.NameInCode, "asset");
+                    commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateChangePropertyCommand(identifier, oldValue, assetId));
+                }
+
+                dialogSystem.CloseCurrentDialog();
+                editorEvents.InvokeSelectionChangedEvent();
+                editorEvents.InvokeUiChangedEvent();
+                GetGuid.value = assetId;
+                data.notInWindowAction?.Submit(null);
+            };
+
+            //this is not nice
+            var layoutElement = uiAssetBrowserVisuals.gameObject.AddComponent<LayoutElement>();
+            layoutElement.minHeight = 400;
+            layoutElement.minWidth = 600;
+            uiAssetBrowserVisuals.transform.SetParent(content.transform, false);
         }
     }
 }

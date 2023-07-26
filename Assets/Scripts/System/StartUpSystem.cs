@@ -45,7 +45,7 @@ namespace Assets.Scripts.System
         {
             InterpretArgs(Environment.GetCommandLineArgs());
 
-            // assetManagerSystem.CacheAllAssetMetadata();
+            assetManagerSystem.CacheAllAssetMetadata();
 
             customComponentMarkupSystem.SetupCustomComponents();
 

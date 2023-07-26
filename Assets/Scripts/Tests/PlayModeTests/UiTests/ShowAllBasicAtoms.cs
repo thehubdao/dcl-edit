@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Assets.Scripts.System;
 using Assets.Scripts.Tests.PlayModeTests.UiTests.Utility;
+using Assets.Scripts.Visuals;
 using Assets.Scripts.Visuals.UiBuilder;
 using Assets.Scripts.Visuals.UiHandler;
 using NUnit.Framework;
@@ -208,13 +210,17 @@ namespace Assets.Scripts.Tests.PlayModeTests.UiTests
         {
             var testerPrompt = UiTester.instance.uiTesterPrompt;
             var mainPanel = UiBuilder.NewPanelData();
-            var buttonCommands = new PromptSystem.Action[] { new PromptSystem.Yes(() => Debug.Log("Yes")), new PromptSystem.No(() => Debug.Log("No")) };
+            var buttonCommands = new PromptSystem.PromptAction[] { new PromptSystem.Yes(() => Debug.Log("Yes")), new PromptSystem.No(() => Debug.Log("No")) };
             var notInWindowCommand = new PromptSystem.Cancel(() => Debug.Log("Cancel"));
-            UiPromptVisuals.Data data = new(null, "Test the Prompt System", buttonCommands, notInWindowCommand);
-            var promptPanel = mainPanel.AddPanel();
-            UiPromptVisuals.AssignActions(data);
-            UiPromptVisuals.CreateText(promptPanel, data);
-            UiPromptVisuals.AddButtons(promptPanel, data);
+            PromptSystem.PromptData data = new(null, "Test the Prompt System", buttonCommands, notInWindowCommand, PromptSystem.PromptData.PromptType.Dialog);
+
+            if (!string.IsNullOrEmpty(data.dialogText))
+                mainPanel.AddText(data.dialogText);
+
+            var horizontalPanel = mainPanel.AddPanel(PanelHandler.LayoutDirection.Horizontal, TextAnchor.UpperCenter);
+            foreach (var action in data.actions)
+                horizontalPanel.AddButton(action.name, (gameObject) => action.Submit());
+
             uiBuilder.Update(mainPanel);
 
             string promptText = "Click the same anser in the prompt system and here to success?";
@@ -224,6 +230,7 @@ namespace Assets.Scripts.Tests.PlayModeTests.UiTests
             UiTesterPrompt.Answer correctAnswer = data.taskCompleted.Task.Result.name == "Yes" ? Yes : No;
 
             yield return testerPrompt.WaitForQuestionPrompt(promptText, correctAnswer);
+            yield return null;
         }
     }
 }

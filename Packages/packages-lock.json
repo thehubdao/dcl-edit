@@ -1,5 +1,12 @@
 {
   "dependencies": {
+    "com.oss.leantween": {
+      "version": "2.50.4",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://package.openupm.com"
+    },
     "com.svermeulen.extenject": {
       "version": "https://github.com/Mathijs-Bakker/Extenject.git?path=/UnityProject/Assets/Plugins/Zenject/#9.2.1",
       "depth": 0,

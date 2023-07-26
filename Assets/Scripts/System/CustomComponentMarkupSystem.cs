@@ -235,6 +235,7 @@ namespace Assets.Scripts.System
             var componentDefinition = new DclComponent.ComponentDefinition(
                 classValue,
                 componentValue ?? classValue,
+                true,
                 importFileValue,
                 propertyDefinitions);
 
