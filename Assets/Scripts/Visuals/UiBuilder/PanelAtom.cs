@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Zenject;
 
 namespace Assets.Scripts.Visuals.UiBuilder
 {
@@ -48,6 +49,25 @@ namespace Assets.Scripts.Visuals.UiBuilder
         public Data data;
 
         public List<Atom> childAtoms = new List<Atom>();
+
+        // Dependencies
+        PanelAtom.Factory panelAtomFactory;
+        ContextMenuTextAtom.Factory contextMenuTextAtomFactory;
+        ContextMenuSpacerAtom.Factory contextMenuSpacerAtomFactory;
+        ContextSubmenuAtom.Factory contextSubmenuAtomFactory;
+
+        [Inject]
+        public void Construct(
+            ContextMenuTextAtom.Factory contextMenuTextAtomFactory,
+            PanelAtom.Factory panelAtomFactory,
+            ContextMenuSpacerAtom.Factory contextMenuSpacerAtomFactory,
+            ContextSubmenuAtom.Factory contextSubmenuAtomFactory)
+        {
+            this.contextMenuTextAtomFactory = contextMenuTextAtomFactory;
+            this.panelAtomFactory = panelAtomFactory;
+            this.contextMenuSpacerAtomFactory = contextMenuSpacerAtomFactory;
+            this.contextSubmenuAtomFactory = contextSubmenuAtomFactory;
+        }
 
         public override void Update(Atom.Data newData)
         {
@@ -162,7 +182,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
                 PanelWithBorderAtom.Data _ => new PanelWithBorderAtom(uiBuilder),
                 GridAtom.Data _ => new GridAtom(uiBuilder),
                 AssetBrowserFolderAtom.Data _ => new AssetBrowserFolderAtom(uiBuilder),
-                PanelAtom.Data _ => new PanelAtom(uiBuilder),
+                PanelAtom.Data _ => panelAtomFactory.Create(uiBuilder),
                 PanelHeaderAtom.Data _ => new PanelHeaderAtom(uiBuilder),
                 HierarchyItemAtom.Data _ => new HierarchyItemAtom(uiBuilder),
                 StringPropertyAtom.Data _ => new StringPropertyAtom(uiBuilder),
@@ -171,9 +191,9 @@ namespace Assets.Scripts.Visuals.UiBuilder
                 Vector3PropertyAtom.Data _ => new Vector3PropertyAtom(uiBuilder),
                 AssetPropertyAtom.Data _ => new AssetPropertyAtom(uiBuilder),
                 MenuBarButtonAtom.Data _ => new MenuBarButtonAtom(uiBuilder),
-                ContextMenuTextAtom.Data _ => new ContextMenuTextAtom(uiBuilder),
-                ContextSubmenuAtom.Data _ => new ContextSubmenuAtom(uiBuilder),
-                ContextMenuSpacerAtom.Data _ => new ContextMenuSpacerAtom(uiBuilder),
+                ContextMenuTextAtom.Data _ => contextMenuTextAtomFactory.Create(uiBuilder),
+                ContextSubmenuAtom.Data _ => contextSubmenuAtomFactory.Create(uiBuilder),
+                ContextMenuSpacerAtom.Data _ => contextMenuSpacerAtomFactory.Create(uiBuilder),
                 ButtonAtom.Data _ => new ButtonAtom(uiBuilder),
                 AssetBrowserButtonAtom.Data _ => new AssetBrowserButtonAtom(uiBuilder),
                 _ => throw new ArgumentException()
@@ -183,6 +203,8 @@ namespace Assets.Scripts.Visuals.UiBuilder
         public PanelAtom(UiBuilder uiBuilder) : base(uiBuilder)
         {
         }
+
+        public class Factory : PlaceholderFactory<UiBuilder, PanelAtom> { }
     }
 
     public static class PanelPanelHelper

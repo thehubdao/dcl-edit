@@ -1,10 +1,11 @@
-using System;
-using System.Collections.Generic;
 using Assets.Scripts.EditorState;
 using Assets.Scripts.System;
+using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Zenject;
 
 namespace Assets.Scripts.Visuals.UiBuilder
 {
@@ -17,7 +18,6 @@ namespace Assets.Scripts.Visuals.UiBuilder
             public string title;
             public List<ContextMenuItem> submenuItems;
             public float menuWidth;
-            public ContextMenuSystem contextMenuSystem;
             public bool isDisabled { get; set; }
 
             public override bool Equals(Atom.Data other)
@@ -33,12 +33,20 @@ namespace Assets.Scripts.Visuals.UiBuilder
                     title.Equals(otherContextMenuText.title) &&
                     submenuItems.Equals(otherContextMenuText.submenuItems) &&
                     menuWidth.Equals(otherContextMenuText.menuWidth) &&
-                    contextMenuSystem.Equals(otherContextMenuText.contextMenuSystem) &&
                     isDisabled.Equals(otherContextMenuText.isDisabled);
             }
         }
 
         protected Data data;
+
+        // Dependencies
+        ContextMenuSystem contextMenuSystem;
+
+        [Inject]
+        public void Construct(ContextMenuSystem contextMenuSystem)
+        {
+            this.contextMenuSystem = contextMenuSystem;
+        }
 
         public override void Update(Atom.Data newData)
         {
@@ -71,11 +79,11 @@ namespace Assets.Scripts.Visuals.UiBuilder
                 var hoverHandler = gameObject.gameObject.GetComponent<ContextMenuHoverHandler>();
                 hoverHandler.OnHoverAction = () =>
                 {
-                    newContextMenuTextData.contextMenuSystem.CloseMenusUntil(newContextMenuTextData.menuId);
+                    contextMenuSystem.CloseMenusUntil(newContextMenuTextData.menuId);
 
                     Vector3 rightExpandPosition = new Vector3(rect.position.x + newContextMenuTextData.menuWidth, rect.position.y, rect.position.z);
                     Vector3 leftExpandPosition = new Vector3(rect.position.x, rect.position.y, rect.position.z);
-                    newContextMenuTextData.contextMenuSystem.OpenSubmenu(
+                    contextMenuSystem.OpenSubmenu(
                         newContextMenuTextData.submenuId,
                         new List<ContextMenuState.Placement>
                         {
@@ -99,13 +107,20 @@ namespace Assets.Scripts.Visuals.UiBuilder
         public ContextSubmenuAtom(UiBuilder uiBuilder) : base(uiBuilder)
         {
         }
+
+        public class Factory : PlaceholderFactory<UiBuilder, ContextSubmenuAtom> { }
     }
 
     public static class ContextSubmenuPanelHelper
     {
-        public static ContextSubmenuAtom.Data AddContextSubmenu(this PanelAtom.Data panelAtomData, Guid menuId,
-            Guid submenuId, string title, List<ContextMenuItem> submenuItems, float menuWidth,
-            ContextMenuSystem contextMenuSystem, bool isDisabled)
+        public static ContextSubmenuAtom.Data AddContextSubmenu(
+            this PanelAtom.Data panelAtomData,
+            Guid menuId,
+            Guid submenuId,
+            string title,
+            List<ContextMenuItem> submenuItems,
+            float menuWidth,
+            bool isDisabled)
         {
             var data = new ContextSubmenuAtom.Data
             {
@@ -114,7 +129,6 @@ namespace Assets.Scripts.Visuals.UiBuilder
                 title = title,
                 submenuItems = submenuItems,
                 menuWidth = menuWidth,
-                contextMenuSystem = contextMenuSystem,
                 isDisabled = isDisabled
             };
 

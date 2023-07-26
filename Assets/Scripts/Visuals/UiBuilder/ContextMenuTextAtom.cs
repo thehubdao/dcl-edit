@@ -1,8 +1,9 @@
-using System;
 using Assets.Scripts.System;
+using System;
 using TMPro;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using Zenject;
 
 namespace Assets.Scripts.Visuals.UiBuilder
 {
@@ -14,7 +15,6 @@ namespace Assets.Scripts.Visuals.UiBuilder
             public string title;
             public UnityAction onClick;
             public bool isDisabled;
-            public ContextMenuSystem contextMenuSystem;
 
             public override bool Equals(Atom.Data other)
             {
@@ -27,12 +27,20 @@ namespace Assets.Scripts.Visuals.UiBuilder
                     menuId.Equals(otherContextMenuText.menuId) &&
                     title.Equals(otherContextMenuText.title) &&
                     onClick.Equals(otherContextMenuText.onClick) &&
-                    isDisabled.Equals(otherContextMenuText.isDisabled) &&
-                    contextMenuSystem.Equals(otherContextMenuText.contextMenuSystem);
+                    isDisabled.Equals(otherContextMenuText.isDisabled);
             }
         }
 
         protected Data data;
+
+        // Dependencies
+        ContextMenuSystem contextMenuSystem;
+
+        [Inject]
+        public void Construct(ContextMenuSystem contextMenuSystem)
+        {
+            this.contextMenuSystem = contextMenuSystem;
+        }
 
         public override void Update(Atom.Data newData)
         {
@@ -57,11 +65,11 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
                 var button = gameObject.gameObject.GetComponent<Button>();
                 button.onClick.AddListener(newContextMenuTextData.onClick);
-                button.onClick.AddListener(newContextMenuTextData.contextMenuSystem.CloseMenu);
+                button.onClick.AddListener(contextMenuSystem.CloseMenu);
                 if (newContextMenuTextData.isDisabled) button.interactable = false;
 
                 var hoverHandler = gameObject.gameObject.GetComponent<ContextMenuHoverHandler>();
-                hoverHandler.OnHoverAction = () => newContextMenuTextData.contextMenuSystem.CloseMenusUntil(newContextMenuTextData.menuId);
+                hoverHandler.OnHoverAction = () => contextMenuSystem.CloseMenusUntil(newContextMenuTextData.menuId);
 
                 data = newContextMenuTextData;
             }
@@ -77,19 +85,20 @@ namespace Assets.Scripts.Visuals.UiBuilder
         public ContextMenuTextAtom(UiBuilder uiBuilder) : base(uiBuilder)
         {
         }
+
+        public class Factory : PlaceholderFactory<UiBuilder, ContextMenuTextAtom> { }
     }
 
     public static class ContextMenuTextPanelHelper
     {
-        public static ContextMenuTextAtom.Data AddContextMenuText(this PanelAtom.Data panelAtomData, Guid menuId, string title, UnityAction onClick, bool isDisabled, ContextMenuSystem contextMenuSystem)
+        public static ContextMenuTextAtom.Data AddContextMenuText(this PanelAtom.Data panelAtomData, Guid menuId, string title, UnityAction onClick, bool isDisabled)
         {
             var data = new ContextMenuTextAtom.Data
             {
                 menuId = menuId,
                 title = title,
                 onClick = onClick,
-                isDisabled = isDisabled,
-                contextMenuSystem = contextMenuSystem
+                isDisabled = isDisabled
             };
 
             panelAtomData.childDates.Add(data);
