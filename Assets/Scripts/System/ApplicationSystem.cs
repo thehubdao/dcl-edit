@@ -1,6 +1,4 @@
 using Assets.Scripts.Events;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 
@@ -48,22 +46,16 @@ namespace Assets.Scripts.System
         private void CreateHelpMenuBarItems()
         {
             menuBarSystem.AddMenuItem("Help#30/Support",
-                () =>
-                {
-                    Application.OpenURL("https://discord.com/channels/843557607373275206/1033310423010775120");
-                });
+                () => { Application.OpenURL("https://discord.com/channels/843557607373275206/1033310423010775120"); });
             menuBarSystem.AddMenuItem("Help#30/Tweet about us",
                 () =>
                 {
                     Application.OpenURL(
                         "https://twitter.com/intent/tweet?text=Using%20%23DCLEdit%20by%20%40MGH_DAO%20right%20now");
                 });
-            
+
             menuBarSystem.AddMenuItem("Help#30/Show Log",
-                async() =>
-                {
-                    await promptSystem.CreateChangeLog();
-                });
+                async () => { await promptSystem.CreateChangeLog(); });
         }
 
         /// <summary>
@@ -77,7 +69,7 @@ namespace Assets.Scripts.System
         {
             Application.targetFrameRate = settingsSystem.applicationTargetFramerate.Get();
         }
-
+        
         /// <summary>
         /// Close the application
         /// </summary>

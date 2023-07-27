@@ -241,15 +241,18 @@ namespace Assets.Scripts.SceneState
 
             public string NameOfSlot { get; }
 
+            public bool IsRemovable { get; }
+
             [CanBeNull]
             public string SourceFile { get; }
 
             public List<DclComponentProperty.PropertyDefinition> properties;
 
-            public ComponentDefinition(string nameInCode, string nameOfSlot, [CanBeNull] string sourceFile = null, params DclComponentProperty.PropertyDefinition[] properties)
+            public ComponentDefinition(string nameInCode, string nameOfSlot, bool isRemovable, [CanBeNull] string sourceFile = null, params DclComponentProperty.PropertyDefinition[] properties)
             {
                 NameInCode = nameInCode;
                 NameOfSlot = nameOfSlot;
+                IsRemovable = isRemovable;
                 SourceFile = sourceFile;
                 this.properties = properties.ToList();
             }
@@ -265,8 +268,8 @@ namespace Assets.Scripts.SceneState
         public DclEntity Entity = null;
 
         public string NameInCode { get; }
-
         public string NameOfSlot { get; }
+
 
         public List<DclComponentProperty> Properties = new List<DclComponentProperty>();
 

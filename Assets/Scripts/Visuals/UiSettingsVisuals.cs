@@ -158,6 +158,41 @@ namespace Assets.Scripts.Visuals
                 {
                     OnSubmit = settingsSystem.gizmoToolScaleSnapping.Set
                 });
+            
+            
+            // Environment Settings
+
+            var environmentPanel = settingsPanel.AddPanelWithBorder();
+
+            environmentPanel.AddPanelHeader("Environment");
+
+            // skybox
+            environmentPanel.AddNumberProperty(
+                "Time of day",
+                "Time (default: 12)",
+                settingsSystem.skyboxTime.Get(),
+                new StringPropertyAtom.UiPropertyActions<float>
+                {
+                    OnSubmit = settingsSystem.skyboxTime.Set
+                });
+
+            gizmoToolSnappingPanel.AddNumberProperty(
+                "Grid Selection",
+                "Grid (default: 1)",
+                settingsSystem.groundGridSetting.Get(),
+                new StringPropertyAtom.UiPropertyActions<float>
+                {
+                    OnSubmit = (value) => settingsSystem.groundGridSetting.Set((int)value)
+                });
+
+            gizmoToolSnappingPanel.AddNumberProperty(
+                "Gridsize Selection",
+                "Gridsize (default: 16)",
+                settingsSystem.groundGridSizeSetting.Get(),
+                new StringPropertyAtom.UiPropertyActions<float>
+                {
+                    OnSubmit = (value) => settingsSystem.groundGridSizeSetting.Set((int)value)
+                });
 
             // Version number
             settingsPanel.AddSpacer(100);

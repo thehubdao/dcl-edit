@@ -33,9 +33,18 @@ public class DclEditorInstaller : MonoInstaller
     [SerializeField]
     private UnityState unityState;
 
+    [Header("Test Mode")]
+    [SerializeField]
+    private bool enableTestMode;
+
 
     public override void InstallBindings()
     {
+        if (!enableTestMode)
+        {
+            Container.BindInterfacesTo<GeneralInputInteraction>().AsSingle();
+        }
+        
         Container.Bind<LoadFromVersion1System>().To<LoadFromVersion1System>().AsSingle();
 
         Container.Bind(typeof(ISceneLoadSystem), typeof(ISceneSaveSystem)).To<SceneLoadSaveSystem>().AsSingle();
@@ -63,8 +72,6 @@ public class DclEditorInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<ModelCacheState>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<CameraState>().AsSingle();
-
-        //Container.BindInterfacesAndSelfTo<SceneDirectoryState>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<GizmoState>().AsSingle();
 
@@ -180,12 +187,10 @@ public class DclEditorInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<SceneChangeDetectSystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<PromptSystem>().AsSingle();
-        
-        Container.BindInterfacesAndSelfTo<FileUpgraderSystem>().AsSingle();
-        
-        Container.BindInterfacesAndSelfTo<HierarchyNavigationInteraction>().AsSingle();
 
-        Container.BindInterfacesTo<GeneralInputInteraction>().AsSingle();
+        Container.BindInterfacesAndSelfTo<FileUpgraderSystem>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<HierarchyNavigationInteraction>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<SnackbarSystem>().AsSingle();
 

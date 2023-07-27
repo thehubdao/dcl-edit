@@ -149,6 +149,9 @@ namespace Assets.Scripts.Tests.EditModeTests
 
             MenuBarState.MenuBarItem a1 = menuBarState.menuItems[1];
             Assert.AreEqual("A1", a1.title);
+
+            ContextMenuState.SortItems(a1.subItems);
+
             ContextMenuTextItem a2 = a1.subItems[1] as ContextMenuTextItem;
             Assert.AreEqual("A2", a2.title);
             ContextMenuTextItem a3 = a1.subItems[0] as ContextMenuTextItem;
