@@ -12,7 +12,7 @@ namespace Visuals
     {
         [SerializeField]
         private GameObject contentVersions;
-        
+
         [SerializeField]
         private GameObject contentDescription;
 
@@ -39,7 +39,7 @@ namespace Visuals
         public void AddChangeLog()
         {
             ResetScrollBars();
-            
+
             var versionsPanelData = UiBuilder.NewPanelData();
             versionsPanelData.layoutDirection = PanelHandler.LayoutDirection.Vertical;
 
@@ -49,7 +49,7 @@ namespace Visuals
             defaultDescriptionPanelData.AddText(orderedChangeLogs.First().details);
 
             AddButtons(orderedChangeLogs, versionsPanelData);
-            
+
             uiBuilderVersions.Update(versionsPanelData);
             uiBuilderDescription.Update(defaultDescriptionPanelData);
         }
@@ -57,15 +57,13 @@ namespace Visuals
         private void AddButtons(IOrderedEnumerable<ChangeLogState.ChangeLogStructure> orderedChangeLogs,
             PanelAtom.Data versionsPanelData)
         {
-            foreach (var changeLog in orderedChangeLogs)
+            var orderedChangeLogsList = orderedChangeLogs.ToList();
+            
+            foreach (var changeLog in orderedChangeLogsList)
             {
-                //TODO access button to change layout (and color?)
-                versionsPanelData.AddButton(changeLog.version, go =>
+                var butt = versionsPanelData.AddButton(changeLog.version, go =>
                 {
                     var button = go.GetComponent<Button>();
-                    var colors = button.colors;
-                    colors.selectedColor = Color.blue;
-                    button.colors = colors;
                     button.Select();
 
                     var descriptionPanelData = UiBuilder.NewPanelData();
@@ -74,6 +72,17 @@ namespace Visuals
 
                     uiBuilderDescription.Update(descriptionPanelData);
                 });
+
+                butt.textAnchor = TextAnchor.UpperCenter;
+
+                var newColors = ColorBlock.defaultColorBlock;
+                newColors.selectedColor = Color.magenta;
+                butt.customColors = newColors;
+
+                if (ReferenceEquals(changeLog, orderedChangeLogsList[0]))
+                {
+                    butt.isSelected = true;
+                }
             }
         }
 
