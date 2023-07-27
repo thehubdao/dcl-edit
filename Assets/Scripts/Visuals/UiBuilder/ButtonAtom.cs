@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.UI;
 
 namespace Assets.Scripts.Visuals.UiBuilder
 {
@@ -9,6 +10,9 @@ namespace Assets.Scripts.Visuals.UiBuilder
         {
             public string text;
             public UnityAction<GameObject> onClick;
+            public TextAnchor textAnchor = TextAnchor.UpperLeft;
+            public bool isSelected = false;
+            public ColorBlock customColors = ColorBlock.defaultColorBlock;
 
             public override bool Equals(Atom.Data other)
             {
@@ -45,14 +49,28 @@ namespace Assets.Scripts.Visuals.UiBuilder
             if (!newBtnData.Equals(data))
             {
                 // Update data
+                UpdateLayout(newBtnData);
+                
                 var btnHandler = gameObject.gameObject.GetComponent<ButtonHandler>();
                 btnHandler.text.text = newBtnData.text;
                 btnHandler.button.onClick.RemoveAllListeners();
                 btnHandler.button.onClick.AddListener(() => newBtnData.onClick(btnHandler.button.gameObject));
+                btnHandler.button.colors = newBtnData.customColors;
+                
+                if (newBtnData.isSelected)
+                {
+                    btnHandler.button.Select();
+                }
+                
                 data = newBtnData;
             }
         }
 
+        protected virtual void UpdateLayout(Data newData)
+        {
+            gameObject.gameObject.GetComponent<HorizontalOrVerticalLayoutGroup>().childAlignment = newData.textAnchor;
+        }
+        
         protected virtual AtomGameObject MakeNewGameObject()
         {
             var atomObject = uiBuilder.GetAtomObjectFromPool(UiBuilder.AtomType.Button);
@@ -68,12 +86,15 @@ namespace Assets.Scripts.Visuals.UiBuilder
     public static class ButtonPanelHelper
     {
         // The GameObject parameter of the onClick action gives access to the button UI game object.
-        public static ButtonAtom.Data AddButton(this PanelAtom.Data panelAtomData, string text, UnityAction<GameObject> onClick)
+        public static ButtonAtom.Data AddButton(this PanelAtom.Data panelAtomData, string text, UnityAction<GameObject> onClick, TextAnchor textAnchor = TextAnchor.UpperLeft, bool isSelected = false, ColorBlock customColors = default)
         {
             var data = new ButtonAtom.Data
             {
                 text = text,
-                onClick = onClick
+                onClick = onClick,
+                textAnchor = textAnchor,
+                isSelected = isSelected,
+                customColors = customColors
             };
 
             panelAtomData.childDates.Add(data);
