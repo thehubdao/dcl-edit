@@ -1,4 +1,5 @@
 using Assets.Scripts.Visuals.UiHandler;
+using TMPro;
 
 namespace Assets.Scripts.Visuals.UiBuilder
 {
@@ -7,6 +8,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
         public new class Data : Atom.Data
         {
             public string text;
+            public TextAlignmentOptions textAlignment = TextAlignmentOptions.Center;
 
             public override bool Equals(Atom.Data other)
             {
@@ -20,6 +22,11 @@ namespace Assets.Scripts.Visuals.UiBuilder
         }
 
         protected Data data;
+        
+        private void UpdateLayout(Data newData)
+        {
+            gameObject.gameObject.GetComponent<TextMeshProUGUI>().alignment = newData.textAlignment;
+        }
 
         public override void Update(Atom.Data newData)
         {
@@ -38,6 +45,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
             if (!newTextData.Equals(data))
             {
                 // Update data
+                UpdateLayout(newTextData);
                 var textHandler = gameObject.gameObject.GetComponent<TextHandler>();
                 textHandler.text = newTextData.text;
                 data = newTextData;
@@ -58,11 +66,12 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
     public static class TextPanelHelper
     {
-        public static TextAtom.Data AddText(this PanelAtom.Data panelAtomData, string text)
+        public static TextAtom.Data AddText(this PanelAtom.Data panelAtomData, string text, TextAlignmentOptions textAlignment = TextAlignmentOptions.Center)
         {
             var data = new TextAtom.Data
             {
-                text = text
+                text = text,
+                textAlignment = textAlignment
             };
 
             panelAtomData.childDates.Add(data);

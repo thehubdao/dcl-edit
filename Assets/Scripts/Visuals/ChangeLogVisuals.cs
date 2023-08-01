@@ -3,6 +3,7 @@ using Assets.Scripts.EditorState;
 using Zenject;
 using Assets.Scripts.Visuals.UiBuilder;
 using Assets.Scripts.Visuals.UiHandler;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -46,7 +47,8 @@ namespace Visuals
             var orderedChangeLogs = changeLogState.ChangeLog.OrderByDescending(l => l.version);
 
             var defaultDescriptionPanelData = UiBuilder.NewPanelData();
-            defaultDescriptionPanelData.AddText(orderedChangeLogs.First().details);
+            var descriptionText = defaultDescriptionPanelData.AddText(orderedChangeLogs.First().details);
+            descriptionText.textAlignment = TextAlignmentOptions.MidlineLeft;
 
             AddButtons(orderedChangeLogs, versionsPanelData);
 
