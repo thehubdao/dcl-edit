@@ -191,10 +191,8 @@ namespace Assets.Scripts.Visuals
         
         private void AddChangeLog()
         {
-            //TODO?
-            PromptSystem.Value<bool> destroyValue = new(() => Destroy(tmpObject));
-            destroyValue.data = data;
-            data.notInWindowAction = destroyValue;
+            data.notInWindowAction = new PromptSystem.NotInWindow();
+            data.notInWindowAction.data = data;
 
             changeLogVisuals.AddChangeLog();
         }
