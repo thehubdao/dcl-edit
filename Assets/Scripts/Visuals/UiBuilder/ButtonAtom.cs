@@ -13,6 +13,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
             public TextAnchor textAnchor = TextAnchor.UpperLeft;
             public bool isSelected = false;
             public ColorBlock customColors = ColorBlock.defaultColorBlock;
+            public bool expandHorInLayout = false;
 
             public override bool Equals(Atom.Data other)
             {
@@ -50,27 +51,32 @@ namespace Assets.Scripts.Visuals.UiBuilder
             {
                 // Update data
                 UpdateLayout(newBtnData);
-                
+
                 var btnHandler = gameObject.gameObject.GetComponent<ButtonHandler>();
                 btnHandler.text.text = newBtnData.text;
                 btnHandler.button.onClick.RemoveAllListeners();
                 btnHandler.button.onClick.AddListener(() => newBtnData.onClick(btnHandler.button.gameObject));
                 btnHandler.button.colors = newBtnData.customColors;
-                
+
                 if (newBtnData.isSelected)
                 {
                     btnHandler.button.Select();
                 }
-                
+
                 data = newBtnData;
             }
         }
 
         protected virtual void UpdateLayout(Data newData)
         {
-            gameObject.gameObject.GetComponent<HorizontalOrVerticalLayoutGroup>().childAlignment = newData.textAnchor;
+            var layoutGroup = gameObject.gameObject.GetComponent<HorizontalOrVerticalLayoutGroup>();
+            layoutGroup.childAlignment = newData.textAnchor;
+            layoutGroup.childForceExpandWidth = newData.expandHorInLayout;
+
+            gameObject.gameObject.transform.Find("Button").GetComponent<HorizontalLayoutGroup>().childForceExpandWidth =
+                newData.expandHorInLayout;
         }
-        
+
         protected virtual AtomGameObject MakeNewGameObject()
         {
             var atomObject = uiBuilder.GetAtomObjectFromPool(UiBuilder.AtomType.Button);
@@ -86,7 +92,9 @@ namespace Assets.Scripts.Visuals.UiBuilder
     public static class ButtonPanelHelper
     {
         // The GameObject parameter of the onClick action gives access to the button UI game object.
-        public static ButtonAtom.Data AddButton(this PanelAtom.Data panelAtomData, string text, UnityAction<GameObject> onClick, TextAnchor textAnchor = TextAnchor.UpperLeft, bool isSelected = false, ColorBlock customColors = default)
+        public static ButtonAtom.Data AddButton(this PanelAtom.Data panelAtomData, string text,
+            UnityAction<GameObject> onClick, TextAnchor textAnchor = TextAnchor.UpperLeft,
+            bool isSelected = false, ColorBlock customColors = default, bool expandHorInLayout = false)
         {
             var data = new ButtonAtom.Data
             {
@@ -94,7 +102,8 @@ namespace Assets.Scripts.Visuals.UiBuilder
                 onClick = onClick,
                 textAnchor = textAnchor,
                 isSelected = isSelected,
-                customColors = customColors
+                customColors = customColors,
+                expandHorInLayout = expandHorInLayout
             };
 
             panelAtomData.childDates.Add(data);

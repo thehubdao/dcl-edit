@@ -69,13 +69,17 @@ namespace Visuals
                     button.Select();
 
                     var descriptionPanelData = UiBuilder.NewPanelData();
-                    descriptionPanelData.AddText(changeLog.details);
+                    
+                    var descriptionText = descriptionPanelData.AddText(changeLog.details);
+                    descriptionText.textAlignment = TextAlignmentOptions.MidlineLeft;
+                    
                     scrollRectDescription.verticalScrollbar.value = 1;
 
                     uiBuilderDescription.Update(descriptionPanelData);
                 });
 
                 butt.textAnchor = TextAnchor.UpperCenter;
+                butt.expandHorInLayout = true;
 
                 var newColors = ColorBlock.defaultColorBlock;
                 newColors.selectedColor = Color.magenta;
