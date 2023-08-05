@@ -191,7 +191,11 @@ namespace Assets.Scripts.Visuals
         
         private void AddChangeLog()
         {
-            data.notInWindowAction = new PromptSystem.NotInWindow();
+            data.notInWindowAction = new PromptSystem.NotInWindow(() =>
+            {
+                changeLogVisuals.ResetScrollBars();
+            });
+            
             data.notInWindowAction.data = data;
 
             changeLogVisuals.AddChangeLog();

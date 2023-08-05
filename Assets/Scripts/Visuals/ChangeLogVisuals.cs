@@ -39,8 +39,6 @@ namespace Visuals
 
         public void AddChangeLog()
         {
-            ResetScrollBars();
-
             var versionsPanelData = UiBuilder.NewPanelData();
             versionsPanelData.layoutDirection = PanelHandler.LayoutDirection.Vertical;
 
@@ -92,9 +90,8 @@ namespace Visuals
             }
         }
 
-        private void ResetScrollBars()
+        public void ResetScrollBars()
         {
-            //TODO not working
             scrollRectDescription.verticalScrollbar.value = 1;
             scrollRectVersions.verticalScrollbar.value = 1;
         }
