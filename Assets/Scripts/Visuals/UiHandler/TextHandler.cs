@@ -15,47 +15,49 @@ namespace Assets.Scripts.Visuals.UiHandler
         }
 
         [SerializeField]
-        public TMP_ColorGradient NormalColorGradient;
+        public TMP_ColorGradient normalColorGradient;
 
         [SerializeField]
-        public TMP_ColorGradient PrimaryColorGradient;
+        public TMP_ColorGradient primaryColorGradient;
 
         [SerializeField]
-        public TMP_ColorGradient SecondaryColorGradient;
-        
+        public TMP_ColorGradient secondaryColorGradient;
+
         [SerializeField]
-        public TMP_ColorGradient DisabledColorGradient;
+        public TMP_ColorGradient disabledColorGradient;
 
         [Header("Scene References")]
         [SerializeField]
-        public TextMeshProUGUI TextComponent;
+        public TextMeshProUGUI textComponent;
 
+        public Action<string> onLinkClicked;
+        
         public string text
         {
-            get => TextComponent.text;
-            set => TextComponent.text = value;
+            get => textComponent.text;
+            set => textComponent.text = value;
         }
 
         public TextStyle textStyle
         {
             get
             {
-                if (TextComponent.colorGradientPreset == NormalColorGradient)
+                if (textComponent.colorGradientPreset == normalColorGradient)
                 {
                     return TextStyle.Normal;
                 }
-                
-                if (TextComponent.colorGradientPreset == PrimaryColorGradient)
+
+                if (textComponent.colorGradientPreset == primaryColorGradient)
                 {
                     return TextStyle.PrimarySelection;
                 }
 
-                if (TextComponent.colorGradientPreset == SecondaryColorGradient)
+                if (textComponent.colorGradientPreset == secondaryColorGradient)
                 {
                     return TextStyle.SecondarySelection;
                 }
 
-                if (TextComponent.colorGradientPreset == DisabledColorGradient)
+                if (textComponent.colorGradientPreset == disabledColorGradient)
                 {
                     return TextStyle.Disabled;
                 }
@@ -63,14 +65,26 @@ namespace Assets.Scripts.Visuals.UiHandler
                 throw new ArgumentOutOfRangeException();
             }
 
-            set => TextComponent.colorGradientPreset = value switch
+            set => textComponent.colorGradientPreset = value switch
             {
-                TextStyle.Normal => NormalColorGradient,
-                TextStyle.PrimarySelection => PrimaryColorGradient,
-                TextStyle.SecondarySelection => SecondaryColorGradient,
-                TextStyle.Disabled => DisabledColorGradient,
+                TextStyle.Normal => normalColorGradient,
+                TextStyle.PrimarySelection => primaryColorGradient,
+                TextStyle.SecondarySelection => secondaryColorGradient,
+                TextStyle.Disabled => disabledColorGradient,
                 _ => throw new ArgumentOutOfRangeException(nameof(value), value, null)
             };
         }
+
+        private void LateUpdate()
+        {
+            if (!textComponent.TryGetLinkID(out var selectedLinkID))
+            {
+                return;
+            }
+            
+            Debug.Log("Link Clicked!");
+            onLinkClicked?.Invoke(selectedLinkID);
+        }
+        
     }
 }

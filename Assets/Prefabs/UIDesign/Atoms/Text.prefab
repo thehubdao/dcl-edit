@@ -30,6 +30,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -148,11 +149,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 169b2e350ae095b41939620222df4067, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  NormalColorGradient: {fileID: 11400000, guid: c2e3fb0467bc7af4b9ced519e3efe75d, type: 2}
-  PrimaryColorGradient: {fileID: 11400000, guid: fd55bb3cc1e5ba944b4bb9f9aa355a18, type: 2}
-  SecondaryColorGradient: {fileID: 11400000, guid: 391ea3c2d39da864c959c30ce56a8da1, type: 2}
-  DisabledColorGradient: {fileID: 11400000, guid: 479fa25d43f3a734e815874f8171d407, type: 2}
-  TextComponent: {fileID: 8024071907148859789}
+  normalColorGradient: {fileID: 11400000, guid: c2e3fb0467bc7af4b9ced519e3efe75d, type: 2}
+  primaryColorGradient: {fileID: 11400000, guid: fd55bb3cc1e5ba944b4bb9f9aa355a18, type: 2}
+  secondaryColorGradient: {fileID: 11400000, guid: 391ea3c2d39da864c959c30ce56a8da1, type: 2}
+  disabledColorGradient: {fileID: 11400000, guid: 479fa25d43f3a734e815874f8171d407, type: 2}
+  textComponent: {fileID: 8024071907148859789}
 --- !u!114 &8642057508157690593
 MonoBehaviour:
   m_ObjectHideFlags: 0

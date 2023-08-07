@@ -45,8 +45,10 @@ namespace Visuals
             var orderedChangeLogs = changeLogState.ChangeLog.OrderByDescending(l => l.version);
 
             var defaultDescriptionPanelData = UiBuilder.NewPanelData();
+            
             var descriptionText = defaultDescriptionPanelData.AddText(orderedChangeLogs.First().details);
             descriptionText.textAlignment = TextAlignmentOptions.MidlineLeft;
+            descriptionText.onLinkClicked = TMPDclEditHelpers.OpenUrl;
 
             AddButtons(orderedChangeLogs, versionsPanelData);
 

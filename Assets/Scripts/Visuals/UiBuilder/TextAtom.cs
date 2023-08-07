@@ -1,3 +1,4 @@
+using System;
 using Assets.Scripts.Visuals.UiHandler;
 using TMPro;
 
@@ -9,6 +10,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
         {
             public string text;
             public TextAlignmentOptions textAlignment = TextAlignmentOptions.Center;
+            public Action<string> onLinkClicked;
 
             public override bool Equals(Atom.Data other)
             {
@@ -48,6 +50,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
                 UpdateLayout(newTextData);
                 var textHandler = gameObject.gameObject.GetComponent<TextHandler>();
                 textHandler.text = newTextData.text;
+                textHandler.onLinkClicked = newTextData.onLinkClicked;
                 data = newTextData;
             }
         }
@@ -66,12 +69,14 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
     public static class TextPanelHelper
     {
-        public static TextAtom.Data AddText(this PanelAtom.Data panelAtomData, string text, TextAlignmentOptions textAlignment = TextAlignmentOptions.Center)
+        public static TextAtom.Data AddText(this PanelAtom.Data panelAtomData, string text,
+            TextAlignmentOptions textAlignment = TextAlignmentOptions.Center, Action<string> onLinkClicked = null)
         {
             var data = new TextAtom.Data
             {
                 text = text,
-                textAlignment = textAlignment
+                textAlignment = textAlignment,
+                onLinkClicked = onLinkClicked
             };
 
             panelAtomData.childDates.Add(data);

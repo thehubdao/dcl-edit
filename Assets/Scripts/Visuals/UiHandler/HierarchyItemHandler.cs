@@ -85,7 +85,7 @@ namespace Assets.Scripts.Visuals.UiHandler
             
             text.text = newHierarchyItemData.name;
             text.textStyle = newHierarchyItemData.style;
-            text.TextComponent.enabled = true;
+            text.textComponent.enabled = true;
             
             indent.offsetMin = new Vector2(20 * newHierarchyItemData.level, 0);
 
