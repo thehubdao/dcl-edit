@@ -19,7 +19,9 @@ namespace Assets.Scripts.Visuals.UiBuilder
                     return false;
                 }
 
-                return text == otherText.text;
+                return text == otherText.text &&
+                       textAlignment == otherText.textAlignment &&
+                       onLinkClicked == otherText.onLinkClicked;
             }
         }
 

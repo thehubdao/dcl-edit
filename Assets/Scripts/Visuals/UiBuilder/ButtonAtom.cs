@@ -27,7 +27,12 @@ namespace Assets.Scripts.Visuals.UiBuilder
                     return false;
                 }
 
-                return text == otherBtn.text;
+                return text == otherBtn.text &&
+                       onClick == otherBtn.onClick &&
+                       textAnchor == otherBtn.textAnchor &&
+                       isSelected == otherBtn.isSelected &&
+                       customColors == otherBtn.customColors &&
+                       expandHorInLayout == otherBtn.expandHorInLayout;
             }
         }
 
