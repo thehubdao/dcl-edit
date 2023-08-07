@@ -74,7 +74,8 @@ namespace Assets.Scripts.Visuals.UiHandler
                 _ => throw new ArgumentOutOfRangeException(nameof(value), value, null)
             };
         }
-
+        
+        //TODO onLinkClicked sometimes null!
         private void LateUpdate()
         {
             if (!textComponent.TryGetLinkID(out var selectedLinkID))
