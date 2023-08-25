@@ -373,11 +373,11 @@ namespace Assets.Scripts.System
                     break;
                 case DclComponent.DclComponentProperty.PropertyType.Vector3:
                     var vector3 = property.GetConcrete<Vector3>().FixedValue;
-                    value = $"new Vector3({vector3.x.ToString(CultureInfo.InvariantCulture)}, {vector3.y.ToString(CultureInfo.InvariantCulture)}, {vector3.z.ToString(CultureInfo.InvariantCulture)})";
+                    value = $"Vector3.create({vector3.x.ToString(CultureInfo.InvariantCulture)}, {vector3.y.ToString(CultureInfo.InvariantCulture)}, {vector3.z.ToString(CultureInfo.InvariantCulture)})";
                     break;
                 case DclComponent.DclComponentProperty.PropertyType.Quaternion:
                     var quaternion = property.GetConcrete<Quaternion>().FixedValue;
-                    value = $"new Quaternion({quaternion.x.ToString(CultureInfo.InvariantCulture)}, {quaternion.y.ToString(CultureInfo.InvariantCulture)}, {quaternion.z.ToString(CultureInfo.InvariantCulture)}, {quaternion.w.ToString(CultureInfo.InvariantCulture)})";
+                    value = $"Quaternion.create({quaternion.x.ToString(CultureInfo.InvariantCulture)}, {quaternion.y.ToString(CultureInfo.InvariantCulture)}, {quaternion.z.ToString(CultureInfo.InvariantCulture)}, {quaternion.w.ToString(CultureInfo.InvariantCulture)})";
                     break;
                 case DclComponent.DclComponentProperty.PropertyType.Asset:
                     value = $"\"{await BuildOrGetAsset(property.GetConcrete<Guid>().FixedValue, neededAssets)}\"";
@@ -599,9 +599,18 @@ export type DceEntity = {
                 const string rootTransformSymbol = rootEntitySymbol + "Trans";
 
                 // Root entity
+
+                //--------------------------------------------------------------
+                // generatedScript.AppendLine($"if ({rootEntitySymbol} == null) {{".Indent(2));
+                // generatedScript.AppendLine($"{rootEntitySymbol} = new Entity()".Indent(3));
+                // generatedScript.AppendLine($"const {rootTransformSymbol} = new Transform()".Indent(3));
+                //--------------------------------------------------------------
+                
+                //--------------------------------------------------------------
                 generatedScript.AppendLine($"if ({rootEntitySymbol} == null) {{".Indent(2));
-                generatedScript.AppendLine($"{rootEntitySymbol} = new Entity()".Indent(3));
-                generatedScript.AppendLine($"const {rootTransformSymbol} = new Transform()".Indent(3));
+                generatedScript.AppendLine($"{rootEntitySymbol} = engine.addEntity()".Indent(3));
+                //--------------------------------------------------------------
+                
                 if (obfuscate)
                 {
                     generatedScript.AppendLine($"o({rootEntitySymbol},{rootTransformSymbol})");
@@ -626,15 +635,30 @@ export type DceEntity = {
                 generatedScript.AppendLine("}".Indent(2));
 
                 generatedScript.Append(doNotModify);
-
+                
                 // other entities
                 foreach (var entityInfo in sceneInfo.gatheredEntityInfos)
                 {
-                    generatedScript.AppendLine($"const {entityInfo.internalScriptSymbol} = new Entity(\"{entityInfo.name}\")".Indent(2));
-
+                    //--------------------------------------------------------------
+                    generatedScript.Append($"let {entityInfo.internalScriptSymbol} = engine.addEntity()");
+                    generatedScript.Append($"Transform.create({entityInfo.internalScriptSymbol},{{");
+                    foreach (var componentInfo in entityInfo.gatheredComponentInfos)
+                    {
+                        foreach (var propertyInfo in componentInfo.gatheredPropertyInfos.Where(pi => !pi.isConstructorParameter).Where(pi => pi.value != null))
+                        {
+                            generatedScript.AppendLine($"{propertyInfo.symbol}: {propertyInfo.value}".Indent(2));
+                        }
+                    }
+                    //--------------------------------------------------------------
+                    
+                    //--------------------------------------------------------------
+                    //generatedScript.AppendLine($"const {entityInfo.internalScriptSymbol} = new Entity(\"{entityInfo.name}\")".Indent(2));
+                    //--------------------------------------------------------------
+                    
                     // components
                     foreach (var componentInfo in entityInfo.gatheredComponentInfos)
                     {
+                        //-----------------------------------------------------------
                         if (componentInfo.specialComponent == EntityComponentInfo.SpecialComponent.ChildScene)
                         {
                             generatedScript.AppendLine($"const {componentInfo.internalScriptSymbol} = SceneFactory.create{componentInfo.symbol}({entityInfo.internalScriptSymbol})".Indent(2));
@@ -676,6 +700,7 @@ export type DceEntity = {
                                 generatedScript.AppendLine($"{entityInfo.internalScriptSymbol}.addComponent({componentInfo.internalScriptSymbol})".Indent(2));
                             }
                         }
+                        //-----------------------------------------------------------
                     }
                     generatedScript.Append(doNotModify);
                 }
