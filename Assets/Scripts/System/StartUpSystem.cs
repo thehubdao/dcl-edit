@@ -43,8 +43,6 @@ namespace Assets.Scripts.System
 
         void Awake()
         {
-            InterpretArgs(Environment.GetCommandLineArgs());
-
             assetManagerSystem.CacheAllAssetMetadata();
 
             customComponentMarkupSystem.SetupCustomComponents();
@@ -59,23 +57,6 @@ namespace Assets.Scripts.System
             workspaceSaveSystem.Load();
 
             frameTimeSystem.SetApplicationTargetFramerate();
-        }
-
-        private void InterpretArgs(string[] args)
-        {
-            string projectPath = null;
-            for (var i = 0; i < args.Length; i++)
-            {
-                if (args[i] == "--projectPath")
-                {
-                    projectPath = args[i + 1];
-                }
-            }
-
-            if (projectPath != null)
-            {
-                pathState.ProjectPath = projectPath;
-            }
         }
     }
 }
