@@ -49,20 +49,26 @@ namespace Visuals
                         "https://twitter.com/intent/tweet?text=Using%20%23DCLEdit%20by%20%40MGH_DAO%20right%20now");
                 });
         }
-        
+
+
+        private bool forceQuit = false;
+
         /// <summary>
         /// Close the application
         /// </summary>
         private bool QuitApplication()
         {
+            if (forceQuit)
+                return true;
+
+            if (!sceneChangeDetectSystem.HasSceneChanged())
+                return true;
+
             var quitActions = new PromptSystem.PromptAction[]
             {
                 new PromptSystem.Yes(() =>
                 {
-                    if (sceneChangeDetectSystem.HasSceneChanged())
-                    {
-                        sceneManagerSystem.SaveCurrentScene();
-                    }
+                    sceneManagerSystem.SaveCurrentScene();
 
 #if UNITY_EDITOR
                     EditorApplication.isPlaying = false;
@@ -72,6 +78,7 @@ namespace Visuals
                 }),
                 new PromptSystem.No(() =>
                 {
+                    forceQuit = true;
 #if UNITY_EDITOR
                     EditorApplication.isPlaying = false;
 #else
@@ -80,13 +87,15 @@ namespace Visuals
                 }),
                 new PromptSystem.Cancel()
             };
-            
+
+#pragma warning disable CS4014 // async method is not awaited
             promptSystem.CreateDialog(
                 "Do you want to save before quitting?",
                 quitActions,
                 new PromptSystem.NotInWindow()
             );
-            
+#pragma warning restore CS4014
+
             return false;
         }
     }
