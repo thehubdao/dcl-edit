@@ -1,7 +1,9 @@
+using System;
 using System.IO;
 using JetBrains.Annotations;
 using UnityEditor;
 using UnityEngine;
+using Zenject;
 
 
 namespace Assets.Scripts.EditorState
@@ -33,6 +35,29 @@ namespace Assets.Scripts.EditorState
             }
 
             set { _projectPath = value; }
+        }
+
+        [Inject]
+        private void Construct()
+        {
+            InterpretArgs(Environment.GetCommandLineArgs());
+        }
+
+        private void InterpretArgs(string[] args)
+        {
+            string projectPath = null;
+            for (var i = 0; i < args.Length; i++)
+            {
+                if (args[i] == "--projectPath")
+                {
+                    projectPath = args[i + 1];
+                }
+            }
+
+            if (projectPath != null)
+            {
+                ProjectPath = projectPath;
+            }
         }
     }
 }
