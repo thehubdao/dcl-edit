@@ -41,8 +41,8 @@ namespace Assets.Scripts.System
             }
             catch (Exception e)
             {
-                Debug.LogError("Error while reading scene.json");
-                Debug.LogException(e);
+                //Debug.LogError("Error while reading scene.json");
+                //Debug.LogException(e);
                 return null;
             }
 
