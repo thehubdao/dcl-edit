@@ -109,7 +109,11 @@ namespace Assets.Scripts.System
                                 newCollider.sharedMesh = meshFilter.sharedMesh;
 
                             if (child.TryGetComponent<SkinnedMeshRenderer>(out var skinnedMeshRenderer))
-                                newCollider.sharedMesh = skinnedMeshRenderer.sharedMesh;
+                            {
+                                Mesh bakedMesh = new Mesh();
+                                skinnedMeshRenderer.BakeMesh(bakedMesh, true);
+                                newCollider.sharedMesh = bakedMesh;
+                            }
                         }
 
                         // Add the loaded model to cache. Copies of it will be created when the cache is used.
