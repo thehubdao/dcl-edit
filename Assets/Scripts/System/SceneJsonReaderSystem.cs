@@ -54,6 +54,7 @@ namespace Assets.Scripts.System
         /// </summary>
         public class DecentralandSceneData
         {
+            public bool? ecs7 { get; set; }
             public Display display { get; set; }
             public string owner { get; set; }
             public Contact contact { get; set; }
@@ -64,11 +65,11 @@ namespace Assets.Scripts.System
 
             public Scene scene { get; set; }
 
-            public List<SpawnPoints> spawnPoints { get; set; }
+            //public List<SpawnPoints> spawnPoints { get; set; }
 
-            public List<string> requiredPermissions { get; set; }
+            //public List<string> requiredPermissions { get; set; }
 
-            public FeatureToggles featureToggles { get; set; }
+            //public FeatureToggles featureToggles { get; set; }
 
             public class Display
             {
@@ -91,17 +92,17 @@ namespace Assets.Scripts.System
                 public string @base { get; set; }
             }
 
-            public class SpawnPoints
-            {
-                public string name { get; set; }
-                public bool @default { get; set; }
-                public Vector3Int position { get; set; }
-                public Vector3Int cameraTarget { get; set; }
-            }
+            //public class SpawnPoints
+            //{
+            //    public string name { get; set; }
+            //    public bool @default { get; set; }
+            //    public Vector3Int position { get; set; }
+            //    public Vector3Int cameraTarget { get; set; }
+            //}
 
-            public class FeatureToggles
-            {
-            }
+            //public class FeatureToggles
+            //{
+            //}
 
             public List<ParcelInformation> GetParcelsInformation()
             {
