@@ -48,18 +48,12 @@ namespace Assets.Scripts.Visuals
 
             if (_cameraState.HasMovementDestination)
             {
-                float time;
+                float time = 0.5f;
                 float distance = (_cameraState.MovementDestination - transform.position).magnitude;
-                if (_cameraState.IsMovingFast)
-                {
-                    time = distance / _cameraState.CameraFastFlySpeed;
-                }
-                else
-                {
-                    time = distance / _cameraState.CameraNormalFlySpeed;
-                }
+                
                 LeanTween
                     .move(gameObject, _cameraState.MovementDestination, time)
+                    .setEaseInCubic()
                     .setOnComplete(() => _cameraState.Position = transform.position);
             }
             else
