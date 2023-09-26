@@ -53,7 +53,7 @@ namespace Assets.Scripts.Visuals
                 
                 LeanTween
                     .move(gameObject, _cameraState.MovementDestination, time)
-                    .setEaseInCubic()
+                    .setEaseInOutCubic()
                     .setOnComplete(() => _cameraState.Position = transform.position);
             }
             else
