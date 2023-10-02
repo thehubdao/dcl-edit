@@ -1,5 +1,7 @@
 using Assets.Scripts.Events;
 using Assets.Scripts.SceneState;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 
@@ -94,6 +96,11 @@ namespace Assets.Scripts.EditorState
         /// The transform, where the gizmo operations are applied to 
         /// </summary>
         public DclTransformComponent affectedTransform;
+
+        /// <summary>
+        /// IEnumrable of transforms, where gizmo operations are applied to when multiselect entities
+        /// </summary>
+        public IEnumerable<DclTransformComponent> multiselecTransforms;
 
         /// <summary>
         /// Describes the direction of the held gizmo tool

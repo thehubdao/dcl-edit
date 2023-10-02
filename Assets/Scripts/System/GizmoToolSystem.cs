@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
 using Assets.Scripts.SceneState;
@@ -100,6 +101,18 @@ namespace Assets.Scripts.System
             // get the affected transform
             gizmoState.affectedTransform = sceneManagerState.GetCurrentDirectoryState()?.currentScene?.SelectionState.PrimarySelectedEntity?.GetTransformComponent();
             Assert.IsNotNull(gizmoState.affectedTransform);
+
+            var selectedEntities = sceneManagerState.GetCurrentDirectoryState()?.currentScene?.SelectionState.AllSelectedEntities;
+
+            if (selectedEntities != null)
+            {
+                List<DclTransformComponent> transforms = new List<DclTransformComponent>();
+                foreach (var entity in selectedEntities)
+                {
+                    transforms.Add(entity?.GetTransformComponent());
+                }
+                gizmoState.multiselecTransforms = transforms;
+            }
 
             // set plane
             switch (gizmoToolMode)
@@ -390,6 +403,10 @@ namespace Assets.Scripts.System
             var worldMouseMovementSinceStart = mouseMovementOnPrimaryAxis + mouseMovementOnSecondaryAxis;
 
             gizmoState.affectedTransform.globalPosition = gizmoState.affectedTransform.globalFixedPosition + worldMouseMovementSinceStart;
+            foreach (var transform in gizmoState.multiselecTransforms)
+            {
+                transform.globalPosition = transform.globalFixedPosition + worldMouseMovementSinceStart;                
+            }
         }
 
         private void RotateWhileHolding(Vector2 contextSpaceMouseMovementSinceStart)
@@ -463,14 +480,26 @@ namespace Assets.Scripts.System
 
         private void ExecuteTranslateCommand()
         {
-            commandSystem.ExecuteCommand(
-                commandSystem.CommandFactory.CreateChangePropertyCommand(
-                    new DclPropertyIdentifier(
+            if (gizmoState.multiselecTransforms != null)
+            {
+                foreach (var transform in gizmoState.multiselecTransforms)
+                {
+                    commandSystem.ExecuteCommand(
+                        commandSystem.CommandFactory.CreateTranslateTransform(
+                            transform.Entity.Id,
+                            transform.position.FixedValue,
+                            transform.position.Value
+                    ));
+                }
+            } else
+            {
+                commandSystem.ExecuteCommand(
+                    commandSystem.CommandFactory.CreateTranslateTransform(
                         gizmoState.affectedTransform.Entity.Id,
-                        DclTransformComponent.transformComponentDefinition.NameInCode,
-                        "position"),
-                    gizmoState.affectedTransform.position.FixedValue,
-                    gizmoState.affectedTransform.position.Value));
+                        gizmoState.affectedTransform.position.FixedValue,
+                        gizmoState.affectedTransform.position.Value
+                ));
+            }
         }
 
         private void ExecuteRotateCommand()
