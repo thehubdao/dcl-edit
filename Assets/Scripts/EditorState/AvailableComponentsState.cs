@@ -194,6 +194,12 @@ namespace Assets.Scripts.EditorState
                 componentDefinition = new DclComponent.ComponentDefinition("ConeCollider", "Collider", true)
             });
 
+            buildInComponents.Add(new AvailableComponent
+            {
+                category = "Built-in",
+                availableInAddComponentMenu = true,
+                componentDefinition = DclGltfContainerComponent.gltfShapeComponentDefinition
+            });
         }
 
         public DclComponent.ComponentDefinition GetComponentDefinitionByName(string name)

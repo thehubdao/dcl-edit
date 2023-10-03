@@ -13,13 +13,19 @@ namespace Assets.Scripts.System
         private CommandSystem commandSystem;
         private SceneManagerSystem sceneManagerSystem;
         private HierarchyOrderSystem hierarchyOrderSystem;
+        private SceneJsonReaderSystem sceneJsonReaderSystem;
 
         [Inject]
-        private void Construct(CommandSystem commandSystem, SceneManagerSystem sceneManagerSystem, HierarchyOrderSystem hierarchyOrderSystem)
+        private void Construct(
+            CommandSystem commandSystem,
+            SceneManagerSystem sceneManagerSystem,
+            HierarchyOrderSystem hierarchyOrderSystem,
+            SceneJsonReaderSystem sceneJsonReaderSystem)
         {
             this.commandSystem = commandSystem;
             this.sceneManagerSystem = sceneManagerSystem;
             this.hierarchyOrderSystem = hierarchyOrderSystem;
+            this.sceneJsonReaderSystem = sceneJsonReaderSystem;
         }
 
         public void AddEntityFromPresetAsCommand(EntityPresetState.EntityPreset preset, Guid parentId)
@@ -45,8 +51,24 @@ namespace Assets.Scripts.System
         {
             var hierarchyOrder = hierarchyOrderSystem.GetDefaultHierarchyOrder(newEntity.ParentId);
 
-            commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateAddModelAssetToScene(newEntity.Id,
-                newEntity.CustomName, assetMetadata.assetId, position, hierarchyOrder));
+            if (sceneJsonReaderSystem.IsEcs7())
+            {
+                commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateAddEcs7ModelAssetToScene(
+                    newEntity.Id,
+                    newEntity.CustomName,
+                    assetMetadata.assetId,
+                    position,
+                    hierarchyOrder));
+            }
+            else
+            {
+                commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateAddModelAssetToScene(
+                    newEntity.Id,
+                    newEntity.CustomName,
+                    assetMetadata.assetId,
+                    position,
+                    hierarchyOrder));
+            }
         }
 
         public void AddSceneAssetEntityAsCommand(DclEntity newEntity, AssetMetadata assetMetadata, Vector3 position)

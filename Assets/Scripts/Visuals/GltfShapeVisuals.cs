@@ -16,21 +16,35 @@ namespace Assets.Scripts.Visuals
         private AssetManagerSystem _assetManagerSystem;
         private UnityState _unityState;
         private SceneManagerSystem _sceneManagerSystem;
+        private SceneJsonReaderSystem _sceneJsonReaderSystem;
 
         [Inject]
         private void Construct(
             AssetManagerSystem assetManagerSystem,
             UnityState unityState,
-            SceneManagerSystem sceneManagerSystem)
+            SceneManagerSystem sceneManagerSystem,
+            SceneJsonReaderSystem sceneJsonReaderSystem)
         {
             _assetManagerSystem = assetManagerSystem;
             _unityState = unityState;
             _sceneManagerSystem = sceneManagerSystem;
+            _sceneJsonReaderSystem = sceneJsonReaderSystem;
         }
 
         public override void UpdateVisuals(DclScene scene, DclEntity entity)
         {
-            var assetGuid = entity.GetComponentByName("GLTFShape")?.GetPropertyByName("asset")?.GetConcrete<Guid>().Value;
+            var assetGuid =
+                _sceneJsonReaderSystem.IsEcs7() ?
+                    entity
+                        .GetComponentByName(DclGltfContainerComponent.gltfShapeComponentDefinition.NameInCode)?
+                        .GetPropertyByName("src")?
+                        .GetConcrete<Guid>()
+                        .Value :
+                    entity
+                        .GetComponentByName("GLTFShape")?
+                        .GetPropertyByName("asset")?
+                        .GetConcrete<Guid>()
+                        .Value;
 
             if (!assetGuid.HasValue)
                 return;
@@ -41,15 +55,14 @@ namespace Assets.Scripts.Visuals
             switch (data.state)
             {
                 case AssetData.State.IsAvailable:
-                    if (data is ModelAssetData)
+                    if (data is ModelAssetData modelData)
                     {
-                        ModelAssetData modelData = (ModelAssetData) data;
                         if (modelData.data == null)
                             return;
 
                         newModel = modelData.data;
                     }
-                    
+
                     break;
 
                 case AssetData.State.IsLoading:

@@ -61,7 +61,7 @@ namespace Assets.Scripts.Visuals
 
         void InitializeGltfShapeVisualsComponent(DclScene scene, DclEntity entity)
         {
-            var gltfShapeComponent = entity.GetComponentByName("GLTFShape");
+            var gltfShapeComponent = entity.GetFirstComponentByName("GltfContainer", "GLTFShape");
             var gltfShapeVisualization = GetComponent<GltfShapeVisuals>(); // returns null if component isn't found
 
             if (gltfShapeComponent != null)

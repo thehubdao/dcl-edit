@@ -19,18 +19,6 @@ namespace Assets.Scripts.System
             this.commandSystem = commandSystem;
         }
 
-        public List<DclComponent.ComponentDefinition> GetAvailableComponents()
-        {
-            return new List<DclComponent.ComponentDefinition>
-            {
-                new DclComponent.ComponentDefinition("BoxShape", "Shape", true),
-                new DclComponent.ComponentDefinition("SphereShape", "Shape", true),
-                new DclComponent.ComponentDefinition("PlaneShape", "Shape", true),
-                new DclComponent.ComponentDefinition("CylinderShape", "Shape", true),
-                new DclComponent.ComponentDefinition("ConeShape", "Shape", true),
-            };
-        }
-
         public bool CanComponentBeAdded(DclEntity entity, DclComponent.ComponentDefinition component)
         {
             return entity.GetComponentBySlot(component.NameOfSlot) == null;

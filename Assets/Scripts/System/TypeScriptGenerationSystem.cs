@@ -53,9 +53,8 @@ namespace Assets.Scripts.System
             try
             {
                 string script;
-                if (sceneJsonReaderSystem.GetSceneData(false)?.ecs7 ?? false)
+                if (sceneJsonReaderSystem.IsEcs7())
                 {
-                    //script = "ecs7 generation here";
                     script = await ecs7GenerationSystem.GenerateScript();
                 }
                 else
@@ -78,12 +77,6 @@ namespace Assets.Scripts.System
                 Debug.LogException(e);
                 return false;
             }
-        }
-
-
-        void OnScriptHotReload()
-        {
-            GenerateTypeScript();
         }
     }
 }
