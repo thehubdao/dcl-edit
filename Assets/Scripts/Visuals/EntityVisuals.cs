@@ -82,7 +82,7 @@ namespace Assets.Scripts.Visuals
         void InitializePrimitiveShapeComponent(DclScene scene, DclEntity entity)
         {
             var primitiveShapeComponent =
-                entity.GetFirstComponentByName("BoxShape", "SphereShape", "CylinderShape", "PlaneShape", "ConeShape");
+                entity.GetFirstComponentByName("BoxShape", "SphereShape", "CylinderShape", "PlaneShape", "ConeShape", "BoxRenderer", "SphereRenderer", "CylinderRenderer", "PlaneRenderer");
             var primitiveShapeVisualization = GetComponent<PrimitiveShapeVisuals>(); // returns null if component isn't found
             if (primitiveShapeComponent != null)
             {

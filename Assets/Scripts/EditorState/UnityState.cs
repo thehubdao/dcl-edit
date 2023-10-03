@@ -46,7 +46,13 @@ namespace Assets.Scripts.EditorState
         public Mesh SphereMesh;
 
         [SerializeField]
+        public Mesh SphereMeshEcs7;
+
+        [SerializeField]
         public Mesh CylinderMesh;
+
+        [SerializeField]
+        public Mesh CylinderMeshEcs7;
 
         [SerializeField]
         public Mesh PlaneMesh;
