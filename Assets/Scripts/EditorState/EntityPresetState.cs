@@ -19,8 +19,6 @@ namespace Assets.Scripts.EditorState
         private void Construct(AvailableComponentsState availableComponentsState)
         {
             this.availableComponentsState = availableComponentsState;
-
-            FillBuildInPresets();
         }
 
 
@@ -29,7 +27,7 @@ namespace Assets.Scripts.EditorState
 
         private IReadOnlyList<EntityPreset> buildInPresets;
 
-        private void FillBuildInPresets()
+        public void FillEcs6BuildInPresets()
         {
             buildInPresets = new List<EntityPreset>
             {
@@ -76,6 +74,63 @@ namespace Assets.Scripts.EditorState
                     components = new List<DclComponent.ComponentDefinition>
                     {
                         availableComponentsState.GetComponentDefinitionByName("ConeShape")
+                    }
+                }
+            };
+        }
+
+        public void FillEcs7BuildInPresets()
+        {
+            buildInPresets = new List<EntityPreset>
+            {
+                new EntityPreset
+                {
+                    name = "Empty Entity",
+                    components = new List<DclComponent.ComponentDefinition>()
+                },
+                new EntityPreset
+                {
+                    name = "Box Entity",
+                    components = new List<DclComponent.ComponentDefinition>
+                    {
+                        availableComponentsState.GetComponentDefinitionByName("BoxRenderer"),
+                        availableComponentsState.GetComponentDefinitionByName("BoxCollider")
+                    }
+                },
+                new EntityPreset
+                {
+                    name = "Sphere Entity",
+                    components = new List<DclComponent.ComponentDefinition>
+                    {
+                        availableComponentsState.GetComponentDefinitionByName("SphereRenderer"),
+                        availableComponentsState.GetComponentDefinitionByName("SphereCollider")
+                    }
+                },
+                new EntityPreset
+                {
+                    name = "Plane Entity",
+                    components = new List<DclComponent.ComponentDefinition>
+                    {
+                        availableComponentsState.GetComponentDefinitionByName("PlaneRenderer"),
+                        availableComponentsState.GetComponentDefinitionByName("PlaneCollider")
+                    }
+                },
+                new EntityPreset
+                {
+                    name = "Cylinder Entity",
+                    components = new List<DclComponent.ComponentDefinition>
+                    {
+                        availableComponentsState.GetComponentDefinitionByName("CylinderRenderer"),
+                        availableComponentsState.GetComponentDefinitionByName("CylinderCollider")
+                    }
+                },
+                new EntityPreset
+                {
+                    name = "Cone Entity",
+                    components = new List<DclComponent.ComponentDefinition>
+                    {
+                        availableComponentsState.GetComponentDefinitionByName("ConeRenderer"),
+                        availableComponentsState.GetComponentDefinitionByName("ConeCollider")
                     }
                 }
             };

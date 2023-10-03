@@ -50,59 +50,151 @@ namespace Assets.Scripts.EditorState
         public IEnumerable<AvailableComponent> allAvailableComponents => buildInComponents.Concat(customComponents);
 
 
-        private readonly IReadOnlyList<AvailableComponent> buildInComponents = new List<AvailableComponent>
+        private readonly List<AvailableComponent> buildInComponents = new List<AvailableComponent>();
+
+        private readonly List<AvailableComponent> customComponents = new List<AvailableComponent>();
+
+        public void AddEcs6BuildInComponents()
         {
-            new AvailableComponent
+            buildInComponents.Add(new AvailableComponent
             {
                 category = "Built-in",
                 availableInAddComponentMenu = false,
                 componentDefinition = DclTransformComponent.transformComponentDefinition
-            },
-            new AvailableComponent
+            });
+
+            buildInComponents.Add(new AvailableComponent
             {
                 category = "Built-in/Shape",
                 availableInAddComponentMenu = true,
                 componentDefinition = new DclComponent.ComponentDefinition("BoxShape", "Shape", true)
-            },
-            new AvailableComponent
+            });
+
+            buildInComponents.Add(new AvailableComponent
             {
                 category = "Built-in/Shape",
                 availableInAddComponentMenu = true,
                 componentDefinition = new DclComponent.ComponentDefinition("SphereShape", "Shape", true)
-            },
-            new AvailableComponent
+            });
+
+            buildInComponents.Add(new AvailableComponent
             {
                 category = "Built-in/Shape",
                 availableInAddComponentMenu = true,
                 componentDefinition = new DclComponent.ComponentDefinition("PlaneShape", "Shape", true)
-            },
-            new AvailableComponent
+            });
+
+            buildInComponents.Add(new AvailableComponent
             {
                 category = "Built-in/Shape",
                 availableInAddComponentMenu = true,
                 componentDefinition = new DclComponent.ComponentDefinition("CylinderShape", "Shape", true)
-            },
-            new AvailableComponent
+            });
+
+            buildInComponents.Add(new AvailableComponent
             {
                 category = "Built-in/Shape",
                 availableInAddComponentMenu = true,
                 componentDefinition = new DclComponent.ComponentDefinition("ConeShape", "Shape", true)
-            },
-            new AvailableComponent
+            });
+
+            buildInComponents.Add(new AvailableComponent
             {
                 category = "Built-in/Shape",
                 availableInAddComponentMenu = false,
                 componentDefinition = DclGltfShapeComponent.gltfShapeComponentDefinition
-            },
-            new AvailableComponent
+            });
+
+            buildInComponents.Add(new AvailableComponent
             {
                 category = "Built-in",
                 availableInAddComponentMenu = true,
                 componentDefinition = DclSceneComponent.sceneComponentDefinition
-            }
-        };
+            });
+        }
 
-        private readonly List<AvailableComponent> customComponents = new List<AvailableComponent>();
+        public void AddEcs7BuildInComponents()
+        {
+            buildInComponents.Add(new AvailableComponent
+            {
+                category = "Built-in",
+                availableInAddComponentMenu = false,
+                componentDefinition = DclTransformComponent.transformComponentDefinition
+            });
+
+            buildInComponents.Add(new AvailableComponent
+            {
+                category = "Built-in",
+                availableInAddComponentMenu = true,
+                componentDefinition = DclSceneComponent.sceneComponentDefinition
+            });
+
+            buildInComponents.Add(new AvailableComponent
+            {
+                category = "Built-in",
+                availableInAddComponentMenu = true,
+                componentDefinition = new DclComponent.ComponentDefinition("BoxRenderer", "Renderer", true)
+            });
+            buildInComponents.Add(new AvailableComponent
+            {
+                category = "Built-in",
+                availableInAddComponentMenu = true,
+                componentDefinition = new DclComponent.ComponentDefinition("BoxCollider", "Collider", true)
+            });
+
+            buildInComponents.Add(new AvailableComponent
+            {
+                category = "Built-in",
+                availableInAddComponentMenu = true,
+                componentDefinition = new DclComponent.ComponentDefinition("SphereRenderer", "Renderer", true)
+            });
+            buildInComponents.Add(new AvailableComponent
+            {
+                category = "Built-in",
+                availableInAddComponentMenu = true,
+                componentDefinition = new DclComponent.ComponentDefinition("SphereCollider", "Collider", true)
+            });
+
+            buildInComponents.Add(new AvailableComponent
+            {
+                category = "Built-in",
+                availableInAddComponentMenu = true,
+                componentDefinition = new DclComponent.ComponentDefinition("PlaneRenderer", "Renderer", true)
+            });
+            buildInComponents.Add(new AvailableComponent
+            {
+                category = "Built-in",
+                availableInAddComponentMenu = true,
+                componentDefinition = new DclComponent.ComponentDefinition("PlaneCollider", "Collider", true)
+            });
+
+            buildInComponents.Add(new AvailableComponent
+            {
+                category = "Built-in",
+                availableInAddComponentMenu = true,
+                componentDefinition = new DclComponent.ComponentDefinition("CylinderRenderer", "Renderer", true)
+            });
+            buildInComponents.Add(new AvailableComponent
+            {
+                category = "Built-in",
+                availableInAddComponentMenu = true,
+                componentDefinition = new DclComponent.ComponentDefinition("CylinderCollider", "Collider", true)
+            });
+
+            buildInComponents.Add(new AvailableComponent
+            {
+                category = "Built-in",
+                availableInAddComponentMenu = true,
+                componentDefinition = new DclComponent.ComponentDefinition("ConeRenderer", "Renderer", true)
+            });
+            buildInComponents.Add(new AvailableComponent
+            {
+                category = "Built-in",
+                availableInAddComponentMenu = true,
+                componentDefinition = new DclComponent.ComponentDefinition("ConeCollider", "Collider", true)
+            });
+
+        }
 
         public DclComponent.ComponentDefinition GetComponentDefinitionByName(string name)
         {

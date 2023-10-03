@@ -16,6 +16,9 @@ namespace Assets.Scripts.System
         private ApplicationSystem frameTimeSystem;
         private SceneManagerSystem sceneManagerSystem;
         private CustomComponentMarkupSystem customComponentMarkupSystem;
+        private AvailableComponentsState availableComponentsState;
+        private SceneJsonReaderSystem sceneJsonReaderSystem;
+        private EntityPresetState entityPresetState;
 
         [Inject]
         private void Construct(
@@ -23,17 +26,35 @@ namespace Assets.Scripts.System
             WorkspaceSaveSystem workspaceSaveSystem,
             ApplicationSystem frameTimeSystem,
             SceneManagerSystem sceneManagerSystem,
-            CustomComponentMarkupSystem customComponentMarkupSystem)
+            CustomComponentMarkupSystem customComponentMarkupSystem,
+            AvailableComponentsState availableComponentsState,
+            SceneJsonReaderSystem sceneJsonReaderSystem,
+            EntityPresetState entityPresetState)
         {
             this.assetManagerSystem = assetManagerSystem;
             this.workspaceSaveSystem = workspaceSaveSystem;
             this.frameTimeSystem = frameTimeSystem;
             this.sceneManagerSystem = sceneManagerSystem;
             this.customComponentMarkupSystem = customComponentMarkupSystem;
+            this.availableComponentsState = availableComponentsState;
+            this.sceneJsonReaderSystem = sceneJsonReaderSystem;
+            this.entityPresetState = entityPresetState;
         }
 
         void Awake()
         {
+            if (sceneJsonReaderSystem.IsEcs7())
+            {
+                availableComponentsState.AddEcs7BuildInComponents();
+                entityPresetState.FillEcs7BuildInPresets();
+            }
+            else
+            {
+                availableComponentsState.AddEcs6BuildInComponents();
+                entityPresetState.FillEcs6BuildInPresets();
+            }
+
+
             assetManagerSystem.CacheAllAssetMetadata();
 
             customComponentMarkupSystem.SetupCustomComponents();

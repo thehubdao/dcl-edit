@@ -29,7 +29,7 @@ namespace Assets.Scripts.System
         /// <param name="reload">if it should reload the scene data from the json file again</param>
         /// <returns>the Decentraland scene data; if there is an error it returns null</returns>
         [CanBeNull]
-        public DecentralandSceneData GetSceneData(bool reload)
+        public DecentralandSceneData GetSceneData(bool reload = false)
         {
             try
             {
@@ -47,6 +47,11 @@ namespace Assets.Scripts.System
             }
 
             return decentralandSceneData;
+        }
+
+        public bool IsEcs7()
+        {
+            return GetSceneData()?.ecs7 ?? false;
         }
 
         /// <summary>
