@@ -19,6 +19,7 @@ namespace Assets.Scripts.System
         private AvailableComponentsState availableComponentsState;
         private SceneJsonReaderSystem sceneJsonReaderSystem;
         private EntityPresetState entityPresetState;
+        private CustomComponentDefinitionSystem customComponentDefinitionSystem;
 
         [Inject]
         private void Construct(
@@ -29,7 +30,8 @@ namespace Assets.Scripts.System
             CustomComponentMarkupSystem customComponentMarkupSystem,
             AvailableComponentsState availableComponentsState,
             SceneJsonReaderSystem sceneJsonReaderSystem,
-            EntityPresetState entityPresetState)
+            EntityPresetState entityPresetState,
+            CustomComponentDefinitionSystem customComponentDefinitionSystem)
         {
             this.assetManagerSystem = assetManagerSystem;
             this.workspaceSaveSystem = workspaceSaveSystem;
@@ -39,6 +41,7 @@ namespace Assets.Scripts.System
             this.availableComponentsState = availableComponentsState;
             this.sceneJsonReaderSystem = sceneJsonReaderSystem;
             this.entityPresetState = entityPresetState;
+            this.customComponentDefinitionSystem = customComponentDefinitionSystem;
         }
 
         void Awake()
@@ -54,10 +57,16 @@ namespace Assets.Scripts.System
                 entityPresetState.FillEcs6BuildInPresets();
             }
 
-
             assetManagerSystem.CacheAllAssetMetadata();
 
-            customComponentMarkupSystem.SetupCustomComponents();
+            if (sceneJsonReaderSystem.IsEcs7())
+            {
+                customComponentDefinitionSystem.DiscoverComponentDefinitions();
+            }
+            else
+            {
+                customComponentMarkupSystem.SetupCustomComponents();
+            }
 
             sceneManagerSystem.DiscoverScenes();
 

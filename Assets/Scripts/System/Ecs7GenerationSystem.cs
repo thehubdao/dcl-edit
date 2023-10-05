@@ -315,7 +315,7 @@ public class Ecs7GenerationSystem
         }
 
         // find the correct component definition
-        var componentDefinition = availableComponentsState.GetComponentDefinitionByName(component.NameInCode);
+        var componentDefinition = availableComponentsState.GetComponentDefinitionByCodeName(component.NameInCode);
 
         // update the list of all used components
         //if (entity.IsExposed)
@@ -382,7 +382,7 @@ public class Ecs7GenerationSystem
         {
             symbol = property.PropertyName,
             value = value,
-            isConstructorParameter = (availableComponentsState.GetComponentDefinitionByName(component.NameInCode).GetPropertyDefinitionByName(property.PropertyName).flags & DclComponent.DclComponentProperty.PropertyDefinition.Flags.ParseInConstructor) > 0
+            isConstructorParameter = (availableComponentsState.GetComponentDefinitionByCodeName(component.NameInCode).GetPropertyDefinitionByName(property.PropertyName).flags & DclComponent.DclComponentProperty.PropertyDefinition.Flags.ParseInConstructor) > 0
         };
     }
 

@@ -445,7 +445,7 @@ namespace Assets.Scripts.System
             };
         }
 
-        public IEnumerable<JObject> FindCustomComponentMarkupsInFile(string path, List<IFileReadingProblem> problems)
+        private IEnumerable<JObject> FindCustomComponentMarkupsInFile(string path, List<IFileReadingProblem> problems)
         {
             try
             {

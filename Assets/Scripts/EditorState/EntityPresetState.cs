@@ -41,7 +41,7 @@ namespace Assets.Scripts.EditorState
                     name = "Box Entity",
                     components = new List<DclComponent.ComponentDefinition>
                     {
-                        availableComponentsState.GetComponentDefinitionByName("BoxShape")
+                        availableComponentsState.GetComponentDefinitionByCodeName("BoxShape")
                     }
                 },
                 new EntityPreset
@@ -49,7 +49,7 @@ namespace Assets.Scripts.EditorState
                     name = "Sphere Entity",
                     components = new List<DclComponent.ComponentDefinition>
                     {
-                        availableComponentsState.GetComponentDefinitionByName("SphereShape")
+                        availableComponentsState.GetComponentDefinitionByCodeName("SphereShape")
                     }
                 },
                 new EntityPreset
@@ -57,15 +57,15 @@ namespace Assets.Scripts.EditorState
                     name = "Plane Entity",
                     components = new List<DclComponent.ComponentDefinition>
                     {
-                        availableComponentsState.GetComponentDefinitionByName("PlaneShape")
+                        availableComponentsState.GetComponentDefinitionByCodeName("PlaneShape")
                     }
                 },
                 new EntityPreset
                 {
                     name = "Cylinder Entity",
                     components = new List<DclComponent.ComponentDefinition>
-                    {   
-                        availableComponentsState.GetComponentDefinitionByName("CylinderShape")
+                    {
+                        availableComponentsState.GetComponentDefinitionByCodeName("CylinderShape")
                     }
                 },
                 new EntityPreset
@@ -73,7 +73,7 @@ namespace Assets.Scripts.EditorState
                     name = "Cone Entity",
                     components = new List<DclComponent.ComponentDefinition>
                     {
-                        availableComponentsState.GetComponentDefinitionByName("ConeShape")
+                        availableComponentsState.GetComponentDefinitionByCodeName("ConeShape")
                     }
                 }
             };
@@ -93,8 +93,8 @@ namespace Assets.Scripts.EditorState
                     name = "Box Entity",
                     components = new List<DclComponent.ComponentDefinition>
                     {
-                        availableComponentsState.GetComponentDefinitionByName("BoxRenderer"),
-                        availableComponentsState.GetComponentDefinitionByName("BoxCollider")
+                        availableComponentsState.GetComponentDefinitionByCodeName("BoxRenderer"),
+                        availableComponentsState.GetComponentDefinitionByCodeName("BoxCollider")
                     }
                 },
                 new EntityPreset
@@ -102,8 +102,8 @@ namespace Assets.Scripts.EditorState
                     name = "Sphere Entity",
                     components = new List<DclComponent.ComponentDefinition>
                     {
-                        availableComponentsState.GetComponentDefinitionByName("SphereRenderer"),
-                        availableComponentsState.GetComponentDefinitionByName("SphereCollider")
+                        availableComponentsState.GetComponentDefinitionByCodeName("SphereRenderer"),
+                        availableComponentsState.GetComponentDefinitionByCodeName("SphereCollider")
                     }
                 },
                 new EntityPreset
@@ -111,8 +111,8 @@ namespace Assets.Scripts.EditorState
                     name = "Plane Entity",
                     components = new List<DclComponent.ComponentDefinition>
                     {
-                        availableComponentsState.GetComponentDefinitionByName("PlaneRenderer"),
-                        availableComponentsState.GetComponentDefinitionByName("PlaneCollider")
+                        availableComponentsState.GetComponentDefinitionByCodeName("PlaneRenderer"),
+                        availableComponentsState.GetComponentDefinitionByCodeName("PlaneCollider")
                     }
                 },
                 new EntityPreset
@@ -120,8 +120,8 @@ namespace Assets.Scripts.EditorState
                     name = "Cylinder Entity",
                     components = new List<DclComponent.ComponentDefinition>
                     {
-                        availableComponentsState.GetComponentDefinitionByName("CylinderRenderer"),
-                        availableComponentsState.GetComponentDefinitionByName("CylinderCollider")
+                        availableComponentsState.GetComponentDefinitionByCodeName("CylinderRenderer"),
+                        availableComponentsState.GetComponentDefinitionByCodeName("CylinderCollider")
                     }
                 },
                 new EntityPreset
@@ -129,8 +129,8 @@ namespace Assets.Scripts.EditorState
                     name = "Cone Entity",
                     components = new List<DclComponent.ComponentDefinition>
                     {
-                        availableComponentsState.GetComponentDefinitionByName("ConeRenderer"),
-                        availableComponentsState.GetComponentDefinitionByName("ConeCollider")
+                        availableComponentsState.GetComponentDefinitionByCodeName("ConeRenderer"),
+                        availableComponentsState.GetComponentDefinitionByCodeName("ConeCollider")
                     }
                 }
             };
