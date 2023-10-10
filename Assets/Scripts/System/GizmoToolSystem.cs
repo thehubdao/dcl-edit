@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Assets.Scripts.Command;
 using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
 using Assets.Scripts.SceneState;
@@ -34,6 +35,7 @@ namespace Assets.Scripts.System
         private GizmoSizeSystem gizmoSizeSystem;
         private SettingsSystem settingsSystem;
         private CommandSystem commandSystem;
+        private SelectionSystem selectionSystem;
 
         [Inject]
         private void Construct(
@@ -43,7 +45,8 @@ namespace Assets.Scripts.System
             EditorEvents editorEvents,
             GizmoSizeSystem gizmoSizeSystem,
             SettingsSystem settingsSystem,
-            CommandSystem commandSystem)
+            CommandSystem commandSystem,
+            SelectionSystem selectionSystem)
         {
             this.gizmoState = gizmoState;
             this.sceneManagerState = sceneManagerState;
@@ -52,6 +55,7 @@ namespace Assets.Scripts.System
             this.gizmoSizeSystem = gizmoSizeSystem;
             this.settingsSystem = settingsSystem;
             this.commandSystem = commandSystem;
+            this.selectionSystem = selectionSystem;
         }
 
         public ToolMode gizmoToolMode
@@ -102,7 +106,7 @@ namespace Assets.Scripts.System
             gizmoState.affectedTransform = sceneManagerState.GetCurrentDirectoryState()?.currentScene?.SelectionState.PrimarySelectedEntity?.GetTransformComponent();
             Assert.IsNotNull(gizmoState.affectedTransform);
 
-            var selectedEntities = sceneManagerState.GetCurrentDirectoryState()?.currentScene?.SelectionState.AllSelectedEntities;
+            var selectedEntities = selectionSystem.AllSelectedEntitiesWithoutChildren;
 
             if (selectedEntities != null)
             {
@@ -402,7 +406,7 @@ namespace Assets.Scripts.System
 
             var worldMouseMovementSinceStart = mouseMovementOnPrimaryAxis + mouseMovementOnSecondaryAxis;
 
-            gizmoState.affectedTransform.globalPosition = gizmoState.affectedTransform.globalFixedPosition + worldMouseMovementSinceStart;
+            //gizmoState.affectedTransform.globalPosition = gizmoState.affectedTransform.globalFixedPosition + worldMouseMovementSinceStart;
             foreach (var transform in gizmoState.multiselecTransforms)
             {
                 transform.globalPosition = transform.globalFixedPosition + worldMouseMovementSinceStart;                
@@ -480,38 +484,33 @@ namespace Assets.Scripts.System
 
         private void ExecuteTranslateCommand()
         {
-            if (gizmoState.multiselecTransforms != null)
+            Assert.IsNotNull(gizmoState.multiselecTransforms);
+            var list = new List<TranslateTransform.EntityTransform>();
+            foreach (var transform in gizmoState.multiselecTransforms)
             {
-                foreach (var transform in gizmoState.multiselecTransforms)
-                {
-                    commandSystem.ExecuteCommand(
-                        commandSystem.CommandFactory.CreateTranslateTransform(
-                            transform.Entity.Id,
-                            transform.position.FixedValue,
-                            transform.position.Value
-                    ));
-                }
-            } else
-            {
-                commandSystem.ExecuteCommand(
-                    commandSystem.CommandFactory.CreateTranslateTransform(
-                        gizmoState.affectedTransform.Entity.Id,
-                        gizmoState.affectedTransform.position.FixedValue,
-                        gizmoState.affectedTransform.position.Value
-                ));
+                list.Add(new TranslateTransform.EntityTransform { 
+                    selectedEntityGuid = transform.Entity.Id,
+                    newFixedPosition = transform.position.Value,
+                    oldFixedPosition = transform.position.FixedValue
+                });
             }
+            commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateTranslateTransform(list));
         }
 
         private void ExecuteRotateCommand()
         {
-            commandSystem.ExecuteCommand(
-                commandSystem.CommandFactory.CreateChangePropertyCommand(
-                    new DclPropertyIdentifier(
-                        gizmoState.affectedTransform.Entity.Id,
-                        DclTransformComponent.transformComponentDefinition.NameInCode,
-                        "rotation"),
-                    gizmoState.affectedTransform.rotation.FixedValue,
-                    gizmoState.affectedTransform.rotation.Value));
+            Assert.IsNotNull(gizmoState.multiselecTransforms);
+            var list = new List<RotateTransform.EntityTransform>();
+            foreach (var transform in gizmoState.multiselecTransforms)
+            {
+                list.Add(new RotateTransform.EntityTransform
+                {
+                    selectedEntityGuid = transform.Entity.Id,
+                    newFixedRotation = transform.rotation.Value,
+                    oldFixedRotation = transform.rotation.FixedValue
+                });
+            }
+            commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateRotateTransform(list));
         }
 
         private void ExecuteScaleCommand()

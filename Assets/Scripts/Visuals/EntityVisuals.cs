@@ -188,6 +188,11 @@ namespace Assets.Scripts.Visuals
             {
                 shapeVisuals.ShowPrimarySelectionOutline();
             }
+
+            if (rootScene.SelectionState.SecondarySelectedEntities.Contains(overrideEntity))
+            {
+                shapeVisuals.ShowSecondarySelectionOutline();
+            }
         }
     }
 

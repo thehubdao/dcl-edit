@@ -14,15 +14,15 @@ public class CommandFactorySystem
     }
 
     // Translate Transform
-    public TranslateTransform CreateTranslateTransform(Guid selectedEntity, Vector3 oldFixedPosition, Vector3 newFixedPosition)
+    public TranslateTransform CreateTranslateTransform(List<TranslateTransform.EntityTransform> entityTransforms)
     {
-        return new TranslateTransform(selectedEntity, oldFixedPosition, newFixedPosition);
+        return new TranslateTransform(entityTransforms);
     }
 
     // Rotate Transform
-    public RotateTransform CreateRotateTransform(Guid selectedEntity, Quaternion oldFixedRotation, Quaternion newFixedRotation)
+    public RotateTransform CreateRotateTransform(List<RotateTransform.EntityTransform> entityTransforms)
     {
-        return new RotateTransform(selectedEntity, oldFixedRotation, newFixedRotation);
+        return new RotateTransform(entityTransforms);
     }
 
     // Scale Transform

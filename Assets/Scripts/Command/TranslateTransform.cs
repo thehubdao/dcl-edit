@@ -1,6 +1,7 @@
 using Assets.Scripts.Events;
 using Assets.Scripts.SceneState;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Assets.Scripts.Command
@@ -9,29 +10,38 @@ namespace Assets.Scripts.Command
     {
         public override string Name => "Move Transform";
         public override string Description => "Moving transform to new position.";
-        Guid selectedEntityGuid;
-        Vector3 oldFixedPosition;
-        Vector3 newFixedPosition;
-
-        public TranslateTransform(Guid selectedEntity, Vector3 oldFixedPosition, Vector3 newFixedPosition)
+        public struct EntityTransform
         {
-            this.selectedEntityGuid = selectedEntity;
-            this.oldFixedPosition = oldFixedPosition;
-            this.newFixedPosition = newFixedPosition;
+            public Guid selectedEntityGuid;
+            public Vector3 oldFixedPosition;
+            public Vector3 newFixedPosition;
+        }
+
+        private List<EntityTransform> entityTransforms;
+
+        public TranslateTransform(List<EntityTransform> entityTransforms)
+        {
+            this.entityTransforms = entityTransforms;
         }
 
         public override void Do(DclScene sceneState, EditorEvents editorEvents)
         {
-            DclTransformComponent transform = TransformFromEntityGuid(sceneState, selectedEntityGuid);
-            transform?.position.SetFixedValue(newFixedPosition);
-            editorEvents.InvokeSelectionChangedEvent();
+            foreach (var entityTransform in entityTransforms)
+            {
+                DclTransformComponent transform = TransformFromEntityGuid(sceneState, entityTransform.selectedEntityGuid);
+                transform?.position.SetFixedValue(entityTransform.newFixedPosition);
+                editorEvents.InvokeSelectionChangedEvent();
+            }
         }
 
         public override void Undo(DclScene sceneState, EditorEvents editorEvents)
         {
-            DclTransformComponent transform = TransformFromEntityGuid(sceneState, selectedEntityGuid);
-            transform?.position.SetFixedValue(oldFixedPosition);
-            editorEvents.InvokeSelectionChangedEvent();
+            foreach(var entityTransform in entityTransforms)
+            {
+                DclTransformComponent transform = TransformFromEntityGuid(sceneState, entityTransform.selectedEntityGuid);
+                transform?.position.SetFixedValue(entityTransform.oldFixedPosition);
+                editorEvents.InvokeSelectionChangedEvent();
+            }
         }
 
         DclTransformComponent TransformFromEntityGuid(DclScene sceneState, Guid guid)
