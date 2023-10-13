@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Assets.Scripts.SceneState
@@ -178,5 +179,17 @@ namespace Assets.Scripts.SceneState
         {
             return globalTransformMatrix.inverse.MultiplyPoint(position);
         }
+
+        public void RotateAround(Vector3 point, Quaternion angle)
+        {
+            Vector3 difference = this.position.FixedValue - point;
+            Quaternion rotation = angle;
+
+            this?.rotation.SetFloatingValue(rotation);
+
+            Vector3 relativePosition = point + rotation * difference;
+            this.position.SetFixedValue(relativePosition);
+        }
+
     }
 }

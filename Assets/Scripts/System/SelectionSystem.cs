@@ -11,22 +11,18 @@ namespace Assets.Scripts.System
     {
         // Dependencies
         private SceneManagerState _sceneManagerState;
-        private SelectionState _selectionState;
 
         [Inject]
-        private void Construct(SceneManagerState sceneManagerState, SelectionState selectionState)
+        private void Construct(SceneManagerState sceneManagerState)
         {
             _sceneManagerState = sceneManagerState;
-            _selectionState = selectionState;
         }
 
         [CanBeNull]
-        public DclEntity PrimarySelectedEntity => _selectionState.PrimarySelectedEntity;
-        public List<DclEntity> SecondarySelectedEntities => _selectionState.SecondarySelectedEntities;
+        public DclEntity PrimarySelectedEntity => _sceneManagerState.GetCurrentDirectoryState()?.currentScene?.SelectionState.PrimarySelectedEntity;
+        public List<DclEntity> SecondarySelectedEntities => _sceneManagerState.GetCurrentDirectoryState()?.currentScene?.SelectionState.SecondarySelectedEntities;
 
-        public IEnumerable<DclEntity> AllSelectedEntities =>
-            SecondarySelectedEntities
-                .Prepend(PrimarySelectedEntity);
+        public IEnumerable<DclEntity> AllSelectedEntities => _sceneManagerState.GetCurrentDirectoryState()?.currentScene?.SelectionState.AllSelectedEntities;
 
         public IEnumerable<DclEntity> AllSelectedEntitiesWithoutChildren
         {

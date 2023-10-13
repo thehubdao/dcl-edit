@@ -26,22 +26,10 @@ namespace Assets.Scripts.Command
 
         public override void Do(DclScene sceneState, EditorEvents editorEvents)
         {
-            DclTransformComponent pivotTransform = TransformFromEntityGuid(sceneState, entityTransforms[0].selectedEntityGuid);
-            Vector3 pivotPosition = pivotTransform.position.Value;
             foreach (var entityTransform in entityTransforms)
             {
                 DclTransformComponent transform = TransformFromEntityGuid(sceneState, entityTransform.selectedEntityGuid);
-                //transform?.rotation.SetFixedValue(entityTransform.newFixedRotation);
-                Quaternion oldRotation = transform.rotation.Value;
-                Quaternion newRotation = entityTransform.newFixedRotation;
-                Quaternion relativeRotation = Quaternion.Inverse(pivotTransform.rotation.Value) * (newRotation * pivotTransform.rotation.Value) * Quaternion.Inverse(oldRotation);
-                relativeRotation = relativeRotation.normalized;
-
-                transform?.rotation.SetFixedValue(relativeRotation * oldRotation);
-
-                Vector3 relativePosition = pivotTransform.rotation.Value * (transform.position.Value - pivotPosition);
-                transform.position.SetFixedValue(pivotPosition + relativePosition);
-
+                transform?.rotation.SetFixedValue(entityTransform.newFixedRotation);
                 editorEvents.InvokeSelectionChangedEvent();
             }
         }

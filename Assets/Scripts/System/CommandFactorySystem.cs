@@ -26,9 +26,9 @@ public class CommandFactorySystem
     }
 
     // Scale Transform
-    public ScaleTransform CreateScaleTransform(Guid selectedEntity, Vector3 oldFixedScale, Vector3 newFixedScale)
+    public ScaleTransform CreateScaleTransform(List<ScaleTransform.EntityTransform> entityTransforms)
     {
-        return new ScaleTransform(selectedEntity, oldFixedScale, newFixedScale);
+        return new ScaleTransform(entityTransforms);
     }
 
     // Change Entity Name

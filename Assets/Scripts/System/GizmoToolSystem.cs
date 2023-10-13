@@ -6,6 +6,7 @@ using Assets.Scripts.Events;
 using Assets.Scripts.SceneState;
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.UIElements;
 using Zenject;
 using static Assets.Scripts.EditorState.GizmoState.MouseContextRelevance;
 using static Assets.Scripts.Utility.StaticUtilities;
@@ -106,7 +107,7 @@ namespace Assets.Scripts.System
             gizmoState.affectedTransform = sceneManagerState.GetCurrentDirectoryState()?.currentScene?.SelectionState.PrimarySelectedEntity?.GetTransformComponent();
             Assert.IsNotNull(gizmoState.affectedTransform);
 
-            var selectedEntities = selectionSystem.AllSelectedEntitiesWithoutChildren;
+            var selectedEntities = sceneManagerState.GetCurrentDirectoryState()?.currentScene?.SelectionState.AllSelectedEntities;
 
             if (selectedEntities != null)
             {
@@ -420,13 +421,20 @@ namespace Assets.Scripts.System
                 gizmoState.gizmoDirection.isOnlyY() ? contextSpaceMouseMovementSinceStart.x * -90 : 0,
                 gizmoState.gizmoDirection.isOnlyZ() ? contextSpaceMouseMovementSinceStart.x * -90 : 0);
 
+            DclTransformComponent pivotTransform = gizmoState.affectedTransform;
+            Vector3 pivotPosition = pivotTransform.position.FixedValue;
+
             if (gizmoToolContext == ToolContext.Local)
             {
-                gizmoState.affectedTransform.rotation.SetFloatingValue(gizmoState.affectedTransform.rotation.FixedValue * additionalRotation);
+                //gizmoState.affectedTransform.rotation.SetFloatingValue(gizmoState.affectedTransform.rotation.FixedValue * additionalRotation);
+                foreach (var transform in gizmoState.multiselecTransforms)
+                {
+                    transform.RotateAround(pivotPosition, additionalRotation);
+                }
             }
             else
             {
-                gizmoState.affectedTransform.globalRotation = additionalRotation * gizmoState.affectedTransform.globalFixedRotation;
+                //gizmoState.affectedTransform.globalRotation = additionalRotation * gizmoState.affectedTransform.globalFixedRotation;
             }
         }
 
@@ -437,7 +445,10 @@ namespace Assets.Scripts.System
                 gizmoState.gizmoDirection.isY ? contextSpaceMouseMovementSinceStart.x : 0,
                 gizmoState.gizmoDirection.isZ ? contextSpaceMouseMovementSinceStart.x : 0);
 
-            gizmoState.affectedTransform.scale.SetFloatingValue(gizmoState.affectedTransform.scale.FixedValue + additionalScale);
+            foreach (var transform in gizmoState.multiselecTransforms)
+            {
+                transform.scale.SetFloatingValue(transform.scale.FixedValue + additionalScale);
+            }
         }
 
         #endregion // While holding
@@ -515,14 +526,18 @@ namespace Assets.Scripts.System
 
         private void ExecuteScaleCommand()
         {
-            commandSystem.ExecuteCommand(
-                commandSystem.CommandFactory.CreateChangePropertyCommand(
-                    new DclPropertyIdentifier(
-                        gizmoState.affectedTransform.Entity.Id,
-                        DclTransformComponent.transformComponentDefinition.NameInCode,
-                        "scale"),
-                    gizmoState.affectedTransform.scale.FixedValue,
-                    gizmoState.affectedTransform.scale.Value));
+            Assert.IsNotNull(gizmoState.multiselecTransforms);
+            var list = new List<ScaleTransform.EntityTransform>();
+            foreach (var transform in gizmoState.multiselecTransforms)
+            {
+                list.Add(new ScaleTransform.EntityTransform
+                {
+                    selectedEntityGuid = transform.Entity.Id,
+                    newFixedScale = transform.scale.Value,
+                    oldFixedScale = transform.scale.FixedValue
+                });
+            }
+            commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateScaleTransform(list));
         }
 
         #endregion // End holding

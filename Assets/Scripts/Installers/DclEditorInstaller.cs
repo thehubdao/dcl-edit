@@ -199,5 +199,9 @@ public class DclEditorInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<SnackbarState>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<CustomComponentDefinitionSystem>().AsSingle();
+        
+        Container.BindInterfacesAndSelfTo<SelectionState>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<SelectionSystem>().AsSingle();
     }
 }
