@@ -2,6 +2,7 @@ using Assets.Scripts.EditorState;
 using Assets.Scripts.SceneState;
 using JetBrains.Annotations;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Zenject;
 
@@ -29,7 +30,6 @@ namespace Assets.Scripts.System
             get
             {
                 var allSelected = AllSelectedEntities.ToList();
-                var selectedWithoutChildren = new List<DclEntity>();
 
                 // Walk though entire scene tree
                 var currentTreeObject = new Stack<DclEntity>();
@@ -45,7 +45,7 @@ namespace Assets.Scripts.System
                     {
                         if (allSelected.Contains(child))
                         {
-                            selectedWithoutChildren.Add(child as DclEntity); // if current object is selected, add it to returned list
+                            allSelected.Remove(child);
                         }
                         else
                         {
@@ -54,7 +54,7 @@ namespace Assets.Scripts.System
                     }
                 }
 
-                return selectedWithoutChildren.AsEnumerable();
+                return allSelected.AsEnumerable();
             }
         }
 

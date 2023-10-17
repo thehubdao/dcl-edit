@@ -107,7 +107,7 @@ namespace Assets.Scripts.System
             gizmoState.affectedTransform = sceneManagerState.GetCurrentDirectoryState()?.currentScene?.SelectionState.PrimarySelectedEntity?.GetTransformComponent();
             Assert.IsNotNull(gizmoState.affectedTransform);
 
-            var selectedEntities = sceneManagerState.GetCurrentDirectoryState()?.currentScene?.SelectionState.AllSelectedEntities;
+            var selectedEntities = selectionSystem.AllSelectedEntitiesWithoutChildren;
 
             if (selectedEntities != null)
             {
@@ -407,7 +407,6 @@ namespace Assets.Scripts.System
 
             var worldMouseMovementSinceStart = mouseMovementOnPrimaryAxis + mouseMovementOnSecondaryAxis;
 
-            //gizmoState.affectedTransform.globalPosition = gizmoState.affectedTransform.globalFixedPosition + worldMouseMovementSinceStart;
             foreach (var transform in gizmoState.multiselecTransforms)
             {
                 transform.globalPosition = transform.globalFixedPosition + worldMouseMovementSinceStart;                

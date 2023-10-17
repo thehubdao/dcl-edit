@@ -185,7 +185,7 @@ namespace Assets.Scripts.SceneState
             Vector3 difference = this.position.FixedValue - point;
             Quaternion rotation = angle;
 
-            this?.rotation.SetFloatingValue(rotation);
+            this?.rotation.SetFloatingValue(this.rotation.FixedValue * rotation);
 
             Vector3 relativePosition = point + rotation * difference;
             this.position.SetFixedValue(relativePosition);
