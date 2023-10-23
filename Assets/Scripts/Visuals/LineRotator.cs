@@ -32,55 +32,55 @@ namespace Assets.Scripts.Visuals
             {
                 if (relativeCamPos.y > 0 && relativeCamPos.z > 0)
                 {
-                    transform.rotation = Quaternion.Euler(0, 0, 0);
+                    transform.localRotation = Quaternion.Euler(0, 0, 0);
                 }
                 else if (relativeCamPos.y < 0 && relativeCamPos.z > 0)
                 {
-                    transform.rotation = Quaternion.Euler(90, 0, 0);
+                    transform.localRotation = Quaternion.Euler(90, 0, 0);
                 }
                 else if (relativeCamPos.y > 0 && relativeCamPos.z < 0)
                 {
-                    transform.rotation = Quaternion.Euler(270, 0, 0);
+                    transform.localRotation = Quaternion.Euler(270, 0, 0);
                 }
                 else if (relativeCamPos.y < 0 && relativeCamPos.z < 0)
                 {
-                    transform.rotation = Quaternion.Euler(180, 0, 0);
+                    transform.localRotation = Quaternion.Euler(180, 0, 0);
                 }
             } else if (axis == RelevantAxis.Y)
             {
                 if (relativeCamPos.x > 0 && relativeCamPos.z > 0)
                 {
-                    transform.rotation = Quaternion.Euler(0, 0, 0);
+                    transform.localRotation = Quaternion.Euler(0, 0, 0);
                 }
                 else if (relativeCamPos.x < 0 && relativeCamPos.z > 0)
                 {
-                    transform.rotation = Quaternion.Euler(0, 270, 0);
+                    transform.localRotation = Quaternion.Euler(0, 270, 0);
                 }
                 else if (relativeCamPos.x < 0 && relativeCamPos.z < 0)
                 {
-                    transform.rotation = Quaternion.Euler(0, 180, 0);
+                    transform.localRotation = Quaternion.Euler(0, 180, 0);
                 }
                 else if (relativeCamPos.x > 0 && relativeCamPos.z < 0)
                 {
-                    transform.rotation = Quaternion.Euler(0, 90, 0);
+                    transform.localRotation = Quaternion.Euler(0, 90, 0);
                 }
             } else if (axis == RelevantAxis.Z)
             {
                 if (relativeCamPos.x > 0 && relativeCamPos.y > 0)
                 {
-                    transform.rotation = Quaternion.Euler(0, 0, 0);
+                    transform.localRotation = Quaternion.Euler(0, 0, 0);
                 }
                 else if (relativeCamPos.x < 0 && relativeCamPos.y > 0)
                 {
-                    transform.rotation = Quaternion.Euler(0, 0, 90);
+                    transform.localRotation = Quaternion.Euler(0, 0, 90);
                 }
                 else if (relativeCamPos.x < 0 && relativeCamPos.y < 0)
                 {
-                    transform.rotation = Quaternion.Euler(0, 0, 180);
+                    transform.localRotation = Quaternion.Euler(0, 0, 180);
                 }
                 else if (relativeCamPos.x > 0 && relativeCamPos.y < 0)
                 {
-                    transform.rotation = Quaternion.Euler(0, 0, 270);
+                    transform.localRotation = Quaternion.Euler(0, 0, 270);
                 }
             }
 
