@@ -7,8 +7,8 @@ namespace Assets.Scripts.EditorState
 {
     public class CameraState
     {
-        private float CameraNormalFlySpeed => PersistentData.CameraSpeed;
-        private float CameraFastFlySpeed => CameraNormalFlySpeed * 3;
+        public float CameraNormalFlySpeed => PersistentData.CameraSpeed;
+        public float CameraFastFlySpeed => CameraNormalFlySpeed * 3;
         private float MouseSensitivity => PersistentData.MouseSensitivity;
 
         private Vector3 _position;
@@ -21,6 +21,9 @@ namespace Assets.Scripts.EditorState
             set
             {
                 _position = value;
+
+                ResetMovementParameters();
+
                 _editorEvents.InvokeCameraStateChangedEvent();
             }
         }
@@ -38,6 +41,8 @@ namespace Assets.Scripts.EditorState
                 if (_pitch < -100)
                     _pitch = -100;
 
+                ResetMovementParameters();
+
                 _editorEvents.InvokeCameraStateChangedEvent();
             }
         }
@@ -48,6 +53,9 @@ namespace Assets.Scripts.EditorState
             set
             {
                 _yaw = value;
+
+                ResetMovementParameters();
+
                 _editorEvents.InvokeCameraStateChangedEvent();
             }
         }
@@ -59,6 +67,9 @@ namespace Assets.Scripts.EditorState
         public Vector3 Left => Rotation * Vector3.left;
         public Vector3 Up => Rotation * Vector3.up;
         public Vector3 Down => Rotation * Vector3.down;
+        public Vector3 MovementDestination { get; private set; } = Vector3.negativeInfinity;
+        public bool HasMovementDestination => !MovementDestination.Equals(Vector3.negativeInfinity);
+        public bool IsMovingFast { get; private set; }
 
 
         // Dependencies
@@ -97,20 +108,20 @@ namespace Assets.Scripts.EditorState
         /// <summary>
         /// Moves the camera towards the given destination. Returns true if the destination was reached.
         /// </summary>
-        public bool MoveTowards(Vector3 globalDestination, bool isFast)
+        public void MoveTowards(Vector3 globalDestination, bool isFast)
         {
-            Vector3 dirToDest = globalDestination - Position;
-            Vector3 move = dirToDest.normalized * Time.deltaTime * (isFast ? CameraFastFlySpeed : CameraNormalFlySpeed);
+            MovementDestination = globalDestination;
+            IsMovingFast = isFast;
+            _editorEvents.InvokeCameraStateChangedEvent();
+        }
 
-            // Check if destination was reached
-            if (dirToDest.magnitude < move.magnitude)
-            {
-                Position += dirToDest;
-                return true;
-            }
-
-            MoveContinuously(Quaternion.Inverse(Rotation) * dirToDest.normalized, isFast);
-            return false;
+        /// <summary>
+        /// Aborts any ongoing movement of the camera.
+        /// </summary>
+        private void ResetMovementParameters()
+        {
+            MovementDestination = Vector3.negativeInfinity;
+            IsMovingFast = false;
         }
 
         public void RotateAroundPointStep(Vector3 point, Vector2 direction)

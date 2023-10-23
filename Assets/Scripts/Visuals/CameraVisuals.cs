@@ -44,8 +44,30 @@ namespace Assets.Scripts.Visuals
 
         private void UpdateCameraTransform()
         {
-            transform.position = _cameraState.Position;
             transform.rotation = _cameraState.Rotation;
+
+            if (_cameraState.HasMovementDestination)
+            {
+                float time = 0.3f;
+                float distance = (_cameraState.MovementDestination - transform.position).magnitude;
+                
+                LeanTween
+                    .move(gameObject, _cameraState.MovementDestination, time)
+                    .setEaseOutCubic()
+                    .setOnComplete(() => _cameraState.Position = transform.position);
+            }
+            else
+            {
+                if (LeanTween.isTweening(gameObject))
+                {
+                    _cameraState.Position = transform.position;
+                    LeanTween.cancel(gameObject);
+                }
+                else
+                {
+                    transform.position = _cameraState.Position;
+                }
+            }
         }
     }
 }
