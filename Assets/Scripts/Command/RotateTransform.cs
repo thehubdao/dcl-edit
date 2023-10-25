@@ -15,6 +15,8 @@ namespace Assets.Scripts.Command
             public Guid selectedEntityGuid;
             public Quaternion oldFixedRotation;
             public Quaternion newFixedRotation;
+            public Vector3 newFixedPosition;
+            public Vector3 oldFixedPosition;
         }
 
         private List<EntityTransform> entityTransforms;
@@ -30,6 +32,7 @@ namespace Assets.Scripts.Command
             {
                 DclTransformComponent transform = TransformFromEntityGuid(sceneState, entityTransform.selectedEntityGuid);
                 transform?.rotation.SetFixedValue(entityTransform.newFixedRotation);
+                transform?.position.SetFixedValue(entityTransform.newFixedPosition);
                 editorEvents.InvokeSelectionChangedEvent();
             }
         }
@@ -40,6 +43,7 @@ namespace Assets.Scripts.Command
             {
                 DclTransformComponent transform = TransformFromEntityGuid(sceneState, entityTransform.selectedEntityGuid);
                 transform?.rotation.SetFixedValue(entityTransform.oldFixedRotation);
+                transform?.position.SetFixedValue(entityTransform.oldFixedPosition);
                 editorEvents.InvokeSelectionChangedEvent();
             }
         }

@@ -425,15 +425,20 @@ namespace Assets.Scripts.System
 
             if (gizmoToolContext == ToolContext.Local)
             {
-                //gizmoState.affectedTransform.rotation.SetFloatingValue(gizmoState.affectedTransform.rotation.FixedValue * additionalRotation);
                 foreach (var transform in gizmoState.multiselecTransforms)
                 {
-                    transform.RotateAround(pivotPosition, additionalRotation);
+                    var rotation = transform.rotation.FixedValue * Quaternion.Inverse(pivotTransform.rotation.FixedValue);
+                    rotation.Normalize();
+                    transform.SetFloatingPivotRotation(pivotPosition, additionalRotation * rotation);
                 }
             }
             else
             {
-                //gizmoState.affectedTransform.globalRotation = additionalRotation * gizmoState.affectedTransform.globalFixedRotation;
+                foreach (var transform in gizmoState.multiselecTransforms)
+                {
+                    //Global variation
+                    transform.SetFloatingPivotRotation(pivotPosition, additionalRotation);
+                }
             }
         }
 
@@ -517,7 +522,9 @@ namespace Assets.Scripts.System
                 {
                     selectedEntityGuid = transform.Entity.Id,
                     newFixedRotation = transform.rotation.Value,
-                    oldFixedRotation = transform.rotation.FixedValue
+                    oldFixedRotation = transform.rotation.FixedValue,
+                    newFixedPosition = transform.position.Value,
+                    oldFixedPosition = transform.position.FixedValue
                 });
             }
             commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateRotateTransform(list));

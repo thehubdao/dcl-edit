@@ -180,15 +180,13 @@ namespace Assets.Scripts.SceneState
             return globalTransformMatrix.inverse.MultiplyPoint(position);
         }
 
-        public void RotateAround(Vector3 point, Quaternion angle)
+        public void SetFloatingPivotRotation(Vector3 point, Quaternion angle)
         {
+            this.rotation.SetFloatingValue(this.rotation.FixedValue * angle);
             Vector3 difference = this.position.FixedValue - point;
-            Quaternion rotation = angle;
-
-            this?.rotation.SetFloatingValue(this.rotation.FixedValue * rotation);
-
-            Vector3 relativePosition = point + rotation * difference;
-            this.position.SetFixedValue(relativePosition);
+            difference = angle * difference;
+            Vector3 relativePosition = point + difference;
+            this.position.SetFloatingValue(relativePosition);
         }
 
     }
