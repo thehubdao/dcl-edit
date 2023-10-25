@@ -427,17 +427,15 @@ namespace Assets.Scripts.System
             {
                 foreach (var transform in gizmoState.multiselecTransforms)
                 {
-                    var rotation = transform.rotation.FixedValue * Quaternion.Inverse(pivotTransform.rotation.FixedValue);
-                    rotation.Normalize();
-                    transform.SetFloatingPivotRotation(pivotPosition, additionalRotation * rotation);
+                    
+                    transform.SetFloatingPivotRotation(pivotPosition, additionalRotation);
                 }
             }
             else
             {
                 foreach (var transform in gizmoState.multiselecTransforms)
                 {
-                    //Global variation
-                    transform.SetFloatingPivotRotation(pivotPosition, additionalRotation);
+                    transform.SetGlobalPivotRotation(pivotPosition, additionalRotation);
                 }
             }
         }

@@ -182,11 +182,34 @@ namespace Assets.Scripts.SceneState
 
         public void SetFloatingPivotRotation(Vector3 point, Quaternion angle)
         {
-            this.rotation.SetFloatingValue(this.rotation.FixedValue * angle);
-            Vector3 difference = this.position.FixedValue - point;
-            difference = angle * difference;
-            Vector3 relativePosition = point + difference;
-            this.position.SetFloatingValue(relativePosition);
+            // Get the offset from the point to the center of the object
+            var initialPos = position.FixedValue;
+            var offset = initialPos - point;
+
+            // rotate the transform
+            rotation.SetFloatingValue(rotation.FixedValue * angle);
+
+            // move the transform so it keeps the same position
+            var diffRotation = rotation.Value * Quaternion.Inverse(rotation.FixedValue);
+            var rotatedOffset = diffRotation * offset;
+            position.SetFloatingValue(point + rotatedOffset);
+        }
+
+        public void SetGlobalPivotRotation(Vector3 point, Quaternion angle)
+        {
+
+            //gizmoState.affectedTransform.globalRotation = additionalRotation * gizmoState.affectedTransform.globalFixedRotation;
+            // Get the offset from the point to the center of the object
+            var initialPos = position.FixedValue;
+            var offset = initialPos - point;
+
+            // rotate the transform
+            globalRotation = angle * globalFixedRotation;
+
+            // move the transform so it keeps the same position
+            var diffRotation = globalRotation * Quaternion.Inverse(globalFixedRotation);
+            var rotatedOffset = diffRotation * offset;
+            position.SetFloatingValue(point + rotatedOffset);
         }
 
     }
