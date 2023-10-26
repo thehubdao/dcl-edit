@@ -89,10 +89,12 @@ namespace Assets.Scripts.System
             if (!checkVersionSystem.CheckDclSceneExists())
             {
                 //TODO Display a message, that there is no project and exit after user input
+#pragma warning disable CS4014
                 promptSystem.CreateDialog(
                     "There is no Dcl-Edit project in this folder. Please use the command terminal to navigate to the right folder.\n\n For example:\ncd C:\\Users\\Username\\ProjectName",
-                    new PromptSystem.PromptAction[] { new PromptSystem.OK(Application.Quit) },
+                    new PromptSystem.PromptAction[] {new PromptSystem.OK(Application.Quit)},
                     null);
+#pragma warning restore CS4014
                 Debug.LogError("No Decentraland Folder found");
                 return;
             }

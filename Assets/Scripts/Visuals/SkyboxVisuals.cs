@@ -6,10 +6,15 @@ using Zenject;
 
 public class SkyboxVisuals: MonoBehaviour
 {
-    [SerializeField] private SkyboxConfiguration config;
-    [SerializeField] private Material mat;
-    [SerializeField] private Light light;
-    
+    [SerializeField]
+    private SkyboxConfiguration config;
+
+    [SerializeField]
+    private Material mat;
+
+    [SerializeField]
+    private new Light light;
+
     private EditorEvents editorEvents;
     private SettingsSystem settingsSystem;
     private const int slotCount = 5;

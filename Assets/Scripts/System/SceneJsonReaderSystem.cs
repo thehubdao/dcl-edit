@@ -39,7 +39,7 @@ namespace Assets.Scripts.System
                     decentralandSceneData = JsonConvert.DeserializeObject<DecentralandSceneData>(json);
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 //Debug.LogError("Error while reading scene.json");
                 //Debug.LogException(e);
