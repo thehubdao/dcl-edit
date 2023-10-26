@@ -13,39 +13,60 @@ namespace Assets.Scripts.System
         // dependencies
         private AssetManagerSystem assetManagerSystem;
         private WorkspaceSaveSystem workspaceSaveSystem;
-        private IPathState pathState;
         private ApplicationSystem frameTimeSystem;
         private SceneManagerSystem sceneManagerSystem;
-        private ISceneViewSystem sceneViewSystem;
-        private SettingsSystem settingsSystem;
         private CustomComponentMarkupSystem customComponentMarkupSystem;
+        private AvailableComponentsState availableComponentsState;
+        private SceneJsonReaderSystem sceneJsonReaderSystem;
+        private EntityPresetState entityPresetState;
+        private CustomComponentDefinitionSystem customComponentDefinitionSystem;
 
         [Inject]
         private void Construct(
             AssetManagerSystem assetManagerSystem,
             WorkspaceSaveSystem workspaceSaveSystem,
-            IPathState pathState,
             ApplicationSystem frameTimeSystem,
             SceneManagerSystem sceneManagerSystem,
-            ISceneViewSystem sceneViewSystem,
-            SettingsSystem settingsSystem,
-            CustomComponentMarkupSystem customComponentMarkupSystem)
+            CustomComponentMarkupSystem customComponentMarkupSystem,
+            AvailableComponentsState availableComponentsState,
+            SceneJsonReaderSystem sceneJsonReaderSystem,
+            EntityPresetState entityPresetState,
+            CustomComponentDefinitionSystem customComponentDefinitionSystem)
         {
             this.assetManagerSystem = assetManagerSystem;
             this.workspaceSaveSystem = workspaceSaveSystem;
             this.frameTimeSystem = frameTimeSystem;
             this.sceneManagerSystem = sceneManagerSystem;
-            this.sceneViewSystem = sceneViewSystem;
-            this.settingsSystem = settingsSystem;
-            this.pathState = pathState;
             this.customComponentMarkupSystem = customComponentMarkupSystem;
+            this.availableComponentsState = availableComponentsState;
+            this.sceneJsonReaderSystem = sceneJsonReaderSystem;
+            this.entityPresetState = entityPresetState;
+            this.customComponentDefinitionSystem = customComponentDefinitionSystem;
         }
 
         void Awake()
         {
+            if (sceneJsonReaderSystem.IsEcs7())
+            {
+                availableComponentsState.AddEcs7BuildInComponents();
+                entityPresetState.FillEcs7BuildInPresets();
+            }
+            else
+            {
+                availableComponentsState.AddEcs6BuildInComponents();
+                entityPresetState.FillEcs6BuildInPresets();
+            }
+
             assetManagerSystem.CacheAllAssetMetadata();
 
-            customComponentMarkupSystem.SetupCustomComponents();
+            if (sceneJsonReaderSystem.IsEcs7())
+            {
+                customComponentDefinitionSystem.DiscoverComponentDefinitions();
+            }
+            else
+            {
+                customComponentMarkupSystem.SetupCustomComponents();
+            }
 
             sceneManagerSystem.DiscoverScenes();
 

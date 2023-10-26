@@ -21,6 +21,7 @@ namespace Assets.Scripts.Visuals
         private UiBuilder.UiBuilder uiBuilder;
         private UnityState unityState;
         private InputState inputState;
+        private SceneJsonReaderSystem sceneJsonReaderSystem;
 
         [Inject]
         private void Construct(
@@ -28,13 +29,15 @@ namespace Assets.Scripts.Visuals
             SettingsSystem settingsSystem,
             UiBuilder.UiBuilder.Factory uiBuilderFactory,
             UnityState unityState,
-            InputState inputState)
+            InputState inputState,
+            SceneJsonReaderSystem sceneJsonReaderSystem)
         {
             this.editorEvents = editorEvents;
             this.settingsSystem = settingsSystem;
             this.uiBuilder = uiBuilderFactory.Create(content);
             this.unityState = unityState;
             this.inputState = inputState;
+            this.sceneJsonReaderSystem = sceneJsonReaderSystem;
 
             SetupEventListeners();
         }
@@ -194,9 +197,13 @@ namespace Assets.Scripts.Visuals
                     OnSubmit = (value) => settingsSystem.groundGridSizeSetting.Set((int)value)
                 });
 
-            // Version number
+            // Version number x
             settingsPanel.AddSpacer(100);
             settingsPanel.AddText($"dcl-edit version: {Application.version}");
+            settingsPanel.AddText(
+                sceneJsonReaderSystem.IsEcs7() ?
+                    "API Version: ECS 7" :
+                    "API Version: ECS 6");
 
             uiBuilder.Update(settingsPanel);
         }

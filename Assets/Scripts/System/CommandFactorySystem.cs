@@ -59,6 +59,11 @@ public class CommandFactorySystem
         return new AddModelAssetToScene(entityId, entityCustomName, assetId, positionInScene, hierarchyOrder);
     }
 
+    public AddEcs7ModelAssetToScene CreateAddEcs7ModelAssetToScene(Guid entityId, string entityCustomName, Guid assetId, Vector3 positionInScene, float hierarchyOrder)
+    {
+        return new AddEcs7ModelAssetToScene(entityId, entityCustomName, assetId, positionInScene, hierarchyOrder);
+    }
+
     public AddSceneAssetToScene CreateAddSceneAssetToScene(Guid entityId, string entityCustomName, Guid assetId, Vector3 positionInScene, float hierarchyOrder)
     {
         return new AddSceneAssetToScene(entityId, entityCustomName, assetId, positionInScene, hierarchyOrder);

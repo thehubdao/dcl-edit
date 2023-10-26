@@ -119,7 +119,7 @@ First comment second line
             var (availableComponent, _, _) = SetupCustomComponentsTests();
 
             // Minimal
-            var minimal = availableComponent.GetComponentDefinitionByName("Minimal");
+            var minimal = availableComponent.GetComponentDefinitionByCodeName("Minimal");
             Assert.IsNotNull(minimal);
 
             Assert.AreEqual("Minimal", minimal.NameInCode);
@@ -129,7 +129,7 @@ First comment second line
             Assert.AreEqual("src/valid_components", minimal.SourceFile);
 
             // Class and component
-            var classAndComponent = availableComponent.GetComponentDefinitionByName("ClassAndComponent");
+            var classAndComponent = availableComponent.GetComponentDefinitionByCodeName("ClassAndComponent");
             Assert.IsNotNull(classAndComponent);
 
             Assert.AreEqual("ClassAndComponent", classAndComponent.NameInCode);
@@ -139,7 +139,7 @@ First comment second line
             Assert.AreEqual("src/valid_components", classAndComponent.SourceFile);
 
             // Class and number property
-            var classAndNumberProperty = availableComponent.GetComponentDefinitionByName("ClassAndNumberProperty");
+            var classAndNumberProperty = availableComponent.GetComponentDefinitionByCodeName("ClassAndNumberProperty");
             Assert.IsNotNull(classAndNumberProperty);
 
             Assert.AreEqual("ClassAndNumberProperty", classAndNumberProperty.NameInCode);
@@ -154,7 +154,7 @@ First comment second line
             Assert.AreEqual("src/valid_components", classAndNumberProperty.SourceFile);
 
             // Class and number property with default
-            var classAndPropertyWithDefault = availableComponent.GetComponentDefinitionByName("ClassAndNumberPropertyWithDefault");
+            var classAndPropertyWithDefault = availableComponent.GetComponentDefinitionByCodeName("ClassAndNumberPropertyWithDefault");
             Assert.IsNotNull(classAndPropertyWithDefault);
 
             Assert.AreEqual("ClassAndNumberPropertyWithDefault", classAndPropertyWithDefault.NameInCode);
@@ -169,7 +169,7 @@ First comment second line
             Assert.AreEqual("src/valid_components", classAndPropertyWithDefault.SourceFile);
 
             // Class and string property
-            var classAndStringProperty = availableComponent.GetComponentDefinitionByName("ClassAndStringProperty");
+            var classAndStringProperty = availableComponent.GetComponentDefinitionByCodeName("ClassAndStringProperty");
             Assert.IsNotNull(classAndStringProperty);
 
             Assert.AreEqual("ClassAndStringProperty", classAndStringProperty.NameInCode);
@@ -184,7 +184,7 @@ First comment second line
             Assert.AreEqual("src/valid_components", classAndStringProperty.SourceFile);
 
             // Class and string property with default
-            var classAndStringPropertyWithDefault = availableComponent.GetComponentDefinitionByName("ClassAndStringPropertyWithDefault");
+            var classAndStringPropertyWithDefault = availableComponent.GetComponentDefinitionByCodeName("ClassAndStringPropertyWithDefault");
             Assert.IsNotNull(classAndStringPropertyWithDefault);
 
             Assert.AreEqual("ClassAndStringPropertyWithDefault", classAndStringPropertyWithDefault.NameInCode);
@@ -199,7 +199,7 @@ First comment second line
             Assert.AreEqual("src/valid_components", classAndStringPropertyWithDefault.SourceFile);
 
             // Class and vector3 property
-            var classAndVector3Property = availableComponent.GetComponentDefinitionByName("ClassAndVector3Property");
+            var classAndVector3Property = availableComponent.GetComponentDefinitionByCodeName("ClassAndVector3Property");
             Assert.IsNotNull(classAndVector3Property);
 
             Assert.AreEqual("ClassAndVector3Property", classAndVector3Property.NameInCode);
@@ -214,7 +214,7 @@ First comment second line
             Assert.AreEqual("src/valid_components", classAndVector3Property.SourceFile);
 
             // Class and vector3 property with default
-            var classAndVector3PropertyWithDefault = availableComponent.GetComponentDefinitionByName("ClassAndVector3PropertyWithDefault");
+            var classAndVector3PropertyWithDefault = availableComponent.GetComponentDefinitionByCodeName("ClassAndVector3PropertyWithDefault");
             Assert.IsNotNull(classAndVector3PropertyWithDefault);
 
             Assert.AreEqual("ClassAndVector3PropertyWithDefault", classAndVector3PropertyWithDefault.NameInCode);
@@ -229,7 +229,7 @@ First comment second line
             Assert.AreEqual("src/valid_components", classAndVector3PropertyWithDefault.SourceFile);
 
             // Class and multiple properties
-            var classAndMultipleProperties = availableComponent.GetComponentDefinitionByName("ClassAndMultipleProperties");
+            var classAndMultipleProperties = availableComponent.GetComponentDefinitionByCodeName("ClassAndMultipleProperties");
             Assert.IsNotNull(classAndMultipleProperties);
 
             Assert.AreEqual("ClassAndMultipleProperties", classAndMultipleProperties.NameInCode);
@@ -250,7 +250,7 @@ First comment second line
             Assert.AreEqual("src/valid_components", classAndMultipleProperties.SourceFile);
 
             // Class with import file
-            var classWithImportFile = availableComponent.GetComponentDefinitionByName("ClassWithImportFile");
+            var classWithImportFile = availableComponent.GetComponentDefinitionByCodeName("ClassWithImportFile");
             Assert.IsNotNull(classWithImportFile);
 
             Assert.AreEqual("ClassWithImportFile", classWithImportFile.NameInCode);
@@ -279,8 +279,8 @@ First comment second line
 
             ccms.MakeComponent(JObject.Parse(componentWithValidRotationEulerString).WithImportFile("src/inline_test"), "inline_test.ts");
 
-            var componentWithValidRotationEulerComponent = availableComponentsState.GetComponentDefinitionByName("ComponentWithValidRotationEuler");
-            
+            var componentWithValidRotationEulerComponent = availableComponentsState.GetComponentDefinitionByCodeName("ComponentWithValidRotationEuler");
+
             Assert.AreEqual("ComponentWithValidRotationEuler", componentWithValidRotationEulerComponent.NameInCode);
             Assert.AreEqual("ComponentWithValidRotationEuler", componentWithValidRotationEulerComponent.NameOfSlot);
 
@@ -307,8 +307,8 @@ First comment second line
 
             ccms.MakeComponent(JObject.Parse(componentWithValidRotationQuaternionString).WithImportFile("src/inline_test"), "inline_test.ts");
 
-            var componentWithValidRotationQuaternionComponent = 
-                availableComponentsState.GetComponentDefinitionByName("ComponentWithValidRotationQuaternion");
+            var componentWithValidRotationQuaternionComponent =
+                availableComponentsState.GetComponentDefinitionByCodeName("ComponentWithValidRotationQuaternion");
 
             Assert.AreEqual("ComponentWithValidRotationQuaternion", componentWithValidRotationQuaternionComponent.NameInCode);
             Assert.AreEqual("ComponentWithValidRotationQuaternion", componentWithValidRotationQuaternionComponent.NameOfSlot);
@@ -373,7 +373,7 @@ First comment second line
 
             ccms.MakeComponent(JObject.Parse(propertyTypeIsAssetModelString).WithImportFile("src/inline_test"), "inline_test.ts");
 
-            var component = availableComponentsState.GetComponentDefinitionByName("ClassAndComponent");
+            var component = availableComponentsState.GetComponentDefinitionByCodeName("ClassAndComponent");
 
             Assert.AreEqual("ClassAndComponent", component.NameInCode);
             Assert.AreEqual("ClassAndComponent", component.NameOfSlot);
@@ -402,7 +402,7 @@ First comment second line
 
             ccms.MakeComponent(JObject.Parse(propertyTypeIsAssetModelAndDefaultValueIsValidString).WithImportFile("src/inline_test"), "inline_test.ts");
 
-            component = availableComponentsState.GetComponentDefinitionByName("ClassAndComponent2");
+            component = availableComponentsState.GetComponentDefinitionByCodeName("ClassAndComponent2");
 
             Assert.AreEqual("ClassAndComponent2", component.NameInCode);
             Assert.AreEqual("ClassAndComponent2", component.NameOfSlot);
@@ -467,7 +467,7 @@ First comment second line
 
             ccms.MakeComponent(JObject.Parse(propertyTypeIsBoolString).WithImportFile("src/inline_test"), "inline_test.ts");
 
-            var component = availableComponentsState.GetComponentDefinitionByName("ClassAndComponent");
+            var component = availableComponentsState.GetComponentDefinitionByCodeName("ClassAndComponent");
 
             Assert.AreEqual("ClassAndComponent", component.NameInCode);
             Assert.AreEqual("ClassAndComponent", component.NameOfSlot);
@@ -495,7 +495,7 @@ First comment second line
 
             ccms.MakeComponent(JObject.Parse(propertyTypeIsBoolAndDefaultValueIsValidString).WithImportFile("src/inline_test"), "inline_test.ts");
 
-            component = availableComponentsState.GetComponentDefinitionByName("ClassAndComponent2");
+            component = availableComponentsState.GetComponentDefinitionByCodeName("ClassAndComponent2");
 
             Assert.AreEqual("ClassAndComponent2", component.NameInCode);
             Assert.AreEqual("ClassAndComponent2", component.NameOfSlot);

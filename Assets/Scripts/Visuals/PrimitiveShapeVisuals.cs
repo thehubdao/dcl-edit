@@ -27,7 +27,16 @@ namespace Assets.Scripts.Visuals
 
 
             var primitiveShapeComponent =
-                entity.GetFirstComponentByName("BoxShape", "SphereShape", "CylinderShape", "PlaneShape", "ConeShape");
+                entity.GetFirstComponentByName(
+                    "BoxShape",
+                    "SphereShape",
+                    "CylinderShape",
+                    "PlaneShape",
+                    "ConeShape",
+                    "BoxRenderer",
+                    "SphereRenderer",
+                    "CylinderRenderer",
+                    "PlaneRenderer");
 
             if (primitiveShapeComponent == null)
             {
@@ -44,6 +53,10 @@ namespace Assets.Scripts.Visuals
                 "CylinderShape" => _unityState.CylinderMesh,
                 "PlaneShape" => _unityState.PlaneMesh,
                 "ConeShape" => _unityState.ConeMesh,
+                "BoxRenderer" => _unityState.BoxMesh,
+                "SphereRenderer" => _unityState.SphereMeshEcs7,
+                "CylinderRenderer" => _unityState.CylinderMeshEcs7,
+                "PlaneRenderer" => _unityState.PlaneMesh,
                 _ => meshFilter.mesh
             };
 

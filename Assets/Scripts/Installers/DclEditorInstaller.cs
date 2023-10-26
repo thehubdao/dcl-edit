@@ -178,6 +178,8 @@ public class DclEditorInstaller : MonoInstaller
 
         Container.BindInterfacesAndSelfTo<AddEntitySystem>().AsSingle();
 
+        Container.BindInterfacesAndSelfTo<Ecs7GenerationSystem>().AsSingle();
+
         Container.BindInterfacesAndSelfTo<GizmoToolSystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<GizmoSizeSystem>().AsSingle();
@@ -195,5 +197,7 @@ public class DclEditorInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<SnackbarSystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<SnackbarState>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<CustomComponentDefinitionSystem>().AsSingle();
     }
 }

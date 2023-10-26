@@ -155,9 +155,10 @@ namespace Assets.Scripts.Visuals
 
                 // Update the target component with the new asset
                 var currentSelected = scene.SelectionState.PrimarySelectedEntity;
-                var targetComponent = currentSelected.GetComponentByName("GLTFShape");
+                var targetComponent = currentSelected.GetFirstComponentByName("GLTFShape", "GltfContainer");
                 var sceneProperty = targetComponent.GetPropertyByName("scene");
                 var assetProperty = targetComponent.GetPropertyByName("asset");
+                var srcProperty = targetComponent.GetPropertyByName("src");
 
                 if (sceneProperty != null)
                 {
@@ -169,6 +170,13 @@ namespace Assets.Scripts.Visuals
                 {
                     var oldValue = assetProperty.GetConcrete<Guid>().FixedValue;
                     var identifier = new DclPropertyIdentifier(targetComponent.Entity.Id, targetComponent.NameInCode, "asset");
+                    commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateChangePropertyCommand(identifier, oldValue, assetId));
+                }
+
+                if (srcProperty != null)
+                {
+                    var oldValue = srcProperty.GetConcrete<Guid>().FixedValue;
+                    var identifier = new DclPropertyIdentifier(targetComponent.Entity.Id, targetComponent.NameInCode, "src");
                     commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateChangePropertyCommand(identifier, oldValue, assetId));
                 }
 

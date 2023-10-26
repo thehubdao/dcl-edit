@@ -61,7 +61,7 @@ namespace Assets.Scripts.Visuals
 
         void InitializeGltfShapeVisualsComponent(DclScene scene, DclEntity entity)
         {
-            var gltfShapeComponent = entity.GetComponentByName("GLTFShape");
+            var gltfShapeComponent = entity.GetFirstComponentByName("GltfContainer", "GLTFShape");
             var gltfShapeVisualization = GetComponent<GltfShapeVisuals>(); // returns null if component isn't found
 
             if (gltfShapeComponent != null)
@@ -82,7 +82,7 @@ namespace Assets.Scripts.Visuals
         void InitializePrimitiveShapeComponent(DclScene scene, DclEntity entity)
         {
             var primitiveShapeComponent =
-                entity.GetFirstComponentByName("BoxShape", "SphereShape", "CylinderShape", "PlaneShape", "ConeShape");
+                entity.GetFirstComponentByName("BoxShape", "SphereShape", "CylinderShape", "PlaneShape", "ConeShape", "BoxRenderer", "SphereRenderer", "CylinderRenderer", "PlaneRenderer");
             var primitiveShapeVisualization = GetComponent<PrimitiveShapeVisuals>(); // returns null if component isn't found
             if (primitiveShapeComponent != null)
             {

@@ -31,7 +31,7 @@ namespace Assets.Scripts.Visuals
         private DialogSystem dialogSystem;
         private ExposeEntitySystem exposeEntitySystem;
         private PromptSystem promptSystem;
-
+        
         [Inject]
         private void Construct(
             InputState inputState,
@@ -143,10 +143,12 @@ namespace Assets.Scripts.Visuals
             {
                 var componentPanel = inspectorPanel.AddPanelWithBorder();
 
-                if(!availableComponentsState.GetComponentDefinitionByName(component.NameInCode).IsRemovable)
-                    componentPanel.AddPanelHeader(component.NameInCode, null);
+                var componentShowName = availableComponentsState.GetAvailableComponentByCodeName(component.NameInCode).name;
+
+                if (!availableComponentsState.GetComponentDefinitionByCodeName(component.NameInCode).IsRemovable)
+                    componentPanel.AddPanelHeader(componentShowName, null);
                 else
-                    componentPanel.AddPanelHeader(component.NameInCode, () => commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateRemoveComponent(selectedEntity.Id, component)));
+                    componentPanel.AddPanelHeader(componentShowName, () => commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateRemoveComponent(selectedEntity.Id, component)));
 
                 foreach (var property in component.Properties)
                 {
