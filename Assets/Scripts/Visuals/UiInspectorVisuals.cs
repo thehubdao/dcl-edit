@@ -272,6 +272,30 @@ namespace Assets.Scripts.Visuals
 
                             break;
                         }
+                        case DclComponent.DclComponentProperty.PropertyType.Color:
+                            {
+                                var vec3Actions = new StringPropertyAtom.UiPropertyActions<Vector3>
+                                {
+                                    OnChange = (value) => updatePropertiesSystem.UpdateFloatingProperty(propertyIdentifier, new Color(value.x, value.y, value.z)),
+                                    OnInvalid = () => updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier),
+                                    OnSubmit = (value) => updatePropertiesSystem.UpdateFixedProperty(propertyIdentifier, new Color(value.x, value.y, value.z)),
+                                    OnAbort = (value) => updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier)
+                                };
+
+                                Vector3 color = new Vector3(
+                                    property.GetConcrete<Color>().Value.r,
+                                    property.GetConcrete<Color>().Value.g,
+                                    property.GetConcrete<Color>().Value.b
+                                );
+
+                                componentPanel.AddVector3Property(
+                                    property.PropertyName,
+                                    new List<string> { "R", "G", "B" },
+                                    color,
+                                    vec3Actions);
+
+                                break;
+                            }
                         default:
                             throw new ArgumentOutOfRangeException();
                     }
