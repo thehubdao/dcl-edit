@@ -87,7 +87,7 @@ namespace Assets.Scripts.Visuals
             }
         }
 
-        private void UpdateVisuals()
+        private async void UpdateVisuals()
         {
             if (inputState.InState == InputState.InStateType.UiInput)
             {
@@ -274,25 +274,27 @@ namespace Assets.Scripts.Visuals
                         }
                         case DclComponent.DclComponentProperty.PropertyType.Color:
                             {
-                                var vec3Actions = new StringPropertyAtom.UiPropertyActions<Vector3>
+                                Color selectedColor = property.GetConcrete<Color>().Value;
+                                var hexColor = ColorUtility.ToHtmlStringRGB(selectedColor);
+
+                                var colorActions = new ColorPropertyAtom.UiPropertyActions<Color>
                                 {
-                                    OnChange = (value) => updatePropertiesSystem.UpdateFloatingProperty(propertyIdentifier, new Color(value.x, value.y, value.z)),
-                                    OnInvalid = () => updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier),
-                                    OnSubmit = (value) => updatePropertiesSystem.UpdateFixedProperty(propertyIdentifier, new Color(value.x, value.y, value.z)),
-                                    OnAbort = (value) => updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier)
+                                    OnChange = (value) => updatePropertiesSystem.UpdateFloatingProperty(propertyIdentifier, value),
+                                    OnSubmit = (value) => updatePropertiesSystem.UpdateFixedProperty(propertyIdentifier, value), 
+                                    OnAbort = (_) => updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier)
                                 };
 
-                                Vector3 color = new Vector3(
-                                    property.GetConcrete<Color>().Value.r,
-                                    property.GetConcrete<Color>().Value.g,
-                                    property.GetConcrete<Color>().Value.b
-                                );
 
-                                componentPanel.AddVector3Property(
+                                componentPanel.AddColorProperty(
                                     property.PropertyName,
-                                    new List<string> { "R", "G", "B" },
-                                    color,
-                                    vec3Actions);
+                                    property.PropertyName,
+                                    hexColor,
+                                    colorActions,
+                                    async (_) => {
+                                        var color = await promptSystem.CreateColorPicker(selectedColor);
+                                        updatePropertiesSystem.UpdateFixedProperty(propertyIdentifier, color.value);
+                                    }
+                                    );
 
                                 break;
                             }

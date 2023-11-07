@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using System;
 using Zenject;
+using HSVPicker;
 
 namespace Assets.Scripts.System
 {
@@ -40,9 +41,10 @@ namespace Assets.Scripts.System
             return await promptData.taskCompleted.Task;
         }
 
-        public async Task<Value<Color>> CreateColorPicker()
+        public async Task<Value<Color>> CreateColorPicker(Color initColor)
         {
-            CreatePromptData(unityState.PromptColorPicker, "Chose a color", null, null, PromptData.PromptType.ColorPicker);
+            unityState.ColorPicker.GetComponent<ColorPicker>().CurrentColor = initColor;
+            CreatePromptData(unityState.PromptColorPicker, "Choose a color", null, null, PromptData.PromptType.ColorPicker);
             unityState.PromptColorPicker.SetActive(true);
             return (Value<Color>)await promptData.taskCompleted.Task;
         }
