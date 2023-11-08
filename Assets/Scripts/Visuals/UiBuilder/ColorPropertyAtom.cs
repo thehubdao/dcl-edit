@@ -36,7 +36,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
         {
             public string name;
             public string placeholder;
-            public string currentContents;
+            public Color currentContents;
             public UiPropertyActions<Color> actions;
             public UnityAction<GameObject> onClick;
 
@@ -85,12 +85,13 @@ namespace Assets.Scripts.Visuals.UiBuilder
                 colorPropertyHandler.ResetActions();
 
                 colorPropertyHandler.propertyNameText.text = newColorPropertyData.name;
-                colorPropertyHandler.stringInput.SetCurrentText(newColorPropertyData.currentContents);
+                colorPropertyHandler.stringInput.SetCurrentText(ColorUtility.ToHtmlStringRGBA(newColorPropertyData.currentContents));
                 colorPropertyHandler.stringInput.SetPlaceHolder(newColorPropertyData.placeholder);
                 colorPropertyHandler.colorPicker.button.onClick.RemoveAllListeners();
                 colorPropertyHandler.colorPicker.button.onClick.AddListener(() => newColorPropertyData.onClick(colorPropertyHandler.colorPicker.button.gameObject));
 
                 // setup actions
+                colorPropertyHandler.colorImage.color = newColorPropertyData.currentContents;
                 colorPropertyHandler.SetActions(newColorPropertyData.actions);
             }
         }
@@ -109,7 +110,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
 
     public static class ColorPropertyPanelHelper
     {
-        public static ColorPropertyAtom.Data AddColorProperty(this PanelAtom.Data panelAtomData, string name, string placeholder, string currentContents, ColorPropertyAtom.UiPropertyActions<Color> actions, UnityAction<GameObject> onClick)
+        public static ColorPropertyAtom.Data AddColorProperty(this PanelAtom.Data panelAtomData, string name, string placeholder, Color currentContents, ColorPropertyAtom.UiPropertyActions<Color> actions, UnityAction<GameObject> onClick)
         {
             var data = new ColorPropertyAtom.Data
             {

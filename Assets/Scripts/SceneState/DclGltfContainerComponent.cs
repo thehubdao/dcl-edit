@@ -12,7 +12,7 @@ public class DclGltfContainerComponent : DclComponent
             true,
             null,
             new DclComponentProperty.PropertyDefinition("src", DclComponentProperty.PropertyType.Asset, Guid.Empty, ParseInConstructor),
-            new DclComponentProperty.PropertyDefinition("color", DclComponentProperty.PropertyType.Color, new Color(0, 0, 0))
+            new DclComponentProperty.PropertyDefinition("color", DclComponentProperty.PropertyType.Color, new Color(255, 255, 255))
             );
 
     public DclGltfContainerComponent(Guid assetId, Color color) : base(gltfShapeComponentDefinition.NameInCode, gltfShapeComponentDefinition.NameOfSlot)

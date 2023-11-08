@@ -288,7 +288,7 @@ namespace Assets.Scripts.Visuals
                                 componentPanel.AddColorProperty(
                                     property.PropertyName,
                                     property.PropertyName,
-                                    hexColor,
+                                    selectedColor,
                                     colorActions,
                                     async (_) => {
                                         var color = await promptSystem.CreateColorPicker(selectedColor);

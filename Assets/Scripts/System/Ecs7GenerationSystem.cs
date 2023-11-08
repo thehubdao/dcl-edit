@@ -351,6 +351,9 @@ public class Ecs7GenerationSystem
             case DclComponent.DclComponentProperty.PropertyType.String:
                 value = $"\"{property.GetConcrete<string>().FixedValue}\"";
                 break;
+            case DclComponent.DclComponentProperty.PropertyType.Color:
+                value = $"\"{ColorUtility.ToHtmlStringRGBA(property.GetConcrete<Color>().FixedValue)}\"";
+                break;
             case DclComponent.DclComponentProperty.PropertyType.Int:
                 value = property.GetConcrete<int>().FixedValue.ToString(CultureInfo.InvariantCulture);
                 break;
