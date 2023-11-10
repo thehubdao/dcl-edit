@@ -489,7 +489,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   propertyNameText: {fileID: 2865675628713399044}
-  colorPicker: {fileID: 0}
+  colorPicker: {fileID: 6543138359748062817}
   stringInput: {fileID: 3411827136587501723}
   colorImage: {fileID: 1750429435588585343}
 --- !u!1001 &1298251241553722905
