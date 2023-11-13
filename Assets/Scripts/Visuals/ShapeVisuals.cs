@@ -53,6 +53,11 @@ namespace Assets.Scripts.Visuals
             SetRenderingLayerRecursive(gameObject, LayerMask.NameToLayer("Outline2"));
         }
 
+        public void ShowSecondarySelectionOutline()
+        {
+            SetRenderingLayerRecursive(gameObject, LayerMask.NameToLayer("Outline3"));
+        }
+
         protected void SetRenderingLayerRecursive(GameObject o, int layer)
         {
             if (HasRenderer(o))

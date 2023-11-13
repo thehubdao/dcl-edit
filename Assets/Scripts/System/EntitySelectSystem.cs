@@ -33,11 +33,11 @@ namespace Assets.Scripts.System
                 return;
             }
 
-            // if (inputHelper.GetIsControlPressed())
-            // {
-            //     SelectAdditional(entity);
-            //     return;
-            // }
+            if (inputHelper.GetIsControlPressed())
+            {
+                SelectAdditional(entity);
+                return;
+            }
 
             // else
             SelectSingle(entity);

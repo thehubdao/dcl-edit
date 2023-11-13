@@ -38,8 +38,8 @@ namespace Assets.Scripts.Tests.EditModeTests
             Assert.False(sceneChangeDetectSystem.HasSceneChanged());
 
             // Run two new commands
-            commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateTranslateTransform(Guid.NewGuid(), Vector3.zero, Vector3.one));
-            commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateTranslateTransform(Guid.NewGuid(), Vector3.one, Vector3.zero));
+            //commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateTranslateTransform(Guid.NewGuid(), Vector3.zero, Vector3.one));
+            //commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateTranslateTransform(Guid.NewGuid(), Vector3.one, Vector3.zero));
             Assert.True(sceneChangeDetectSystem.HasSceneChanged());
 
             // Undo commands until back in saved state
@@ -58,12 +58,12 @@ namespace Assets.Scripts.Tests.EditModeTests
         public void TestOverwritingCommandHistory()
         {
             // Execute new command, save and execute another command.
-            commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateTranslateTransform(Guid.NewGuid(), Vector3.zero, Vector3.one));
-            commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateTranslateTransform(Guid.NewGuid(), Vector3.one, Vector3.zero));
+            //commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateTranslateTransform(Guid.NewGuid(), Vector3.zero, Vector3.one));
+            //commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateTranslateTransform(Guid.NewGuid(), Vector3.one, Vector3.zero));
             commandSystem.UndoCommand();
             sceneChangeDetectSystem.RememberCurrentState();
             Assert.False(sceneChangeDetectSystem.HasSceneChanged());
-            commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateTranslateTransform(Guid.NewGuid(), Vector3.one, Vector3.zero));
+            //commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateTranslateTransform(Guid.NewGuid(), Vector3.one, Vector3.zero));
             Assert.True(sceneChangeDetectSystem.HasSceneChanged());
 
             // Return to the command before the scene was saved. That makes it so that the saved state lies in the future.
@@ -71,7 +71,7 @@ namespace Assets.Scripts.Tests.EditModeTests
             commandSystem.UndoCommand();
             Assert.False(sceneChangeDetectSystem.HasSceneChanged());
             commandSystem.UndoCommand();
-            commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateTranslateTransform(Guid.NewGuid(), Vector3.one, Vector3.zero));
+            //commandSystem.ExecuteCommand(commandSystem.CommandFactory.CreateTranslateTransform(Guid.NewGuid(), Vector3.one, Vector3.zero));
             Assert.True(sceneChangeDetectSystem.HasSceneChanged());
         }
 

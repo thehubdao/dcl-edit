@@ -1,6 +1,7 @@
 using Assets.Scripts.Events;
 using Assets.Scripts.SceneState;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Assets.Scripts.Command
@@ -9,29 +10,38 @@ namespace Assets.Scripts.Command
     {
         public override string Name => "Scale Transform";
         public override string Description => "Scaling transform.";
-        Guid selectedEntityGuid;
-        Vector3 oldFixedScale;
-        Vector3 newFixedScale;
-
-        public ScaleTransform(Guid selectedEntity, Vector3 oldFixedScale, Vector3 newFixedScale)
+        public struct EntityTransform
         {
-            this.selectedEntityGuid = selectedEntity;
-            this.oldFixedScale = oldFixedScale;
-            this.newFixedScale = newFixedScale;
+            public Guid selectedEntityGuid;
+            public Vector3 oldFixedScale;
+            public Vector3 newFixedScale;
+        }
+        private List<EntityTransform> entityTransforms;
+
+        public ScaleTransform(List<EntityTransform> entityTransforms)
+        {
+            this.entityTransforms = entityTransforms;
         }
 
         public override void Do(DclScene sceneState, EditorEvents editorEvents)
         {
-            DclTransformComponent transform = TransformFromEntityGuid(sceneState, selectedEntityGuid);
-            transform?.scale.SetFixedValue(newFixedScale);
-            editorEvents.InvokeSelectionChangedEvent();
+            foreach (var entityTransform in entityTransforms)
+            {
+                DclTransformComponent transform = TransformFromEntityGuid(sceneState, entityTransform.selectedEntityGuid);
+                transform?.scale.SetFixedValue(entityTransform.newFixedScale);
+                editorEvents.InvokeSelectionChangedEvent();
+
+            }
         }
 
         public override void Undo(DclScene sceneState, EditorEvents editorEvents)
         {
-            DclTransformComponent transform = TransformFromEntityGuid(sceneState, selectedEntityGuid);
-            transform?.scale.SetFixedValue(oldFixedScale);
-            editorEvents.InvokeSelectionChangedEvent();
+            foreach (var entityTransform in entityTransforms)
+            {
+                DclTransformComponent transform = TransformFromEntityGuid(sceneState, entityTransform.selectedEntityGuid);
+                transform?.scale.SetFixedValue(entityTransform.oldFixedScale);
+                editorEvents.InvokeSelectionChangedEvent();
+            }
         }
 
         DclTransformComponent TransformFromEntityGuid(DclScene sceneState, Guid guid)

@@ -1,6 +1,7 @@
 using Assets.Scripts.Events;
 using Assets.Scripts.SceneState;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Assets.Scripts.Command
@@ -9,29 +10,42 @@ namespace Assets.Scripts.Command
     {
         public override string Name => "Rotate Transform";
         public override string Description => "Rotating transform.";
-        Guid selectedEntityGuid;
-        Quaternion oldFixedRotation;
-        Quaternion newFixedRotation;
-
-        public RotateTransform(Guid selectedEntity, Quaternion oldFixedRotation, Quaternion newFixedRotation)
+        public struct EntityTransform
         {
-            this.selectedEntityGuid = selectedEntity;
-            this.oldFixedRotation = oldFixedRotation;
-            this.newFixedRotation = newFixedRotation;
+            public Guid selectedEntityGuid;
+            public Quaternion oldFixedRotation;
+            public Quaternion newFixedRotation;
+            public Vector3 newFixedPosition;
+            public Vector3 oldFixedPosition;
+        }
+
+        private List<EntityTransform> entityTransforms;
+
+        public RotateTransform(List<EntityTransform> entityTransforms)
+        {
+            this.entityTransforms = entityTransforms;
         }
 
         public override void Do(DclScene sceneState, EditorEvents editorEvents)
         {
-            DclTransformComponent transform = TransformFromEntityGuid(sceneState, selectedEntityGuid);
-            transform?.rotation.SetFixedValue(newFixedRotation);
-            editorEvents.InvokeSelectionChangedEvent();
+            foreach (var entityTransform in entityTransforms)
+            {
+                DclTransformComponent transform = TransformFromEntityGuid(sceneState, entityTransform.selectedEntityGuid);
+                transform?.rotation.SetFixedValue(entityTransform.newFixedRotation);
+                transform?.position.SetFixedValue(entityTransform.newFixedPosition);
+                editorEvents.InvokeSelectionChangedEvent();
+            }
         }
 
         public override void Undo(DclScene sceneState, EditorEvents editorEvents)
         {
-            DclTransformComponent transform = TransformFromEntityGuid(sceneState, selectedEntityGuid);
-            transform?.rotation.SetFixedValue(oldFixedRotation);
-            editorEvents.InvokeSelectionChangedEvent();
+            foreach(var entityTransform in entityTransforms)
+            {
+                DclTransformComponent transform = TransformFromEntityGuid(sceneState, entityTransform.selectedEntityGuid);
+                transform?.rotation.SetFixedValue(entityTransform.oldFixedRotation);
+                transform?.position.SetFixedValue(entityTransform.oldFixedPosition);
+                editorEvents.InvokeSelectionChangedEvent();
+            }
         }
 
         DclTransformComponent TransformFromEntityGuid(DclScene sceneState, Guid guid)
