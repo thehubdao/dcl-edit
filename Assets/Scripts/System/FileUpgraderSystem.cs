@@ -151,9 +151,9 @@ namespace Assets.Scripts.System
             return new Version(versionString);
         }
 
-        public Version entityVersion = new Version(1, 0, 2);
-        public Version sceneVersion = new Version(1, 0, 0);
-        public Version dclAssetVersion = new Version(1, 0, 2);
+        public Version entityVersion = new Version(3, 0, 0);
+        public Version sceneVersion = new Version(3, 0, 0);
+        public Version dclAssetVersion = new Version(3, 0, 0);
 
         private static void SetFileVersion(string path, Version version)
         {
@@ -238,11 +238,16 @@ namespace Assets.Scripts.System
 
         private void SetupUpgrades()
         {
-            upgradeActions.Add((1, 0, 2), new List<Action<string>>
+            upgradeActions.Add((1, 0, 2), new()
             {
                 UpgradeDclAssetFileNamesToIncludeOriginalFileEnding,
                 UpgradePropertySceneIdToSceneInSceneComponent
-            } );
+            });
+
+            upgradeActions.Add((3, 0, 0), new()
+            {
+                UpgradeAllVersionNumbers
+            });
         }
 
         private void UpgradeDclAssetFileNamesToIncludeOriginalFileEnding(string path)
@@ -308,6 +313,11 @@ namespace Assets.Scripts.System
                 var newFileContents = json.ToString(Formatting.Indented);
                 File.WriteAllText(path, newFileContents);
             }
+        }
+
+        private void UpgradeAllVersionNumbers(string path)
+        {
+            SetFileVersion(path, (3, 0, 0));
         }
     }
 }
