@@ -151,6 +151,10 @@ namespace Assets.Scripts.System
             return new Version(versionString);
         }
 
+        public Version entityVersion = new Version(1, 0, 2);
+        public Version sceneVersion = new Version(1, 0, 0);
+        public Version dclAssetVersion = new Version(1, 0, 2);
+
         private static void SetFileVersion(string path, Version version)
         {
             if (!File.Exists(path))
@@ -196,7 +200,6 @@ namespace Assets.Scripts.System
                     }
                 }
 
-                SetFileVersion(path, currentVersion);
             }
             catch (Exception e)
             {
@@ -281,6 +284,11 @@ namespace Assets.Scripts.System
 
         private void UpgradePropertySceneIdToSceneInSceneComponent(string path)
         {
+            if (IsSceneJsonFile(path))
+            {
+                return;
+            }
+
             if (IsEntityFile(path))
             {
                 var fileContents = File.ReadAllText(path);
@@ -295,6 +303,8 @@ namespace Assets.Scripts.System
                     property["type"] = "Asset";
                 }
 
+                var currentVersion = new Version(Application.version);
+                json["dclEditVersionNumber"] = currentVersion.ToString();
                 var newFileContents = json.ToString(Formatting.Indented);
                 File.WriteAllText(path, newFileContents);
             }

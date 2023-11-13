@@ -82,7 +82,7 @@ namespace Assets.Scripts.System
                     id = sceneDirectoryState.id,
                     relativePath = sceneDirectoryState.directoryPath,
                     settings = new JObject(),
-                    dclEditVersionNumber = Application.version
+                    dclEditVersionNumber = fileUpgraderSystem.sceneVersion.ToString()
                 };
                 string sceneFilePath = Path.Combine(sceneDirectoryState.directoryPath, "scene.json");
                 string sceneFileContentsJson = JsonConvert.SerializeObject(sceneFileContents, Formatting.Indented);
@@ -201,7 +201,7 @@ namespace Assets.Scripts.System
                 }
 
                 // Write entity data to file
-                DclEntityData data = new DclEntityData(entity);
+                DclEntityData data = new DclEntityData(entity, fileUpgraderSystem);
                 string dataJson = JsonConvert.SerializeObject(data, Formatting.Indented);
                 string filename = data.customName.Replace(' ', '_') + "-" + data.guid.ToString() + ".json";
                 string path = $"{sceneDirectoryPath}/{filename}";
@@ -239,13 +239,13 @@ namespace Assets.Scripts.System
             public List<DclComponentData> components;
             public string dclEditVersionNumber;
 
-            public DclEntityData(DclEntity entity)
+            public DclEntityData(DclEntity entity, FileUpgraderSystem fileUpgraderSystem)
             {
                 this.customName = entity.CustomName;
                 this.guid = entity.Id;
                 this.parentGuid = entity.Parent?.Id;
                 isExposed = entity.IsExposed;
-                dclEditVersionNumber = Application.version;
+                dclEditVersionNumber = fileUpgraderSystem.entityVersion.ToString();
                 this.hierarchyOrder = entity.hierarchyOrder;
 
                 this.components = new List<DclComponentData>();
