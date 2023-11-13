@@ -8,18 +8,11 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.Assertions;
-using Zenject;
 
 namespace Assets.Scripts.System
 {
     public class FileUpgraderSystem
     {
-        [Inject]
-        private void Construct()
-        {
-            SetupUpgrades();
-        }
-        
         public struct Version
         {
             public int major;
@@ -151,6 +144,10 @@ namespace Assets.Scripts.System
             return new Version(versionString);
         }
 
+        public Version entityVersion = new Version(3, 0, 0);
+        public Version sceneVersion = new Version(3, 0, 0);
+        public Version dclAssetVersion = new Version(3, 0, 0);
+
         private static void SetFileVersion(string path, Version version)
         {
             if (!File.Exists(path))
@@ -196,7 +193,6 @@ namespace Assets.Scripts.System
                     }
                 }
 
-                SetFileVersion(path, currentVersion);
             }
             catch (Exception e)
             {
@@ -231,15 +227,20 @@ namespace Assets.Scripts.System
         }
 
         // Upgrades
-        private readonly SortedDictionary<Version, List<Action<string>>> upgradeActions = new SortedDictionary<Version, List<Action<string>>>( /*Comparer<Version>.Create((l, r) => l > r ? -1 : l < r ? 1 : 0)*/);
+        private readonly SortedDictionary<Version, List<Action<string>>> upgradeActions = new(Comparer<Version>.Create((l, r) => l > r ? -1 : l < r ? 1 : 0));
 
-        private void SetupUpgrades()
+        public void InitUpgrader()
         {
-            upgradeActions.Add((1, 0, 2), new List<Action<string>>
+            upgradeActions.Add((1, 0, 2), new()
             {
                 UpgradeDclAssetFileNamesToIncludeOriginalFileEnding,
                 UpgradePropertySceneIdToSceneInSceneComponent
-            } );
+            });
+
+            upgradeActions.Add((3, 0, 0), new()
+            {
+                UpgradeAllVersionNumbersTo_3_0_0
+            });
         }
 
         private void UpgradeDclAssetFileNamesToIncludeOriginalFileEnding(string path)
@@ -263,10 +264,9 @@ namespace Assets.Scripts.System
                 
                 var newMetaFileName = assetMetaData["assetFilename"] + ".dclasset";
                 var newPath = Path.Combine(Path.GetDirectoryName(path), newMetaFileName);
-                
-                var currentVersion = new Version(Application.version);
-                json["dclEditVersionNumber"] = currentVersion.ToString();
-                
+
+                json["dclEditVersionNumber"] = ((Version) (1, 0, 2)).ToString();
+
                 var newFileContents = json.ToString(Formatting.Indented);
                 File.WriteAllText(newPath, newFileContents);
                 
@@ -281,6 +281,11 @@ namespace Assets.Scripts.System
 
         private void UpgradePropertySceneIdToSceneInSceneComponent(string path)
         {
+            if (IsSceneJsonFile(path))
+            {
+                return;
+            }
+
             if (IsEntityFile(path))
             {
                 var fileContents = File.ReadAllText(path);
@@ -295,9 +300,15 @@ namespace Assets.Scripts.System
                     property["type"] = "Asset";
                 }
 
+                json["dclEditVersionNumber"] = ((Version) (1, 0, 2)).ToString();
                 var newFileContents = json.ToString(Formatting.Indented);
                 File.WriteAllText(path, newFileContents);
             }
+        }
+
+        private void UpgradeAllVersionNumbersTo_3_0_0(string path)
+        {
+            SetFileVersion(path, (3, 0, 0));
         }
     }
 }
