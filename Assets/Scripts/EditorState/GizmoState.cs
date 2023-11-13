@@ -108,6 +108,11 @@ namespace Assets.Scripts.EditorState
         public GizmoDirection gizmoDirection;
 
         /// <summary>
+        /// The rotation of the gizmo
+        /// </summary>
+        public Quaternion gizmoRotation;
+
+        /// <summary>
         /// Describes the center point of the mouse context
         /// </summary>
         /// <remarks>

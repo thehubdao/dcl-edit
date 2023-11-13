@@ -119,6 +119,12 @@ namespace Assets.Scripts.System
                 gizmoState.multiselecTransforms = transforms;
             }
 
+            // set GizmoRotation
+            gizmoState.gizmoRotation =
+                gizmoToolContext == ToolContext.Global ?
+                    Quaternion.identity :
+                    gizmoState.affectedTransform!.globalRotation;
+
             // set plane
             switch (gizmoToolMode)
             {
@@ -421,21 +427,22 @@ namespace Assets.Scripts.System
                 gizmoState.gizmoDirection.isOnlyZ() ? contextSpaceMouseMovementSinceStart.x * -90 : 0);
 
             DclTransformComponent pivotTransform = gizmoState.affectedTransform;
-            Vector3 pivotPosition = pivotTransform.position.FixedValue;
+            Vector3 pivotPosition = pivotTransform.globalFixedPosition;
+
+            var additionalWorldRotation = gizmoState.gizmoRotation * additionalRotation * Quaternion.Inverse(gizmoState.gizmoRotation);
 
             if (gizmoToolContext == ToolContext.Local)
             {
                 foreach (var transform in gizmoState.multiselecTransforms)
                 {
-                    
-                    transform.SetFloatingPivotRotation(pivotPosition, additionalRotation);
+                    transform.SetGlobalPivotRotation(pivotPosition, additionalWorldRotation);
                 }
             }
             else
             {
                 foreach (var transform in gizmoState.multiselecTransforms)
                 {
-                    transform.SetGlobalPivotRotation(pivotPosition, additionalRotation);
+                    transform.SetGlobalPivotRotation(pivotPosition, additionalWorldRotation);
                 }
             }
         }

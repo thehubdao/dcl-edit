@@ -38,6 +38,8 @@ namespace Assets.Scripts.SceneState
         {
             get
             {
+                rotation.SetFloatingValue(Quaternion.Normalize(rotation.Value));
+
                 if (Entity.Parent == null)
                 {
                     Matrix4x4 transformMatrix = new Matrix4x4();
@@ -102,6 +104,8 @@ namespace Assets.Scripts.SceneState
         {
             get
             {
+                rotation.SetFixedValue(Quaternion.Normalize(rotation.FixedValue));
+
                 if (Entity.Parent == null)
                 {
                     Matrix4x4 transformMatrix = new Matrix4x4();
@@ -183,7 +187,7 @@ namespace Assets.Scripts.SceneState
         public void SetFloatingPivotRotation(Vector3 point, Quaternion angle)
         {
             // Get the offset from the point to the center of the object
-            var initialPos = position.FixedValue;
+            var initialPos = globalFixedPosition;
             var offset = initialPos - point;
 
             // rotate the transform
@@ -192,15 +196,14 @@ namespace Assets.Scripts.SceneState
             // move the transform so it keeps the same position
             var diffRotation = rotation.Value * Quaternion.Inverse(rotation.FixedValue);
             var rotatedOffset = diffRotation * offset;
-            position.SetFloatingValue(point + rotatedOffset);
+            globalPosition = point + rotatedOffset;
         }
 
         public void SetGlobalPivotRotation(Vector3 point, Quaternion angle)
         {
-
             //gizmoState.affectedTransform.globalRotation = additionalRotation * gizmoState.affectedTransform.globalFixedRotation;
             // Get the offset from the point to the center of the object
-            var initialPos = position.FixedValue;
+            var initialPos = globalFixedPosition;
             var offset = initialPos - point;
 
             // rotate the transform
@@ -209,7 +212,7 @@ namespace Assets.Scripts.SceneState
             // move the transform so it keeps the same position
             var diffRotation = globalRotation * Quaternion.Inverse(globalFixedRotation);
             var rotatedOffset = diffRotation * offset;
-            position.SetFloatingValue(point + rotatedOffset);
+            globalPosition = point + rotatedOffset;
         }
 
     }

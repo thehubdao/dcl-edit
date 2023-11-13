@@ -4,6 +4,7 @@ using JetBrains.Annotations;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using UnityEditor.Experimental.GraphView;
 using Zenject;
 
 namespace Assets.Scripts.System
@@ -30,13 +31,21 @@ namespace Assets.Scripts.System
             get
             {
                 var allSelected = AllSelectedEntities.ToList();
+                var allSelectedWithoutChildren = new List<DclEntity>();
 
                 // Walk though entire scene tree
                 var currentTreeObject = new Stack<DclEntity>();
 
                 foreach (var entity in _sceneManagerState.GetCurrentDirectoryState().currentScene.EntitiesInSceneRoot)
                 {
-                    currentTreeObject.Push(entity);
+                    if (allSelected.Contains(entity))
+                    {
+                        allSelectedWithoutChildren.Add(entity);
+                    }
+                    else
+                    {
+                        currentTreeObject.Push(entity);
+                    }
                 }
 
                 while (currentTreeObject.Count > 0)
@@ -45,7 +54,7 @@ namespace Assets.Scripts.System
                     {
                         if (allSelected.Contains(child))
                         {
-                            allSelected.Remove(child);
+                            allSelectedWithoutChildren.Add(child);
                         }
                         else
                         {
@@ -54,7 +63,7 @@ namespace Assets.Scripts.System
                     }
                 }
 
-                return allSelected.AsEnumerable();
+                return allSelectedWithoutChildren.AsEnumerable();
             }
         }
 
