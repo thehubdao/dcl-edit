@@ -303,8 +303,8 @@ namespace Assets.Scripts.System
                     property["type"] = "Asset";
                 }
 
-                var currentVersion = new Version(Application.version);
-                json["dclEditVersionNumber"] = currentVersion.ToString();
+                var newVersion = new Version(1, 0, 2);
+                json["dclEditVersionNumber"] = newVersion.ToString();
                 var newFileContents = json.ToString(Formatting.Indented);
                 File.WriteAllText(path, newFileContents);
             }
