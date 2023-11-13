@@ -8,18 +8,11 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.Assertions;
-using Zenject;
 
 namespace Assets.Scripts.System
 {
     public class FileUpgraderSystem
     {
-        [Inject]
-        private void Construct()
-        {
-            SetupUpgrades();
-        }
-        
         public struct Version
         {
             public int major;
@@ -234,9 +227,9 @@ namespace Assets.Scripts.System
         }
 
         // Upgrades
-        private readonly SortedDictionary<Version, List<Action<string>>> upgradeActions = new SortedDictionary<Version, List<Action<string>>>( /*Comparer<Version>.Create((l, r) => l > r ? -1 : l < r ? 1 : 0)*/);
+        private readonly SortedDictionary<Version, List<Action<string>>> upgradeActions = new(Comparer<Version>.Create((l, r) => l > r ? -1 : l < r ? 1 : 0));
 
-        private void SetupUpgrades()
+        public void InitUpgrader()
         {
             upgradeActions.Add((1, 0, 2), new()
             {
@@ -246,7 +239,7 @@ namespace Assets.Scripts.System
 
             upgradeActions.Add((3, 0, 0), new()
             {
-                UpgradeAllVersionNumbers
+                UpgradeAllVersionNumbersTo_3_0_0
             });
         }
 
@@ -271,10 +264,9 @@ namespace Assets.Scripts.System
                 
                 var newMetaFileName = assetMetaData["assetFilename"] + ".dclasset";
                 var newPath = Path.Combine(Path.GetDirectoryName(path), newMetaFileName);
-                
-                var currentVersion = new Version(Application.version);
-                json["dclEditVersionNumber"] = currentVersion.ToString();
-                
+
+                json["dclEditVersionNumber"] = ((Version) (1, 0, 2)).ToString();
+
                 var newFileContents = json.ToString(Formatting.Indented);
                 File.WriteAllText(newPath, newFileContents);
                 
@@ -308,14 +300,13 @@ namespace Assets.Scripts.System
                     property["type"] = "Asset";
                 }
 
-                var newVersion = new Version(1, 0, 2);
-                json["dclEditVersionNumber"] = newVersion.ToString();
+                json["dclEditVersionNumber"] = ((Version) (1, 0, 2)).ToString();
                 var newFileContents = json.ToString(Formatting.Indented);
                 File.WriteAllText(path, newFileContents);
             }
         }
 
-        private void UpgradeAllVersionNumbers(string path)
+        private void UpgradeAllVersionNumbersTo_3_0_0(string path)
         {
             SetFileVersion(path, (3, 0, 0));
         }

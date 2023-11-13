@@ -20,6 +20,7 @@ namespace Assets.Scripts.System
         private SceneJsonReaderSystem sceneJsonReaderSystem;
         private EntityPresetState entityPresetState;
         private CustomComponentDefinitionSystem customComponentDefinitionSystem;
+        private FileUpgraderSystem fileUpgraderSystem;
 
         [Inject]
         private void Construct(
@@ -31,7 +32,8 @@ namespace Assets.Scripts.System
             AvailableComponentsState availableComponentsState,
             SceneJsonReaderSystem sceneJsonReaderSystem,
             EntityPresetState entityPresetState,
-            CustomComponentDefinitionSystem customComponentDefinitionSystem)
+            CustomComponentDefinitionSystem customComponentDefinitionSystem,
+            FileUpgraderSystem fileUpgraderSystem)
         {
             this.assetManagerSystem = assetManagerSystem;
             this.workspaceSaveSystem = workspaceSaveSystem;
@@ -42,10 +44,13 @@ namespace Assets.Scripts.System
             this.sceneJsonReaderSystem = sceneJsonReaderSystem;
             this.entityPresetState = entityPresetState;
             this.customComponentDefinitionSystem = customComponentDefinitionSystem;
+            this.fileUpgraderSystem = fileUpgraderSystem;
         }
 
         void Awake()
         {
+            fileUpgraderSystem.InitUpgrader();
+
             if (sceneJsonReaderSystem.IsEcs7())
             {
                 availableComponentsState.AddEcs7BuildInComponents();
