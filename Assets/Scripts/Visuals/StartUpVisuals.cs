@@ -24,7 +24,7 @@ namespace Visuals
             this.sceneManagerSystem = sceneManagerSystem;
             
             CreateMenuBarItems();
-            CreateHelpMenuBarItems();
+            //CreateHelpMenuBarItems();
             
             // Set on quit event
             Application.wantsToQuit += QuitApplication;
