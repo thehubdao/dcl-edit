@@ -128,7 +128,7 @@ public class CustomComponentDefinitionSystem
         var validTsSymbol = "[$_\\p{Lu}\\p{Ll}\\p{Lt}\\p{Lm}\\p{Lo}\\p{Nl}][$_\\p{Lu}\\p{Ll}\\p{Lt}\\p{Lm}\\p{Lo}\\p{Nl}\\u200C\\u200D\\p{Mn}\\p{Mc}\\p{Nd}\\p{Pc}]*";
 
         // What the fuck is this?
-        var regexPattern = $"export\\s*(const|var|let)\\s*(?<class>{validTsSymbol})\\s*=\\s*engine\\s*\\.\\s*defineComponent\\s*\\(\\s*\"(?<componentName>[^\"]+)\"\\s*,\\s*(?<schema>{{[\\s\\S]*?}})\\s*(\\,\\s*(?<defaults>{{[\\s\\S]*?}}))?\\s*\\)";
+        var regexPattern = $"export\\s*(const|var|let)\\s*(?<class>{validTsSymbol})\\s*=\\s*engine\\s*\\.\\s*defineComponent\\s*\\(\\s*(\"(?<componentName>[^\"]*)\"|\'(?<componentName>[^\']*)\')\\s*,\\s*(?<schema>{{[\\s\\S]*?}})\\s*(\\,\\s*(?<defaults>{{[\\s\\S]*?}}))?\\s*\\)";
 
         var result = Regex.Matches(file, regexPattern);
 
