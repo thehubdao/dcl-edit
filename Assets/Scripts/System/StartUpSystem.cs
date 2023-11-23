@@ -1,7 +1,10 @@
 using Assets.Scripts.EditorState;
 using System;
+using System.Threading.Tasks;
+using UnityEditor;
 using UnityEngine;
 using Zenject;
+using static Assets.Scripts.System.PromptSystem;
 
 namespace Assets.Scripts.System
 {
@@ -21,6 +24,7 @@ namespace Assets.Scripts.System
         private EntityPresetState entityPresetState;
         private CustomComponentDefinitionSystem customComponentDefinitionSystem;
         private FileUpgraderSystem fileUpgraderSystem;
+        private PromptSystem promptSystem;
 
         [Inject]
         private void Construct(
@@ -33,7 +37,8 @@ namespace Assets.Scripts.System
             SceneJsonReaderSystem sceneJsonReaderSystem,
             EntityPresetState entityPresetState,
             CustomComponentDefinitionSystem customComponentDefinitionSystem,
-            FileUpgraderSystem fileUpgraderSystem)
+            FileUpgraderSystem fileUpgraderSystem,
+            PromptSystem promptSystem)
         {
             this.assetManagerSystem = assetManagerSystem;
             this.workspaceSaveSystem = workspaceSaveSystem;
@@ -45,6 +50,7 @@ namespace Assets.Scripts.System
             this.entityPresetState = entityPresetState;
             this.customComponentDefinitionSystem = customComponentDefinitionSystem;
             this.fileUpgraderSystem = fileUpgraderSystem;
+            this.promptSystem = promptSystem;
         }
 
         void Awake()
@@ -58,8 +64,13 @@ namespace Assets.Scripts.System
             }
             else
             {
-                availableComponentsState.AddEcs6BuildInComponents();
-                entityPresetState.FillEcs6BuildInPresets();
+                //availableComponentsState.AddEcs6BuildInComponents();
+                //entityPresetState.FillEcs6BuildInPresets();
+
+                Task<PromptAction> task = promptSystem.CreateDialog(
+                    "DCL-Edit V3 does not support SDK6. Please upgrade your project to SDK7 or downgrade dcl-edit",
+                    new PromptAction[] { new OK(() => Application.Quit()) },
+                    new NotInWindow(() => Application.Quit()));
             }
 
             assetManagerSystem.CacheAllAssetMetadata();
