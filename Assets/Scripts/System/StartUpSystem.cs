@@ -64,9 +64,6 @@ namespace Assets.Scripts.System
             }
             else
             {
-                //availableComponentsState.AddEcs6BuildInComponents();
-                //entityPresetState.FillEcs6BuildInPresets();
-
                 Task<PromptAction> task = promptSystem.CreateDialog(
                     "DCL-Edit V3 does not support SDK6. Please upgrade your project to SDK7 or downgrade dcl-edit",
                     new PromptAction[] { new OK(() => Application.Quit()) },
