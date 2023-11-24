@@ -12,6 +12,8 @@ public class SkyboxVisuals: MonoBehaviour
     [SerializeField]
     private Material mat;
 
+    private Material matCopy;
+
     [SerializeField]
     private new Light light;
 
@@ -26,6 +28,7 @@ public class SkyboxVisuals: MonoBehaviour
         this.editorEvents = editorEvents;
         this.settingsSystem = settingsSystem;
 
+        matCopy = new Material(mat);
         SetupEventListeners();
     }
 
@@ -41,6 +44,7 @@ public class SkyboxVisuals: MonoBehaviour
     
     private void ConfigSkyBox(float daytime)
     {
-        config.ApplyOnMaterial(mat, daytime, daytime/24, slotCount, light, cycleTime);
+        config.ApplyOnMaterial(matCopy, daytime, daytime/24, slotCount, light, cycleTime);
+        RenderSettings.skybox = matCopy;
     }
 }
