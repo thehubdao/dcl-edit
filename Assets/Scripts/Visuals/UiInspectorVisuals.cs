@@ -263,12 +263,12 @@ namespace Assets.Scripts.Visuals
                             break;
                         }
                         case DclComponent.DclComponentProperty.PropertyType.Asset: // not supported yet
-                            {
-                                var assetMetadata = assetManagerSystem.GetMetadataById(property.GetConcrete<Guid>().Value);
-                                componentPanel.AddAssetProperty(
-                                    property.PropertyName,
-                                    assetMetadata,
-                                    async (_) => await promptSystem.CreateAssetMenu());
+                        {
+                            //var assetMetadata = assetManagerSystem.GetMetadataById(property.GetConcrete<Guid>().Value);
+                            //componentPanel.AddAssetProperty(
+                            //    property.PropertyName,
+                            //    assetMetadata,
+                            //    async (_) => await promptSystem.CreateAssetMenu());
 
                             break;
                         }

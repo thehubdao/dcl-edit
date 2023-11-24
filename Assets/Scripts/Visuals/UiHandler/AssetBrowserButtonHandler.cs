@@ -10,7 +10,7 @@ using Zenject;
 
 public class AssetBrowserButtonHandler : ButtonHandler
 {
-    public AssetMetadata metadata;
+    //public AssetMetadata metadata;
     public Image maskedImage;       // Uses a child object with an image component. This allows setting an image that is influenced by the buttons mask.
     public Image assetTypeIndicatorImage;
     public AssetButtonInteraction assetButtonInteraction;
@@ -28,27 +28,28 @@ public class AssetBrowserButtonHandler : ButtonHandler
 
     // Dependencies
     EditorEvents editorEvents;
-    AssetThumbnailManagerSystem assetThumbnailManagerSystem;
+
+    //AssetThumbnailManagerSystem assetThumbnailManagerSystem;
     SceneManagerSystem sceneManagerSystem;
     PromptSystem promptSystem;
 
     [Inject]
-    void Construct(EditorEvents editorEvents, AssetThumbnailManagerSystem assetThumbnailManagerSystem, SceneManagerSystem sceneManagerSystem, PromptSystem promptSystem)
+    void Construct(EditorEvents editorEvents, /*AssetThumbnailManagerSystem assetThumbnailManagerSystem,*/ SceneManagerSystem sceneManagerSystem, PromptSystem promptSystem)
     {
         this.editorEvents = editorEvents;
-        this.assetThumbnailManagerSystem = assetThumbnailManagerSystem;
+        /*this.assetThumbnailManagerSystem = assetThumbnailManagerSystem;*/
         this.sceneManagerSystem = sceneManagerSystem;
         this.promptSystem = promptSystem;
     }
 
-    public void Init(AssetMetadata metadata, bool enableDragAndDrop, Action<Guid> onClick, ScrollRect scrollViewRect = null)
+    public void Init( /*AssetMetadata metadata,*/ bool enableDragAndDrop, Action<Guid> onClick, ScrollRect scrollViewRect = null)
     {
-        this.metadata = metadata;
-        assetButtonInteraction.assetMetadata = metadata;
-        maskedImage.sprite = null;          // Clear thumbnail. There might be one still set because the prefab gets reused from the pool
+        /*this.metadata = metadata;*/
+        /*assetButtonInteraction.assetMetadata = metadata;*/
+        maskedImage.sprite = null; // Clear thumbnail. There might be one still set because the prefab gets reused from the pool
 
-        SetText(metadata);
-        SetTypeIndicator(metadata);
+        /*SetText(metadata);
+        SetTypeIndicator(metadata);*/
         if (IsCyclicScene())
         {
             button.enabled = false;
@@ -60,7 +61,7 @@ public class AssetBrowserButtonHandler : ButtonHandler
             button.enabled = true;
             assetButtonInteraction.enableDragAndDrop = enableDragAndDrop;
             maskedImage.color = Color.white;
-            SetOnClickAction(metadata, onClick);
+            /*SetOnClickAction(metadata, onClick);*/
         }
 
         editorEvents.onAssetThumbnailUpdatedEvent += OnAssetThumbnailUpdatedCallback;
@@ -81,9 +82,10 @@ public class AssetBrowserButtonHandler : ButtonHandler
         editorEvents.onAssetThumbnailUpdatedEvent -= OnAssetThumbnailUpdatedCallback;
     }
 
-    #region Initialization
+    //#region Initialization
     private bool IsCyclicScene()
     {
+        /*
         if (metadata == null) return false;
         if (metadata.assetType != AssetMetadata.AssetType.Scene) return false;
 
@@ -112,7 +114,10 @@ public class AssetBrowserButtonHandler : ButtonHandler
 
         DclScene sceneFromAsset = sceneManagerSystem.GetScene(metadata.assetId);
         return CheckForCyclicScenesRecursive(sceneFromAsset);
-    }
+        */
+
+        return false;
+    } /*
     private void SetTypeIndicator(AssetMetadata metadata)
     {
         if (metadata == null)
@@ -168,7 +173,7 @@ public class AssetBrowserButtonHandler : ButtonHandler
 
         button.onClick.AddListener(() => onClick(metadata.assetId));
     }
-    #endregion
+    #endregion*/
 
     private bool IsVisibleInScrollView()
     {
@@ -189,7 +194,7 @@ public class AssetBrowserButtonHandler : ButtonHandler
 
     private void ShowThumbnailWhenVisible(Vector2 _)
     {
-        if (metadata == null) return;
+        /*if (metadata == null) return;
 
         loadingSymbol.SetActive(false);
 
@@ -213,12 +218,12 @@ public class AssetBrowserButtonHandler : ButtonHandler
                 break;
             default:
                 break;
-        }
+        }*/
     }
 
     public void OnAssetThumbnailUpdatedCallback(List<Guid> ids)
     {
-        if (metadata == null) return;
+        /*if (metadata == null) return;
 
         if (ids.Contains(metadata.assetId))
         {
@@ -227,7 +232,7 @@ public class AssetBrowserButtonHandler : ButtonHandler
             var thumbnail = assetThumbnailManagerSystem.GetThumbnailById(metadata.assetId);
             if (thumbnail.texture != null) SetImage(thumbnail.texture);
             else SetImage(errorAssetThumbnail);
-        }
+        }*/
     }
 
     public void SetImage(Texture2D tex)

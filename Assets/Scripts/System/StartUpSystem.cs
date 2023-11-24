@@ -62,7 +62,7 @@ namespace Assets.Scripts.System
                 entityPresetState.FillEcs6BuildInPresets();
             }
 
-            assetManagerSystem.CacheAllAssetMetadata();
+            //assetManagerSystem.CacheAllAssetMetadata();
 
             if (sceneJsonReaderSystem.IsEcs7())
             {

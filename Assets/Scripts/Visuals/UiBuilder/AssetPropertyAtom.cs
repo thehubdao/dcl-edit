@@ -8,7 +8,8 @@ namespace Assets.Scripts.Visuals.UiBuilder
         public new class Data : Atom.Data
         {
             public string propertyName;
-            public AssetMetadata assetMetadata;
+
+            //public AssetMetadata assetMetadata;
             public Action<Guid> onClick;
 
             public override bool Equals(Atom.Data other)
@@ -23,10 +24,10 @@ namespace Assets.Scripts.Visuals.UiBuilder
                     return false;
                 }
 
-                if (assetMetadata != otherAssetProperty.assetMetadata)
-                {
-                    return false;
-                }
+                //if (assetMetadata != otherAssetProperty.assetMetadata)
+                //{
+                //    return false;
+                //}
 
                 return true;
             }
@@ -52,7 +53,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
             {
                 var assetPropertyHandler = gameObject.gameObject.GetComponent<AssetPropertyHandler>();
                 assetPropertyHandler.propertyNameText.text = newAssetPropertyData.propertyName;
-                assetPropertyHandler.assetBrowserButtonHandler.Init(newAssetPropertyData.assetMetadata, false, newAssetPropertyData.onClick);
+                //assetPropertyHandler.assetBrowserButtonHandler.Init(newAssetPropertyData.assetMetadata, false, newAssetPropertyData.onClick);
             }
         }
 
@@ -73,13 +74,13 @@ namespace Assets.Scripts.Visuals.UiBuilder
         public static AssetPropertyAtom.Data AddAssetProperty(
             this PanelAtom.Data panelAtomData,
             string propertyName,
-            AssetMetadata assetMetadata,
+            //AssetMetadata assetMetadata,
             Action<Guid> onClick)
         {
             var data = new AssetPropertyAtom.Data
             {
                 propertyName = propertyName,
-                assetMetadata = assetMetadata,
+                //assetMetadata = assetMetadata,
                 onClick = onClick
             };
 

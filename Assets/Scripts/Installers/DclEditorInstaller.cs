@@ -113,19 +113,19 @@ public class DclEditorInstaller : MonoInstaller
 
         Container.BindInterfacesAndSelfTo<AssetManagerSystem>().AsSingle();
 
-        Container.Bind<IAssetLoaderSystem>().To<FileAssetLoaderSystem>().AsCached().WithArguments("assets", false);
-        Container.Bind<IAssetLoaderSystem>().To<FileAssetLoaderSystem>().AsCached().WithArguments("node_modules", true);
-        Container.Bind<IAssetLoaderSystem>().To<BuilderAssetLoaderSystem>().AsSingle();
+        //Container.Bind<IAssetLoaderSystem>().To<FileAssetLoaderSystem>().AsCached().WithArguments("assets", false);
+        //Container.Bind<IAssetLoaderSystem>().To<FileAssetLoaderSystem>().AsCached().WithArguments("node_modules", true);
+        //Container.Bind<IAssetLoaderSystem>().To<BuilderAssetLoaderSystem>().AsSingle();
 
-        Container.BindInterfacesAndSelfTo<FileAssetLoaderState>().AsTransient();
+        //Container.BindInterfacesAndSelfTo<FileAssetLoaderState>().AsTransient();
 
-        Container.BindInterfacesAndSelfTo<AssetBrowserSystem>().AsSingle();
+        //Container.BindInterfacesAndSelfTo<AssetBrowserSystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<AssetBrowserState>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<LoadGltfFromFileSystem>().AsSingle();
 
-        Container.BindInterfacesAndSelfTo<BuilderAssetLoaderState>().AsSingle();
+        //Container.BindInterfacesAndSelfTo<BuilderAssetLoaderState>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<WebRequestSystem>().AsSingle();
 
@@ -136,7 +136,7 @@ public class DclEditorInstaller : MonoInstaller
 
         Container.BindInterfacesAndSelfTo<HierarchyContextMenuSystem>().AsSingle();
 
-        Container.BindInterfacesAndSelfTo<AssetThumbnailManagerSystem>().AsSingle();
+        //Container.BindInterfacesAndSelfTo<AssetThumbnailManagerSystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<AssetThumbnailGeneratorSystem>().FromComponentInNewPrefab(_assetThumbnailGeneratorPrefab).AsSingle();
 

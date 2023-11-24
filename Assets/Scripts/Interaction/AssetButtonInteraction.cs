@@ -9,7 +9,7 @@ using Zenject;
 
 public class AssetButtonInteraction : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
-    public AssetMetadata assetMetadata;
+    //public AssetMetadata assetMetadata;
     public bool enableDragAndDrop;
     private DclEntity newEntity;
     private bool entityInScene;
@@ -39,23 +39,23 @@ public class AssetButtonInteraction : MonoBehaviour, IBeginDragHandler, IDragHan
 
     public void OnClick()
     {
-        newEntity = SetupEntity();
+        //newEntity = SetupEntity();
 
         Ray ray = new Ray(cameraState.Position, cameraState.Forward);
         if (Physics.Raycast(ray, out RaycastHit hit, 50))
         {
-            AddEntityToScene(hit.point);
+            //AddEntityToScene(hit.point);
         }
         else
         {
-            AddEntityToScene(ray.GetPoint(10));
+            //AddEntityToScene(ray.GetPoint(10));
         }
     }
 
     public void OnBeginDrag(PointerEventData eventData)
     {
         if (!enableDragAndDrop) return;
-        newEntity = SetupEntity();
+        //newEntity = SetupEntity();
     }
 
     public void OnDrag(PointerEventData eventData)
@@ -93,14 +93,15 @@ public class AssetButtonInteraction : MonoBehaviour, IBeginDragHandler, IDragHan
         if (!enableDragAndDrop) return;
         if (!entityInScene) return;
 
-        AddEntityToScene(mousePositionInScene);
+        //AddEntityToScene(mousePositionInScene);
     }
 
+    /*
     private DclEntity SetupEntity()
     {
         var e = new DclEntity(Guid.NewGuid(), assetMetadata.assetDisplayName);
         e.AddComponent(new DclTransformComponent());
-
+        
         switch (assetMetadata.assetType)
         {
             case AssetMetadata.AssetType.Model:
@@ -112,7 +113,7 @@ public class AssetButtonInteraction : MonoBehaviour, IBeginDragHandler, IDragHan
             case AssetMetadata.AssetType.Scene:
                 DclSceneComponent sceneComponent = new DclSceneComponent(assetMetadata.assetId);
                 e.AddComponent(sceneComponent);
-
+            
                 // Make all entities in the child scene to floating
                 DclScene scene = sceneManagerSystem.GetScene(assetMetadata.assetId);
                 foreach (var entity in scene.AllEntities)
@@ -122,7 +123,7 @@ public class AssetButtonInteraction : MonoBehaviour, IBeginDragHandler, IDragHan
                 scene.ClearAllEntities();
                 break;
         }
-
+        
         return e;
     }
 
@@ -144,9 +145,9 @@ public class AssetButtonInteraction : MonoBehaviour, IBeginDragHandler, IDragHan
                     scene.AddEntity(entity.Value);
                 }
                 scene.ClearFloatingEntities();
-
+            
                 addEntitySystem.AddSceneAssetEntityAsCommand(newEntity, assetMetadata, position);
                 break;
         }
-    }
+    }*/
 }

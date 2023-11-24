@@ -1,3 +1,4 @@
+/*
 using Assets.Scripts.EditorState;
 using Assets.Scripts.System;
 using NUnit.Framework;
@@ -72,3 +73,4 @@ public class AssetManagerSystemTest
         Assert.Contains(Guid.Parse("AAAA8C5E-CEB2-4faa-B6BF-329BF39FA1E4"), ids);
     }
 }
+*/

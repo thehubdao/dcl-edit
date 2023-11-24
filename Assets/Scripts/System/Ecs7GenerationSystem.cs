@@ -393,9 +393,10 @@ public class Ecs7GenerationSystem
             return asset;
         }
 
-        var assetPath = await assetManagerSystem.CopyAssetTo(id, "Some path");
-        neededAssets.Add(id, assetPath);
-        return assetPath;
+        //var assetPath = await assetManagerSystem.CopyAssetTo(id, "Some path");
+        //neededAssets.Add(id, assetPath);
+        //return assetPath;
+        return "";
     }
 
     const string rootEntitySymbol = "rootEntity";

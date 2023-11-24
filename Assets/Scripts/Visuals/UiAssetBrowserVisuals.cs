@@ -34,7 +34,8 @@ namespace Assets.Scripts.Visuals
 
         // Dependencies
         private EditorEvents editorEvents;
-        private AssetBrowserSystem assetBrowserSystem;
+
+        //private AssetBrowserSystem assetBrowserSystem;
         private AssetBrowserState assetBrowserState;
         private AssetManagerSystem assetManagerSystem;
         private ContextMenuSystem contextMenuSystem;
@@ -43,7 +44,7 @@ namespace Assets.Scripts.Visuals
         private void Construct(
             UiBuilder.UiBuilder.Factory uiBuilderFactory,
             EditorEvents editorEvents,
-            AssetBrowserSystem assetBrowserSystem,
+            //AssetBrowserSystem assetBrowserSystem,
             AssetBrowserState assetBrowserState,
             AssetManagerSystem assetManagerSystem,
             ContextMenuSystem contextMenuSystem)
@@ -52,7 +53,7 @@ namespace Assets.Scripts.Visuals
             contentUiBuilder = uiBuilderFactory.Create(scrollViewContent);
             footerUiBuilder = uiBuilderFactory.Create(footerContent);
             this.editorEvents = editorEvents;
-            this.assetBrowserSystem = assetBrowserSystem;
+            //this.assetBrowserSystem = assetBrowserSystem;
             this.assetBrowserState = assetBrowserState;
             this.assetManagerSystem = assetManagerSystem;
             this.contextMenuSystem = contextMenuSystem;
@@ -69,7 +70,7 @@ namespace Assets.Scripts.Visuals
         IEnumerator LateStart()
         {
             yield return null;
-            assetBrowserSystem.ChangeSorting(AssetBrowserState.Sorting.NameAscending);
+            //assetBrowserSystem.ChangeSorting(AssetBrowserState.Sorting.NameAscending);
             UpdateVisuals();
         }
 
@@ -91,7 +92,7 @@ namespace Assets.Scripts.Visuals
         {
             UpdateHeader();
             UpdateContent();
-            UpdateFooter();
+            //UpdateFooter();
         }
 
         private void UpdateHeader()
@@ -104,10 +105,10 @@ namespace Assets.Scripts.Visuals
 
             headerData.AddText("Filter:");
 
-            foreach (AssetMetadata.AssetType type in assetBrowserSystem.filters)
-            {
-                headerData.AddButton(type.ToString() + " x", _ => assetBrowserSystem.RemoveFilter(type));
-            }
+            //foreach (AssetMetadata.AssetType type in assetBrowserSystem.filters)
+            //{
+            //    headerData.AddButton(type.ToString() + " x", _ => assetBrowserSystem.RemoveFilter(type));
+            //}
 
             headerData.AddButton("+", btn =>
             {
@@ -126,11 +127,11 @@ namespace Assets.Scripts.Visuals
                     }
                 }, new List<ContextMenuItem>
                 {
-                    new ContextMenuTextItem("Add model filter", () => assetBrowserSystem.AddFilter(AssetMetadata.AssetType.Model)),
-                    //new ContextMenuTextItem("Add image filter", () => assetBrowserSystem.AddFilter(AssetMetadata.AssetType.Image)),
-                    new ContextMenuTextItem("Add scene filter", () => assetBrowserSystem.AddFilter(AssetMetadata.AssetType.Scene)),
-                    new ContextMenuTextItem("Sort by name (A-Z)", () => assetBrowserSystem.ChangeSorting(AssetBrowserState.Sorting.NameAscending)),
-                    new ContextMenuTextItem("Sort by name (Z-A)", () => assetBrowserSystem.ChangeSorting(AssetBrowserState.Sorting.NameDescending)),
+                    //new ContextMenuTextItem("Add model filter", () => assetBrowserSystem.AddFilter(AssetMetadata.AssetType.Model)),
+                    ////new ContextMenuTextItem("Add image filter", () => assetBrowserSystem.AddFilter(AssetMetadata.AssetType.Image)),
+                    //new ContextMenuTextItem("Add scene filter", () => assetBrowserSystem.AddFilter(AssetMetadata.AssetType.Scene)),
+                    //new ContextMenuTextItem("Sort by name (A-Z)", () => assetBrowserSystem.ChangeSorting(AssetBrowserState.Sorting.NameAscending)),
+                    //new ContextMenuTextItem("Sort by name (Z-A)", () => assetBrowserSystem.ChangeSorting(AssetBrowserState.Sorting.NameDescending)),
                 });
             });
 
@@ -140,17 +141,17 @@ namespace Assets.Scripts.Visuals
         private void UpdateContent()
         {
             var panel = new PanelAtom.Data();
-            var assetHierarchy = assetBrowserSystem.GetFilteredAssetHierarchy();
-
-            foreach (AssetHierarchyItem hierarchyItem in assetHierarchy)
-            {
-                BuildHierarchy(hierarchyItem, panel);
-            }
+            //var assetHierarchy = assetBrowserSystem.GetFilteredAssetHierarchy();
+            //
+            //foreach (AssetHierarchyItem hierarchyItem in assetHierarchy)
+            //{
+            //    BuildHierarchy(hierarchyItem, panel);
+            //}
 
             contentUiBuilder.Update(panel);
         }
 
-        private void UpdateFooter()
+        /*private void UpdateFooter()
         {
             var footerData = new PanelAtom.Data
             {
@@ -191,7 +192,7 @@ namespace Assets.Scripts.Visuals
         {
             string[] directories = hierarchyItem.path.Split(Path.AltDirectorySeparatorChar);
             return directories.Length - 1;
-        }
+        }*/
 
         public class Factory : PlaceholderFactory<UiAssetBrowserVisuals>
         {

@@ -9,8 +9,9 @@ public class AssetBrowserFolderHandler : MonoBehaviour
 {
     public Button header;
     public TextMeshProUGUI headerText;
+
     public RectTransform expandIcon;
-    private AssetHierarchyItem hierarchyItem;
+    //private AssetHierarchyItem hierarchyItem;
 
     // Dependencies
     AssetBrowserState assetBrowserState;
@@ -23,19 +24,19 @@ public class AssetBrowserFolderHandler : MonoBehaviour
         this.editorEvents = editorEvents;
     }
 
-    public void Initialize(AssetHierarchyItem hierarchyItem)
+    public void Initialize( /*AssetHierarchyItem hierarchyItem*/)
     {
-        this.hierarchyItem = hierarchyItem;
-        headerText.text = hierarchyItem.name;
+        /*this.hierarchyItem = hierarchyItem;
+        headerText.text = hierarchyItem.name;*/
 
         var scale = expandIcon.localScale;
-        scale.y = IsExpanded() ? -1 : 1;        // Flip icon vertically if expanded
+        scale.y = IsExpanded() ? -1 : 1; // Flip icon vertically if expanded
         expandIcon.localScale = scale;
     }
 
     private void SetExpanded(bool expanded)
     {
-        if (expanded)
+        /*if (expanded)
         {
             assetBrowserState.expandedFoldersPaths.Add(hierarchyItem.path);
         }
@@ -44,12 +45,12 @@ public class AssetBrowserFolderHandler : MonoBehaviour
             // Mark all folders as closed that are at the current position or further down in the asset hierarchy
             assetBrowserState.expandedFoldersPaths.RemoveAll((path) => path.Contains(hierarchyItem.path));
         }
-        editorEvents.InvokeUiChangedEvent();
+        editorEvents.InvokeUiChangedEvent();*/
     }
 
     public void ToggleExpanded() => SetExpanded(!IsExpanded());
 
-    private bool IsExpanded() => assetBrowserState.expandedFoldersPaths.Contains(hierarchyItem.path);
+    private bool IsExpanded() => false; //assetBrowserState.expandedFoldersPaths.Contains(hierarchyItem.path);
 
     public class Factory : PlaceholderFactory<AssetBrowserFolderHandler>
     {
