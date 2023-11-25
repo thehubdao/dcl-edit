@@ -7,6 +7,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
+using Assets.Scripts.Assets;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
@@ -39,6 +41,7 @@ namespace Assets.Scripts.Visuals
         private AssetBrowserState assetBrowserState;
         private AssetManagerSystem assetManagerSystem;
         private ContextMenuSystem contextMenuSystem;
+        private DiscoveredAssets discoveredAssets;
 
         [Inject]
         private void Construct(
@@ -47,7 +50,8 @@ namespace Assets.Scripts.Visuals
             //AssetBrowserSystem assetBrowserSystem,
             AssetBrowserState assetBrowserState,
             AssetManagerSystem assetManagerSystem,
-            ContextMenuSystem contextMenuSystem)
+            ContextMenuSystem contextMenuSystem,
+            DiscoveredAssets discoveredAssets)
         {
             headerUiBuilder = uiBuilderFactory.Create(headerContent);
             contentUiBuilder = uiBuilderFactory.Create(scrollViewContent);
@@ -57,6 +61,7 @@ namespace Assets.Scripts.Visuals
             this.assetBrowserState = assetBrowserState;
             this.assetManagerSystem = assetManagerSystem;
             this.contextMenuSystem = contextMenuSystem;
+            this.discoveredAssets = discoveredAssets;
 
             SetupSceneEventListeners();
         }
@@ -90,8 +95,17 @@ namespace Assets.Scripts.Visuals
 
         private void UpdateVisuals()
         {
-            UpdateHeader();
-            UpdateContent();
+            //var sb = new StringBuilder();
+            //
+            //foreach (var asset in discoveredAssets.discoveredAssets)
+            //{
+            //    sb.AppendLine($"{asset.displayPath}/{asset.assetName}");
+            //}
+            //
+            //Debug.Log(sb);
+
+            //UpdateHeader();
+            //UpdateContent();
             //UpdateFooter();
         }
 

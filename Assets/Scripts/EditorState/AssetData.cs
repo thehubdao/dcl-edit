@@ -4,30 +4,6 @@ using UnityEngine;
 
 namespace Assets.Scripts.EditorState
 {
-    public class AssetInfo
-    {
-        public Guid assetId;
-        public string assetName;
-        public AssetFormat baseFormat;
-        public List<AssetFormat> availableFormats;
-    }
-
-    public enum Availability
-    {
-        Unavailable,
-        Loading,
-        Available,
-        Error
-    }
-
-    public abstract class AssetFormat
-    {
-        public abstract string name { get; }
-        public abstract string hash { get; }
-        public abstract Availability availability { get; }
-    }
-
-
     //public class AssetMetadata
     //{
     //    public enum AssetType

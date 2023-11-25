@@ -1,3 +1,4 @@
+using Assets.Scripts.Assets;
 using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
 using Assets.Scripts.Interaction;
@@ -44,7 +45,13 @@ public class DclEditorInstaller : MonoInstaller
         {
             Container.BindInterfacesTo<GeneralInputInteraction>().AsSingle();
         }
-        
+
+        // assets
+        Container.BindInterfacesAndSelfTo<AssetDiscovery>().AsSingle();
+        Container.BindInterfacesAndSelfTo<DiscoveredAssets>().AsSingle();
+        Container.BindInterfacesAndSelfTo<BuilderAssetDiscovery>().AsSingle();
+
+
         Container.Bind<LoadFromVersion1System>().To<LoadFromVersion1System>().AsSingle();
 
         Container.Bind(typeof(ISceneLoadSystem), typeof(ISceneSaveSystem)).To<SceneLoadSaveSystem>().AsSingle();

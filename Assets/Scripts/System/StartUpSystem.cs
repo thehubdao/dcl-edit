@@ -1,5 +1,7 @@
 using Assets.Scripts.EditorState;
 using System;
+using Assets.Scripts.Assets;
+using Assets.Scripts.Events;
 using UnityEngine;
 using Zenject;
 
@@ -21,6 +23,7 @@ namespace Assets.Scripts.System
         private EntityPresetState entityPresetState;
         private CustomComponentDefinitionSystem customComponentDefinitionSystem;
         private FileUpgraderSystem fileUpgraderSystem;
+        private AssetDiscovery assetDiscovery;
 
         [Inject]
         private void Construct(
@@ -33,7 +36,8 @@ namespace Assets.Scripts.System
             SceneJsonReaderSystem sceneJsonReaderSystem,
             EntityPresetState entityPresetState,
             CustomComponentDefinitionSystem customComponentDefinitionSystem,
-            FileUpgraderSystem fileUpgraderSystem)
+            FileUpgraderSystem fileUpgraderSystem,
+            AssetDiscovery assetDiscovery)
         {
             this.assetManagerSystem = assetManagerSystem;
             this.workspaceSaveSystem = workspaceSaveSystem;
@@ -45,6 +49,7 @@ namespace Assets.Scripts.System
             this.entityPresetState = entityPresetState;
             this.customComponentDefinitionSystem = customComponentDefinitionSystem;
             this.fileUpgraderSystem = fileUpgraderSystem;
+            this.assetDiscovery = assetDiscovery;
         }
 
         void Awake()
@@ -63,6 +68,7 @@ namespace Assets.Scripts.System
             }
 
             //assetManagerSystem.CacheAllAssetMetadata();
+            assetDiscovery.Initialize();
 
             if (sceneJsonReaderSystem.IsEcs7())
             {
