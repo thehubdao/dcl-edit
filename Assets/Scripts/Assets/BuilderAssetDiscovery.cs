@@ -129,15 +129,21 @@ namespace Assets.Scripts.Assets
                         //    ThumbnailHash = asset.thumbnail
                         //});
 
-                        discoveredAssets.discoveredAssets.Add(new CommonAssetTypes.AssetInfo()
+                        var contents = asset.contents.ToObject<Dictionary<string, string>>();
+                        var modelCloudPath = asset.model;
+                        var thumbnailCloudHash = asset.thumbnail;
+
+                        var baseFormat = new AssetFormatBuilderCloud(contents, modelCloudPath, thumbnailCloudHash);
+
+                        discoveredAssets.discoveredAssets.Add(new CommonAssetTypes.AssetInfo
                         {
                             assetId = id,
                             assetName = asset.name,
                             assetSource = CommonAssetTypes.AssetSource.DecentralandBuilder,
                             assetType = CommonAssetTypes.AssetType.Model3D,
-                            availableFormats = new List<CommonAssetTypes.AssetFormat>(),
-                            baseFormat = new AssetFormatBuilderCloud(),
-                            displayPath = $"{assetPack.title} / {asset.category}"
+                            availableFormats = new List<CommonAssetTypes.AssetFormat> {baseFormat},
+                            baseFormat = baseFormat,
+                            displayPath = $"{assetPack.title}/{asset.category}"
                         });
                     }
 
@@ -151,9 +157,6 @@ namespace Assets.Scripts.Assets
 
                 editorEvents.InvokeAssetMetadataCacheUpdatedEvent();
             });
-
-
-            return;
         }
     }
 }
