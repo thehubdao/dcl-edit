@@ -24,6 +24,7 @@ namespace Assets.Scripts.System
         private CustomComponentDefinitionSystem customComponentDefinitionSystem;
         private FileUpgraderSystem fileUpgraderSystem;
         private AssetDiscovery assetDiscovery;
+        private AssetFormatTransformer assetFormatTransformer;
 
         [Inject]
         private void Construct(
@@ -37,7 +38,8 @@ namespace Assets.Scripts.System
             EntityPresetState entityPresetState,
             CustomComponentDefinitionSystem customComponentDefinitionSystem,
             FileUpgraderSystem fileUpgraderSystem,
-            AssetDiscovery assetDiscovery)
+            AssetDiscovery assetDiscovery,
+            AssetFormatTransformer assetFormatTransformer)
         {
             this.assetManagerSystem = assetManagerSystem;
             this.workspaceSaveSystem = workspaceSaveSystem;
@@ -50,6 +52,7 @@ namespace Assets.Scripts.System
             this.customComponentDefinitionSystem = customComponentDefinitionSystem;
             this.fileUpgraderSystem = fileUpgraderSystem;
             this.assetDiscovery = assetDiscovery;
+            this.assetFormatTransformer = assetFormatTransformer;
         }
 
         void Awake()
@@ -69,6 +72,7 @@ namespace Assets.Scripts.System
 
             //assetManagerSystem.CacheAllAssetMetadata();
             assetDiscovery.Initialize();
+            assetFormatTransformer.Init();
 
             if (sceneJsonReaderSystem.IsEcs7())
             {
