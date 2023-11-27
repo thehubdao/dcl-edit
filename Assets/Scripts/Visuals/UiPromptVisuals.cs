@@ -155,7 +155,7 @@ namespace Assets.Scripts.Visuals
 
                 // Update the target component with the new asset
                 var currentSelected = scene.SelectionState.PrimarySelectedEntity;
-                var targetComponent = currentSelected.GetFirstComponentByName("GLTFShape", "GltfContainer");
+                var targetComponent = currentSelected.GetFirstComponentByName("GLTFShape", "GltfContainer", "Scene");
                 var sceneProperty = targetComponent.GetPropertyByName("scene");
                 var assetProperty = targetComponent.GetPropertyByName("asset");
                 var srcProperty = targetComponent.GetPropertyByName("src");
