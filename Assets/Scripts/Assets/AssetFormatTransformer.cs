@@ -1,16 +1,28 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
+using Zenject;
 
 namespace Assets.Scripts.Assets
 {
     public class AssetFormatTransformer
     {
+        // Dependencies
+        private TransformerBuilderCloudToBuilderDownload transformerBuilderCloudToBuilderDownload;
+
+        [Inject]
+        private void Construct(TransformerBuilderCloudToBuilderDownload transformerBuilderCloudToBuilderDownload)
+        {
+            this.transformerBuilderCloudToBuilderDownload = transformerBuilderCloudToBuilderDownload;
+        }
+
+
         public abstract class AssetTransformation
         {
-            public abstract void Transform();
+            public abstract CommonAssetTypes.AssetFormat Transform(CommonAssetTypes.AssetFormat fromFormat, CommonAssetTypes.AssetInfo asset);
         }
 
 
@@ -51,6 +63,16 @@ namespace Assets.Scripts.Assets
                     transformation = transformation
                 };
                 edges.Add(edge);
+            }
+
+            public Type GetFromType(AssetTransformation assetTransformation)
+            {
+                return edges.First(e => e.transformation == assetTransformation).from.formatType;
+            }
+
+            public Type GetToType(AssetTransformation assetTransformation)
+            {
+                return edges.First(e => e.transformation == assetTransformation).to.formatType;
             }
 
             private Node GetNodeOrNull(Type formatType)
@@ -175,13 +197,58 @@ namespace Assets.Scripts.Assets
         }
 
 
+        private FormatsGraph formatsGraph = new();
+
         public void Init()
         {
-            var graph = new FormatsGraph();
+            formatsGraph.Add(typeof(AssetFormatBuilderCloud), typeof(AssetFormatBuilderDownload), transformerBuilderCloudToBuilderDownload);
 
-            graph.Add(typeof(AssetFormatBuilderCloud), typeof(AssetFormatBuilderDownload), new TransformerBuilderCloudToBuilderDownload());
+            formatsGraph.CalculatePaths();
+        }
 
-            graph.CalculatePaths();
+
+        public enum TransformToFormatReturn
+        {
+            Available,
+            Loading,
+            Impossible
+        }
+
+        public TransformToFormatReturn TransformToFormat(CommonAssetTypes.AssetInfo asset, Type toFormat)
+        {
+            // check if already done
+            if (asset.availableFormats.Any(f => f.GetType() == toFormat))
+            {
+                var searchedFormat = asset.availableFormats.First(f => f.GetType() == toFormat);
+                if (searchedFormat.availability == CommonAssetTypes.Availability.Loading)
+                    return TransformToFormatReturn.Loading;
+                return TransformToFormatReturn.Available;
+            }
+
+            // get starting format
+            var baseFormatType = asset.baseFormat.GetType();
+
+            // check if impossible
+            var nextStep = formatsGraph.GetNextStep(baseFormatType, toFormat);
+            if (nextStep == null) return TransformToFormatReturn.Impossible;
+
+            var nextFormat = formatsGraph.GetToType(nextStep);
+
+            while (asset.GetAssetFormatOrNull(nextFormat) != null)
+            {
+                nextStep = formatsGraph.GetNextStep(nextFormat, toFormat);
+                nextFormat = formatsGraph.GetToType(nextStep);
+            }
+
+            var currentFormat = formatsGraph.GetFromType(nextStep);
+
+            var newFormat = nextStep.Transform(asset.GetAssetFormatOrNull(currentFormat), asset);
+
+            asset.availableFormats.Add(newFormat);
+
+            return newFormat.availability == CommonAssetTypes.Availability.Available ?
+                TransformToFormat(asset, toFormat) : // If instantly available, transform further
+                TransformToFormatReturn.Loading; // If format is loading, return loading
         }
     }
 }

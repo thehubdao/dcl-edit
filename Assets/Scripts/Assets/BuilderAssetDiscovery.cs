@@ -135,7 +135,7 @@ namespace Assets.Scripts.Assets
 
                         var baseFormat = new AssetFormatBuilderCloud(contents, modelCloudPath, thumbnailCloudHash);
 
-                        discoveredAssets.discoveredAssets.Add(new CommonAssetTypes.AssetInfo
+                        discoveredAssets.discoveredAssets.Add(id, new CommonAssetTypes.AssetInfo
                         {
                             assetId = id,
                             assetName = asset.name,

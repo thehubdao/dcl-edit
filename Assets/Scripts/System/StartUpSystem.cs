@@ -1,5 +1,6 @@
 using Assets.Scripts.EditorState;
 using System;
+using System.Collections;
 using Assets.Scripts.Assets;
 using Assets.Scripts.Events;
 using UnityEngine;
@@ -25,6 +26,7 @@ namespace Assets.Scripts.System
         private FileUpgraderSystem fileUpgraderSystem;
         private AssetDiscovery assetDiscovery;
         private AssetFormatTransformer assetFormatTransformer;
+        private DiscoveredAssets discoveredAssets;
 
         [Inject]
         private void Construct(
@@ -39,7 +41,8 @@ namespace Assets.Scripts.System
             CustomComponentDefinitionSystem customComponentDefinitionSystem,
             FileUpgraderSystem fileUpgraderSystem,
             AssetDiscovery assetDiscovery,
-            AssetFormatTransformer assetFormatTransformer)
+            AssetFormatTransformer assetFormatTransformer,
+            DiscoveredAssets discoveredAssets)
         {
             this.assetManagerSystem = assetManagerSystem;
             this.workspaceSaveSystem = workspaceSaveSystem;
@@ -53,6 +56,7 @@ namespace Assets.Scripts.System
             this.fileUpgraderSystem = fileUpgraderSystem;
             this.assetDiscovery = assetDiscovery;
             this.assetFormatTransformer = assetFormatTransformer;
+            this.discoveredAssets = discoveredAssets;
         }
 
         void Awake()
@@ -86,6 +90,8 @@ namespace Assets.Scripts.System
             sceneManagerSystem.DiscoverScenes();
 
             sceneManagerSystem.SetLastOpenedSceneAsCurrentScene();
+
+            StartCoroutine(LateAwake());
         }
 
         void Start()
@@ -93,6 +99,17 @@ namespace Assets.Scripts.System
             workspaceSaveSystem.Load();
 
             frameTimeSystem.SetApplicationTargetFramerate();
+        }
+
+        IEnumerator LateAwake()
+        {
+            yield return new WaitForSeconds(1);
+
+            var id = Guid.Parse("8d8d5f8b-2bd3-4da1-942d-d89c182ca020");
+
+            discoveredAssets.discoveredAssets[id].assetFormatChanged += () => { Debug.Log(discoveredAssets.GetAssetFormat<AssetFormatBuilderDownload>(id)); };
+
+            Debug.Log(discoveredAssets.GetAssetFormat<AssetFormatBuilderDownload>(id));
         }
     }
 }

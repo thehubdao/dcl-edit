@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using JetBrains.Annotations;
 using UnityEngine;
 
 namespace Assets.Scripts.Assets
@@ -16,13 +18,31 @@ namespace Assets.Scripts.Assets
             public string displayPath;
             public AssetFormat baseFormat;
             public List<AssetFormat> availableFormats;
+            public event Action assetFormatChanged;
+
+            public void InvokeAssetFormatChanged()
+            {
+                assetFormatChanged.Invoke();
+            }
+
+            [CanBeNull]
+            public AssetFormat GetAssetFormatOrNull(Type assetFormatType)
+            {
+                return availableFormats.Find(af => af.GetType() == assetFormatType);
+            }
+
+            public void PurgeOutOfDateFormats()
+            {
+                var baseHash = baseFormat.hash;
+                var newAvailableFormats = availableFormats.Where(f => f.hash == baseHash).ToList();
+                availableFormats = newAvailableFormats;
+            }
         }
 
         public enum Availability
         {
-            Unavailable,
-            Loading,
             Available,
+            Loading,
             Error
         }
 
