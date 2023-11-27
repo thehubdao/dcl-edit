@@ -11,22 +11,20 @@ namespace Assets.Scripts.Assets
     public class AssetFormatTransformer
     {
         // Dependencies
-        private TransformerBuilderCloudToBuilderDownload transformerBuilderCloudToBuilderDownload;
-        private TransformerBuilderDownloadToLoadedModel transformerBuilderDownloadToLoadedModel;
+        private IAssetTransformation[] assetTransformations;
 
         [Inject]
-        private void Construct(
-            TransformerBuilderCloudToBuilderDownload transformerBuilderCloudToBuilderDownload,
-            TransformerBuilderDownloadToLoadedModel transformerBuilderDownloadToLoadedModel)
+        private void Construct(IAssetTransformation[] assetTransformations)
         {
-            this.transformerBuilderCloudToBuilderDownload = transformerBuilderCloudToBuilderDownload;
-            this.transformerBuilderDownloadToLoadedModel = transformerBuilderDownloadToLoadedModel;
+            this.assetTransformations = assetTransformations;
         }
 
 
-        public abstract class AssetTransformation
+        public interface IAssetTransformation
         {
-            public abstract CommonAssetTypes.AssetFormat Transform(CommonAssetTypes.AssetFormat fromFormat, CommonAssetTypes.AssetInfo asset);
+            public Type fromType { get; }
+            public Type toType { get; }
+            public CommonAssetTypes.AssetFormat Transform(CommonAssetTypes.AssetFormat fromFormat, CommonAssetTypes.AssetInfo asset);
         }
 
 
@@ -43,11 +41,11 @@ namespace Assets.Scripts.Assets
             {
                 public Node from;
                 public Node to;
-                public AssetTransformation transformation;
+                public IAssetTransformation transformation;
             }
 
-            public List<Node> nodes = new();
-            public List<Edge> edges = new();
+            private readonly List<Node> nodes = new();
+            private readonly List<Edge> edges = new();
 
             private void AddNode(Type formatType)
             {
@@ -58,7 +56,7 @@ namespace Assets.Scripts.Assets
                 nodes.Add(node);
             }
 
-            private void AddEdge(Node to, Node from, AssetTransformation transformation)
+            private void AddEdge(Node to, Node from, IAssetTransformation transformation)
             {
                 var edge = new Edge
                 {
@@ -69,38 +67,38 @@ namespace Assets.Scripts.Assets
                 edges.Add(edge);
             }
 
-            public Type GetFromType(AssetTransformation assetTransformation)
-            {
-                return edges.First(e => e.transformation == assetTransformation).from.formatType;
-            }
-
-            public Type GetToType(AssetTransformation assetTransformation)
-            {
-                return edges.First(e => e.transformation == assetTransformation).to.formatType;
-            }
+            //public Type GetFromType(IAssetTransformation assetTransformation)
+            //{
+            //    return edges.First(e => e.transformation == assetTransformation).from.formatType;
+            //}
+            //
+            //public Type GetToType(IAssetTransformation assetTransformation)
+            //{
+            //    return edges.First(e => e.transformation == assetTransformation).to.formatType;
+            //}
 
             private Node GetNodeOrNull(Type formatType)
             {
                 return nodes.Find(n => n.formatType == formatType);
             }
 
-            public void Add(Type fromType, Type toType, AssetTransformation transformation)
+            public void Add(IAssetTransformation transformation)
             {
-                Assert.IsTrue(fromType.IsSubclassOf(typeof(CommonAssetTypes.AssetFormat)));
-                Assert.IsTrue(toType.IsSubclassOf(typeof(CommonAssetTypes.AssetFormat)));
+                Assert.IsTrue(transformation.fromType.IsSubclassOf(typeof(CommonAssetTypes.AssetFormat)));
+                Assert.IsTrue(transformation.toType.IsSubclassOf(typeof(CommonAssetTypes.AssetFormat)));
 
-                var from = GetNodeOrNull(fromType);
+                var from = GetNodeOrNull(transformation.fromType);
                 if (from == null)
                 {
-                    AddNode(fromType);
-                    from = nodes.Find(n => n.formatType == fromType);
+                    AddNode(transformation.fromType);
+                    from = nodes.Find(n => n.formatType == transformation.fromType);
                 }
 
-                var to = GetNodeOrNull(toType);
+                var to = GetNodeOrNull(transformation.toType);
                 if (to == null)
                 {
-                    AddNode(toType);
-                    to = nodes.Find(n => n.formatType == toType);
+                    AddNode(transformation.toType);
+                    to = nodes.Find(n => n.formatType == transformation.toType);
                 }
 
                 AddEdge(to, from, transformation);
@@ -182,7 +180,7 @@ namespace Assets.Scripts.Assets
                 }
             }
 
-            public AssetTransformation GetNextStep(Type fromType, Type toType)
+            public IAssetTransformation GetNextStep(Type fromType, Type toType)
             {
                 var from = GetNodeOrNull(fromType);
                 var to = GetNodeOrNull(toType);
@@ -205,8 +203,10 @@ namespace Assets.Scripts.Assets
 
         public void Init()
         {
-            formatsGraph.Add(typeof(AssetFormatBuilderCloud), typeof(AssetFormatBuilderDownload), transformerBuilderCloudToBuilderDownload);
-            formatsGraph.Add(typeof(AssetFormatBuilderDownload), typeof(AssetFormatLoadedModel), transformerBuilderDownloadToLoadedModel);
+            foreach (var transformation in assetTransformations)
+            {
+                formatsGraph.Add(transformation);
+            }
 
             formatsGraph.CalculatePaths();
         }
@@ -237,15 +237,15 @@ namespace Assets.Scripts.Assets
             var nextStep = formatsGraph.GetNextStep(baseFormatType, toFormat);
             if (nextStep == null) return TransformToFormatReturn.Impossible;
 
-            var nextFormat = formatsGraph.GetToType(nextStep);
+            var nextFormat = nextStep.toType;
 
             while (asset.GetAssetFormatOrNull(nextFormat) != null)
             {
                 nextStep = formatsGraph.GetNextStep(nextFormat, toFormat);
-                nextFormat = formatsGraph.GetToType(nextStep);
+                nextFormat = nextStep.toType;
             }
 
-            var currentFormat = formatsGraph.GetFromType(nextStep);
+            var currentFormat = nextStep.fromType;
 
             var newFormat = nextStep.Transform(asset.GetAssetFormatOrNull(currentFormat), asset);
 

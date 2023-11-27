@@ -8,7 +8,7 @@ using UnityEngine;
 using UnityEngine.Assertions;
 using Zenject;
 
-public class TransformerBuilderCloudToBuilderDownload : AssetFormatTransformer.AssetTransformation
+public class TransformerBuilderCloudToBuilderDownload : AssetFormatTransformer.IAssetTransformation
 {
     // https://builder-api.decentraland.org/v1/storage/contents/<hash>
 
@@ -21,7 +21,10 @@ public class TransformerBuilderCloudToBuilderDownload : AssetFormatTransformer.A
         this.webRequestSystem = webRequestSystem;
     }
 
-    public override CommonAssetTypes.AssetFormat Transform(CommonAssetTypes.AssetFormat fromFormat, CommonAssetTypes.AssetInfo asset)
+    public Type fromType => typeof(AssetFormatBuilderCloud);
+    public Type toType => typeof(AssetFormatBuilderDownload);
+
+    public CommonAssetTypes.AssetFormat Transform(CommonAssetTypes.AssetFormat fromFormat, CommonAssetTypes.AssetInfo asset)
     {
         var assetFormatBuilderCloud = fromFormat as AssetFormatBuilderCloud ?? throw new ArgumentException("TransformerBuilderCloudToBuilderDownload needs an AssetFormatBuilderCloud as argument");
 
