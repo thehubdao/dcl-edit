@@ -107,9 +107,9 @@ namespace Assets.Scripts.System
 
             var id = Guid.Parse("8d8d5f8b-2bd3-4da1-942d-d89c182ca020");
 
-            discoveredAssets.discoveredAssets[id].assetFormatChanged += () => { Debug.Log(discoveredAssets.GetAssetFormat<AssetFormatBuilderDownload>(id)); };
+            discoveredAssets.discoveredAssets[id].assetFormatChanged += () => { Debug.Log(discoveredAssets.GetAssetFormat<AssetFormatLoadedModel>(id)); };
 
-            Debug.Log(discoveredAssets.GetAssetFormat<AssetFormatBuilderDownload>(id));
+            Debug.Log(discoveredAssets.GetAssetFormat<AssetFormatLoadedModel>(id));
         }
     }
 }

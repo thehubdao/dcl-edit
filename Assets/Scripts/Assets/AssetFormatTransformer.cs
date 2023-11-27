@@ -12,11 +12,15 @@ namespace Assets.Scripts.Assets
     {
         // Dependencies
         private TransformerBuilderCloudToBuilderDownload transformerBuilderCloudToBuilderDownload;
+        private TransformerBuilderDownloadToLoadedModel transformerBuilderDownloadToLoadedModel;
 
         [Inject]
-        private void Construct(TransformerBuilderCloudToBuilderDownload transformerBuilderCloudToBuilderDownload)
+        private void Construct(
+            TransformerBuilderCloudToBuilderDownload transformerBuilderCloudToBuilderDownload,
+            TransformerBuilderDownloadToLoadedModel transformerBuilderDownloadToLoadedModel)
         {
             this.transformerBuilderCloudToBuilderDownload = transformerBuilderCloudToBuilderDownload;
+            this.transformerBuilderDownloadToLoadedModel = transformerBuilderDownloadToLoadedModel;
         }
 
 
@@ -202,6 +206,7 @@ namespace Assets.Scripts.Assets
         public void Init()
         {
             formatsGraph.Add(typeof(AssetFormatBuilderCloud), typeof(AssetFormatBuilderDownload), transformerBuilderCloudToBuilderDownload);
+            formatsGraph.Add(typeof(AssetFormatBuilderDownload), typeof(AssetFormatLoadedModel), transformerBuilderDownloadToLoadedModel);
 
             formatsGraph.CalculatePaths();
         }
