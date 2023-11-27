@@ -4,6 +4,7 @@ using System.Collections;
 using Assets.Scripts.Assets;
 using Assets.Scripts.Events;
 using UnityEngine;
+using UnityEngine.Assertions;
 using Zenject;
 
 namespace Assets.Scripts.System
@@ -27,6 +28,7 @@ namespace Assets.Scripts.System
         private AssetDiscovery assetDiscovery;
         private AssetFormatTransformer assetFormatTransformer;
         private DiscoveredAssets discoveredAssets;
+        private GlbInterpreterSystem glbInterpreterSystem;
 
         [Inject]
         private void Construct(
@@ -42,7 +44,8 @@ namespace Assets.Scripts.System
             FileUpgraderSystem fileUpgraderSystem,
             AssetDiscovery assetDiscovery,
             AssetFormatTransformer assetFormatTransformer,
-            DiscoveredAssets discoveredAssets)
+            DiscoveredAssets discoveredAssets,
+            GlbInterpreterSystem glbInterpreterSystem)
         {
             this.assetManagerSystem = assetManagerSystem;
             this.workspaceSaveSystem = workspaceSaveSystem;
@@ -57,6 +60,7 @@ namespace Assets.Scripts.System
             this.assetDiscovery = assetDiscovery;
             this.assetFormatTransformer = assetFormatTransformer;
             this.discoveredAssets = discoveredAssets;
+            this.glbInterpreterSystem = glbInterpreterSystem;
         }
 
         void Awake()
@@ -105,9 +109,18 @@ namespace Assets.Scripts.System
         {
             yield return new WaitForSeconds(1);
 
-            var id = Guid.Parse("8d8d5f8b-2bd3-4da1-942d-d89c182ca020");
+            var id = Guid.Parse("9de0c4dc-896a-4402-8baa-59505daad91e");
 
-            discoveredAssets.discoveredAssets[id].assetFormatChanged += () => { Debug.Log(discoveredAssets.GetAssetFormat<AssetFormatLoadedModel>(id)); };
+            discoveredAssets.discoveredAssets[id].assetFormatChanged += async () =>
+            {
+                Debug.Log(discoveredAssets.GetAssetFormat<AssetFormatLoadedModel>(id));
+
+                var (_, builderDownload) = discoveredAssets.GetAssetFormat<AssetFormatBuilderDownload>(id);
+                var glb = await glbInterpreterSystem.ReadGlb(builderDownload.basePath);
+                Debug.Log(glb); // fu
+                Assert.IsTrue(glb.header.Validate());
+                Assert.IsTrue(glb.chunks[0].GetChunkType() == GlbInterpreterSystem.GlbFile.Chunk.Type.Json);
+            };
 
             Debug.Log(discoveredAssets.GetAssetFormat<AssetFormatLoadedModel>(id));
         }
