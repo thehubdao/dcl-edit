@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Assets.Scripts.Assets;
 using Assets.Scripts.System;
 using UnityEngine;
@@ -21,6 +22,11 @@ public class TransformerBuilderDownloadToLoadedModel : AssetFormatTransformer.IA
     public Type fromType => typeof(AssetFormatBuilderDownload);
     public Type toType => typeof(AssetFormatLoadedModel);
 
+    public List<(CommonAssetTypes.AssetInfo, Type)> AdditionalRequirements(CommonAssetTypes.AssetInfo asset)
+    {
+        return asset.dependencies.Select(dependency => (dependency, typeof(AssetFormatBuilderDownload))).ToList();
+    }
+
     public CommonAssetTypes.AssetFormat Transform(CommonAssetTypes.AssetFormat fromFormat, CommonAssetTypes.AssetInfo asset)
     {
         var builderDownload = (AssetFormatBuilderDownload)fromFormat;
@@ -39,7 +45,6 @@ public class TransformerBuilderDownloadToLoadedModel : AssetFormatTransformer.IA
                 newLoadedModelFormat.SetModel(go);
                 asset.InvokeAssetFormatChanged();
             }
-
         });
 
         return newLoadedModelFormat;

@@ -139,10 +139,12 @@ namespace Assets.Scripts.Assets
                         {
                             assetId = id,
                             assetName = asset.name,
+                            visible = true,
                             assetSource = CommonAssetTypes.AssetSource.DecentralandBuilder,
                             assetType = CommonAssetTypes.AssetType.Model3D,
                             availableFormats = new List<CommonAssetTypes.AssetFormat> {baseFormat},
                             baseFormat = baseFormat,
+                            dependencies = new List<CommonAssetTypes.AssetInfo>(),
                             displayPath = $"{assetPack.title}/{asset.category}"
                         });
                     }

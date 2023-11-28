@@ -24,6 +24,7 @@ namespace Assets.Scripts.Assets
         {
             public Type fromType { get; }
             public Type toType { get; }
+            public List<(CommonAssetTypes.AssetInfo, Type)> AdditionalRequirements(CommonAssetTypes.AssetInfo asset);
             public CommonAssetTypes.AssetFormat Transform(CommonAssetTypes.AssetFormat fromFormat, CommonAssetTypes.AssetInfo asset);
         }
 
@@ -221,13 +222,13 @@ namespace Assets.Scripts.Assets
 
         public TransformToFormatReturn TransformToFormat(CommonAssetTypes.AssetInfo asset, Type toFormat)
         {
-            // check if already done
+            // check if format already exists
             if (asset.availableFormats.Any(f => f.GetType() == toFormat))
             {
                 var searchedFormat = asset.availableFormats.First(f => f.GetType() == toFormat);
-                if (searchedFormat.availability == CommonAssetTypes.Availability.Loading)
-                    return TransformToFormatReturn.Loading;
-                return TransformToFormatReturn.Available;
+                return searchedFormat.availability == CommonAssetTypes.Availability.Loading ?
+                    TransformToFormatReturn.Loading :
+                    TransformToFormatReturn.Available;
             }
 
             // get starting format
@@ -237,6 +238,7 @@ namespace Assets.Scripts.Assets
             var nextStep = formatsGraph.GetNextStep(baseFormatType, toFormat);
             if (nextStep == null) return TransformToFormatReturn.Impossible;
 
+            // Find next step
             var nextFormat = nextStep.toType;
 
             while (asset.GetAssetFormatOrNull(nextFormat) != null)
@@ -247,8 +249,36 @@ namespace Assets.Scripts.Assets
 
             var currentFormat = nextStep.fromType;
 
+            // check requirements
+            var anyLoading = false;
+            var requirements = nextStep.AdditionalRequirements(asset);
+            foreach (var (requiredAsset, requiredType) in requirements)
+            {
+                var ret = TransformToFormat(requiredAsset, requiredType);
+                switch (ret)
+                {
+                    case TransformToFormatReturn.Impossible:
+                        return TransformToFormatReturn.Impossible; // instantly abort Transform, because it cant be done anyway
+
+                    case TransformToFormatReturn.Loading:
+                        requiredAsset.assetFormatChanged -= asset.InvokeAssetFormatChanged;
+                        requiredAsset.assetFormatChanged += asset.InvokeAssetFormatChanged;
+                        anyLoading = true; // remember that some requirement is loading and load all other requirements as well
+                        break;
+
+                    case TransformToFormatReturn.Available:
+                    default:
+                        break;
+                }
+            }
+
+            if (anyLoading)
+                return TransformToFormatReturn.Loading;
+
+            // dispatch next transformation
             var newFormat = nextStep.Transform(asset.GetAssetFormatOrNull(currentFormat), asset);
 
+            // add format
             asset.availableFormats.Add(newFormat);
 
             return newFormat.availability == CommonAssetTypes.Availability.Available ?

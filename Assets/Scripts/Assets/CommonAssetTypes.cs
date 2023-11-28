@@ -13,16 +13,19 @@ namespace Assets.Scripts.Assets
         {
             public Guid assetId;
             public string assetName;
+            public bool visible;
             public AssetType assetType;
             public AssetSource assetSource;
             public string displayPath;
             public AssetFormat baseFormat;
             public List<AssetFormat> availableFormats;
+            public List<AssetInfo> dependencies;
             public event Action assetFormatChanged;
+
 
             public void InvokeAssetFormatChanged()
             {
-                assetFormatChanged.Invoke();
+                assetFormatChanged?.Invoke();
             }
 
             [CanBeNull]

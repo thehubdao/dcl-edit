@@ -20,7 +20,7 @@ namespace Assets.Scripts.System
                 var options = new ImportOptions()
                 {
                     DataLoader = dataLoader,
-                    AsyncCoroutineHelper = GameObject.Find("EditorStates").GetComponent<UnityGLTF.AsyncCoroutineHelper>()
+                    AsyncCoroutineHelper = GameObject.Find("EditorStates").GetComponent<AsyncCoroutineHelper>()
                 };
 
                 var importer = new GLTFSceneImporter(gltfPath, options);
