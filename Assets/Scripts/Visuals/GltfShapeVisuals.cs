@@ -99,6 +99,7 @@ namespace Assets.Scripts.Visuals
 
         public override void Deactivate()
         {
+            if (_currentModelObject == null) return;
             _currentModelObject.SetActive(false);
         }
 
