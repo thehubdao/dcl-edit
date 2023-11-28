@@ -70,5 +70,39 @@ namespace Assets.Scripts.Assets
             public abstract string hash { get; }
             public abstract Availability availability { get; }
         }
+
+        public interface IModelProvider
+        {
+            ModelInstance CreateInstance();
+            void ReturnToPool(ModelInstance modelInstance);
+        }
+
+        public class ModelInstance
+        {
+            public GameObject gameObject;
+
+            private readonly CommonAssetTypes.IModelProvider parentModelProvider;
+
+            public void ReturnToPool()
+            {
+                parentModelProvider.ReturnToPool(this);
+            }
+
+            public ModelInstance(GameObject gameObject, CommonAssetTypes.IModelProvider parentModelProvider)
+            {
+                this.gameObject = gameObject;
+                this.parentModelProvider = parentModelProvider;
+            }
+        }
+
+        public class ModelPoolEntry
+        {
+            public ModelInstance modelInstance;
+
+            public ModelPoolEntry(ModelInstance modelInstance)
+            {
+                this.modelInstance = modelInstance;
+            }
+        }
     }
 }

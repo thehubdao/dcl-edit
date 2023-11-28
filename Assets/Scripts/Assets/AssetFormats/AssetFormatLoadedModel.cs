@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Assets.Scripts.Assets;
 using UnityEngine;
 
-public class AssetFormatLoadedModel : CommonAssetTypes.AssetFormat
+public class AssetFormatLoadedModel : CommonAssetTypes.AssetFormat, CommonAssetTypes.IModelProvider
 {
     public override string formatName => "Loaded model";
     public override string hash { get; }
@@ -12,7 +12,9 @@ public class AssetFormatLoadedModel : CommonAssetTypes.AssetFormat
 
     private CommonAssetTypes.Availability availabilityInternal;
 
-    public GameObject modelTemplate;
+    private GameObject modelTemplate;
+
+    private Stack<CommonAssetTypes.ModelPoolEntry> modelPool = new();
 
     public AssetFormatLoadedModel(string hash)
     {
@@ -29,5 +31,24 @@ public class AssetFormatLoadedModel : CommonAssetTypes.AssetFormat
     public void SetError()
     {
         availabilityInternal = CommonAssetTypes.Availability.Error;
+    }
+
+    public void ReturnToPool(CommonAssetTypes.ModelInstance modelInstance)
+    {
+        modelInstance.gameObject.SetActive(false);
+        modelPool.Push(new CommonAssetTypes.ModelPoolEntry(modelInstance));
+    }
+
+    public CommonAssetTypes.ModelInstance CreateInstance()
+    {
+        if (modelPool.Count > 0)
+        {
+            var modelInstance = modelPool.Pop().modelInstance;
+            modelInstance.gameObject.SetActive(true);
+            return modelInstance;
+        }
+
+        // else
+        return new CommonAssetTypes.ModelInstance(Object.Instantiate(modelTemplate), this);
     }
 }

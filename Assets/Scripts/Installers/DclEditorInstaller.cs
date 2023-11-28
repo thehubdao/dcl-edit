@@ -30,9 +30,12 @@ public class DclEditorInstaller : MonoInstaller
     [SerializeField]
     private GameObject mainSceneVisualsPrefab;
 
-    [Header("Unity State")]
+    [Header("Unity References")]
     [SerializeField]
     private UnityState unityState;
+
+    [SerializeField]
+    private SpecialAssets specialAssets;
 
     [Header("Test Mode")]
     [SerializeField]
@@ -55,6 +58,8 @@ public class DclEditorInstaller : MonoInstaller
 
         Container.BindInterfacesAndSelfTo<TransformerBuilderCloudToBuilderDownload>().AsSingle();
         Container.BindInterfacesAndSelfTo<TransformerBuilderDownloadToLoadedModel>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<SpecialAssets>().FromComponentOn(specialAssets.gameObject).AsSingle();
 
 
         Container.Bind<LoadFromVersion1System>().To<LoadFromVersion1System>().AsSingle();
