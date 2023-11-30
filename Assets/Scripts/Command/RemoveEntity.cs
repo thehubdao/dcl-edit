@@ -11,15 +11,22 @@ namespace Assets.Scripts.Command
     public class RemoveEntity : SceneState.Command
     {
         private readonly DclEntity entity;
+        private readonly List<DclEntity> secondarySelectedEntity;
         private readonly List<DclEntity> sortedEntities = new List<DclEntity>();
         private readonly List<DclEntity> sortedParents = new List<DclEntity>();
         private Guid primarySelectedEntityId;
-        private List<Guid> secondarySelectedEntityIds;
 
         public RemoveEntity(DclEntity entity)
         {
             this.entity = entity;
+
             GetChildrenInOrder(entity);
+            
+            secondarySelectedEntity = entity.Scene.SelectionState.SecondarySelectedEntities;
+            foreach (var secondaryEntity in secondarySelectedEntity)
+            {
+                GetChildrenInOrder(secondaryEntity);
+            }
         }
 
         public override string Name => "Remove Entity";
@@ -34,10 +41,16 @@ namespace Assets.Scripts.Command
             {
                 primarySelectedEntityId = sceneState.SelectionState.PrimarySelectedEntity.Id;
             }
+            
+            EntityUtility.DeleteEntity(sceneState, primarySelectedEntityId);
+            foreach (var secondaryEntityToDelete in secondarySelectedEntity)
+            {
+                if (sceneState.GetEntityById(secondaryEntityToDelete.Id) != null)
+                {
+                    EntityUtility.DeleteEntity(sceneState, secondaryEntityToDelete.Id);
+                }
+            }
 
-            secondarySelectedEntityIds = sceneState.SelectionState.SecondarySelectedEntities.Select(entity => entity.Id).ToList();
-
-            EntityUtility.DeleteEntity(sceneState, entity.Id);
             editorEvents.InvokeSelectionChangedEvent();
         }
 
@@ -46,8 +59,7 @@ namespace Assets.Scripts.Command
             ReAddEntityAndChildren(sceneState);
 
             sceneState.SelectionState.PrimarySelectedEntity = sceneState.GetEntityById(primarySelectedEntityId);
-            sceneState.SelectionState.SecondarySelectedEntities =
-                secondarySelectedEntityIds.Select(sceneState.GetEntityById).ToList();
+            sceneState.SelectionState.SecondarySelectedEntities = secondarySelectedEntity;
 
             editorEvents.InvokeSelectionChangedEvent();
         }
@@ -72,6 +84,8 @@ namespace Assets.Scripts.Command
         /// <param name="entity">The root of the entity tree</param>
         private void GetChildrenInOrder(DclEntity entity)
         {
+            if (sortedEntities.Contains(entity)) return; 
+            
             Queue<DclEntity> queue = new Queue<DclEntity>();
             queue.Enqueue(entity);
 
@@ -84,7 +98,10 @@ namespace Assets.Scripts.Command
                 
                 foreach (var childNode in node.Children)
                 {
-                    queue.Enqueue(childNode);
+                    if (!sortedEntities.Contains(childNode))
+                    {
+                        queue.Enqueue(childNode);
+                    }
                 }
             }
         }

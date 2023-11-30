@@ -56,10 +56,9 @@ namespace Assets.Scripts.Command.Utility
         {
             foreach (var selectedEntity in scene.SelectionState.AllSelectedEntities)
             {
-                //This is the case when primaryselectedentity == null and no secondaryselectedentities exist
                 if (selectedEntity == null)
                 {
-                    return;
+                    continue;
                 }
                 
                 var entity = scene.GetEntityById(entityId);
@@ -90,9 +89,8 @@ namespace Assets.Scripts.Command.Utility
             {
                 scene.SelectionState.PrimarySelectedEntity = null;
             }
-            
-            scene.SelectionState.AllSelectedEntities.ToList().Remove(entity);
-            scene.SelectionState.SecondarySelectedEntities.ToList().Remove(entity);
+
+            scene.SelectionState.AllSelectedEntities = scene.SelectionState.AllSelectedEntities.Where(x => x != entity);
         }
 
         public static void AddDefaultTransformComponent(DclEntity entity)
