@@ -6,8 +6,10 @@ using SFB;
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 using Zenject;
+using static Assets.Scripts.System.PromptSystem;
 
 namespace Assets.Scripts.System
 {
@@ -303,11 +305,28 @@ namespace Assets.Scripts.System
             catch
             {
                 //if the extraction of path and name failed, use the defaults below.
-                oldContainingDirectoryPath = pathState.ProjectPath;
+                oldContainingDirectoryPath = pathState.ProjectPath + "/assets";
                 oldName = "New Scene";
             }
 
             string newPath = StandaloneFileBrowser.SaveFilePanel("Save Scene", oldContainingDirectoryPath, oldName, "dclscene");
+            
+            if (newPath != null)
+            {
+                var newPathInAssets = newPath.Substring(0, newPath.LastIndexOf(Path.DirectorySeparatorChar));
+                int result = String.Compare(Path.GetFullPath(oldContainingDirectoryPath), 
+                    Path.GetFullPath(newPathInAssets), 
+                    StringComparison.InvariantCultureIgnoreCase);
+                if (result != 0)
+                {
+                    Task<PromptAction> task = promptSystem.CreateDialog("Scene cannot be saved outside assets project folder.",
+                        new PromptAction[] { new OK() },
+                        new NotInWindow());
+                    
+                    return;
+                }
+            }
+
             // check for canceled dialog
             if (newPath == "")
             {
