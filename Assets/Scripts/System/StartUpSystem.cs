@@ -68,6 +68,8 @@ namespace Assets.Scripts.System
                     "DCL-Edit V3 does not support SDK6. Please upgrade your project to SDK7 or downgrade dcl-edit",
                     new PromptAction[] { new OK(() => Application.Quit()) },
                     new NotInWindow(() => Application.Quit()));
+
+                return;
             }
 
             assetManagerSystem.CacheAllAssetMetadata();
