@@ -28,7 +28,7 @@ namespace Assets.Scripts.Command
 
         private void AddGltfContainerComponent(DclEntity entity)
         {
-            var gltfShape = new DclGltfContainerComponent(assetId, new Color(0,0,0));
+            var gltfShape = new DclGltfContainerComponent(assetId);
             entity.AddComponent(gltfShape);
         }
     }
