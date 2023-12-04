@@ -11,12 +11,8 @@ namespace Assets.Scripts.SceneState
 
         public List<DclEntity> SecondarySelectedEntities { get; set; } = new List<DclEntity>();
 
-        public IEnumerable<DclEntity> AllSelectedEntities
-        {
-            get =>
-                SecondarySelectedEntities
-                    .Prepend(PrimarySelectedEntity);
-            set => SecondarySelectedEntities = new List<DclEntity>();
-        }
+        public IEnumerable<DclEntity> AllSelectedEntities =>
+            SecondarySelectedEntities
+                .Prepend(PrimarySelectedEntity);
     }
 }

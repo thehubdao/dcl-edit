@@ -1,5 +1,6 @@
 using Assets.Scripts.SceneState;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Assets.Scripts.Command.Utility
@@ -87,10 +88,15 @@ namespace Assets.Scripts.Command.Utility
         {
             if (scene.SelectionState.PrimarySelectedEntity == entity)
             {
-                scene.SelectionState.PrimarySelectedEntity = null;
+                scene.SelectionState.PrimarySelectedEntity = null; 
+                foreach (var child in entity.Children)
+                {
+                    scene.SelectionState.SecondarySelectedEntities = new List<DclEntity>(scene.SelectionState.SecondarySelectedEntities.Where(x => x != child));
+                } 
+                return;
             }
 
-            scene.SelectionState.AllSelectedEntities = scene.SelectionState.AllSelectedEntities.Where(x => x != entity);
+            scene.SelectionState.SecondarySelectedEntities = new List<DclEntity>(scene.SelectionState.SecondarySelectedEntities.Where(x => x != entity));
         }
 
         public static void AddDefaultTransformComponent(DclEntity entity)
