@@ -364,6 +364,9 @@ namespace Assets.Scripts.System
                     case DclComponent.DclComponentProperty.PropertyType.Asset:
                         this.fixedValue = JToken.FromObject(property.GetConcrete<Guid>().FixedValue);
                         break;
+                    case DclComponent.DclComponentProperty.PropertyType.Color:
+                        this.fixedValue = JToken.FromObject(property.GetConcrete<Color>().FixedValue);
+                        break;
                     default:
                         break;
                 }
@@ -464,6 +467,13 @@ namespace Assets.Scripts.System
                         }
 
                         return new DclComponent.DclComponentProperty<Guid>(name, fixedValue.ToObject<Guid>());
+                    case DclComponent.DclComponentProperty.PropertyType.Color:
+                        if (fixedValue.Type != JTokenType.Object)
+                        {
+                            throw new SceneLoadException("Color property has no Object value");
+                        }
+
+                        return new DclComponent.DclComponentProperty<Color>(name, fixedValue.ToObject<Color>());
                     default:
                         throw new SceneLoadException("Unknown property type");
                 }

@@ -176,6 +176,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
                 ContextMenuSpacerAtom.Data _ => new ContextMenuSpacerAtom(uiBuilder),
                 ButtonAtom.Data _ => new ButtonAtom(uiBuilder),
                 AssetBrowserButtonAtom.Data _ => new AssetBrowserButtonAtom(uiBuilder),
+                ColorPropertyAtom.Data _ => new ColorPropertyAtom(uiBuilder),
                 _ => throw new ArgumentException()
             };
         }

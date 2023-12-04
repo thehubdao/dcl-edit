@@ -80,8 +80,8 @@ public class CustomComponentDefinitionSystem
             "Number" => PropertyType.Float,
             "Vector3" => PropertyType.Vector3,
             "Quaternion" => PropertyType.Quaternion,
-            "Color3" => null,
-            "Color4" => null,
+            "Color3" => PropertyType.Color,
+            "Color4" => PropertyType.Color,
             "Entity" => null,
             "EnumNumber" => null,
             "EnumString" => null,
@@ -105,6 +105,7 @@ public class CustomComponentDefinitionSystem
             DclComponent.DclComponentProperty.PropertyType.Vector3 => Vector3.zero,
             DclComponent.DclComponentProperty.PropertyType.Quaternion => Quaternion.identity,
             DclComponent.DclComponentProperty.PropertyType.Asset => Guid.Empty,
+            DclComponent.DclComponentProperty.PropertyType.Color => new Color(0,0,0),
             _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
         };
     }

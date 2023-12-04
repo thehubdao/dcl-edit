@@ -60,6 +60,7 @@ namespace Assets.Scripts.SceneState
                         PropertyType.Vector3 => defaultValue is Vector3,
                         PropertyType.Quaternion => defaultValue is Quaternion,
                         PropertyType.Asset => defaultValue is Guid,
+                        PropertyType.Color => defaultValue is Color,
                         _ => throw new ArgumentOutOfRangeException()
                     };
                 }
@@ -76,7 +77,8 @@ namespace Assets.Scripts.SceneState
                 Boolean,
                 Vector3,
                 Quaternion,
-                Asset
+                Asset,
+                Color
             }
 
             public PropertyType Type =>
@@ -89,6 +91,7 @@ namespace Assets.Scripts.SceneState
                     DclComponentProperty<Vector3> _ => PropertyType.Vector3,
                     DclComponentProperty<Quaternion> _ => PropertyType.Quaternion,
                     DclComponentProperty<Guid> _ => PropertyType.Asset,
+                    DclComponentProperty<Color> _ => PropertyType.Color,
                     _ => PropertyType.None
                 };
 
@@ -104,6 +107,7 @@ namespace Assets.Scripts.SceneState
                     PropertyType.Vector3 => new DclComponentProperty<Vector3>(name, initialValue),
                     PropertyType.Quaternion => new DclComponentProperty<Quaternion>(name, initialValue),
                     PropertyType.Asset => new DclComponentProperty<Guid>(name, initialValue),
+                    PropertyType.Color => new DclComponentProperty<Color>(name, initialValue),
                     _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
                 };
             }
@@ -121,8 +125,11 @@ namespace Assets.Scripts.SceneState
             public DclComponentProperty DeepCopy(DclComponentProperty other)
             {
                 Type propertyType = other.GetType();
-
-                if (propertyType == typeof(DclComponentProperty<Vector3>))
+                if (propertyType == typeof(DclComponentProperty<Color>))
+                {
+                    return new DclComponentProperty<Color>(other.PropertyName, other.GetConcrete<Color>().Value);
+                }
+                else if (propertyType == typeof(DclComponentProperty<Vector3>))
                 {
                     return new DclComponentProperty<Vector3>(other.PropertyName, other.GetConcrete<Vector3>().Value);
                 }

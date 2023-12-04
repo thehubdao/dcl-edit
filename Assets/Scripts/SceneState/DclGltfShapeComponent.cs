@@ -1,5 +1,6 @@
 using Assets.Scripts.SceneState;
 using System;
+using UnityEngine;
 using static Assets.Scripts.SceneState.DclComponent.DclComponentProperty.PropertyDefinition.Flags;
 
 public class DclGltfShapeComponent : DclComponent
@@ -13,7 +14,8 @@ public class DclGltfShapeComponent : DclComponent
             new DclComponentProperty.PropertyDefinition("asset", DclComponentProperty.PropertyType.Asset, Guid.Empty, ParseInConstructor),
             new DclComponentProperty.PropertyDefinition("visible", DclComponentProperty.PropertyType.Boolean, true),
             new DclComponentProperty.PropertyDefinition("withCollisions", DclComponentProperty.PropertyType.Boolean, true),
-            new DclComponentProperty.PropertyDefinition("isPointerBlocker", DclComponentProperty.PropertyType.Boolean, true));
+            new DclComponentProperty.PropertyDefinition("isPointerBlocker", DclComponentProperty.PropertyType.Boolean, true)
+            );
 
     public DclGltfShapeComponent(Guid assetId, bool visible = true, bool withCollisions = true, bool isPointerBlocker = true) : base("GLTFShape", "Shape")
     {

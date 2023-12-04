@@ -87,7 +87,7 @@ namespace Assets.Scripts.Visuals
             }
         }
 
-        private void UpdateVisuals()
+        private async void UpdateVisuals()
         {
             if (inputState.InState == InputState.InStateType.UiInput)
             {
@@ -272,6 +272,32 @@ namespace Assets.Scripts.Visuals
 
                             break;
                         }
+                        case DclComponent.DclComponentProperty.PropertyType.Color:
+                            {
+                                Color selectedColor = property.GetConcrete<Color>().Value;
+                                var hexColor = ColorUtility.ToHtmlStringRGB(selectedColor);
+
+                                var colorActions = new ColorPropertyAtom.UiPropertyActions<Color>
+                                {
+                                    OnChange = (value) => updatePropertiesSystem.UpdateFloatingProperty(propertyIdentifier, value),
+                                    OnSubmit = (value) => updatePropertiesSystem.UpdateFixedProperty(propertyIdentifier, value), 
+                                    OnAbort = (_) => updatePropertiesSystem.RevertFloatingProperty(propertyIdentifier)
+                                };
+
+
+                                componentPanel.AddColorProperty(
+                                    property.PropertyName,
+                                    property.PropertyName,
+                                    selectedColor,
+                                    colorActions,
+                                    async (_) => {
+                                        var color = await promptSystem.CreateColorPicker(selectedColor);
+                                        updatePropertiesSystem.UpdateFixedProperty(propertyIdentifier, color.value);
+                                    }
+                                    );
+
+                                break;
+                            }
                         default:
                             throw new ArgumentOutOfRangeException();
                     }
