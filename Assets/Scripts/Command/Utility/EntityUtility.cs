@@ -91,12 +91,12 @@ namespace Assets.Scripts.Command.Utility
                 scene.SelectionState.PrimarySelectedEntity = null; 
                 foreach (var child in entity.Children)
                 {
-                    scene.SelectionState.SecondarySelectedEntities = new List<DclEntity>(scene.SelectionState.SecondarySelectedEntities.Where(x => x != child));
+                    scene.SelectionState.SecondarySelectedEntities = scene.SelectionState.SecondarySelectedEntities.Where(x => x != child).ToList();
                 } 
                 return;
             }
 
-            scene.SelectionState.SecondarySelectedEntities = new List<DclEntity>(scene.SelectionState.SecondarySelectedEntities.Where(x => x != entity));
+            scene.SelectionState.SecondarySelectedEntities = scene.SelectionState.SecondarySelectedEntities.Where(x => x != entity).ToList();
         }
 
         public static void AddDefaultTransformComponent(DclEntity entity)
