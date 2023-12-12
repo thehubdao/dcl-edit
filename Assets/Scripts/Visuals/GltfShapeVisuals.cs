@@ -76,54 +76,6 @@ namespace Assets.Scripts.Visuals
             {
                 UpdateDisplayedAsset(null);
             }
-
-
-            //var data = _assetManagerSystem.GetDataById((Guid)assetGuid);
-            //
-            //GameObject newModel = null;
-            //switch (data.state)
-            //{
-            //    case AssetData.State.IsAvailable:
-            //        if (data is ModelAssetData modelData)
-            //        {
-            //            if (modelData.data == null)
-            //                return;
-            //
-            //            newModel = modelData.data;
-            //        }
-            //
-            //        break;
-            //
-            //    case AssetData.State.IsLoading:
-            //        newModel = Instantiate(_unityState.LoadingModel);
-            //        break;
-            //
-            //    case AssetData.State.IsError:
-            //        newModel = Instantiate(_unityState.ErrorModel);
-            //        break;
-            //}
-            //
-            //if (newModel != null)
-            //{
-            //    Destroy(_currentModelObject);
-            //
-            //    newModel.transform.SetParent(transform);
-            //    newModel.transform.localScale = Vector3.one;
-            //    newModel.transform.localRotation = Quaternion.identity;
-            //    newModel.transform.localPosition = Vector3.zero;
-            //
-            //    _currentModelObject = newModel;
-            //
-            //    if (newModel.TryGetComponent(out Animation animation))
-            //        animation.enabled = false;
-            //
-            //    UpdateSelection(entity);
-            //}
-            //
-            //if (scene.IsFloatingEntity(entity.Id)! == true)
-            //{
-            //    StaticUtilities.SetLayerRecursive(gameObject, LayerMask.NameToLayer("Ignore Raycast"));
-            //}
         }
 
         private void UpdateDisplayedAsset(CommonAssetTypes.AssetInfo asset)
@@ -212,8 +164,7 @@ namespace Assets.Scripts.Visuals
         {
             Assert.IsNotNull(currentModelObject);
             currentModelObject!.gameObject.transform.SetParent(transform);
-            currentModelObject!.gameObject.transform.localPosition = Vector3.zero;
-            currentModelObject!.gameObject.transform.localRotation = Quaternion.identity;
+            currentModelObject!.gameObject.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
             currentModelObject!.gameObject.transform.localScale = Vector3.one;
         }
 

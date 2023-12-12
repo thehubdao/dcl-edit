@@ -96,7 +96,7 @@ namespace Assets.Scripts.System
 
             sceneManagerSystem.SetLastOpenedSceneAsCurrentScene();
 
-            StartCoroutine(LateAwake());
+            //StartCoroutine(LateAwake());
         }
 
         void Start()
@@ -106,17 +106,17 @@ namespace Assets.Scripts.System
             frameTimeSystem.SetApplicationTargetFramerate();
         }
 
-        IEnumerator LateAwake()
-        {
-            yield return new WaitForSeconds(1);
-
-            var id = Guid.Parse("9de0c4dc-896a-4402-8baa-59505daad91e");
-            var count = 0;
-
-            discoveredAssets.discoveredAssets[id].assetFormatChanged +=
-                () => { Debug.Log(count++ + ": " + discoveredAssets.GetAssetFormat<AssetFormatLoadedModel>(id)); };
-
-            Debug.Log(discoveredAssets.GetAssetFormat<AssetFormatLoadedModel>(id));
-        }
+        //IEnumerator LateAwake()
+        //{
+        //    yield return new WaitForSeconds(1);
+        //    
+        //    var id = Guid.Parse("9de0c4dc-896a-4402-8baa-59505daad91e");
+        //    var count = 0;
+        //    
+        //    discoveredAssets.discoveredAssets[id].assetFormatChanged +=
+        //        () => { Debug.Log(count++ + ": " + discoveredAssets.GetAssetFormat<AssetFormatLoadedModel>(id)); };
+        //    
+        //    Debug.Log(discoveredAssets.GetAssetFormat<AssetFormatLoadedModel>(id));
+        //}
     }
 }

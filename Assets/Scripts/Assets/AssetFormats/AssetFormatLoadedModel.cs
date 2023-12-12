@@ -49,6 +49,8 @@ public class AssetFormatLoadedModel : CommonAssetTypes.AssetFormat, CommonAssetT
         }
 
         // else
-        return new CommonAssetTypes.ModelInstance(Object.Instantiate(modelTemplate), this);
+        var instance = new CommonAssetTypes.ModelInstance(Object.Instantiate(modelTemplate), this);
+        instance.gameObject.SetActive(true);
+        return instance;
     }
 }
