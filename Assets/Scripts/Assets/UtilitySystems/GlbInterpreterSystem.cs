@@ -78,7 +78,7 @@ public class GlbInterpreterSystem
             }
 
             chunks[0].chunkData = alignedBytes;
-            chunks[0].chunkLength = (uint) bytes.Length;
+            chunks[0].chunkLength = (uint) alignedBytes.Length;
 
             header.length = (uint) (12 + chunks.Sum(c => c.chunkData.Length + 8));
         }
