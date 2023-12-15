@@ -13,23 +13,23 @@ using Object = UnityEngine.Object;
 
 public class SpecialAssets : MonoBehaviour
 {
-    public class SpecialModelProvider : CommonAssetTypes.IModelProvider
+    public class GameObjectProvider : CommonAssetTypes.IModelProvider
     {
-        private readonly Stack<CommonAssetTypes.ModelPoolEntry> pool = new();
+        private readonly Stack<CommonAssetTypes.GameObjectPoolEntry> pool = new();
         private readonly GameObject template;
 
-        public SpecialModelProvider(GameObject template)
+        public GameObjectProvider(GameObject template)
         {
             this.template = template;
         }
 
-        public void ReturnToPool(CommonAssetTypes.ModelInstance modelInstance)
+        public void ReturnToPool(CommonAssetTypes.GameObjectInstance modelInstance)
         {
             modelInstance.gameObject.SetActive(false);
-            pool.Push(new CommonAssetTypes.ModelPoolEntry(modelInstance));
+            pool.Push(new CommonAssetTypes.GameObjectPoolEntry(modelInstance));
         }
 
-        public CommonAssetTypes.ModelInstance CreateInstance()
+        public CommonAssetTypes.GameObjectInstance CreateInstance()
         {
             if (pool.Count > 0)
             {
@@ -39,7 +39,7 @@ public class SpecialAssets : MonoBehaviour
             }
 
             // else
-            return new CommonAssetTypes.ModelInstance(Object.Instantiate(template), this);
+            return new CommonAssetTypes.GameObjectInstance(Object.Instantiate(template), this);
         }
     }
 
@@ -50,9 +50,18 @@ public class SpecialAssets : MonoBehaviour
     [SerializeField]
     private GameObject loadingTemplate;
 
+    [SerializeField]
+    private GameObject assetFolderUiElementTemplate;
 
-    public SpecialModelProvider errorModelProvider;
-    public SpecialModelProvider loadingModelProvider;
+    [SerializeField]
+    private GameObject assetButtonUiElementTemplate;
+
+
+    public GameObjectProvider errorModelProvider;
+    public GameObjectProvider loadingModelProvider;
+
+    public GameObjectProvider assetFolderUiElement;
+    public GameObjectProvider assetButtonUiElement;
 
     [Inject]
     public void Construct()
@@ -60,9 +69,13 @@ public class SpecialAssets : MonoBehaviour
         // ReSharper disable ExpressionIsAlwaysNull
         Assert.IsNotNull(errorTemplate);
         Assert.IsNotNull(loadingTemplate);
+        Assert.IsNotNull(assetFolderUiElementTemplate);
+        Assert.IsNotNull(assetButtonUiElementTemplate);
 
-        errorModelProvider = new SpecialModelProvider(errorTemplate);
-        loadingModelProvider = new SpecialModelProvider(loadingTemplate);
+        errorModelProvider = new GameObjectProvider(errorTemplate);
+        loadingModelProvider = new GameObjectProvider(loadingTemplate);
+        assetFolderUiElement = new GameObjectProvider(assetFolderUiElementTemplate);
+        assetButtonUiElement = new GameObjectProvider(assetButtonUiElementTemplate);
         // ReSharper restore ExpressionIsAlwaysNull
     }
 }

@@ -54,6 +54,7 @@ namespace Assets.Scripts.Assets
             Unknown,
             Model3D,
             Image,
+            Scene,
             Entity
         }
 
@@ -73,11 +74,11 @@ namespace Assets.Scripts.Assets
 
         public interface IModelProvider
         {
-            ModelInstance CreateInstance();
-            void ReturnToPool(ModelInstance modelInstance);
+            GameObjectInstance CreateInstance();
+            void ReturnToPool(GameObjectInstance modelInstance);
         }
 
-        public class ModelInstance
+        public class GameObjectInstance
         {
             public GameObject gameObject;
 
@@ -88,18 +89,18 @@ namespace Assets.Scripts.Assets
                 parentModelProvider.ReturnToPool(this);
             }
 
-            public ModelInstance(GameObject gameObject, CommonAssetTypes.IModelProvider parentModelProvider)
+            public GameObjectInstance(GameObject gameObject, CommonAssetTypes.IModelProvider parentModelProvider)
             {
                 this.gameObject = gameObject;
                 this.parentModelProvider = parentModelProvider;
             }
         }
 
-        public class ModelPoolEntry
+        public class GameObjectPoolEntry
         {
-            public ModelInstance modelInstance;
+            public GameObjectInstance modelInstance;
 
-            public ModelPoolEntry(ModelInstance modelInstance)
+            public GameObjectPoolEntry(GameObjectInstance modelInstance)
             {
                 this.modelInstance = modelInstance;
             }

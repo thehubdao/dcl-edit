@@ -4,7 +4,9 @@ using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
 using System;
 using System.Collections.Generic;
+using Assets.Scripts.Assets;
 using UnityEngine;
+using UnityEngine.Profiling.Memory.Experimental;
 using UnityEngine.UI;
 using Zenject;
 
@@ -42,44 +44,76 @@ public class AssetBrowserButtonHandler : ButtonHandler
         this.promptSystem = promptSystem;
     }
 
-    public void Init( /*AssetMetadata metadata,*/ bool enableDragAndDrop, Action<Guid> onClick, ScrollRect scrollViewRect = null)
+    public void InitUsageInUiAssetBrowser(AssetBrowserSystem.AbStructAsset abStructAsset)
     {
-        /*this.metadata = metadata;*/
-        /*assetButtonInteraction.assetMetadata = metadata;*/
+        //assetButtonInteraction.assetMetadata = metadata;
         maskedImage.sprite = null; // Clear thumbnail. There might be one still set because the prefab gets reused from the pool
 
-        /*SetText(metadata);
-        SetTypeIndicator(metadata);*/
-        if (IsCyclicScene())
+        SetText(abStructAsset);
+        SetTypeIndicator(abStructAsset);
+        SetEnabled(true);
+    }
+
+    private void SetTypeIndicator(AssetBrowserSystem.AbStructAsset abStructAsset)
+    {
+        if (abStructAsset == null)
         {
-            button.enabled = false;
-            assetButtonInteraction.enableDragAndDrop = false;
-            maskedImage.color = Color.red;
-        }
-        else
-        {
-            button.enabled = true;
-            assetButtonInteraction.enableDragAndDrop = enableDragAndDrop;
-            maskedImage.color = Color.white;
-            /*SetOnClickAction(metadata, onClick);*/
+            assetTypeIndicatorImage.sprite = null;
+            assetTypeIndicatorImage.enabled = false;
+            return;
         }
 
-        editorEvents.onAssetThumbnailUpdatedEvent += OnAssetThumbnailUpdatedCallback;
-
-        if (scrollViewRect != null)
+        assetTypeIndicatorImage.enabled = true;
+        switch (abStructAsset.assetInfo.assetType)
         {
-            this.scrollViewRect = scrollViewRect;
-            scrollViewRect.onValueChanged.AddListener(ShowThumbnailWhenVisible);
+            case CommonAssetTypes.AssetType.Unknown:
+                assetTypeIndicatorImage.sprite = null;
+                assetTypeIndicatorImage.enabled = false;
+                break;
+            case CommonAssetTypes.AssetType.Model3D:
+                assetTypeIndicatorImage.sprite = modelTypeIndicator;
+                break;
+            case CommonAssetTypes.AssetType.Image:
+                assetTypeIndicatorImage.sprite = imageTypeIndicator;
+                break;
+            case CommonAssetTypes.AssetType.Scene:
+                assetTypeIndicatorImage.sprite = sceneTypeIndicator;
+                break;
+            case CommonAssetTypes.AssetType.Entity:
+                assetTypeIndicatorImage.sprite = null;
+                assetTypeIndicatorImage.enabled = false;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    }
+
+    private void SetText(AssetBrowserSystem.AbStructAsset abStructAsset)
+    {
+        if (abStructAsset == null)
+        {
+            text.text = "None";
+            return;
         }
 
-        // TODO: unsubscribe from assetthumbnailupdated and scrollviewupdated on destroy
+        text.text = abStructAsset.name;
+    }
 
-        ShowThumbnailWhenVisible(Vector2.zero);
+    private void SetEnabled(bool value)
+    {
+        button.enabled = value;
+        assetButtonInteraction.enableDragAndDrop = value && IsDragAndDropEnabled();
+        maskedImage.color = value ? Color.white : Color.red;
+    }
+
+    private bool IsDragAndDropEnabled()
+    {
+        return false;
     }
 
     private void OnDestroy()
     {
-        editorEvents.onAssetThumbnailUpdatedEvent -= OnAssetThumbnailUpdatedCallback;
+        //editorEvents.onAssetThumbnailUpdatedEvent -= OnAssetThumbnailUpdatedCallback;
     }
 
     //#region Initialization

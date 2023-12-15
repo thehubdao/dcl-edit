@@ -12,6 +12,7 @@ using Assets.Scripts.Assets;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
+using static AssetBrowserSystem;
 
 namespace Assets.Scripts.Visuals
 {
@@ -37,33 +38,34 @@ namespace Assets.Scripts.Visuals
         // Dependencies
         private EditorEvents editorEvents;
 
-        //private AssetBrowserSystem assetBrowserSystem;
+        private AssetBrowserSystem assetBrowserSystem;
         private AssetBrowserState assetBrowserState;
         private AssetManagerSystem assetManagerSystem;
         private ContextMenuSystem contextMenuSystem;
         private DiscoveredAssets discoveredAssets;
+        private SpecialAssets specialAssets;
 
         [Inject]
         private void Construct(
             UiBuilder.UiBuilder.Factory uiBuilderFactory,
             EditorEvents editorEvents,
-            //AssetBrowserSystem assetBrowserSystem,
+            AssetBrowserSystem assetBrowserSystem,
             AssetBrowserState assetBrowserState,
             AssetManagerSystem assetManagerSystem,
             ContextMenuSystem contextMenuSystem,
-            DiscoveredAssets discoveredAssets)
+            DiscoveredAssets discoveredAssets,
+            SpecialAssets specialAssets)
         {
             headerUiBuilder = uiBuilderFactory.Create(headerContent);
             contentUiBuilder = uiBuilderFactory.Create(scrollViewContent);
             footerUiBuilder = uiBuilderFactory.Create(footerContent);
             this.editorEvents = editorEvents;
-            //this.assetBrowserSystem = assetBrowserSystem;
+            this.assetBrowserSystem = assetBrowserSystem;
             this.assetBrowserState = assetBrowserState;
             this.assetManagerSystem = assetManagerSystem;
             this.contextMenuSystem = contextMenuSystem;
             this.discoveredAssets = discoveredAssets;
-
-            SetupSceneEventListeners();
+            this.specialAssets = specialAssets;
         }
 
         void Start()
@@ -77,20 +79,22 @@ namespace Assets.Scripts.Visuals
             yield return null;
             //assetBrowserSystem.ChangeSorting(AssetBrowserState.Sorting.NameAscending);
             UpdateVisuals();
+            SetupSceneEventListeners();
         }
 
         public void SetupSceneEventListeners()
         {
-            editorEvents.onAssetMetadataCacheUpdatedEvent += UpdateVisuals;
-            editorEvents.onUiChangedEvent += UpdateVisuals;
-            editorEvents.OnCurrentSceneChangedEvent += UpdateContent;
+            //editorEvents.onAssetMetadataCacheUpdatedEvent += UpdateVisuals;
+            //editorEvents.onUiChangedEvent += UpdateVisuals;
+            //editorEvents.OnCurrentSceneChangedEvent += UpdateContent;
+            assetBrowserSystem.rootItem.Change += UpdateContent;
         }
 
         private void OnDestroy()
         {
-            editorEvents.onAssetMetadataCacheUpdatedEvent -= UpdateVisuals;
-            editorEvents.onUiChangedEvent -= UpdateVisuals;
-            editorEvents.OnCurrentSceneChangedEvent -= UpdateContent;
+            //editorEvents.onAssetMetadataCacheUpdatedEvent -= UpdateVisuals;
+            //editorEvents.onUiChangedEvent -= UpdateVisuals;
+            //editorEvents.OnCurrentSceneChangedEvent -= UpdateContent;
         }
 
         private void UpdateVisuals()
@@ -105,7 +109,7 @@ namespace Assets.Scripts.Visuals
             //Debug.Log(sb);
 
             //UpdateHeader();
-            //UpdateContent();
+            UpdateContent();
             //UpdateFooter();
         }
 
@@ -154,15 +158,37 @@ namespace Assets.Scripts.Visuals
 
         private void UpdateContent()
         {
-            var panel = new PanelAtom.Data();
-            //var assetHierarchy = assetBrowserSystem.GetFilteredAssetHierarchy();
-            //
-            //foreach (AssetHierarchyItem hierarchyItem in assetHierarchy)
-            //{
-            //    BuildHierarchy(hierarchyItem, panel);
-            //}
+            UpdateFolderContent(scrollViewContent, assetBrowserSystem.rootItem);
+        }
 
-            contentUiBuilder.Update(panel);
+        private void UpdateFolderContent(GameObject parentObject, AssetBrowserSystem.AbStructFolder parentAbStructFolder)
+        {
+            foreach (var abStructItem in parentAbStructFolder.GetItems())
+            {
+                switch (abStructItem)
+                {
+                    case AssetBrowserSystem.AbStructAsset abStructAsset:
+                        AddAssetContent(parentObject, abStructAsset);
+                        break;
+                    case AssetBrowserSystem.AbStructFolder abStructFolder:
+                        AddFolder(parentObject, abStructFolder);
+                        break;
+                }
+            }
+        }
+
+        private void AddFolder(GameObject parentObject, AssetBrowserSystem.AbStructFolder abStructFolder)
+        {
+            var folderUiElement = specialAssets.assetFolderUiElement.CreateInstance();
+            folderUiElement.gameObject.transform.SetParent(parentObject.transform);
+            UpdateFolderContent(folderUiElement.gameObject, abStructFolder);
+        }
+
+        private void AddAssetContent(GameObject parentObject, AssetBrowserSystem.AbStructAsset abStructAsset)
+        {
+            var folderUiElement = specialAssets.assetButtonUiElement.CreateInstance();
+            folderUiElement.gameObject.transform.SetParent(parentObject.transform);
+            folderUiElement.gameObject.GetComponent<AssetBrowserButtonHandler>().InitUsageInUiAssetBrowser(abStructAsset);
         }
 
         /*private void UpdateFooter()

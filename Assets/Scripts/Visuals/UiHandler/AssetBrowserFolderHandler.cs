@@ -24,7 +24,7 @@ public class AssetBrowserFolderHandler : MonoBehaviour
         this.editorEvents = editorEvents;
     }
 
-    public void Initialize( /*AssetHierarchyItem hierarchyItem*/)
+    public void Init(AssetBrowserSystem.AbStructFolder abStructFolder)
     {
         /*this.hierarchyItem = hierarchyItem;
         headerText.text = hierarchyItem.name;*/

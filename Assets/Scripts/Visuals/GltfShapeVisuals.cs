@@ -44,7 +44,7 @@ namespace Assets.Scripts.Visuals
         private CommonAssetTypes.AssetInfo displayedAsset = null;
 
         [CanBeNull]
-        private CommonAssetTypes.ModelInstance currentModelObject = null;
+        private CommonAssetTypes.GameObjectInstance currentModelObject = null;
 
         public override void UpdateVisuals(DclScene scene, DclEntity entity)
         {

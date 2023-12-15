@@ -18,7 +18,7 @@ namespace Assets.Scripts.Assets
         }
 
 
-        public Dictionary<Guid, CommonAssetTypes.AssetInfo> discoveredAssets = new();
+        public readonly SubscribableDictionary<Guid, CommonAssetTypes.AssetInfo> discoveredAssets = new();
 
         public enum AssetFormatAvailability
         {

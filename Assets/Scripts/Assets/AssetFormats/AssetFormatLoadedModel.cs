@@ -14,7 +14,7 @@ public class AssetFormatLoadedModel : CommonAssetTypes.AssetFormat, CommonAssetT
 
     private GameObject modelTemplate;
 
-    private Stack<CommonAssetTypes.ModelPoolEntry> modelPool = new();
+    private Stack<CommonAssetTypes.GameObjectPoolEntry> modelPool = new();
 
     public AssetFormatLoadedModel(string hash)
     {
@@ -33,13 +33,13 @@ public class AssetFormatLoadedModel : CommonAssetTypes.AssetFormat, CommonAssetT
         availabilityInternal = CommonAssetTypes.Availability.Error;
     }
 
-    public void ReturnToPool(CommonAssetTypes.ModelInstance modelInstance)
+    public void ReturnToPool(CommonAssetTypes.GameObjectInstance modelInstance)
     {
         modelInstance.gameObject.SetActive(false);
-        modelPool.Push(new CommonAssetTypes.ModelPoolEntry(modelInstance));
+        modelPool.Push(new CommonAssetTypes.GameObjectPoolEntry(modelInstance));
     }
 
-    public CommonAssetTypes.ModelInstance CreateInstance()
+    public CommonAssetTypes.GameObjectInstance CreateInstance()
     {
         if (modelPool.Count > 0)
         {
@@ -49,7 +49,7 @@ public class AssetFormatLoadedModel : CommonAssetTypes.AssetFormat, CommonAssetT
         }
 
         // else
-        var instance = new CommonAssetTypes.ModelInstance(Object.Instantiate(modelTemplate), this);
+        var instance = new CommonAssetTypes.GameObjectInstance(Object.Instantiate(modelTemplate), this);
         instance.gameObject.SetActive(true);
         return instance;
     }
