@@ -97,6 +97,8 @@ public class AssetBrowserSystem
     {
         rootItem.Clear();
 
+        var tmpCount = 0;
+
         foreach (var assetInfo in discoveredAssets.discoveredAssets.Values)
         {
             var path = new List<string> {AssetSourceName(assetInfo.assetSource)};
@@ -105,6 +107,9 @@ public class AssetBrowserSystem
             var folder = path.Aggregate(rootItem, (current, pathPart) => current.GetOrCreateFolder(pathPart));
 
             folder.AddAsset(assetInfo);
+
+            if (tmpCount++ > 1000)
+                break;
         }
 
         rootItem.InvokeChange();

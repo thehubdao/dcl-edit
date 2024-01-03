@@ -11,6 +11,10 @@ public class AssetBrowserFolderHandler : MonoBehaviour
     public TextMeshProUGUI headerText;
 
     public RectTransform expandIcon;
+
+    public RectTransform subFolderContainer;
+
+    public RectTransform assetButtonContainer;
     //private AssetHierarchyItem hierarchyItem;
 
     // Dependencies
@@ -28,6 +32,7 @@ public class AssetBrowserFolderHandler : MonoBehaviour
     {
         /*this.hierarchyItem = hierarchyItem;
         headerText.text = hierarchyItem.name;*/
+        headerText.text = abStructFolder.name;
 
         var scale = expandIcon.localScale;
         scale.y = IsExpanded() ? -1 : 1; // Flip icon vertically if expanded

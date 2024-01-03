@@ -7,6 +7,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.Remoting.Messaging;
 using System.Text;
 using Assets.Scripts.Assets;
 using UnityEngine;
@@ -18,7 +19,51 @@ namespace Assets.Scripts.Visuals
 {
     public class UiAssetBrowserVisuals : MonoBehaviour
     {
+        private struct GameObjectInstanceTree
+        {
+            public struct GameObjectInstanceTreeNode
+            {
+                private CommonAssetTypes.GameObjectInstance gameObjectInstance;
+
+                private List<GameObjectInstanceTreeNode> children;
+
+                public void ReturnToPool()
+                {
+                    ReturnChildrenToPool();
+
+                    gameObjectInstance.ReturnToPool();
+                }
+
+                public void ReturnChildrenToPool()
+                {
+                    foreach (var child in children)
+                    {
+                        child.ReturnToPool();
+                    }
+
+                    children.Clear();
+                }
+
+                public void AddChild(GameObjectInstanceTreeNode newChild)
+                {
+                    children.Add(newChild);
+                }
+            }
+
+            public List<GameObjectInstanceTreeNode> rootNodes;
+
+            public void ReturnAllToPool()
+            {
+                foreach (var node in rootNodes)
+                {
+                    node.ReturnToPool();
+                }
+            }
+        }
+
         public Action<Guid> assetButtonOnClickOverride = null;
+
+        public List<CommonAssetTypes.GameObjectInstance> allGameObjectInstances = new();
 
         [SerializeField]
         private ScrollRect scrollViewRect;
@@ -158,11 +203,18 @@ namespace Assets.Scripts.Visuals
 
         private void UpdateContent()
         {
+            Debug.Log("Update Content");
+            // clear folder Content
+            ClearFolderContent();
+
             UpdateFolderContent(scrollViewContent, assetBrowserSystem.rootItem);
         }
 
         private void UpdateFolderContent(GameObject parentObject, AssetBrowserSystem.AbStructFolder parentAbStructFolder)
         {
+            Debug.Log("Update Folder Content");
+
+
             foreach (var abStructItem in parentAbStructFolder.GetItems())
             {
                 switch (abStructItem)
@@ -177,18 +229,31 @@ namespace Assets.Scripts.Visuals
             }
         }
 
+        private void ClearFolderContent()
+        {
+            foreach (var gameObjectInstance in allGameObjectInstances)
+            {
+                gameObjectInstance.ReturnToPool();
+            }
+        }
+
         private void AddFolder(GameObject parentObject, AssetBrowserSystem.AbStructFolder abStructFolder)
         {
+            Debug.Log("Add folder");
             var folderUiElement = specialAssets.assetFolderUiElement.CreateInstance();
-            folderUiElement.gameObject.transform.SetParent(parentObject.transform);
+            folderUiElement.gameObject.transform.SetParent(parentObject.GetComponent<AssetBrowserFolderHandler>()?.subFolderContainer ?? parentObject.transform, false);
+            folderUiElement.gameObject.GetComponent<AssetBrowserFolderHandler>().Init(abStructFolder);
+            allGameObjectInstances.Add(folderUiElement);
             UpdateFolderContent(folderUiElement.gameObject, abStructFolder);
         }
 
         private void AddAssetContent(GameObject parentObject, AssetBrowserSystem.AbStructAsset abStructAsset)
         {
-            var folderUiElement = specialAssets.assetButtonUiElement.CreateInstance();
-            folderUiElement.gameObject.transform.SetParent(parentObject.transform);
-            folderUiElement.gameObject.GetComponent<AssetBrowserButtonHandler>().InitUsageInUiAssetBrowser(abStructAsset);
+            Debug.Log("Add content");
+            var buttonUiElement = specialAssets.assetButtonUiElement.CreateInstance();
+            buttonUiElement.gameObject.transform.SetParent(parentObject.GetComponent<AssetBrowserFolderHandler>().assetButtonContainer, false);
+            buttonUiElement.gameObject.GetComponent<AssetBrowserButtonHandler>().InitUsageInUiAssetBrowser(abStructAsset);
+            allGameObjectInstances.Add(buttonUiElement);
         }
 
         /*private void UpdateFooter()
