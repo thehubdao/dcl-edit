@@ -272,11 +272,19 @@ namespace Assets.Scripts.Assets
                 }
             }
 
+            var assetInCurrentFormat = asset.GetAssetFormatOrNull(currentFormat);
+            Assert.IsNotNull(assetInCurrentFormat);
+
+            if (assetInCurrentFormat!.availability == CommonAssetTypes.Availability.Loading)
+            {
+                anyLoading = true;
+            }
+
             if (anyLoading)
                 return TransformToFormatReturn.Loading;
 
             // dispatch next transformation
-            var newFormat = nextStep.Transform(asset.GetAssetFormatOrNull(currentFormat), asset);
+            var newFormat = nextStep.Transform(assetInCurrentFormat, asset);
 
             // add format
             asset.availableFormats.Add(newFormat);

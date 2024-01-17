@@ -4,16 +4,22 @@ using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
 using System;
 using System.Collections.Generic;
+using System.Drawing.Text;
+using System.Security.Cryptography;
 using Assets.Scripts.Assets;
 using UnityEngine;
 using UnityEngine.Profiling.Memory.Experimental;
 using UnityEngine.UI;
 using Zenject;
+using Assets.Scripts.Visuals.UiHandler;
+using UnityEngine.Assertions;
+using UnityEngine.EventSystems;
+using static Assets.Scripts.Assets.CommonAssetTypes;
 
-public class AssetBrowserButtonHandler : ButtonHandler
+public class AssetBrowserButtonHandler : ButtonHandler, IPointerClickHandler, IDragHandler, IOnReturnToPool
 {
     //public AssetMetadata metadata;
-    public Image maskedImage;       // Uses a child object with an image component. This allows setting an image that is influenced by the buttons mask.
+    public Image maskedImage; // Uses a child object with an image component. This allows setting an image that is influenced by the buttons mask.
     public Image assetTypeIndicatorImage;
     public AssetButtonInteraction assetButtonInteraction;
     public GameObject loadingSymbol;
@@ -28,24 +34,45 @@ public class AssetBrowserButtonHandler : ButtonHandler
     [Header("Thumbnail Sprites")]
     public Sprite errorAssetThumbnail;
 
+    private AssetBrowserSystem.AbStructAsset currentAsset;
+
+    private enum InteractionStrategy
+    {
+        UiAssetBrowser
+    }
+
+    private InteractionStrategy interactionStrategy;
+
     // Dependencies
     EditorEvents editorEvents;
 
     //AssetThumbnailManagerSystem assetThumbnailManagerSystem;
     SceneManagerSystem sceneManagerSystem;
     PromptSystem promptSystem;
+    AddEntitySystem addEntitySystem;
+    CameraState cameraState;
 
     [Inject]
-    void Construct(EditorEvents editorEvents, /*AssetThumbnailManagerSystem assetThumbnailManagerSystem,*/ SceneManagerSystem sceneManagerSystem, PromptSystem promptSystem)
+    void Construct(EditorEvents editorEvents,
+        /*AssetThumbnailManagerSystem assetThumbnailManagerSystem,*/
+        SceneManagerSystem sceneManagerSystem,
+        PromptSystem promptSystem,
+        AddEntitySystem addEntitySystem,
+        CameraState cameraState)
     {
         this.editorEvents = editorEvents;
         /*this.assetThumbnailManagerSystem = assetThumbnailManagerSystem;*/
         this.sceneManagerSystem = sceneManagerSystem;
         this.promptSystem = promptSystem;
+        this.addEntitySystem = addEntitySystem;
+        this.cameraState = cameraState;
     }
 
     public void InitUsageInUiAssetBrowser(AssetBrowserSystem.AbStructAsset abStructAsset)
     {
+        Assert.IsNull(currentAsset, "Double initialization");
+
+        currentAsset = abStructAsset;
         //assetButtonInteraction.assetMetadata = metadata;
         maskedImage.sprite = null; // Clear thumbnail. There might be one still set because the prefab gets reused from the pool
 
@@ -53,6 +80,12 @@ public class AssetBrowserButtonHandler : ButtonHandler
         SetTypeIndicator(abStructAsset);
         SetEnabled(true);
     }
+
+    public void OnReturnToPool()
+    {
+        currentAsset = null;
+    }
+
 
     private void SetTypeIndicator(AssetBrowserSystem.AbStructAsset abStructAsset)
     {
@@ -102,7 +135,7 @@ public class AssetBrowserButtonHandler : ButtonHandler
     private void SetEnabled(bool value)
     {
         button.enabled = value;
-        assetButtonInteraction.enableDragAndDrop = value && IsDragAndDropEnabled();
+        //assetButtonInteraction.enableDragAndDrop = value && IsDragAndDropEnabled();
         maskedImage.color = value ? Color.white : Color.red;
     }
 
@@ -117,6 +150,7 @@ public class AssetBrowserButtonHandler : ButtonHandler
     }
 
     //#region Initialization
+
     private bool IsCyclicScene()
     {
         /*
@@ -151,63 +185,11 @@ public class AssetBrowserButtonHandler : ButtonHandler
         */
 
         return false;
-    } /*
-    private void SetTypeIndicator(AssetMetadata metadata)
-    {
-        if (metadata == null)
-        {
-            assetTypeIndicatorImage.sprite = null;
-            assetTypeIndicatorImage.enabled = false;
-            return;
-        }
-
-        assetTypeIndicatorImage.enabled = true;
-        switch (this.metadata.assetType)
-        {
-            case AssetMetadata.AssetType.Unknown:
-                break;
-            case AssetMetadata.AssetType.Model:
-                assetTypeIndicatorImage.sprite = modelTypeIndicator;
-                break;
-            case AssetMetadata.AssetType.Image:
-                assetTypeIndicatorImage.sprite = imageTypeIndicator;
-                break;
-            case AssetMetadata.AssetType.Scene:
-                assetTypeIndicatorImage.sprite = sceneTypeIndicator;
-                break;
-            default:
-                break;
-        }
     }
-    private void SetText(AssetMetadata metadata)
+
+    private void SetOnClickActionInUiAssetBrowser()
     {
-        if (metadata == null)
-        {
-            text.text = "None";
-            return;
-        }
-
-        text.text = this.metadata.assetDisplayName;
     }
-    private void SetOnClickAction(AssetMetadata metadata, Action<Guid> onClick)
-    {
-        button.onClick.RemoveAllListeners();
-
-        if (onClick == null)
-        {
-            button.onClick.AddListener(assetButtonInteraction.OnClick);
-            return;
-        }
-
-        if (metadata == null)
-        {
-            button.onClick.AddListener(() => onClick(Guid.Empty));
-            return;
-        }
-
-        button.onClick.AddListener(() => onClick(metadata.assetId));
-    }
-    #endregion*/
 
     private bool IsVisibleInScrollView()
     {
@@ -290,6 +272,107 @@ public class AssetBrowserButtonHandler : ButtonHandler
     }
 
     public class Factory : PlaceholderFactory<AssetBrowserButtonHandler>
+    {
+    }
+
+    private DclEntity newEntity = null;
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        switch (interactionStrategy)
+        {
+            case InteractionStrategy.UiAssetBrowser:
+                OnPointerClickUiAssetBrowser(eventData);
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    }
+
+    private void OnPointerClickUiAssetBrowser(PointerEventData eventData)
+    {
+        newEntity = SetupEntity();
+
+        Ray ray = new Ray(cameraState.Position, cameraState.Forward);
+        if (Physics.Raycast(ray, out RaycastHit hit, 50))
+        {
+            AddEntityToScene(hit.point);
+        }
+        else
+        {
+            AddEntityToScene(ray.GetPoint(10));
+        }
+    }
+
+    private DclEntity SetupEntity()
+    {
+        var e = new DclEntity(Guid.NewGuid(), currentAsset.name);
+        e.AddComponent(new DclTransformComponent());
+
+        switch (currentAsset.assetInfo.assetType)
+        {
+            case AssetType.Model3D:
+                var gltfShape = new DclGltfContainerComponent(currentAsset.assetInfo.assetId);
+                e.AddComponent(gltfShape);
+                break;
+            case AssetType.Image:
+                break;
+            case AssetType.Scene:
+                DclSceneComponent sceneComponent = new DclSceneComponent(currentAsset.assetInfo.assetId);
+                e.AddComponent(sceneComponent);
+
+                // Make all entities in the child scene to floating
+                DclScene scene = sceneManagerSystem.GetScene(currentAsset.assetInfo.assetId);
+                foreach (var entity in scene.AllEntities)
+                {
+                    scene.AddFloatingEntity(entity.Value);
+                }
+
+                scene.ClearAllEntities();
+                break;
+        }
+
+        return e;
+    }
+
+    private void AddEntityToScene(Vector3 position)
+    {
+        sceneManagerSystem.GetCurrentSceneOrNull()?.RemoveFloatingEntity(newEntity.Id);
+        switch (currentAsset.assetInfo.assetType)
+        {
+            case AssetType.Model3D:
+                addEntitySystem.AddModelAssetEntityAsCommand(newEntity, currentAsset.assetInfo.assetId, position);
+                break;
+            case AssetType.Image:
+                break;
+            case AssetType.Scene:
+                // Make all floating entities in child scene normal again
+                DclScene scene = sceneManagerSystem.GetScene(currentAsset.assetInfo.assetId);
+                foreach (var entity in scene.AllFloatingEntities)
+                {
+                    scene.AddEntity(entity.Value);
+                }
+
+                scene.ClearFloatingEntities();
+
+                addEntitySystem.AddSceneAssetEntityAsCommand(newEntity, currentAsset.assetInfo.assetId, position);
+                break;
+        }
+    }
+
+    public void OnDrag(PointerEventData eventData)
+    {
+        switch (interactionStrategy)
+        {
+            case InteractionStrategy.UiAssetBrowser:
+                OnDragUiAssetBrowser(eventData);
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    }
+
+    private void OnDragUiAssetBrowser(PointerEventData eventData)
     {
     }
 }
