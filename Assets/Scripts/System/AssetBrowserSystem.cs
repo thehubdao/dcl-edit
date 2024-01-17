@@ -111,6 +111,9 @@ public class AssetBrowserSystem
 
         foreach (var assetInfo in discoveredAssets.discoveredAssets.Values)
         {
+            if (!assetInfo.visible)
+                continue;
+
             var path = new List<string> {AssetSourceName(assetInfo.assetSource)};
             path.AddRange(assetInfo.displayPath.Split("/"));
 
