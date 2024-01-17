@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Assets.Scripts.Assets;
 using JetBrains.Annotations;
 using UnityEngine;
@@ -17,15 +18,26 @@ public class SpecialAssets : MonoBehaviour
     {
         private readonly Stack<CommonAssetTypes.GameObjectPoolEntry> pool = new();
         private readonly GameObject template;
+        private readonly Transform poolParent;
 
-        public GameObjectProvider(GameObject template)
+        public GameObjectProvider(GameObject template, Transform poolParent)
         {
             this.template = template;
+            this.poolParent = poolParent;
         }
 
         public void ReturnToPool(CommonAssetTypes.GameObjectInstance modelInstance)
         {
+            foreach (var onReturnToPool in modelInstance.gameObject.GetComponentsInChildren<IOnReturnToPool>())
+            {
+                onReturnToPool.OnReturnToPool();
+            }
+
+            modelInstance.gameObject.transform.SetParent(poolParent, false);
             modelInstance.gameObject.SetActive(false);
+
+            Assert.IsFalse(pool.Any(e => e.modelInstance == modelInstance));
+
             pool.Push(new CommonAssetTypes.GameObjectPoolEntry(modelInstance));
         }
 
@@ -63,6 +75,8 @@ public class SpecialAssets : MonoBehaviour
     public GameObjectProvider assetFolderUiElement;
     public GameObjectProvider assetButtonUiElement;
 
+    public Transform poolParent;
+
     [Inject]
     public void Construct()
     {
@@ -72,10 +86,15 @@ public class SpecialAssets : MonoBehaviour
         Assert.IsNotNull(assetFolderUiElementTemplate);
         Assert.IsNotNull(assetButtonUiElementTemplate);
 
-        errorModelProvider = new GameObjectProvider(errorTemplate);
-        loadingModelProvider = new GameObjectProvider(loadingTemplate);
-        assetFolderUiElement = new GameObjectProvider(assetFolderUiElementTemplate);
-        assetButtonUiElement = new GameObjectProvider(assetButtonUiElementTemplate);
+        errorModelProvider = new GameObjectProvider(errorTemplate, poolParent);
+        loadingModelProvider = new GameObjectProvider(loadingTemplate, poolParent);
+        assetFolderUiElement = new GameObjectProvider(assetFolderUiElementTemplate, poolParent);
+        assetButtonUiElement = new GameObjectProvider(assetButtonUiElementTemplate, poolParent);
         // ReSharper restore ExpressionIsAlwaysNull
     }
+}
+
+public interface IOnReturnToPool
+{
+    void OnReturnToPool();
 }

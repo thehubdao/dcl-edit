@@ -41,7 +41,19 @@ public class AssetBrowserSystem
 
         public override string name { get; }
 
+        public bool isExpanded
+        {
+            get => isExpandedInternal;
+            set
+            {
+                isExpandedInternal = value;
+                InvokeChange();
+            }
+        }
+
         private readonly List<AbStructItem> items = new();
+
+        private bool isExpandedInternal = false;
 
         public void Clear()
         {
@@ -54,16 +66,16 @@ public class AssetBrowserSystem
             return (AbStructFolder) items.Find(si => si.name == folderName && si.GetType() == typeof(AbStructFolder));
         }
 
-        public AbStructFolder CreateFolder(string folderName)
+        public AbStructFolder CreateFolderNoChangeInvoke(string folderName)
         {
             var abStructItem = new AbStructFolder(folderName);
             items.Add(abStructItem);
             return abStructItem;
         }
 
-        public AbStructFolder GetOrCreateFolder(string folderName)
+        public AbStructFolder GetOrCreateFolderNoChangeInvoke(string folderName)
         {
-            return GetChildFolder(folderName) ?? CreateFolder(folderName);
+            return GetChildFolder(folderName) ?? CreateFolderNoChangeInvoke(folderName);
         }
 
         public List<AbStructItem> GetItems()
@@ -71,7 +83,7 @@ public class AssetBrowserSystem
             return items;
         }
 
-        public void AddAsset(CommonAssetTypes.AssetInfo assetInfo)
+        public void AddAssetNoChangeInvoke(CommonAssetTypes.AssetInfo assetInfo)
         {
             items.Add(new AbStructAsset(assetInfo));
         }
@@ -97,19 +109,14 @@ public class AssetBrowserSystem
     {
         rootItem.Clear();
 
-        var tmpCount = 0;
-
         foreach (var assetInfo in discoveredAssets.discoveredAssets.Values)
         {
             var path = new List<string> {AssetSourceName(assetInfo.assetSource)};
             path.AddRange(assetInfo.displayPath.Split("/"));
 
-            var folder = path.Aggregate(rootItem, (current, pathPart) => current.GetOrCreateFolder(pathPart));
+            var folder = path.Aggregate(rootItem, (current, pathPart) => current.GetOrCreateFolderNoChangeInvoke(pathPart));
 
-            folder.AddAsset(assetInfo);
-
-            if (tmpCount++ > 1000)
-                break;
+            folder.AddAssetNoChangeInvoke(assetInfo);
         }
 
         rootItem.InvokeChange();

@@ -4,7 +4,7 @@ using Assets.Scripts.Assets;
 using UnityEngine;
 using Zenject;
 
-public class AssetBrowserFolderFillerHandler : MonoBehaviour
+public class AssetBrowserFolderFillerHandler : MonoBehaviour, IOnReturnToPool
 {
     private List<CommonAssetTypes.GameObjectInstance> childGameObjectInstances = new();
 
@@ -17,21 +17,26 @@ public class AssetBrowserFolderFillerHandler : MonoBehaviour
         this.specialAssets = specialAssets;
     }
 
+    [SerializeField]
+    private GameObject subFolderParent;
 
-    private void UpdateFolderContent(GameObject parentObject, AssetBrowserSystem.AbStructFolder parentAbStructFolder)
+    [SerializeField]
+    private GameObject subAssetParent;
+
+
+    public void UpdateFolderContent(AssetBrowserSystem.AbStructFolder parentAbStructFolder)
     {
-        Debug.Log("Update Folder Content");
-
+        ClearFolderContent();
 
         foreach (var abStructItem in parentAbStructFolder.GetItems())
         {
             switch (abStructItem)
             {
                 case AssetBrowserSystem.AbStructAsset abStructAsset:
-                    AddAssetContent(parentObject, abStructAsset);
+                    AddAssetContent(subAssetParent, abStructAsset);
                     break;
                 case AssetBrowserSystem.AbStructFolder abStructFolder:
-                    AddFolder(parentObject, abStructFolder);
+                    AddFolder(subFolderParent, abStructFolder);
                     break;
             }
         }
@@ -43,23 +48,28 @@ public class AssetBrowserFolderFillerHandler : MonoBehaviour
         {
             gameObjectInstance.ReturnToPool();
         }
+
+        childGameObjectInstances.Clear();
     }
 
     private void AddFolder(GameObject parentObject, AssetBrowserSystem.AbStructFolder abStructFolder)
     {
-        Debug.Log("Add folder");
         var folderUiElement = specialAssets.assetFolderUiElement.CreateInstance();
-        folderUiElement.gameObject.transform.SetParent(parentObject.GetComponent<AssetBrowserFolderHandler>()?.subFolderContainer ?? parentObject.transform, false);
+        folderUiElement.gameObject.transform.SetParent(parentObject.transform, false);
         folderUiElement.gameObject.GetComponent<AssetBrowserFolderHandler>().Init(abStructFolder);
         childGameObjectInstances.Add(folderUiElement);
     }
 
     private void AddAssetContent(GameObject parentObject, AssetBrowserSystem.AbStructAsset abStructAsset)
     {
-        Debug.Log("Add content");
         var buttonUiElement = specialAssets.assetButtonUiElement.CreateInstance();
-        buttonUiElement.gameObject.transform.SetParent(parentObject.GetComponent<AssetBrowserFolderHandler>().assetButtonContainer, false);
+        buttonUiElement.gameObject.transform.SetParent(parentObject.transform, false);
         buttonUiElement.gameObject.GetComponent<AssetBrowserButtonHandler>().InitUsageInUiAssetBrowser(abStructAsset);
         childGameObjectInstances.Add(buttonUiElement);
+    }
+
+    public void OnReturnToPool()
+    {
+        ClearFolderContent();
     }
 }

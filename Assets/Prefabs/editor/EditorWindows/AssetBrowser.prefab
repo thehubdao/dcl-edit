@@ -46,6 +46,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8320216663454323932}
   - component: {fileID: 8320216663454323935}
+  - component: {fileID: 7681672456150411190}
   m_Layer: 5
   m_Name: AssetBrowser
   m_TagString: Untagged
@@ -92,6 +93,21 @@ MonoBehaviour:
   headerContent: {fileID: 3788102083799176585}
   scrollViewContent: {fileID: 1756567712722818233}
   footerContent: {fileID: 0}
+  assetBrowserFolderFillerHandler: {fileID: 7681672456150411190}
+--- !u!114 &7681672456150411190
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8320216663454323933}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0913e06e51abe43468c0d9829a418c6c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  subFolderParent: {fileID: 1756567712722818233}
+  subAssetParent: {fileID: 1756567712722818233}
 --- !u!1 &8320216664398521644
 GameObject:
   m_ObjectHideFlags: 0

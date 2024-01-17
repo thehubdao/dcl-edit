@@ -103,3 +103,4 @@ MonoBehaviour:
   loadingTemplate: {fileID: 5108317101022607464, guid: b3105ef88651e5f4b97a1d65f40d9972, type: 3}
   assetFolderUiElementTemplate: {fileID: 569288621326271914, guid: bdf698fa20b9d9842917888e8bea6558, type: 3}
   assetButtonUiElementTemplate: {fileID: 9199737783199215851, guid: 5fbffa0ef7a6dae40aee2be1808b6979, type: 3}
+  poolParent: {fileID: 2209880425006019884}

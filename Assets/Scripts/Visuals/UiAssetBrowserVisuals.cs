@@ -19,47 +19,47 @@ namespace Assets.Scripts.Visuals
 {
     public class UiAssetBrowserVisuals : MonoBehaviour
     {
-        private struct GameObjectInstanceTree
-        {
-            public struct GameObjectInstanceTreeNode
-            {
-                private CommonAssetTypes.GameObjectInstance gameObjectInstance;
-
-                private List<GameObjectInstanceTreeNode> children;
-
-                public void ReturnToPool()
-                {
-                    ReturnChildrenToPool();
-
-                    gameObjectInstance.ReturnToPool();
-                }
-
-                public void ReturnChildrenToPool()
-                {
-                    foreach (var child in children)
-                    {
-                        child.ReturnToPool();
-                    }
-
-                    children.Clear();
-                }
-
-                public void AddChild(GameObjectInstanceTreeNode newChild)
-                {
-                    children.Add(newChild);
-                }
-            }
-
-            public List<GameObjectInstanceTreeNode> rootNodes;
-
-            public void ReturnAllToPool()
-            {
-                foreach (var node in rootNodes)
-                {
-                    node.ReturnToPool();
-                }
-            }
-        }
+        //private struct GameObjectInstanceTree
+        //{
+        //    public struct GameObjectInstanceTreeNode
+        //    {
+        //        private CommonAssetTypes.GameObjectInstance gameObjectInstance;
+        //
+        //        private List<GameObjectInstanceTreeNode> children;
+        //
+        //        public void ReturnToPool()
+        //        {
+        //            ReturnChildrenToPool();
+        //
+        //            gameObjectInstance.ReturnToPool();
+        //        }
+        //
+        //        public void ReturnChildrenToPool()
+        //        {
+        //            foreach (var child in children)
+        //            {
+        //                child.ReturnToPool();
+        //            }
+        //
+        //            children.Clear();
+        //        }
+        //
+        //        public void AddChild(GameObjectInstanceTreeNode newChild)
+        //        {
+        //            children.Add(newChild);
+        //        }
+        //    }
+        //
+        //    public List<GameObjectInstanceTreeNode> rootNodes;
+        //
+        //    public void ReturnAllToPool()
+        //    {
+        //        foreach (var node in rootNodes)
+        //        {
+        //            node.ReturnToPool();
+        //        }
+        //    }
+        //}
 
         public Action<Guid> assetButtonOnClickOverride = null;
 
@@ -79,6 +79,9 @@ namespace Assets.Scripts.Visuals
         [SerializeField]
         private GameObject footerContent;
         private UiBuilder.UiBuilder footerUiBuilder;
+
+        [SerializeField]
+        private AssetBrowserFolderFillerHandler assetBrowserFolderFillerHandler;
 
         // Dependencies
         private EditorEvents editorEvents;
@@ -205,56 +208,57 @@ namespace Assets.Scripts.Visuals
         {
             Debug.Log("Update Content");
             // clear folder Content
-            ClearFolderContent();
+            //ClearFolderContent();
 
-            UpdateFolderContent(scrollViewContent, assetBrowserSystem.rootItem);
+            UpdateFolderContent(assetBrowserSystem.rootItem);
         }
 
-        private void UpdateFolderContent(GameObject parentObject, AssetBrowserSystem.AbStructFolder parentAbStructFolder)
+        private void UpdateFolderContent(AssetBrowserSystem.AbStructFolder parentAbStructFolder)
         {
             Debug.Log("Update Folder Content");
 
+            assetBrowserFolderFillerHandler.UpdateFolderContent(parentAbStructFolder);
 
-            foreach (var abStructItem in parentAbStructFolder.GetItems())
-            {
-                switch (abStructItem)
-                {
-                    case AssetBrowserSystem.AbStructAsset abStructAsset:
-                        AddAssetContent(parentObject, abStructAsset);
-                        break;
-                    case AssetBrowserSystem.AbStructFolder abStructFolder:
-                        AddFolder(parentObject, abStructFolder);
-                        break;
-                }
-            }
+            //foreach (var abStructItem in parentAbStructFolder.GetItems())
+            //{
+            //    switch (abStructItem)
+            //    {
+            //        case AssetBrowserSystem.AbStructAsset abStructAsset:
+            //            AddAssetContent(parentObject, abStructAsset);
+            //            break;
+            //        case AssetBrowserSystem.AbStructFolder abStructFolder:
+            //            AddFolder(parentObject, abStructFolder);
+            //            break;
+            //    }
+            //}
         }
 
-        private void ClearFolderContent()
-        {
-            foreach (var gameObjectInstance in allGameObjectInstances)
-            {
-                gameObjectInstance.ReturnToPool();
-            }
-        }
+        //private void ClearFolderContent()
+        //{
+        //    foreach (var gameObjectInstance in allGameObjectInstances)
+        //    {
+        //        gameObjectInstance.ReturnToPool();
+        //    }
+        //}
 
-        private void AddFolder(GameObject parentObject, AssetBrowserSystem.AbStructFolder abStructFolder)
-        {
-            Debug.Log("Add folder");
-            var folderUiElement = specialAssets.assetFolderUiElement.CreateInstance();
-            folderUiElement.gameObject.transform.SetParent(parentObject.GetComponent<AssetBrowserFolderHandler>()?.subFolderContainer ?? parentObject.transform, false);
-            folderUiElement.gameObject.GetComponent<AssetBrowserFolderHandler>().Init(abStructFolder);
-            allGameObjectInstances.Add(folderUiElement);
-            UpdateFolderContent(folderUiElement.gameObject, abStructFolder);
-        }
-
-        private void AddAssetContent(GameObject parentObject, AssetBrowserSystem.AbStructAsset abStructAsset)
-        {
-            Debug.Log("Add content");
-            var buttonUiElement = specialAssets.assetButtonUiElement.CreateInstance();
-            buttonUiElement.gameObject.transform.SetParent(parentObject.GetComponent<AssetBrowserFolderHandler>().assetButtonContainer, false);
-            buttonUiElement.gameObject.GetComponent<AssetBrowserButtonHandler>().InitUsageInUiAssetBrowser(abStructAsset);
-            allGameObjectInstances.Add(buttonUiElement);
-        }
+        //private void AddFolder(GameObject parentObject, AssetBrowserSystem.AbStructFolder abStructFolder)
+        //{
+        //    Debug.Log("Add folder");
+        //    var folderUiElement = specialAssets.assetFolderUiElement.CreateInstance();
+        //    folderUiElement.gameObject.transform.SetParent(parentObject.GetComponent<AssetBrowserFolderHandler>()?.subFolderContainer ?? parentObject.transform, false);
+        //    folderUiElement.gameObject.GetComponent<AssetBrowserFolderHandler>().Init(abStructFolder);
+        //    allGameObjectInstances.Add(folderUiElement);
+        //    UpdateFolderContent(folderUiElement.gameObject, abStructFolder);
+        //}
+        //
+        //private void AddAssetContent(GameObject parentObject, AssetBrowserSystem.AbStructAsset abStructAsset)
+        //{
+        //    Debug.Log("Add content");
+        //    var buttonUiElement = specialAssets.assetButtonUiElement.CreateInstance();
+        //    buttonUiElement.gameObject.transform.SetParent(parentObject.GetComponent<AssetBrowserFolderHandler>().assetButtonContainer, false);
+        //    buttonUiElement.gameObject.GetComponent<AssetBrowserButtonHandler>().InitUsageInUiAssetBrowser(abStructAsset);
+        //    allGameObjectInstances.Add(buttonUiElement);
+        //}
 
         /*private void UpdateFooter()
         {
