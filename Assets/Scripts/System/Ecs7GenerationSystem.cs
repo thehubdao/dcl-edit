@@ -6,6 +6,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Assets.Scripts.Assets;
 using Assets.Scripts.EditorState;
 using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
@@ -101,7 +102,7 @@ public class Ecs7GenerationSystem
     private ExposeEntitySystem exposeEntitySystem;
     private SceneManagerSystem sceneManagerSystem;
     private AvailableComponentsState availableComponentsState;
-    private AssetManagerSystem assetManagerSystem;
+    private DiscoveredAssets discoveredAssets;
 
     [Inject]
     private void Construct(
@@ -109,13 +110,13 @@ public class Ecs7GenerationSystem
         ExposeEntitySystem exposeEntitySystem,
         SceneManagerSystem sceneManagerSystem,
         AvailableComponentsState availableComponentsState,
-        AssetManagerSystem assetManagerSystem)
+        DiscoveredAssets discoveredAssets)
     {
         this.sceneManagerState = sceneManagerState;
         this.exposeEntitySystem = exposeEntitySystem;
         this.sceneManagerSystem = sceneManagerSystem;
         this.availableComponentsState = availableComponentsState;
-        this.assetManagerSystem = assetManagerSystem;
+        this.discoveredAssets = discoveredAssets;
     }
 
     public async Task<string> GenerateScript()
@@ -393,10 +394,12 @@ public class Ecs7GenerationSystem
             return asset;
         }
 
+        var buildAsset = discoveredAssets.GetAssetFormat<AssetFormatBuildForDecentraland>(id);
+
         //var assetPath = await assetManagerSystem.CopyAssetTo(id, "Some path");
         //neededAssets.Add(id, assetPath);
         //return assetPath;
-        return "";
+        return "dcl-edit/build/assets/" + buildAsset.Item2.buildPath;
     }
 
     const string rootEntitySymbol = "rootEntity";

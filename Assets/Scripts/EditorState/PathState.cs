@@ -37,6 +37,16 @@ namespace Assets.Scripts.EditorState
             set { _projectPath = value; }
         }
 
+        public string buildPath
+        {
+            get
+            {
+                var path = Path.Combine(ProjectPath, "dcl-edit", "build", "assets");
+                Directory.CreateDirectory(path);
+                return path;
+            }
+        }
+
         [Inject]
         private void Construct()
         {

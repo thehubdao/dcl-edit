@@ -57,6 +57,7 @@ public class DclEditorInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<GlbInterpreterSystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<TransformerBuilderCloudToBuilderDownload>().AsSingle();
+        Container.BindInterfacesAndSelfTo<TransformerBuilderDownloadToBuildDecentraland>().AsSingle();
         Container.BindInterfacesAndSelfTo<TransformerBuilderDownloadToLoadedModel>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<SpecialAssets>().FromComponentOn(specialAssets.gameObject).AsSingle();
