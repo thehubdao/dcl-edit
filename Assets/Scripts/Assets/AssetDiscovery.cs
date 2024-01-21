@@ -6,21 +6,23 @@ namespace Assets.Scripts.Assets
     public class AssetDiscovery
     {
         // Dependencies
-        private DiscoveredAssets discoveredAssets;
         private BuilderAssetDiscovery builderAssetDiscovery;
+        private OnDiscAssetDiscovery onDiscAssetDiscovery;
+
 
         [Inject]
         private void Construct(
-            DiscoveredAssets discoveredAssets,
-            BuilderAssetDiscovery builderAssetDiscovery)
+            BuilderAssetDiscovery builderAssetDiscovery,
+            OnDiscAssetDiscovery onDiscAssetDiscovery)
         {
-            this.discoveredAssets = discoveredAssets;
             this.builderAssetDiscovery = builderAssetDiscovery;
+            this.onDiscAssetDiscovery = onDiscAssetDiscovery;
         }
 
         public void Initialize()
         {
             builderAssetDiscovery.Initialize();
+            onDiscAssetDiscovery.Initialize();
         }
     }
 }

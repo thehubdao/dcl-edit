@@ -37,7 +37,7 @@ namespace Assets.Scripts.EditorState
             set { _projectPath = value; }
         }
 
-        public string buildPath
+        public string BuildPath
         {
             get
             {
@@ -46,6 +46,8 @@ namespace Assets.Scripts.EditorState
                 return path;
             }
         }
+
+        public string AssetPath => Path.Combine(ProjectPath, "assets");
 
         [Inject]
         private void Construct()

@@ -70,11 +70,11 @@ public class TransformerBuilderDownloadToBuildDecentraland : AssetFormatTransfor
             // pack gbl
             glb.SetGltfJson(json);
 
-            File.WriteAllBytes(Path.Combine(pathsState.buildPath, nextPath), glb.GetAllBytes());
+            File.WriteAllBytes(Path.Combine(pathsState.BuildPath, nextPath), glb.GetAllBytes());
         }
         else
         {
-            File.Copy(assetInBuilderDownloadFormat.basePath!, Path.Combine(pathsState.buildPath, nextPath), true);
+            File.Copy(assetInBuilderDownloadFormat.basePath!, Path.Combine(pathsState.BuildPath, nextPath), true);
         }
 
         var assetInBuildFormat = new AssetFormatBuildForDecentraland(assetInBuilderDownloadFormat.hash, nextPath);

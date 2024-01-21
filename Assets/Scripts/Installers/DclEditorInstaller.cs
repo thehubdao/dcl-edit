@@ -53,8 +53,10 @@ public class DclEditorInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<AssetDiscovery>().AsSingle();
         Container.BindInterfacesAndSelfTo<DiscoveredAssets>().AsSingle();
         Container.BindInterfacesAndSelfTo<BuilderAssetDiscovery>().AsSingle();
+        Container.BindInterfacesAndSelfTo<OnDiscAssetDiscovery>().AsSingle();
         Container.BindInterfacesAndSelfTo<AssetFormatTransformer>().AsSingle();
         Container.BindInterfacesAndSelfTo<GlbInterpreterSystem>().AsSingle();
+        Container.BindInterfacesAndSelfTo<AssetMetaFile>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<TransformerBuilderCloudToBuilderDownload>().AsSingle();
         Container.BindInterfacesAndSelfTo<TransformerBuilderDownloadToBuildDecentraland>().AsSingle();
