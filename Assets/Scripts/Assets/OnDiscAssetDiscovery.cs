@@ -35,6 +35,8 @@ public class OnDiscAssetDiscovery
         this.editionEvents = editorEvents;
     }
 
+    private Dictionary<string, Guid> pathToIdStore = new();
+
     public void Initialize()
     {
         fileManagerSystem.ForAllFilesByFilterNowAndOnChange(Path.Combine(pathState.ProjectPath, "assets"), "*", (eventType, filePath, oldFilePath) =>
@@ -42,66 +44,99 @@ public class OnDiscAssetDiscovery
             // ignore unknown files including meta files
             if (!IsKnownAssetFile(filePath)) return;
 
-            // try to find the meta file for the asset
-            const string metaFileExtension = ".dclasset";
-            var metaFilePath = filePath + metaFileExtension;
-            AssetMetaFile.Structure metaFile;
-            if (File.Exists(metaFilePath))
+            // check if deleted
+            if (eventType is FileManagerSystem.FileWatcherEvent.Deleted)
             {
-                metaFile = assetMetaFile.ReadFile(metaFilePath);
+                if (pathToIdStore.TryGetValue(filePath, out var id))
+                {
+                    if (discoveredAssets.discoveredAssets.ContainsKey(id))
+                    {
+                        discoveredAssets.discoveredAssets.Remove(id);
+                        pathToIdStore.Remove(filePath);
+                    }
+                }
+            }
+            else if (eventType is FileManagerSystem.FileWatcherEvent.Renamed)
+            {
+                //if (pathToIdStore.TryGetValue(oldFilePath, out var id))
+                //{
+                //    if (discoveredAssets.discoveredAssets.ContainsKey(id))
+                //    {
+                //        Assert.IsTrue(discoveredAssets.discoveredAssets[id].baseFormat is AssetFormatOnDisc);
+                //        var baseFormat = (AssetFormatOnDisc) discoveredAssets.discoveredAssets[id].baseFormat;
+                //
+                //        
+                //            
+                //            
+                //        pathToIdStore.Remove(oldFilePath);
+                //        pathToIdStore.Add(filePath, id);
+                //    }
+                //}
             }
             else
             {
-                // if no meta file exist, make a new one
-                metaFile = assetMetaFile.MakeStructure(Path.GetFileName(filePath), filePath, AssetTypeStringByExtension(filePath));
-                assetMetaFile.WriteFile(metaFilePath, metaFile);
-            }
-
-            // extract values for easier access
-            var assetId = Guid.Parse(metaFile.metadata.assetId);
-
-            // try to find asset info
-            if (discoveredAssets.discoveredAssets.TryGetValue(assetId, out var existingAssetInfo))
-            {
-                Assert.IsTrue(existingAssetInfo.baseFormat is AssetFormatOnDisc);
-                var formatOnDisc = (AssetFormatOnDisc) existingAssetInfo.baseFormat;
-
-                if (eventType == FileManagerSystem.FileWatcherEvent.Renamed)
+                // try to find the meta file for the asset
+                const string metaFileExtension = ".dclasset";
+                var metaFilePath = filePath + metaFileExtension;
+                AssetMetaFile.Structure metaFile;
+                if (File.Exists(metaFilePath))
                 {
-                    formatOnDisc.SetPaths(metaFilePath, filePath);
+                    metaFile = assetMetaFile.ReadFile(metaFilePath);
+                }
+                else
+                {
+                    // if no meta file exist, make a new one
+                    metaFile = assetMetaFile.MakeStructure(Path.GetFileName(filePath), filePath, AssetTypeStringByExtension(filePath));
+                    assetMetaFile.WriteFile(metaFilePath, metaFile);
                 }
 
-                if (formatOnDisc.UpdateHash())
+                // extract values for easier access
+                var assetId = Guid.Parse(metaFile.metadata.assetId);
+
+                // try to find asset info
+                if (discoveredAssets.discoveredAssets.TryGetValue(assetId, out var existingAssetInfo))
                 {
-                    existingAssetInfo.InvokeAssetFormatChanged();
+                    Assert.IsTrue(existingAssetInfo.baseFormat is AssetFormatOnDisc);
+                    var formatOnDisc = (AssetFormatOnDisc) existingAssetInfo.baseFormat;
+
+                    if (eventType == FileManagerSystem.FileWatcherEvent.Renamed)
+                    {
+                        formatOnDisc.SetPaths(metaFilePath, filePath);
+                    }
+
+                    if (formatOnDisc.UpdateHash())
+                    {
+                        existingAssetInfo.InvokeAssetFormatChanged();
+                    }
                 }
-            }
-            else
-            {
-                // make and add asset info
-                // asset path relative to the assets folder
-                var displayPath = Path.GetRelativePath(pathState.AssetPath, filePath);
-                displayPath = Path.GetDirectoryName(displayPath);
-
-                // create base format
-                var baseFormat = new AssetFormatOnDisc(metaFilePath, filePath);
-
-                // create asset info
-                var newAssetInfo = new CommonAssetTypes.AssetInfo
+                else
                 {
-                    assetId = assetId,
-                    assetName = metaFile.metadata.assetDisplayName,
-                    assetSource = CommonAssetTypes.AssetSource.Local,
-                    assetType = AssetTypeByAssetTypeString(metaFile.metadata.assetType),
-                    availableFormats = new List<CommonAssetTypes.AssetFormat> {baseFormat},
-                    baseFormat = baseFormat,
-                    dependencies = new List<CommonAssetTypes.AssetInfo>(),
-                    displayPath = displayPath,
-                    visible = true
-                };
+                    // make and add asset info
+                    // asset path relative to the assets folder
+                    var displayPath = Path.GetRelativePath(pathState.AssetPath, filePath);
+                    displayPath = Path.GetDirectoryName(displayPath);
 
-                // add asset info
-                discoveredAssets.discoveredAssets.Add(newAssetInfo.assetId, newAssetInfo);
+                    // create base format
+                    var baseFormat = new AssetFormatOnDisc(metaFilePath, filePath);
+
+                    // create asset info
+                    var newAssetInfo = new CommonAssetTypes.AssetInfo
+                    {
+                        assetId = assetId,
+                        assetName = metaFile.metadata.assetDisplayName,
+                        assetSource = CommonAssetTypes.AssetSource.Local,
+                        assetType = AssetTypeByAssetTypeString(metaFile.metadata.assetType),
+                        availableFormats = new List<CommonAssetTypes.AssetFormat> {baseFormat},
+                        baseFormat = baseFormat,
+                        dependencies = new List<CommonAssetTypes.AssetInfo>(),
+                        displayPath = displayPath,
+                        visible = true
+                    };
+
+                    // add asset info
+                    discoveredAssets.discoveredAssets.Add(newAssetInfo.assetId, newAssetInfo);
+                    pathToIdStore.Add(filePath, newAssetInfo.assetId);
+                }
             }
         });
     }
