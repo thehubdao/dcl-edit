@@ -130,12 +130,28 @@ namespace Assets.Scripts.Visuals
             SetupSceneEventListeners();
         }
 
+        private bool dirty = false;
+
         public void SetupSceneEventListeners()
         {
             //editorEvents.onAssetMetadataCacheUpdatedEvent += UpdateVisuals;
             //editorEvents.onUiChangedEvent += UpdateVisuals;
             //editorEvents.OnCurrentSceneChangedEvent += UpdateContent;
-            assetBrowserSystem.rootItem.Change += UpdateContent;
+            assetBrowserSystem.rootItem.Change += SetDirty;
+        }
+
+        private void SetDirty()
+        {
+            dirty = true;
+        }
+
+        private void LateUpdate()
+        {
+            if (dirty)
+            {
+                UpdateContent();
+                dirty = false;
+            }
         }
 
         private void OnDestroy()
