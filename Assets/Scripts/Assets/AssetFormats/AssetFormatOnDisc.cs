@@ -13,8 +13,11 @@ public class AssetFormatOnDisc : CommonAssetTypes.AssetFormat
 
     private DateTime hashInternal = DateTime.MinValue;
 
-    private string filePath = "";
-    private string metaPath = "";
+    private string filePathInternal = "";
+    private string metaPathInternal = "";
+
+    public string filePath => filePathInternal;
+    public string metaPath => metaPathInternal;
 
     public AssetFormatOnDisc(string metaPath, string assetPath)
     {
@@ -23,8 +26,8 @@ public class AssetFormatOnDisc : CommonAssetTypes.AssetFormat
 
     public void SetPaths(string metaPath, string assetPath)
     {
-        this.metaPath = metaPath;
-        this.filePath = assetPath;
+        this.metaPathInternal = metaPath;
+        this.filePathInternal = assetPath;
 
         UpdateHash();
     }
