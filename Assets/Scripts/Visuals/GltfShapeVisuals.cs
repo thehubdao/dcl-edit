@@ -76,6 +76,8 @@ namespace Assets.Scripts.Visuals
             {
                 UpdateDisplayedAsset(null);
             }
+
+            UpdateSelection(entity);
         }
 
         private void UpdateDisplayedAsset(CommonAssetTypes.AssetInfo asset)
