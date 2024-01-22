@@ -76,6 +76,8 @@ namespace Assets.Scripts.Visuals
             {
                 UpdateDisplayedAsset(null);
             }
+
+            UpdateSelection(entity);
         }
 
         private void UpdateDisplayedAsset(CommonAssetTypes.AssetInfo asset)
@@ -99,7 +101,6 @@ namespace Assets.Scripts.Visuals
 
         private void UpdateModel()
         {
-            Debug.Log("Update Model");
             if (displayedAsset == null)
             {
                 DisplayNone();

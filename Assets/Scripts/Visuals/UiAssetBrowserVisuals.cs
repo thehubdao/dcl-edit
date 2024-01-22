@@ -222,7 +222,6 @@ namespace Assets.Scripts.Visuals
 
         private void UpdateContent()
         {
-            Debug.Log("Update Content");
             // clear folder Content
             //ClearFolderContent();
 
@@ -231,8 +230,6 @@ namespace Assets.Scripts.Visuals
 
         private void UpdateFolderContent(AssetBrowserSystem.AbStructFolder parentAbStructFolder)
         {
-            Debug.Log("Update Folder Content");
-
             assetBrowserFolderFillerHandler.UpdateFolderContent(parentAbStructFolder);
 
             //foreach (var abStructItem in parentAbStructFolder.GetItems())

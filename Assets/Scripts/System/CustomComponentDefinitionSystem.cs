@@ -47,8 +47,6 @@ public class CustomComponentDefinitionSystem
 
     private void FileScannerCallback(FileManagerSystem.FileWatcherEvent e, string path, string oldPath)
     {
-        Debug.Log($"Event: {e}, Path: {path}, Old path: {oldPath}");
-
         switch (e)
         {
             case FileManagerSystem.FileWatcherEvent.Initial:
@@ -146,7 +144,7 @@ public class CustomComponentDefinitionSystem
             var schema = match.Groups["schema"].Value;
             var defaults = match.Groups["defaults"].Value;
 
-            Debug.Log($"Found component: {NoWhiteSpaces(className)} {NoWhiteSpaces(componentName)} {NoWhiteSpaces(schema)} {NoWhiteSpaces(defaults)}");
+            //Debug.Log($"Found component: {NoWhiteSpaces(className)} {NoWhiteSpaces(componentName)} {NoWhiteSpaces(schema)} {NoWhiteSpaces(defaults)}");
 
             // I hate my self
             var schemaPattern = $"(?<propertyName>{validTsSymbol})\\s*:\\s*Schemas\\s*.\\s*(?<schemaType>Boolean|String|Float|Double|Byte|Short|Int|Int64|Number|Vector3|Quaternion|Color3|Color4|Entity|EnumNumber|EnumString|Array|Map|Optional|OneOf)";
