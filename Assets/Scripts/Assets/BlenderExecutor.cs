@@ -54,8 +54,6 @@ public class BlenderExecutor
     {
         try
         {
-            Debug.Log("Start convert");
-
             var directoryName = Path.GetDirectoryName(glbPath);
             Assert.IsNotNull(directoryName);
             Directory.CreateDirectory(directoryName!);
@@ -83,15 +81,14 @@ except:
             p.EnableRaisingEvents = true;
             p!.Exited += (_, _) =>
             {
-                Debug.Log(p.StandardOutput.ReadToEnd());
                 if (p.ExitCode == 0)
                 {
-                    Debug.Log("Done convert");
                     threadManager.DoOnNextUpdate(() => then(glbPath));
                 }
                 else
                 {
                     Debug.Log($"Convert exit with code {p.ExitCode}");
+                    Debug.Log(p.StandardOutput.ReadToEnd());
                     threadManager.DoOnNextUpdate(() => then(null));
                 }
             };

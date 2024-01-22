@@ -107,7 +107,6 @@ public class OnDiscAssetDiscovery
 
                     if (formatOnDisc.UpdateHash())
                     {
-                        Debug.Log("Updated hash");
                         existingAssetInfo.InvokeAssetFormatChanged();
                     }
                 }
