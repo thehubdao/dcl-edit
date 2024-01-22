@@ -7,15 +7,63 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.Remoting.Messaging;
+using System.Text;
+using Assets.Scripts.Assets;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
+using static AssetBrowserSystem;
 
 namespace Assets.Scripts.Visuals
 {
     public class UiAssetBrowserVisuals : MonoBehaviour
     {
+        //private struct GameObjectInstanceTree
+        //{
+        //    public struct GameObjectInstanceTreeNode
+        //    {
+        //        private CommonAssetTypes.GameObjectInstance gameObjectInstance;
+        //
+        //        private List<GameObjectInstanceTreeNode> children;
+        //
+        //        public void ReturnToPool()
+        //        {
+        //            ReturnChildrenToPool();
+        //
+        //            gameObjectInstance.ReturnToPool();
+        //        }
+        //
+        //        public void ReturnChildrenToPool()
+        //        {
+        //            foreach (var child in children)
+        //            {
+        //                child.ReturnToPool();
+        //            }
+        //
+        //            children.Clear();
+        //        }
+        //
+        //        public void AddChild(GameObjectInstanceTreeNode newChild)
+        //        {
+        //            children.Add(newChild);
+        //        }
+        //    }
+        //
+        //    public List<GameObjectInstanceTreeNode> rootNodes;
+        //
+        //    public void ReturnAllToPool()
+        //    {
+        //        foreach (var node in rootNodes)
+        //        {
+        //            node.ReturnToPool();
+        //        }
+        //    }
+        //}
+
         public Action<Guid> assetButtonOnClickOverride = null;
+
+        public List<CommonAssetTypes.GameObjectInstance> allGameObjectInstances = new();
 
         [SerializeField]
         private ScrollRect scrollViewRect;
@@ -32,12 +80,18 @@ namespace Assets.Scripts.Visuals
         private GameObject footerContent;
         private UiBuilder.UiBuilder footerUiBuilder;
 
+        [SerializeField]
+        private AssetBrowserFolderFillerHandler assetBrowserFolderFillerHandler;
+
         // Dependencies
         private EditorEvents editorEvents;
+
         private AssetBrowserSystem assetBrowserSystem;
         private AssetBrowserState assetBrowserState;
         private AssetManagerSystem assetManagerSystem;
         private ContextMenuSystem contextMenuSystem;
+        private DiscoveredAssets discoveredAssets;
+        private SpecialAssets specialAssets;
 
         [Inject]
         private void Construct(
@@ -46,7 +100,9 @@ namespace Assets.Scripts.Visuals
             AssetBrowserSystem assetBrowserSystem,
             AssetBrowserState assetBrowserState,
             AssetManagerSystem assetManagerSystem,
-            ContextMenuSystem contextMenuSystem)
+            ContextMenuSystem contextMenuSystem,
+            DiscoveredAssets discoveredAssets,
+            SpecialAssets specialAssets)
         {
             headerUiBuilder = uiBuilderFactory.Create(headerContent);
             contentUiBuilder = uiBuilderFactory.Create(scrollViewContent);
@@ -56,8 +112,8 @@ namespace Assets.Scripts.Visuals
             this.assetBrowserState = assetBrowserState;
             this.assetManagerSystem = assetManagerSystem;
             this.contextMenuSystem = contextMenuSystem;
-
-            SetupSceneEventListeners();
+            this.discoveredAssets = discoveredAssets;
+            this.specialAssets = specialAssets;
         }
 
         void Start()
@@ -69,29 +125,56 @@ namespace Assets.Scripts.Visuals
         IEnumerator LateStart()
         {
             yield return null;
-            assetBrowserSystem.ChangeSorting(AssetBrowserState.Sorting.NameAscending);
+            //assetBrowserSystem.ChangeSorting(AssetBrowserState.Sorting.NameAscending);
             UpdateVisuals();
+            SetupSceneEventListeners();
         }
+
+        private bool dirty = false;
 
         public void SetupSceneEventListeners()
         {
-            editorEvents.onAssetMetadataCacheUpdatedEvent += UpdateVisuals;
-            editorEvents.onUiChangedEvent += UpdateVisuals;
-            editorEvents.OnCurrentSceneChangedEvent += UpdateContent;
+            //editorEvents.onAssetMetadataCacheUpdatedEvent += UpdateVisuals;
+            //editorEvents.onUiChangedEvent += UpdateVisuals;
+            //editorEvents.OnCurrentSceneChangedEvent += UpdateContent;
+            assetBrowserSystem.rootItem.Change += SetDirty;
+        }
+
+        private void SetDirty()
+        {
+            dirty = true;
+        }
+
+        private void LateUpdate()
+        {
+            if (dirty)
+            {
+                UpdateContent();
+                dirty = false;
+            }
         }
 
         private void OnDestroy()
         {
-            editorEvents.onAssetMetadataCacheUpdatedEvent -= UpdateVisuals;
-            editorEvents.onUiChangedEvent -= UpdateVisuals;
-            editorEvents.OnCurrentSceneChangedEvent -= UpdateContent;
+            //editorEvents.onAssetMetadataCacheUpdatedEvent -= UpdateVisuals;
+            //editorEvents.onUiChangedEvent -= UpdateVisuals;
+            //editorEvents.OnCurrentSceneChangedEvent -= UpdateContent;
         }
 
         private void UpdateVisuals()
         {
-            UpdateHeader();
+            //var sb = new StringBuilder();
+            //
+            //foreach (var asset in discoveredAssets.discoveredAssets)
+            //{
+            //    sb.AppendLine($"{asset.displayPath}/{asset.assetName}");
+            //}
+            //
+            //Debug.Log(sb);
+
+            //UpdateHeader();
             UpdateContent();
-            UpdateFooter();
+            //UpdateFooter();
         }
 
         private void UpdateHeader()
@@ -104,10 +187,10 @@ namespace Assets.Scripts.Visuals
 
             headerData.AddText("Filter:");
 
-            foreach (AssetMetadata.AssetType type in assetBrowserSystem.filters)
-            {
-                headerData.AddButton(type.ToString() + " x", _ => assetBrowserSystem.RemoveFilter(type));
-            }
+            //foreach (AssetMetadata.AssetType type in assetBrowserSystem.filters)
+            //{
+            //    headerData.AddButton(type.ToString() + " x", _ => assetBrowserSystem.RemoveFilter(type));
+            //}
 
             headerData.AddButton("+", btn =>
             {
@@ -126,11 +209,11 @@ namespace Assets.Scripts.Visuals
                     }
                 }, new List<ContextMenuItem>
                 {
-                    new ContextMenuTextItem("Add model filter", () => assetBrowserSystem.AddFilter(AssetMetadata.AssetType.Model)),
-                    //new ContextMenuTextItem("Add image filter", () => assetBrowserSystem.AddFilter(AssetMetadata.AssetType.Image)),
-                    new ContextMenuTextItem("Add scene filter", () => assetBrowserSystem.AddFilter(AssetMetadata.AssetType.Scene)),
-                    new ContextMenuTextItem("Sort by name (A-Z)", () => assetBrowserSystem.ChangeSorting(AssetBrowserState.Sorting.NameAscending)),
-                    new ContextMenuTextItem("Sort by name (Z-A)", () => assetBrowserSystem.ChangeSorting(AssetBrowserState.Sorting.NameDescending)),
+                    //new ContextMenuTextItem("Add model filter", () => assetBrowserSystem.AddFilter(AssetMetadata.AssetType.Model)),
+                    ////new ContextMenuTextItem("Add image filter", () => assetBrowserSystem.AddFilter(AssetMetadata.AssetType.Image)),
+                    //new ContextMenuTextItem("Add scene filter", () => assetBrowserSystem.AddFilter(AssetMetadata.AssetType.Scene)),
+                    //new ContextMenuTextItem("Sort by name (A-Z)", () => assetBrowserSystem.ChangeSorting(AssetBrowserState.Sorting.NameAscending)),
+                    //new ContextMenuTextItem("Sort by name (Z-A)", () => assetBrowserSystem.ChangeSorting(AssetBrowserState.Sorting.NameDescending)),
                 });
             });
 
@@ -139,18 +222,61 @@ namespace Assets.Scripts.Visuals
 
         private void UpdateContent()
         {
-            var panel = new PanelAtom.Data();
-            var assetHierarchy = assetBrowserSystem.GetFilteredAssetHierarchy();
+            Debug.Log("Update Content");
+            // clear folder Content
+            //ClearFolderContent();
 
-            foreach (AssetHierarchyItem hierarchyItem in assetHierarchy)
-            {
-                BuildHierarchy(hierarchyItem, panel);
-            }
-
-            contentUiBuilder.Update(panel);
+            UpdateFolderContent(assetBrowserSystem.rootItem);
         }
 
-        private void UpdateFooter()
+        private void UpdateFolderContent(AssetBrowserSystem.AbStructFolder parentAbStructFolder)
+        {
+            Debug.Log("Update Folder Content");
+
+            assetBrowserFolderFillerHandler.UpdateFolderContent(parentAbStructFolder);
+
+            //foreach (var abStructItem in parentAbStructFolder.GetItems())
+            //{
+            //    switch (abStructItem)
+            //    {
+            //        case AssetBrowserSystem.AbStructAsset abStructAsset:
+            //            AddAssetContent(parentObject, abStructAsset);
+            //            break;
+            //        case AssetBrowserSystem.AbStructFolder abStructFolder:
+            //            AddFolder(parentObject, abStructFolder);
+            //            break;
+            //    }
+            //}
+        }
+
+        //private void ClearFolderContent()
+        //{
+        //    foreach (var gameObjectInstance in allGameObjectInstances)
+        //    {
+        //        gameObjectInstance.ReturnToPool();
+        //    }
+        //}
+
+        //private void AddFolder(GameObject parentObject, AssetBrowserSystem.AbStructFolder abStructFolder)
+        //{
+        //    Debug.Log("Add folder");
+        //    var folderUiElement = specialAssets.assetFolderUiElement.CreateInstance();
+        //    folderUiElement.gameObject.transform.SetParent(parentObject.GetComponent<AssetBrowserFolderHandler>()?.subFolderContainer ?? parentObject.transform, false);
+        //    folderUiElement.gameObject.GetComponent<AssetBrowserFolderHandler>().Init(abStructFolder);
+        //    allGameObjectInstances.Add(folderUiElement);
+        //    UpdateFolderContent(folderUiElement.gameObject, abStructFolder);
+        //}
+        //
+        //private void AddAssetContent(GameObject parentObject, AssetBrowserSystem.AbStructAsset abStructAsset)
+        //{
+        //    Debug.Log("Add content");
+        //    var buttonUiElement = specialAssets.assetButtonUiElement.CreateInstance();
+        //    buttonUiElement.gameObject.transform.SetParent(parentObject.GetComponent<AssetBrowserFolderHandler>().assetButtonContainer, false);
+        //    buttonUiElement.gameObject.GetComponent<AssetBrowserButtonHandler>().InitUsageInUiAssetBrowser(abStructAsset);
+        //    allGameObjectInstances.Add(buttonUiElement);
+        //}
+
+        /*private void UpdateFooter()
         {
             var footerData = new PanelAtom.Data
             {
@@ -191,7 +317,7 @@ namespace Assets.Scripts.Visuals
         {
             string[] directories = hierarchyItem.path.Split(Path.AltDirectorySeparatorChar);
             return directories.Length - 1;
-        }
+        }*/
 
         public class Factory : PlaceholderFactory<UiAssetBrowserVisuals>
         {

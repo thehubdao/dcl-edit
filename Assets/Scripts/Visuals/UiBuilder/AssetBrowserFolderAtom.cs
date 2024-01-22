@@ -6,7 +6,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
     {
         public new class Data : PanelAtom.Data
         {
-            public AssetHierarchyItem hierarchyItem;
+            //public AssetHierarchyItem hierarchyItem;
 
             public override bool Equals(Atom.Data other)
             {
@@ -15,10 +15,10 @@ namespace Assets.Scripts.Visuals.UiBuilder
                     return false;
                 }
 
-                if (hierarchyItem.name != otherFolder.hierarchyItem.name)
-                {
-                    return false;
-                }
+                //if (hierarchyItem.name != otherFolder.hierarchyItem.name)
+                //{
+                //    return false;
+                //}
 
                 return base.Equals(other);
             }
@@ -44,7 +44,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
             {
                 // Update data
                 var handler = gameObject.gameObject.GetComponent<AssetBrowserFolderHandler>();
-                handler.Initialize(newFolderData.hierarchyItem);
+                //handler.Initialize(newFolderData.hierarchyItem);
                 data = newFolderData;
             }
         }
@@ -64,12 +64,12 @@ namespace Assets.Scripts.Visuals.UiBuilder
     {
         public static AssetBrowserFolderAtom.Data AddAssetBrowserFolder(
             this PanelAtom.Data panelAtomData,
-            AssetHierarchyItem hierarchyItem,
+            /*AssetHierarchyItem hierarchyItem,*/
             int indentationLevel)
         {
             var data = new AssetBrowserFolderAtom.Data
             {
-                hierarchyItem = hierarchyItem,
+                /*hierarchyItem = hierarchyItem,*/
                 indentationLevel = indentationLevel
             };
 

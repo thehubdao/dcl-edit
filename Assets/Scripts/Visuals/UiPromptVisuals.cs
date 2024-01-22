@@ -147,7 +147,7 @@ namespace Assets.Scripts.Visuals
             PromptSystem.Value<Guid> GetGuid = new(() => Destroy(tmpObject));
             GetGuid.data = data;
             data.notInWindowAction = GetGuid;
-            assetBrowserState.StoreShownTypesTemp();
+            //assetBrowserState.StoreShownTypesTemp();
 
             visuals.assetButtonOnClickOverride = (Guid assetId) =>
             {

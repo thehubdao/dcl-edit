@@ -458,6 +458,13 @@ namespace Assets.Scripts.System
                 new SettingOptions.Default<int>(16),
                 new SettingOptions.ClampMin<int>(2),
                 new SettingOptions.ClampMax<int>(100));
+
+            // connective settings
+            blenderExecPath = new Setting<string>(
+                editorEvents,
+                "blenderExecPath",
+                userSettingSaverInstance,
+                new SettingOptions.Default<string>("blender.exe"));
         }
 
         public Setting<float> uiScalingFactor;
@@ -506,5 +513,10 @@ namespace Assets.Scripts.System
         /// Time of day for the skybox in 24h format
         /// </summary>
         public Setting<float> skyboxTime;
+
+        /// <summary>
+        /// The path to the blender executable
+        /// </summary>
+        public Setting<string> blenderExecPath;
     }
 }

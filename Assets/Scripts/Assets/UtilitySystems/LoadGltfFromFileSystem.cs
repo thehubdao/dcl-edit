@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Assets.Scripts.EditorState;
 using Assets.Scripts.Utility;
 using UnityEngine;
 using UnityGLTF;
@@ -12,15 +11,6 @@ namespace Assets.Scripts.System
 {
     public class LoadGltfFromFileSystem
     {
-        // Dependencies
-        private UnityState unityState;
-
-        [Inject]
-        public void Construct(UnityState unityState)
-        {
-            this.unityState = unityState;
-        }
-
         public void LoadGltfFromPath(string gltfPath, Action<GameObject> then, IDataLoader dataLoader = null)
         {
             try
@@ -30,7 +20,7 @@ namespace Assets.Scripts.System
                 var options = new ImportOptions()
                 {
                     DataLoader = dataLoader,
-                    AsyncCoroutineHelper = unityState.AsyncCoroutineHelper
+                    AsyncCoroutineHelper = GameObject.Find("EditorStates").GetComponent<AsyncCoroutineHelper>()
                 };
 
                 var importer = new GLTFSceneImporter(gltfPath, options);

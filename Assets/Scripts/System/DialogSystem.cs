@@ -28,18 +28,18 @@ public class DialogSystem
         dialogState.currentDialog = DialogState.DialogType.Asset;
         dialogState.targetComponent = component;
 
-        assetBrowserState.StoreShownTypesTemp();
-        switch (component.NameInCode)
-        {
-            case "GLTFShape":
-                assetBrowserState.AddShownType(AssetMetadata.AssetType.Model);
-                break;
-            case "Scene":
-                assetBrowserState.AddShownType(AssetMetadata.AssetType.Scene);
-                break;
-            default:
-                break;
-        }
+        //assetBrowserState.StoreShownTypesTemp();
+        //switch (component.NameInCode)
+        //{
+        //    case "GLTFShape":
+        //        assetBrowserState.AddShownType(AssetMetadata.AssetType.Model);
+        //        break;
+        //    case "Scene":
+        //        assetBrowserState.AddShownType(AssetMetadata.AssetType.Scene);
+        //        break;
+        //    default:
+        //        break;
+        //}
 
         editorEvents.InvokeDialogChangedEvent();
     }
@@ -48,7 +48,7 @@ public class DialogSystem
     {
         dialogState.currentDialog = DialogState.DialogType.None;
 
-        assetBrowserState.RestoreShownTypes();
+        //assetBrowserState.RestoreShownTypes();
 
         editorEvents.InvokeDialogChangedEvent();
     }

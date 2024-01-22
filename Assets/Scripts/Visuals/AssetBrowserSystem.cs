@@ -6,7 +6,7 @@ using Zenject;
 
 namespace Assets.Scripts.System
 {
-    public class AssetBrowserSystem
+    /*public class AssetBrowserSystem
     {
         public List<AssetMetadata.AssetType> filters => assetBrowserState.shownAssetTypes;
 
@@ -117,5 +117,5 @@ namespace Assets.Scripts.System
                 editorEvents.InvokeAssetMetadataCacheUpdatedEvent();
             }
         }
-    }
+    }*/
 }

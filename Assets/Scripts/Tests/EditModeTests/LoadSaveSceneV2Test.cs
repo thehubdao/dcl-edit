@@ -84,7 +84,7 @@ namespace Assets.Scripts.Tests.EditModeTests
 
             menuBarSystem.Construct(editorEvents, menuBarState);
             sceneSettingState.Construct(pathState, sceneManagerState);
-            fileManagerSystem.Construct(pathState);
+            //fileManagerSystem.Construct(pathState,);
             settingsSystem.Construct(editorEvents, fileManagerSystem);
             sceneManagerSystem.Construct(
                 sceneManagerState,

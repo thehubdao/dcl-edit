@@ -28,6 +28,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 9199737783199215850}
   m_RootOrder: 1
@@ -103,6 +104,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 9199737783199215850}
   m_RootOrder: 0
@@ -178,6 +180,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1222500967139500237}
   m_Father: {fileID: 9199737783199215850}
@@ -240,8 +243,8 @@ GameObject:
   - component: {fileID: 9199737783199215849}
   - component: {fileID: 4869733556187126291}
   - component: {fileID: 6683100504448346619}
-  - component: {fileID: 5522565053440742496}
   - component: {fileID: 5832586162984013352}
+  - component: {fileID: 3167707940844926598}
   m_Layer: 5
   m_Name: AssetBrowserButton
   m_TagString: Untagged
@@ -259,6 +262,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 473053820396054153}
   - {fileID: 4675746216371715187}
@@ -383,25 +387,12 @@ MonoBehaviour:
   text: {fileID: 7958016555338386204}
   maskedImage: {fileID: 4534782707941783284}
   assetTypeIndicatorImage: {fileID: 5138599711966974024}
-  assetButtonInteraction: {fileID: 5522565053440742496}
+  assetButtonInteraction: {fileID: 0}
   loadingSymbol: {fileID: 1556659948189263386}
   modelTypeIndicator: {fileID: 21300000, guid: fe476aebf1136394a9100229fa339276, type: 3}
   imageTypeIndicator: {fileID: 21300000, guid: 0ebbff0ce96e9244ea03a1752ad226fd, type: 3}
   sceneTypeIndicator: {fileID: 21300000, guid: 1661184fe66d1b549b019069599645d5, type: 3}
   errorAssetThumbnail: {fileID: 21300000, guid: 617c143300c28314e8539c12f20d5b21, type: 3}
---- !u!114 &5522565053440742496
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9199737783199215851}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cefba1da1d9a8ed4795b9828e72d0d4d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  enableDragAndDrop: 0
 --- !u!114 &5832586162984013352
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -422,6 +413,19 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &3167707940844926598
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9199737783199215851}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 717a02054ef2699498e6bd4234fd7995, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _containerSource: 2
 --- !u!1001 &1322820978301253624
 PrefabInstance:
   m_ObjectHideFlags: 0

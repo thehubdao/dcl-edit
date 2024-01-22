@@ -8,7 +8,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
     {
         public new class Data : Atom.Data
         {
-            public AssetMetadata metadata;
+            //public AssetMetadata metadata;
             public bool enableDragAndDrop;
             public Action<Guid> onClick;
             public ScrollRect scrollViewRect;
@@ -20,10 +20,10 @@ namespace Assets.Scripts.Visuals.UiBuilder
                     return false;
                 }
 
-                if (metadata != otherBtn.metadata)
+                /*if (metadata != otherBtn.metadata)
                 {
                     return false;
-                }
+                }*/
 
                 if (enableDragAndDrop != otherBtn.enableDragAndDrop) return false;
                 if (onClick != otherBtn.onClick) return false;
@@ -57,7 +57,7 @@ namespace Assets.Scripts.Visuals.UiBuilder
             {
                 // Update data
                 var btnHandler = gameObject.gameObject.GetComponent<AssetBrowserButtonHandler>();
-                btnHandler.Init(newBtnData.metadata, newBtnData.enableDragAndDrop, newBtnData.onClick, newBtnData.scrollViewRect);
+                //btnHandler.Init(newBtnData.metadata, newBtnData.enableDragAndDrop, newBtnData.onClick, newBtnData.scrollViewRect);
                 data = newBtnData;
             }
         }
@@ -78,15 +78,15 @@ namespace Assets.Scripts.Visuals.UiBuilder
     {
         public static AssetBrowserButtonAtom.Data AddAssetBrowserButton(
             this PanelAtom.Data panelAtomData,
-            AssetMetadata metadata,
+            //AssetMetadata metadata,
             bool enableDragAndDrop,
             Action<Guid> onClick = null,
             ScrollRect scrollViewRect = null
-            )
+        )
         {
             var data = new AssetBrowserButtonAtom.Data
             {
-                metadata = metadata,
+                //metadata = metadata,
                 onClick = onClick,
                 enableDragAndDrop = enableDragAndDrop,
                 scrollViewRect = scrollViewRect

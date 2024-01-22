@@ -1,7 +1,12 @@
 using Assets.Scripts.EditorState;
 using System;
+using System.Collections;
+using Assets.Scripts.Assets;
+using Assets.Scripts.Events;
 using UnityEngine;
+using UnityEngine.Assertions;
 using Zenject;
+using Newtonsoft.Json.Linq;
 
 namespace Assets.Scripts.System
 {
@@ -21,6 +26,10 @@ namespace Assets.Scripts.System
         private EntityPresetState entityPresetState;
         private CustomComponentDefinitionSystem customComponentDefinitionSystem;
         private FileUpgraderSystem fileUpgraderSystem;
+        private AssetDiscovery assetDiscovery;
+        private AssetFormatTransformer assetFormatTransformer;
+        private DiscoveredAssets discoveredAssets;
+        private GlbInterpreterSystem glbInterpreterSystem;
 
         [Inject]
         private void Construct(
@@ -33,7 +42,11 @@ namespace Assets.Scripts.System
             SceneJsonReaderSystem sceneJsonReaderSystem,
             EntityPresetState entityPresetState,
             CustomComponentDefinitionSystem customComponentDefinitionSystem,
-            FileUpgraderSystem fileUpgraderSystem)
+            FileUpgraderSystem fileUpgraderSystem,
+            AssetDiscovery assetDiscovery,
+            AssetFormatTransformer assetFormatTransformer,
+            DiscoveredAssets discoveredAssets,
+            GlbInterpreterSystem glbInterpreterSystem)
         {
             this.assetManagerSystem = assetManagerSystem;
             this.workspaceSaveSystem = workspaceSaveSystem;
@@ -45,6 +58,10 @@ namespace Assets.Scripts.System
             this.entityPresetState = entityPresetState;
             this.customComponentDefinitionSystem = customComponentDefinitionSystem;
             this.fileUpgraderSystem = fileUpgraderSystem;
+            this.assetDiscovery = assetDiscovery;
+            this.assetFormatTransformer = assetFormatTransformer;
+            this.discoveredAssets = discoveredAssets;
+            this.glbInterpreterSystem = glbInterpreterSystem;
         }
 
         void Awake()
@@ -62,7 +79,9 @@ namespace Assets.Scripts.System
                 entityPresetState.FillEcs6BuildInPresets();
             }
 
-            assetManagerSystem.CacheAllAssetMetadata();
+            //assetManagerSystem.CacheAllAssetMetadata();
+            assetDiscovery.Initialize();
+            assetFormatTransformer.Init();
 
             if (sceneJsonReaderSystem.IsEcs7())
             {
@@ -76,6 +95,8 @@ namespace Assets.Scripts.System
             sceneManagerSystem.DiscoverScenes();
 
             sceneManagerSystem.SetLastOpenedSceneAsCurrentScene();
+
+            //StartCoroutine(LateAwake());
         }
 
         void Start()
@@ -84,5 +105,18 @@ namespace Assets.Scripts.System
 
             frameTimeSystem.SetApplicationTargetFramerate();
         }
+
+        //IEnumerator LateAwake()
+        //{
+        //    yield return new WaitForSeconds(1);
+        //    
+        //    var id = Guid.Parse("9de0c4dc-896a-4402-8baa-59505daad91e");
+        //    var count = 0;
+        //    
+        //    discoveredAssets.discoveredAssets[id].assetFormatChanged +=
+        //        () => { Debug.Log(count++ + ": " + discoveredAssets.GetAssetFormat<AssetFormatLoadedModel>(id)); };
+        //    
+        //    Debug.Log(discoveredAssets.GetAssetFormat<AssetFormatLoadedModel>(id));
+        //}
     }
 }

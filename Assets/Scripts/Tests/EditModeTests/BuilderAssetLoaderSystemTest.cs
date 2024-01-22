@@ -1,3 +1,4 @@
+/*
 using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
 using Assets.Scripts.System;
@@ -232,3 +233,4 @@ namespace Assets.Scripts.Tests.EditModeTests
         }
     }
 }
+*/

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -36,7 +37,7 @@ namespace Assets.Scripts.EditorState
             // Check for null action.
             if (onClick == null)
             {
-                throw new System.ArgumentException($"Null not a valid onClick argument.");
+                throw new ArgumentException($"Null not a valid onClick argument.");
             }
 
             Path pathParsed = new Path(path);
@@ -44,7 +45,7 @@ namespace Assets.Scripts.EditorState
             // Check for root directory.
             if (pathParsed.Depth <= 1)
             {
-                throw new System.ArgumentException($"Cannot add actions to the root of the menu bar. Create at least one directory. \"{path}\".");
+                throw new ArgumentException($"Cannot add actions to the root of the menu bar. Create at least one directory. \"{path}\".");
             }
 
             MenuBarItem itemToAddTo = GetOrCreateMenuBarItem(pathParsed.FirstTitle, pathParsed.FirstSortingPriority);
@@ -163,7 +164,7 @@ namespace Assets.Scripts.EditorState
                 {
                     if (title == "")
                     {
-                        throw new System.ArgumentException($"Elements are not allowed to have no title: \"{path}\".");
+                        throw new ArgumentException($"Elements are not allowed to have no title: \"{path}\".");
                     }
                 }
 
@@ -180,7 +181,7 @@ namespace Assets.Scripts.EditorState
                         }
                         catch
                         {
-                            throw new System.ArgumentException($"The sorting priority \"{titles[i].Substring(splitterIndex)}\" is not valid. From the Path: \"{path}\".");
+                            throw new ArgumentException($"The sorting priority \"{titles[i].Substring(splitterIndex)}\" is not valid. From the Path: \"{path}\".");
                         }
                         titles[i] = titles[i].Substring(0, splitterIndex);
                     }
@@ -195,12 +196,12 @@ namespace Assets.Scripts.EditorState
             /// Remove the first element from the Path to use the rest of the path.
             /// </summary>
             /// <returns>This with all other elements.</returns>
-            /// <exception cref="System.Exception"></exception>
+            /// <exception cref="Exception"></exception>
             public Path RemoveFirstElement()
             {
                 if (Depth <= 1)
                 {
-                    throw new System.Exception($"Cannot Remove any more elements the Path \"{ToString()}\".");
+                    throw new Exception($"Cannot Remove any more elements the Path \"{ToString()}\".");
                 }
                 firstElement ++;
 
@@ -211,7 +212,7 @@ namespace Assets.Scripts.EditorState
             /// Remove the first element from the Path to use the rest of the path.
             /// </summary>
             /// <returns>New Path object with all other elements.</returns>
-            /// <exception cref="System.Exception"></exception>
+            /// <exception cref="Exception"></exception>
             public Path FirstElementRemoved()
             {
                 return new Path(this).RemoveFirstElement();

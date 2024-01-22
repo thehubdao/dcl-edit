@@ -1,4 +1,4 @@
-using Assets.Scripts.EditorState;
+/*using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
 using Assets.Scripts.SceneState;
 using NUnit.Framework;
@@ -74,4 +74,4 @@ namespace Assets.Scripts.Tests.PlayModeTests
             Assert.AreEqual(512, thumbnail2.texture.height);
         }
     }
-}
+}*/

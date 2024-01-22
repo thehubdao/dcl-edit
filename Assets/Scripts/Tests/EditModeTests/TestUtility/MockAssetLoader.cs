@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace Assets.Scripts.Tests.EditModeTests.TestUtility
+/*namespace Assets.Scripts.Tests.EditModeTests.TestUtility
 {
     public class MockAssetLoader : IAssetLoaderSystem
     {
@@ -106,4 +106,4 @@ namespace Assets.Scripts.Tests.EditModeTests.TestUtility
             throw new NotImplementedException();
         }
     }
-}
+}*/

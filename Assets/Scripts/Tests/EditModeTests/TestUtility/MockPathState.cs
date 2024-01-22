@@ -18,6 +18,8 @@ namespace Assets.Scripts.Tests.EditModeTests.TestUtility
         }
 
         public string ProjectPath { get; set; }
+        public string BuildPath => Path.Combine(ProjectPath, "build");
+        public string AssetPath => Path.Combine(ProjectPath, "assets");
 
         /**
          * Changes ProjectPath to a new temporary folder and copies the content from the old ProjectPath to the new folder.

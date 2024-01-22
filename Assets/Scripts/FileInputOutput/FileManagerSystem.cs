@@ -11,11 +11,15 @@ namespace Assets.Scripts.System
     {
         // Dependencies
         private IPathState pathState;
+        private ThreadManager threadManager;
 
         [Inject]
-        public void Construct(IPathState pathState)
+        public void Construct(
+            IPathState pathState,
+            ThreadManager threadManager)
         {
             this.pathState = pathState;
+            this.threadManager = threadManager;
         }
 
 
@@ -53,10 +57,10 @@ namespace Assets.Scripts.System
             var fsw = new FileSystemWatcher(path);
             fsw.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.CreationTime | NotifyFilters.Size | NotifyFilters.FileName;
 
-            fsw.Created += (_, e) => { callback(FileWatcherEvent.Created, e.FullPath, e.FullPath); };
-            fsw.Changed += (_, e) => { callback(FileWatcherEvent.Changed, e.FullPath, e.FullPath); };
-            fsw.Deleted += (_, e) => { callback(FileWatcherEvent.Deleted, e.FullPath, e.FullPath); };
-            fsw.Renamed += (_, e) => { callback(FileWatcherEvent.Renamed, e.FullPath, e.OldFullPath); };
+            fsw.Created += (_, e) => { threadManager.DoOnNextUpdate(() => callback(FileWatcherEvent.Created, e.FullPath, e.FullPath)); };
+            fsw.Changed += (_, e) => { threadManager.DoOnNextUpdate(() => callback(FileWatcherEvent.Changed, e.FullPath, e.FullPath)); };
+            fsw.Deleted += (_, e) => { threadManager.DoOnNextUpdate(() => callback(FileWatcherEvent.Deleted, e.FullPath, e.FullPath)); };
+            fsw.Renamed += (_, e) => { threadManager.DoOnNextUpdate(() => callback(FileWatcherEvent.Renamed, e.FullPath, e.OldFullPath)); };
 
             fsw.Filter = filter;
             fsw.IncludeSubdirectories = true;

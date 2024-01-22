@@ -1,0 +1,16 @@
+{
+    "name": "FileInputOutput",
+    "rootNamespace": "",
+    "references": [
+        "GUID:d59dd11f4f3ab1b4291fbf9a2d7f964c"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

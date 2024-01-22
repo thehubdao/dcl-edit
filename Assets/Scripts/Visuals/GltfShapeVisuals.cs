@@ -3,38 +3,53 @@ using Assets.Scripts.SceneState;
 using Assets.Scripts.System;
 using Assets.Scripts.Utility;
 using System;
+using Assets.Scripts.Assets;
+using JetBrains.Annotations;
+using ModestTree;
 using UnityEngine;
+using UnityEngine.Pool;
 using Zenject;
+using Assert = UnityEngine.Assertions.Assert;
 
 namespace Assets.Scripts.Visuals
 {
     public class GltfShapeVisuals : ShapeVisuals
     {
-        private GameObject _currentModelObject = null;
-
         // Dependencies
-        private AssetManagerSystem _assetManagerSystem;
-        private UnityState _unityState;
-        private SceneManagerSystem _sceneManagerSystem;
-        private SceneJsonReaderSystem _sceneJsonReaderSystem;
+        //private AssetManagerSystem assetManagerSystem;
+        private UnityState unityState;
+        private SceneManagerSystem sceneManagerSystem;
+        private SceneJsonReaderSystem sceneJsonReaderSystem;
+        private DiscoveredAssets discoveredAssets;
+        private SpecialAssets specialAssets;
 
         [Inject]
         private void Construct(
-            AssetManagerSystem assetManagerSystem,
+            //AssetManagerSystem assetManagerSystem,
             UnityState unityState,
             SceneManagerSystem sceneManagerSystem,
-            SceneJsonReaderSystem sceneJsonReaderSystem)
+            SceneJsonReaderSystem sceneJsonReaderSystem,
+            DiscoveredAssets discoveredAssets,
+            SpecialAssets specialAssets)
         {
-            _assetManagerSystem = assetManagerSystem;
-            _unityState = unityState;
-            _sceneManagerSystem = sceneManagerSystem;
-            _sceneJsonReaderSystem = sceneJsonReaderSystem;
+            //this.assetManagerSystem = assetManagerSystem;
+            this.unityState = unityState;
+            this.sceneManagerSystem = sceneManagerSystem;
+            this.sceneJsonReaderSystem = sceneJsonReaderSystem;
+            this.discoveredAssets = discoveredAssets;
+            this.specialAssets = specialAssets;
         }
+
+        [CanBeNull]
+        private CommonAssetTypes.AssetInfo displayedAsset = null;
+
+        [CanBeNull]
+        private CommonAssetTypes.GameObjectInstance currentModelObject = null;
 
         public override void UpdateVisuals(DclScene scene, DclEntity entity)
         {
             var assetGuid =
-                _sceneJsonReaderSystem.IsEcs7() ?
+                sceneJsonReaderSystem.IsEcs7() ?
                     entity
                         .GetComponentByName(DclGltfContainerComponent.gltfShapeComponentDefinition.NameInCode)?
                         .GetPropertyByName("src")?
@@ -47,59 +62,117 @@ namespace Assets.Scripts.Visuals
                         .Value;
 
             if (!assetGuid.HasValue)
+            {
+                UpdateDisplayedAsset(null);
                 return;
-
-            var data = _assetManagerSystem.GetDataById((Guid)assetGuid);
-
-            GameObject newModel = null;
-            switch (data.state)
-            {
-                case AssetData.State.IsAvailable:
-                    if (data is ModelAssetData modelData)
-                    {
-                        if (modelData.data == null)
-                            return;
-
-                        newModel = modelData.data;
-                    }
-
-                    break;
-
-                case AssetData.State.IsLoading:
-                    newModel = Instantiate(_unityState.LoadingModel);
-                    break;
-
-                case AssetData.State.IsError:
-                    newModel = Instantiate(_unityState.ErrorModel);
-                    break;
             }
 
-            if (newModel != null)
+            // check if asset exists
+            if (discoveredAssets.discoveredAssets.TryGetValue(assetGuid.Value, out var asset))
             {
-                Destroy(_currentModelObject);
+                UpdateDisplayedAsset(asset);
+            }
+            else
+            {
+                UpdateDisplayedAsset(null);
+            }
+        }
 
-                newModel.transform.SetParent(transform);
-                newModel.transform.localScale = Vector3.one;
-                newModel.transform.localRotation = Quaternion.identity;
-                newModel.transform.localPosition = Vector3.zero;
+        private void UpdateDisplayedAsset(CommonAssetTypes.AssetInfo asset)
+        {
+            if (asset == displayedAsset) return; // already correct
 
-                _currentModelObject = newModel;
-
-                if (newModel.TryGetComponent(out Animation animation))
-                    animation.enabled = false;
-
-                UpdateSelection(entity);
+            if (displayedAsset != null)
+            {
+                displayedAsset.assetFormatChanged -= UpdateModel;
             }
 
-            if (scene.IsFloatingEntity(entity.Id)! == true)
+            if (asset != null)
             {
-                StaticUtilities.SetLayerRecursive(gameObject, LayerMask.NameToLayer("Ignore Raycast"));
+                asset.assetFormatChanged += UpdateModel;
             }
+
+            displayedAsset = asset;
+
+            UpdateModel();
+        }
+
+        private void UpdateModel()
+        {
+            Debug.Log("Update Model");
+            if (displayedAsset == null)
+            {
+                DisplayNone();
+                return;
+            }
+
+            var (availability, model) = discoveredAssets.GetAssetFormat<AssetFormatLoadedModel>(displayedAsset.assetId);
+
+            switch (availability)
+            {
+                case DiscoveredAssets.AssetFormatAvailability.Available:
+                    DisplayModel(model);
+                    break;
+                case DiscoveredAssets.AssetFormatAvailability.Loading:
+                    DisplayLoading();
+                    break;
+                case DiscoveredAssets.AssetFormatAvailability.FormatError:
+                case DiscoveredAssets.AssetFormatAvailability.FormatNotAvailable:
+                case DiscoveredAssets.AssetFormatAvailability.DoesNotExist:
+                    DisplayError();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+
+        private void DisplayModel(AssetFormatLoadedModel model)
+        {
+            Assert.IsTrue(model.availability == CommonAssetTypes.Availability.Available);
+
+            currentModelObject?.ReturnToPool();
+
+            currentModelObject = model.CreateInstance();
+
+            SetupTransform();
+        }
+
+        private void DisplayLoading()
+        {
+            currentModelObject?.ReturnToPool();
+
+            currentModelObject = specialAssets.loadingModelProvider.CreateInstance();
+
+            SetupTransform();
+        }
+
+        private void DisplayError()
+        {
+            currentModelObject?.ReturnToPool();
+
+            currentModelObject = specialAssets.errorModelProvider.CreateInstance();
+
+            SetupTransform();
+        }
+
+        private void DisplayNone()
+        {
+            currentModelObject?.ReturnToPool();
+        }
+
+        private void SetupTransform()
+        {
+            Assert.IsNotNull(currentModelObject);
+            currentModelObject!.gameObject.transform.SetParent(transform);
+            currentModelObject!.gameObject.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+            currentModelObject!.gameObject.transform.localScale = Vector3.one;
         }
 
         public override void Deactivate()
         {
-            _currentModelObject.SetActive(false);
+            DisplayNone();
+            UpdateDisplayedAsset(null);
         }
 
         public class Factory : PlaceholderFactory<GltfShapeVisuals>

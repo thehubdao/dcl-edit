@@ -1,3 +1,4 @@
+using Assets.Scripts.Assets;
 using Assets.Scripts.EditorState;
 using Assets.Scripts.Events;
 using Assets.Scripts.Interaction;
@@ -29,9 +30,15 @@ public class DclEditorInstaller : MonoInstaller
     [SerializeField]
     private GameObject mainSceneVisualsPrefab;
 
-    [Header("Unity State")]
+    [Header("Unity References")]
     [SerializeField]
     private UnityState unityState;
+
+    [SerializeField]
+    private SpecialAssets specialAssets;
+
+    [SerializeField]
+    private ThreadManager threadManager;
 
     [Header("Test Mode")]
     [SerializeField]
@@ -44,7 +51,28 @@ public class DclEditorInstaller : MonoInstaller
         {
             Container.BindInterfacesTo<GeneralInputInteraction>().AsSingle();
         }
-        
+
+        // assets
+        Container.BindInterfacesAndSelfTo<AssetDiscovery>().AsSingle();
+        Container.BindInterfacesAndSelfTo<DiscoveredAssets>().AsSingle();
+        Container.BindInterfacesAndSelfTo<BuilderAssetDiscovery>().AsSingle();
+        Container.BindInterfacesAndSelfTo<OnDiscAssetDiscovery>().AsSingle();
+        Container.BindInterfacesAndSelfTo<AssetFormatTransformer>().AsSingle();
+        Container.BindInterfacesAndSelfTo<GlbInterpreterSystem>().AsSingle();
+        Container.BindInterfacesAndSelfTo<AssetMetaFile>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<TransformerBuilderCloudToBuilderDownload>().AsSingle();
+        Container.BindInterfacesAndSelfTo<TransformerBuilderDownloadToBuildDecentraland>().AsSingle();
+        Container.BindInterfacesAndSelfTo<TransformerBuilderDownloadToLoadedModel>().AsSingle();
+        Container.BindInterfacesAndSelfTo<TransformerOnDiscToLoadedModel>().AsSingle();
+        Container.BindInterfacesAndSelfTo<TransformerOnDiscToBuildForDecentraland>().AsSingle();
+        Container.BindInterfacesAndSelfTo<TransformerBlendToBlendCached>().AsSingle();
+        Container.BindInterfacesAndSelfTo<TransformerBlendCacheToLoadedModel>().AsSingle();
+        Container.BindInterfacesAndSelfTo<TransformerBlenderCacheToBuildDecentraland>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<SpecialAssets>().FromComponentOn(specialAssets.gameObject).AsSingle();
+        Container.BindInterfacesAndSelfTo<ThreadManager>().FromComponentOn(threadManager.gameObject).AsSingle();
+
         Container.Bind<LoadFromVersion1System>().To<LoadFromVersion1System>().AsSingle();
 
         Container.Bind(typeof(ISceneLoadSystem), typeof(ISceneSaveSystem)).To<SceneLoadSaveSystem>().AsSingle();
@@ -58,6 +86,8 @@ public class DclEditorInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<InputState>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<Interface3DState>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<BlenderExecutor>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<ApplicationSystem>().AsSingle();
 
@@ -113,11 +143,11 @@ public class DclEditorInstaller : MonoInstaller
 
         Container.BindInterfacesAndSelfTo<AssetManagerSystem>().AsSingle();
 
-        Container.Bind<IAssetLoaderSystem>().To<FileAssetLoaderSystem>().AsCached().WithArguments("assets", false);
-        Container.Bind<IAssetLoaderSystem>().To<FileAssetLoaderSystem>().AsCached().WithArguments("node_modules", true);
-        Container.Bind<IAssetLoaderSystem>().To<BuilderAssetLoaderSystem>().AsSingle();
+        //Container.Bind<IAssetLoaderSystem>().To<FileAssetLoaderSystem>().AsCached().WithArguments("assets", false);
+        //Container.Bind<IAssetLoaderSystem>().To<FileAssetLoaderSystem>().AsCached().WithArguments("node_modules", true);
+        //Container.Bind<IAssetLoaderSystem>().To<BuilderAssetLoaderSystem>().AsSingle();
 
-        Container.BindInterfacesAndSelfTo<FileAssetLoaderState>().AsTransient();
+        //Container.BindInterfacesAndSelfTo<FileAssetLoaderState>().AsTransient();
 
         Container.BindInterfacesAndSelfTo<AssetBrowserSystem>().AsSingle();
 
@@ -125,7 +155,7 @@ public class DclEditorInstaller : MonoInstaller
 
         Container.BindInterfacesAndSelfTo<LoadGltfFromFileSystem>().AsSingle();
 
-        Container.BindInterfacesAndSelfTo<BuilderAssetLoaderState>().AsSingle();
+        //Container.BindInterfacesAndSelfTo<BuilderAssetLoaderState>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<WebRequestSystem>().AsSingle();
 
@@ -136,7 +166,7 @@ public class DclEditorInstaller : MonoInstaller
 
         Container.BindInterfacesAndSelfTo<HierarchyContextMenuSystem>().AsSingle();
 
-        Container.BindInterfacesAndSelfTo<AssetThumbnailManagerSystem>().AsSingle();
+        //Container.BindInterfacesAndSelfTo<AssetThumbnailManagerSystem>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<AssetThumbnailGeneratorSystem>().FromComponentInNewPrefab(_assetThumbnailGeneratorPrefab).AsSingle();
 
