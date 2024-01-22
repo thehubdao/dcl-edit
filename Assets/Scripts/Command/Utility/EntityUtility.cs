@@ -1,5 +1,6 @@
 using Assets.Scripts.SceneState;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Assets.Scripts.Command.Utility
@@ -56,10 +57,9 @@ namespace Assets.Scripts.Command.Utility
         {
             foreach (var selectedEntity in scene.SelectionState.AllSelectedEntities)
             {
-                //This is the case when primaryselectedentity == null and no secondaryselectedentities exist
                 if (selectedEntity == null)
                 {
-                    return;
+                    continue;
                 }
                 
                 var entity = scene.GetEntityById(entityId);
@@ -88,11 +88,15 @@ namespace Assets.Scripts.Command.Utility
         {
             if (scene.SelectionState.PrimarySelectedEntity == entity)
             {
-                scene.SelectionState.PrimarySelectedEntity = null;
+                scene.SelectionState.PrimarySelectedEntity = null; 
+                foreach (var child in entity.Children)
+                {
+                    scene.SelectionState.SecondarySelectedEntities = scene.SelectionState.SecondarySelectedEntities.Where(x => x != child).ToList();
+                } 
+                return;
             }
-            
-            scene.SelectionState.AllSelectedEntities.ToList().Remove(entity);
-            scene.SelectionState.SecondarySelectedEntities.ToList().Remove(entity);
+
+            scene.SelectionState.SecondarySelectedEntities = scene.SelectionState.SecondarySelectedEntities.Where(x => x != entity).ToList();
         }
 
         public static void AddDefaultTransformComponent(DclEntity entity)
