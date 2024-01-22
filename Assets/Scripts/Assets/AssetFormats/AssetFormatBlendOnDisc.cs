@@ -1,19 +1,13 @@
-using System;
 using Assets.Scripts.Assets;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
-public interface IAssetFormatOnDisc
+public class AssetFormatBlendOnDisc : CommonAssetTypes.AssetFormat, IAssetFormatOnDisc
 {
-    void SetPaths(string metaPath, string assetPath);
-    bool UpdateHash();
-}
-
-public class AssetFormatOnDisc : CommonAssetTypes.AssetFormat, IAssetFormatOnDisc
-{
-    public override string formatName => "On Disc";
+    public override string formatName => "Blend On Disc";
     public override string hash => hashInternal.ToString();
     public override CommonAssetTypes.Availability availability => CommonAssetTypes.Availability.Available;
 
@@ -25,7 +19,7 @@ public class AssetFormatOnDisc : CommonAssetTypes.AssetFormat, IAssetFormatOnDis
     public string filePath => filePathInternal;
     public string metaPath => metaPathInternal;
 
-    public AssetFormatOnDisc(string metaPath, string assetPath)
+    public AssetFormatBlendOnDisc(string metaPath, string assetPath)
     {
         SetPaths(metaPath, assetPath);
     }

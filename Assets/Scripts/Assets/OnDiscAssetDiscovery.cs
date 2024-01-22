@@ -10,6 +10,7 @@ using Assets.Scripts.System;
 using UnityEngine;
 using UnityEngine.Assertions;
 using Zenject;
+using static Assets.Scripts.Assets.CommonAssetTypes;
 
 public class OnDiscAssetDiscovery
 {
@@ -96,8 +97,8 @@ public class OnDiscAssetDiscovery
                 // try to find asset info
                 if (discoveredAssets.discoveredAssets.TryGetValue(assetId, out var existingAssetInfo))
                 {
-                    Assert.IsTrue(existingAssetInfo.baseFormat is AssetFormatOnDisc);
-                    var formatOnDisc = (AssetFormatOnDisc) existingAssetInfo.baseFormat;
+                    Assert.IsTrue(existingAssetInfo.baseFormat is IAssetFormatOnDisc);
+                    var formatOnDisc = (IAssetFormatOnDisc) existingAssetInfo.baseFormat;
 
                     if (eventType == FileManagerSystem.FileWatcherEvent.Renamed)
                     {
@@ -106,6 +107,7 @@ public class OnDiscAssetDiscovery
 
                     if (formatOnDisc.UpdateHash())
                     {
+                        Debug.Log("Updated hash");
                         existingAssetInfo.InvokeAssetFormatChanged();
                     }
                 }
@@ -117,7 +119,9 @@ public class OnDiscAssetDiscovery
                     displayPath = Path.GetDirectoryName(displayPath);
 
                     // create base format
-                    var baseFormat = new AssetFormatOnDisc(metaFilePath, filePath);
+                    AssetFormat baseFormat = Path.GetExtension(filePath) == ".blend" ?
+                        new AssetFormatBlendOnDisc(metaFilePath, filePath) :
+                        new AssetFormatOnDisc(metaFilePath, filePath);
 
                     // create asset info
                     var newAssetInfo = new CommonAssetTypes.AssetInfo
@@ -151,6 +155,7 @@ public class OnDiscAssetDiscovery
         {
             "glb" => true,
             "gltf" => true,
+            "blend" => true,
             "png" => true,
             "jpg" => true,
             "jpeg" => true,
@@ -168,6 +173,7 @@ public class OnDiscAssetDiscovery
         {
             "glb" => "Model",
             "gltf" => "Model",
+            "blend" => "Model",
             "png" => "Image",
             "jpg" => "Image",
             "jpeg" => "Image",

@@ -56,19 +56,19 @@ public class TextInputHandler : MonoBehaviour
         ResetActions();
 
         inputField.onSelect.AddListener(_ => _inputState.InState = InputState.InStateType.UiInput);
-        inputField.onValueChanged.AddListener(value => onChange(value));
+        inputField.onValueChanged.AddListener(value => onChange?.Invoke(value));
         inputField.onEndEdit.AddListener(value =>
         {
             _inputState.InState = InputState.InStateType.NoInput;
-            if(inputField.wasCanceled)
+            if (inputField.wasCanceled)
             {
                 //Debug.Log("Aborting input");
-                onAbort(value);
+                onAbort?.Invoke(value);
             }
             else
             {
                 //Debug.Log("Submitting input");
-                onSubmit(value);
+                onSubmit?.Invoke(value);
             }
         });
     }

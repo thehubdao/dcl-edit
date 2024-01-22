@@ -161,8 +161,25 @@ namespace Assets.Scripts.Visuals
                 {
                     OnSubmit = settingsSystem.gizmoToolScaleSnapping.Set
                 });
-            
-            
+
+            gizmoToolSnappingPanel.AddNumberProperty(
+                "Grid Selection",
+                "Grid (default: 1)",
+                settingsSystem.groundGridSetting.Get(),
+                new StringPropertyAtom.UiPropertyActions<float>
+                {
+                    OnSubmit = (value) => settingsSystem.groundGridSetting.Set((int) value)
+                });
+
+            gizmoToolSnappingPanel.AddNumberProperty(
+                "Gridsize Selection",
+                "Gridsize (default: 16)",
+                settingsSystem.groundGridSizeSetting.Get(),
+                new StringPropertyAtom.UiPropertyActions<float>
+                {
+                    OnSubmit = (value) => settingsSystem.groundGridSizeSetting.Set((int) value)
+                });
+
             // Environment Settings
 
             var environmentPanel = settingsPanel.AddPanelWithBorder();
@@ -179,22 +196,19 @@ namespace Assets.Scripts.Visuals
                     OnSubmit = settingsSystem.skyboxTime.Set
                 });
 
-            gizmoToolSnappingPanel.AddNumberProperty(
-                "Grid Selection",
-                "Grid (default: 1)",
-                settingsSystem.groundGridSetting.Get(),
-                new StringPropertyAtom.UiPropertyActions<float>
-                {
-                    OnSubmit = (value) => settingsSystem.groundGridSetting.Set((int)value)
-                });
+            // Connectivity Settings
 
-            gizmoToolSnappingPanel.AddNumberProperty(
-                "Gridsize Selection",
-                "Gridsize (default: 16)",
-                settingsSystem.groundGridSizeSetting.Get(),
-                new StringPropertyAtom.UiPropertyActions<float>
+            var connectivityPanel = settingsPanel.AddPanelWithBorder();
+
+            connectivityPanel.AddPanelHeader("Connectivity");
+
+            connectivityPanel.AddStringProperty(
+                "Blender Executable",
+                "blender.exe",
+                settingsSystem.blenderExecPath.Get(),
+                new StringPropertyAtom.UiPropertyActions<string>
                 {
-                    OnSubmit = (value) => settingsSystem.groundGridSizeSetting.Set((int)value)
+                    OnSubmit = settingsSystem.blenderExecPath.Set
                 });
 
             // Version number x
@@ -204,6 +218,7 @@ namespace Assets.Scripts.Visuals
                 sceneJsonReaderSystem.IsEcs7() ?
                     "API Version: ECS 7" :
                     "API Version: ECS 6");
+
 
             uiBuilder.Update(settingsPanel);
         }

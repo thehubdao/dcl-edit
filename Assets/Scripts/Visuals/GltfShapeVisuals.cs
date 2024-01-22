@@ -99,6 +99,7 @@ namespace Assets.Scripts.Visuals
 
         private void UpdateModel()
         {
+            Debug.Log("Update Model");
             if (displayedAsset == null)
             {
                 DisplayNone();

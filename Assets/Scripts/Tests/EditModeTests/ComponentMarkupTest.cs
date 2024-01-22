@@ -101,7 +101,7 @@ First comment second line
             var mockPath = new MockPathState("custom-components");
 
             var fileManagerSystem = new FileManagerSystem();
-            fileManagerSystem.Construct(mockPath);
+            //fileManagerSystem.Construct(mockPath);
 
             var availableComponentsState = new AvailableComponentsState();
 

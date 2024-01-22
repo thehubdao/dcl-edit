@@ -70,24 +70,32 @@ namespace Assets.Scripts.Assets
             }
 
             // Step 3: create the missing format(s)
-            var transformationResult = assetFormatTransformer.TransformToFormat(info, wantedFormatType);
-
-            return transformationResult switch
+            try
             {
-                // Step 3a: Missing format has been instantly created
-                AssetFormatTransformer.TransformToFormatReturn.Available =>
-                    (AssetFormatAvailability.Available, (T) info.GetAssetFormatOrNull(wantedFormatType)),
+                var transformationResult = assetFormatTransformer.TransformToFormat(info, wantedFormatType);
 
-                // Step 3b: Missing format is loading
-                AssetFormatTransformer.TransformToFormatReturn.Loading =>
-                    (AssetFormatAvailability.Loading, null),
+                return transformationResult switch
+                {
+                    // Step 3a: Missing format has been instantly created
+                    AssetFormatTransformer.TransformToFormatReturn.Available =>
+                        (AssetFormatAvailability.Available, (T) info.GetAssetFormatOrNull(wantedFormatType)),
 
-                // Step 3c: Missing format can not be created
-                AssetFormatTransformer.TransformToFormatReturn.Impossible =>
-                    (AssetFormatAvailability.FormatNotAvailable, null),
+                    // Step 3b: Missing format is loading
+                    AssetFormatTransformer.TransformToFormatReturn.Loading =>
+                        (AssetFormatAvailability.Loading, null),
 
-                _ => throw new ArgumentOutOfRangeException()
-            };
+                    // Step 3c: Missing format can not be created
+                    AssetFormatTransformer.TransformToFormatReturn.Impossible =>
+                        (AssetFormatAvailability.FormatNotAvailable, null),
+
+                    _ => throw new ArgumentOutOfRangeException()
+                };
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+                throw;
+            }
         }
     }
 }

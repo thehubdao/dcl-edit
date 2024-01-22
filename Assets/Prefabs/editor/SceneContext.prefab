@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 2209880425006019887}
   - component: {fileID: 2209880425006019886}
   - component: {fileID: 708559405382960621}
+  - component: {fileID: 1002689250269935135}
   m_Layer: 0
   m_Name: SceneContext
   m_TagString: Untagged
@@ -86,6 +87,7 @@ MonoBehaviour:
   mainSceneVisualsPrefab: {fileID: 605670504806266054, guid: b3d29882895606a40a7e0a82c4a68140, type: 3}
   unityState: {fileID: 0}
   specialAssets: {fileID: 708559405382960621}
+  threadManager: {fileID: 1002689250269935135}
   enableTestMode: 0
 --- !u!114 &708559405382960621
 MonoBehaviour:
@@ -104,3 +106,15 @@ MonoBehaviour:
   assetFolderUiElementTemplate: {fileID: 569288621326271914, guid: bdf698fa20b9d9842917888e8bea6558, type: 3}
   assetButtonUiElementTemplate: {fileID: 9199737783199215851, guid: 5fbffa0ef7a6dae40aee2be1808b6979, type: 3}
   poolParent: {fileID: 2209880425006019884}
+--- !u!114 &1002689250269935135
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2209880425006019881}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c43798f9d4e29bf40ba1dd082689bb30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

@@ -37,6 +37,9 @@ public class DclEditorInstaller : MonoInstaller
     [SerializeField]
     private SpecialAssets specialAssets;
 
+    [SerializeField]
+    private ThreadManager threadManager;
+
     [Header("Test Mode")]
     [SerializeField]
     private bool enableTestMode;
@@ -63,9 +66,12 @@ public class DclEditorInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<TransformerBuilderDownloadToLoadedModel>().AsSingle();
         Container.BindInterfacesAndSelfTo<TransformerOnDiscToLoadedModel>().AsSingle();
         Container.BindInterfacesAndSelfTo<TransformerOnDiscToBuildForDecentraland>().AsSingle();
+        Container.BindInterfacesAndSelfTo<TransformerBlendToBlendCached>().AsSingle();
+        Container.BindInterfacesAndSelfTo<TransformerBlendCacheToLoadedModel>().AsSingle();
+        Container.BindInterfacesAndSelfTo<TransformerBlenderCacheToBuildDecentraland>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<SpecialAssets>().FromComponentOn(specialAssets.gameObject).AsSingle();
-
+        Container.BindInterfacesAndSelfTo<ThreadManager>().FromComponentOn(threadManager.gameObject).AsSingle();
 
         Container.Bind<LoadFromVersion1System>().To<LoadFromVersion1System>().AsSingle();
 
@@ -80,6 +86,8 @@ public class DclEditorInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<InputState>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<Interface3DState>().AsSingle();
+
+        Container.BindInterfacesAndSelfTo<BlenderExecutor>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<ApplicationSystem>().AsSingle();
 
