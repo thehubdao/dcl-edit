@@ -16,7 +16,7 @@ public class AssetThumbnailGeneratorSystem : MonoBehaviour
     private GameObject assetHolder;
     
     [SerializeField]
-    private new Camera camera;
+    private Camera camera;
     
     [SerializeField]
     private Vector2Int thumbnailSize = new Vector2Int(512, 512);

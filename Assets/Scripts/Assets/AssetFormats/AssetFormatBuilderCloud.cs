@@ -1,8 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using Assets.Scripts.Assets;
-using UnityEditor.VersionControl;
-using UnityEngine;
 
 public class AssetFormatBuilderCloud : CommonAssetTypes.AssetFormat
 {
