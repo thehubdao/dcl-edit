@@ -1,19 +1,20 @@
 using System;
 using System.Collections.Generic;
+using Assets.Scripts.Assets;
 using UnityEngine;
 
 public class AssetThumbnailGeneratorState
 {
     public struct QueuedAsset
     {
-        public QueuedAsset(Guid id, Action<Texture2D> then)
+        public QueuedAsset(CommonAssetTypes.IModelProvider model, Action<Sprite> then)
         {
-            this.id = id;
+            this.model = model;
             this.then = then;
         }
 
-        public Guid id;
-        public Action<Texture2D> then;
+        public CommonAssetTypes.IModelProvider model;
+        public Action<Sprite> then;
     }
 
     public Queue<QueuedAsset> queuedAssets = new Queue<QueuedAsset>();
