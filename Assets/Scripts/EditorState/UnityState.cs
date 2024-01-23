@@ -65,7 +65,7 @@ namespace Assets.Scripts.EditorState
         public Material DefaultMat;
 
         [SerializeField]
-        public Texture2D DefaultAssetThumbnail;
+        public Sprite DefaultAssetThumbnail;
 
         [SerializeField]
         public Texture2D AssetTypeModelIcon;

@@ -15,6 +15,7 @@ using Assets.Scripts.Visuals.UiHandler;
 using UnityEngine.Assertions;
 using UnityEngine.EventSystems;
 using static Assets.Scripts.Assets.CommonAssetTypes;
+using static AssetBrowserSystem;
 
 public class AssetBrowserButtonHandler : ButtonHandler, IPointerClickHandler, IDragHandler, IOnReturnToPool
 {
@@ -48,24 +49,30 @@ public class AssetBrowserButtonHandler : ButtonHandler, IPointerClickHandler, ID
 
     //AssetThumbnailManagerSystem assetThumbnailManagerSystem;
     SceneManagerSystem sceneManagerSystem;
+    DiscoveredAssets discoveredAssets;
     PromptSystem promptSystem;
     AddEntitySystem addEntitySystem;
     CameraState cameraState;
+    UnityState unityState;
 
     [Inject]
     void Construct(EditorEvents editorEvents,
         /*AssetThumbnailManagerSystem assetThumbnailManagerSystem,*/
         SceneManagerSystem sceneManagerSystem,
+        DiscoveredAssets discoveredAssets,
         PromptSystem promptSystem,
         AddEntitySystem addEntitySystem,
-        CameraState cameraState)
+        CameraState cameraState,
+        UnityState unityState)
     {
         this.editorEvents = editorEvents;
         /*this.assetThumbnailManagerSystem = assetThumbnailManagerSystem;*/
         this.sceneManagerSystem = sceneManagerSystem;
+        this.discoveredAssets = discoveredAssets;
         this.promptSystem = promptSystem;
         this.addEntitySystem = addEntitySystem;
         this.cameraState = cameraState;
+        this.unityState = unityState;
     }
 
     public void InitUsageInUiAssetBrowser(AssetBrowserSystem.AbStructAsset abStructAsset)
@@ -76,13 +83,23 @@ public class AssetBrowserButtonHandler : ButtonHandler, IPointerClickHandler, ID
         //assetButtonInteraction.assetMetadata = metadata;
         maskedImage.sprite = null; // Clear thumbnail. There might be one still set because the prefab gets reused from the pool
 
-        SetText(abStructAsset);
-        SetTypeIndicator(abStructAsset);
+        UpdateAll();
+        currentAsset.assetInfo.assetFormatChanged += UpdateAll;
+    }
+
+    public void UpdateAll()
+    {
+        SetText(currentAsset);
+        SetTypeIndicator(currentAsset);
+        SetThumbnail(currentAsset);
         SetEnabled(true);
     }
 
     public void OnReturnToPool()
     {
+        if (currentAsset == null) return;
+
+        currentAsset.assetInfo.assetFormatChanged -= UpdateAll;
         currentAsset = null;
     }
 
@@ -130,6 +147,34 @@ public class AssetBrowserButtonHandler : ButtonHandler, IPointerClickHandler, ID
         }
 
         text.text = abStructAsset.name;
+    }
+
+    private void SetThumbnail(AbStructAsset abStructAsset)
+    {
+        var (availability, thumbnail) = discoveredAssets.GetAssetFormat<AssetFormatThumbnail>(abStructAsset.assetInfo.assetId);
+
+        switch (availability)
+        {
+            case DiscoveredAssets.AssetFormatAvailability.Available:
+                loadingSymbol.SetActive(false);
+                maskedImage.sprite = thumbnail.thumbnail;
+                maskedImage.enabled = true;
+                break;
+            case DiscoveredAssets.AssetFormatAvailability.Loading:
+                loadingSymbol.SetActive(true);
+                maskedImage.sprite = null;
+                maskedImage.enabled = false;
+                break;
+            case DiscoveredAssets.AssetFormatAvailability.FormatError:
+            case DiscoveredAssets.AssetFormatAvailability.FormatNotAvailable:
+            case DiscoveredAssets.AssetFormatAvailability.DoesNotExist:
+            default:
+                Debug.Log(availability);
+                loadingSymbol.SetActive(false);
+                maskedImage.sprite = unityState.DefaultAssetThumbnail;
+                maskedImage.enabled = true;
+                break;
+        }
     }
 
     private void SetEnabled(bool value)

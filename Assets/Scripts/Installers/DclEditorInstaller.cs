@@ -69,6 +69,9 @@ public class DclEditorInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<TransformerBlendToBlendCached>().AsSingle();
         Container.BindInterfacesAndSelfTo<TransformerBlendCacheToLoadedModel>().AsSingle();
         Container.BindInterfacesAndSelfTo<TransformerBlenderCacheToBuildDecentraland>().AsSingle();
+        Container.BindInterfacesAndSelfTo<TransformerBuilderCloudToThumbnailCached>().AsSingle();
+        Container.BindInterfacesAndSelfTo<TransformerThumbnailCacheToThumbnail>().AsSingle();
+        Container.BindInterfacesAndSelfTo<TransformerModelLoadedToThumbnail>().AsSingle();
 
         Container.BindInterfacesAndSelfTo<SpecialAssets>().FromComponentOn(specialAssets.gameObject).AsSingle();
         Container.BindInterfacesAndSelfTo<ThreadManager>().FromComponentOn(threadManager.gameObject).AsSingle();
