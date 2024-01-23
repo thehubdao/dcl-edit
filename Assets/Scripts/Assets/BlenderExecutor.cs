@@ -96,7 +96,7 @@ except:
         }
         catch (Exception e)
         {
-            then(null);
+            threadManager.DoOnNextUpdate(() => then(null));
             Debug.LogException(e);
         }
     }
